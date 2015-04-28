@@ -1,0 +1,218 @@
+# Overview of Julia commands
+
+A quick overview of the `Julia` commands and constructs introduced in the material on pre-calculus.
+
+## Commands
+
+Commands are typed at the REPL prompt in a `IJulia` cell. New commands are separated by a new line or a semicolon:
+
+## Numbers, variable types
+
+Unlike a calculator `Julia` has different types for different types of numbers. For example
+
+- Integers: `2`
+
+- Rational numbers: `1//2`
+
+- Floating point numbers: `0.5`
+
+- Complex numbers `2 + 0im`
+
+As much as possible, operations involving  certain types of numbers will produce output of a given type. For example, both of these divisions produce a floating point answer, even though  mathematically, they need not:
+
+```
+2/1, 1/2
+```
+
+Some operations won't work with integer types, but will with floating point types, as the type of output can't be assured. Powers are the main example where `2^(1/2)` is not defined, but `2.0^(1/2)` is.
+
+An expression like `(-3.0)^(1/3)` is not defined, as it can't be in general for the two types. However, `Julia` provides the special-case function `cbrt`.
+
+Integer operations may silently overflow, producing odd answers:
+
+```
+2^64
+```
+
+When different types of numbers are mixed, `Julia` will usually promote the values to a common type before the operation:
+
+```
+(2 + 1//2) + 0.5
+```
+
+`Julia` will first add `2` and `1//2` converting `2` to rational before doing so. Then add the result, `5//2` to `0.5` by promoting `5//2` to the floating point number `2.5` before proceeding.
+
+The standard mathematical operations are implemented by `+`, `-`, `*`, `/`, `^`. Parentheses are used for grouping.
+
+## Vectors
+
+Arithmetic sequences can be defined by either
+
+- `linspace(a,b,n)` which produces `n` values between `a` and `b`;
+
+- `a:h:b` or `a:b` which produces values starting at `a` separated by `h` (`h` is `1` in the last form) until they reach `b`.
+
+- general vectors can be constructed with square brackets:
+
+```
+[1,1,2,3,5,8]
+```
+
+## Variables
+
+Values can be assigned variable names, with `=`. There are some variants
+
+```
+x = 2
+a_really_long_name = 3
+a, b = 1, 2
+a1 = a2 = 0
+```
+
+The names can be short, as above, or more verbose. They can't start with a number, but can include numbers. It can also be a fancy unicode or even an emoji.
+
+Names may be repurposed, even with values of different types (a dynamic language), save for function names, which have some special rules.
+
+## Functions
+
+Function in `Julia` are just regular objects. In these notes, we often pass them as arguments to other functions. There are many built-in functions and it is easy to define new functions.
+
+We call a function by passing arguments to it, grouped by parentheses:
+
+```
+log(5, 100)   # log base 5 of 100
+```
+
+With out parentheses, the name refers to generic name and the output lists the number of available implementations.
+
+```
+log
+```
+
+### Built-in functions
+
+`Julia` has numerous built-in [mathematical](http://julia.readthedocs.org/en/latest/manual/mathematical-operations/#powers-logs-and-roots) functions.
+
+#### Powers logs and roots
+
+Besides `^`, there are `sqrt` and `cbrt` for powers. In addition basic function for exponential and  logarithmic functions:
+
+```
+Verbatim("""
+sqrt(x), cbrt(x)
+exp(x)
+log(x) # base e
+log10(x), log2(x), log(b, x)
+""")
+```
+
+#### Trignometric functions
+
+The $6$ standard trig functions are implemented; their implementation for degree arguments; their inverse functions; and the hyperbolic analogs.
+
+```
+Verbatim("""
+sin, cos, tan, csc, sec, cot
+sind, cosd, tand, cscd, secd, cotd
+asin, acos, atan, acsc, asec, acot
+sinh, cosh, tanh, csch, sech, coth
+asinh, acosh, atanh, acsch, asech, acoth
+""")
+```
+
+#### Useful functions
+
+Other useful and familiar functions are defined:
+
+- `abs(x)` absolute value
+
+- `sign(x)` is $\lvert x \rvert/x$ except at $x=0$, where it is $0$.
+
+- `floor(x)`, `ceil(x)` greatest integer less or least integer greater
+
+- `max(a,b)` and `min(a,b)` larger (or smaller) of `a` or `b`
+
+- `maximum(xs)` and `minimum(xs)` largest or smallest of the collection referred to by `xs`
+
+
+
+### User-defined functions
+
+Simple mathematical functions can be defined using standard mathematical notation:
+
+```
+f(x) = -16x^2 + 100x + 2
+```
+
+The argument `x` is passed into the body of function.
+
+User defined functions can have 1 or more arguments:
+
+```
+area(w, h) = w*h
+```
+
+Julia makes different *methods* for *generic* function names, so functions whose argument specification is different are different functions, even if the name is the same. This is *polymorphism* and means users need only remember a much smaller set of function names.
+
+Longer functions can be defined using the `function` keyword, the last command executed is returned:
+
+```
+function f(x)
+  y = x^2
+  z = y - 3
+  z
+end
+```
+
+Functions without names, *anonymous functions* are made with the `->` operator as in:
+
+```
+x -> cos(x)^2 - cos(2x)
+```
+
+These are useful when passing a function to another function.
+
+## Conditional statements
+
+`Julia` provides the traditional `if-else-end` statements, but more conveniently has a `ternary` operator for the simplest case:
+
+```
+our_abs(x) = (x < 0) ? -x : x
+```
+
+## Looping
+
+Iterating over a collection can be done with the traditional `for` loop. However, there are list comprehensions to mimic the definition of a set:
+
+```
+[x^2 for x in 1:10]
+```
+
+And `map` to apply a function over a collection:
+
+```
+map(sin, 1:4)
+```
+
+## Plotting
+
+Plotting is *not* built-in to `Julia`, rather added through add-on package. The notes use `Julia`'s `Gadfly` package. There are three basic calling styles:
+
+Plotting a function by passing the function object by name. 
+
+```
+using Gadfly      # needed just once per session
+plot(sin, 0, 2pi)
+```
+
+Plotting an *anonymous* function
+
+```
+plot( x -> exp(-x/pi) * sin(x), 0, 2pi)
+```
+
+Plotting more than one function over $[a,b]$:
+
+```
+plot([sin, cos, zero], 0, 2pi)
+```

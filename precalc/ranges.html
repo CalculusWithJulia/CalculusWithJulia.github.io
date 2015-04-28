@@ -1,0 +1,854 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+
+
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) { 
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();                                    
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();  
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>Ranges and Sets</h1><p>Sequences of numbers are prevalent in math. A simple one is just counting by ones:</p><p>$$ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 $$</p><p>Or counting by sevens:</p><p>$$ 7, 14, 21, 28, 35, 42, 49 $$</p><p>More challenging for humans is <a href="http://www.psychpage.com/learning/library/assess/mse.htm">counting backwards</a> by 7:</p><p>$$ 100, 93, 86, 79, ... $$</p><p>These are examples of <a href="http://en.wikipedia.org/wiki/Arithmetic_progression">arithmetic sequences</a>. The form of these is:</p><p>$$ a_0, a_0 + h, a_0 +2h, a_0 + 3h, \dots, a_0 + nh $$</p><p>The formula for the $n$th term can be written in terms of $a_0$, or any other $0 < m \leq n$ with $a_n = a_m + (n-m)\cdot h$.</p><p>A typical question might be: The first term of an arithmetic sequence is equal to 200 and the common difference is equal to -10. Find the value of the 20th term. We could find this using $a_n = a_0 + n\cdot h$:</p><pre class="sourceCode julia">a0, h, n = 200, -10, 20
+a0 + n * h</pre>
+<pre class="output">
+0</pre>
+
+<p>More complicated questions involve solving for an unknown first, as with: an arithmetic sequence has a common difference equal to 10 and its 6th term is equal to 52. Find its 15th term. Here we have to answer: $a_0 + 15 \cdot 10$, but to find $a_0$, we use $52 = a_0 + 6\cdot(10)$. This yields $a_0=-8$, and so:</p><pre class="sourceCode julia">a0, h, n = -8, 10, 15
+a0 + n * h</pre>
+<pre class="output">
+142</pre>
+
+<p>Rather than express sequences by the $a_0$, $h$, and $n$, <code>Julia</code> uses the starting point (<code>a</code>), the difference (<code>h</code>) and a suggested stopping value (<code>b</code>).  That is, we need three values to specify these ranges of numbers: a <code>start</code>, a <code>step</code>, and an <code>endof</code>. <code>Julia</code> gives a convenient syntax for this: <code>a:h:b</code>. When the difference is just $1$, all numbers between the start and end are specified by <code>a:b</code>, as in</p><pre class="sourceCode julia">1:10</pre>
+<pre class="output">
+1:10</pre>
+
+<p>But wait, nothing printed? This is because <code>1:10</code> is efficiently stored. Basically, only the current state and a means to generate the next values are kept. To expand the values, you have to ask for them to be <code>collect</code>ed:</p><pre class="sourceCode julia">collect(1:10)</pre>
+<pre class="output">
+10-element Array{Int64,1}:
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10</pre>
+
+<p>When a non-default step size is needed, it goes in the middle, as in <code>a:h:b</code>. For example, counting by sevens from 1 to 50 is achieved by:</p><pre class="sourceCode julia">collect(1:7:50)</pre>
+<pre class="output">
+8-element Array{Int64,1}:
+  1
+  8
+ 15
+ 22
+ 29
+ 36
+ 43
+ 50</pre>
+
+<p>Or counting down from 100:</p><pre class="sourceCode julia">collect(100:-7:1)</pre>
+<pre class="output">
+15-element Array{Int64,1}:
+ 100
+  93
+  86
+  79
+  72
+  65
+  58
+  51
+  44
+  37
+  30
+  23
+  16
+   9
+   2</pre>
+
+<p>In this last example, we said end with 1, but it ended with 2. The ending value in the range is a suggestion to go up to, but not exceed.</p><div class="alert alert-info" role="alert"><p>The <code>linspace</code> function is related to the colon operation. It generates <code>n</code> values evenly spaced between <code>a</code> and <code>b</code> with the call <code>linspace(a, b, n)</code>. The <code>n</code> is optional, defaulting to $100$. Specifying the number of numbers is more convenient in some cases, than specifying the step size. On particular case arises when generating points to produce a graph of a function.</p></div>
+<h2>Filtering and modifying arithmetic progressions</h2><p>Within <code>Julia</code>, there are other, specific, ways to achieve a different step size. We don't pursue them, but rather concentrate on some more general styles to modify a sequence to produce a new sequence.</p><p>For example, another way to get the values between 0 and 100 that are multiples of 7 is to start with all 101 values and throw out those that don't match. To check if a number is divisible by $7$, we could use the <code>%</code>operator for modulo division (<code>m%n</code> is the remainder when dividing <code>m</code> by <code>n</code>). Multiples of <code>7</code> match <code>m % 7 == 0</code>. Checking for divisibility by seven is unusual enough there is nothing built in for that, but checking for division by $2$ is common, and for that, there is a built-in function <code>iseven</code>.</p><p>The act of throwing out elements of a collection based on some condition is called <em>filtering</em>. The <code>filter</code> function does this in <code>Julia</code>. The basic syntax being <code>filter(predicate_function,collection)</code>. The "<code>predicate_function</code>" is one that returns either <code>true</code> or <code>false</code>, such as <code>iseven</code>. The output of <code>filter</code> consists of the new collection of values – those where the predicate returns <code>true</code>.</p><p>To see it used, lets start with the numbers between <code>0</code> and <code>100</code> (inclusive) and filter out those that are even:</p><pre class="sourceCode julia">filter(iseven, 0:100)</pre>
+<pre class="output">
+51-element Array{Int64,1}:
+   0
+   2
+   4
+   6
+   8
+  10
+  12
+  14
+  16
+  18
+  20
+  22
+  24
+   ⋮
+  78
+  80
+  82
+  84
+  86
+  88
+  90
+  92
+  94
+  96
+  98
+ 100</pre>
+
+<p>To get the numbers between 1 and 100 that are divisible by $7$ requires us to write a function akin to <code>iseven</code>, which isn't hard (e.g., <code>is_seven(x)=x%7==0</code>), but isn't something we continue with just yet.</p><p>For another example, here is an inefficient way to list the prime numbers between 100 and 200 using the built-in <code>isprime</code> function:</p><pre class="sourceCode julia">filter(isprime, 100:200)</pre>
+<pre class="output">
+21-element Array{Int64,1}:
+ 101
+ 103
+ 107
+ 109
+ 113
+ 127
+ 131
+ 137
+ 139
+ 149
+ 151
+ 157
+ 163
+ 167
+ 173
+ 179
+ 181
+ 191
+ 193
+ 197
+ 199</pre>
+
+<p>(The <code>primes</code> function will list all primes less than its argument <code>n</code> in a much more efficient manner.)</p><p>Illustrating <code>filter</code> at this point is mainly a motivation to illustrate that we can start with a regular set of numbers and then modify or filter them. The function takes on more value once we discuss how to write predicate functions.</p><h2>Comprehensions</h2><p>Let's return to the case of even numbers between 0 and 100. We have many ways to describe this set:</p><p>- The collection of numbers $0, 2, 4, 6 \dots, 100$, or the arithmetic   sequence with step size 2, which is returned by <code>0:2:100</code>.</p><p>- The numbers between 0 and 100 that are even, that is <code>filter(iseven, 0:100)</code>.</p><p>- The set of numbers $\{2k: k=0, \dots, 50\}$.</p><p>While <code>Julia</code> has a special type for dealing with sets, we will use a vector for such a set. (Unlike a set, vectors can have repeated values, but as vectors are more widely used, we demonstrate them.) Vectors are constructed using square brackets: <code>[]</code> (a special syntax for <a href="http://docs.julialang.org/en/latest/manual/arrays/#concatenation">concatenation</a>). Square brackets are used in many different contexts within <code>Julia</code>, in this case we use them to create a <em>collection</em>. If we separate single values in our collection by commas (or semicolons), we will create a vector:</p><pre class="sourceCode julia">x = [0,2,4,6,8,10]</pre>
+<pre class="output">
+6-element Array{Int64,1}:
+  0
+  2
+  4
+  6
+  8
+ 10</pre>
+
+<p>That is of course only part of the set of even numbers we want. Creating more might be tedious were we to type them all out, as above. In such cases, it is best to <em>generate</em> the values. </p><p>For this simple case, a range can be used, but more generally a  <a href="http://julia.readthedocs.org/en/latest/manual/arrays/#comprehensions">comprehension</a> provides this ability using a construct that closely mirrors  a set definition, such as $\{2k: k=0, \dots, 50\}$. The simplest use of a comprehension takes this form:</p><p><code>[expr for variable in collection]</code></p><p>The expression typically involves the variable specified after the keyword <code>for</code>. The collection can be a range, a vector, or many other items that are <em>iterable</em>. Here is how the mathematical set $\{2k: k=0, \dots, 50\}$ may be generated by a comprehension:</p><pre class="sourceCode julia">[2k for k in 0:50]</pre>
+<pre class="output">
+51-element Array{Int64,1}:
+   0
+   2
+   4
+   6
+   8
+  10
+  12
+  14
+  16
+  18
+  20
+  22
+  24
+   ⋮
+  78
+  80
+  82
+  84
+  86
+  88
+  90
+  92
+  94
+  96
+  98
+ 100</pre>
+
+<p>The expression is <code>2k</code>, the variable <code>k</code> and the collection is the range of values, <code>0:50</code>. The syntax is basically identical to how the math expression is typically read aloud.</p><p>For some other examples, here is how we can create the first 50 numbers divisible by 7:</p><pre class="sourceCode julia">[7k for k in 1:50]</pre>
+<pre class="output">
+50-element Array{Int64,1}:
+   7
+  14
+  21
+  28
+  35
+  42
+  49
+  56
+  63
+  70
+  77
+  84
+  91
+   ⋮
+ 273
+ 280
+ 287
+ 294
+ 301
+ 308
+ 315
+ 322
+ 329
+ 336
+ 343
+ 350</pre>
+
+<p>Here is how we can square the numbers between 1 and 10:</p><pre class="sourceCode julia">[x^2 for x in 1:10]</pre>
+<pre class="output">
+10-element Array{Int64,1}:
+   1
+   4
+   9
+  16
+  25
+  36
+  49
+  64
+  81
+ 100</pre>
+
+<p>To generate other progressions, such as powers of 2, we could do:</p><pre class="sourceCode julia">[2^i for i in 1:10]</pre>
+<pre class="output">
+10-element Array{Int64,1}:
+    2
+    4
+    8
+   16
+   32
+   64
+  128
+  256
+  512
+ 1024</pre>
+
+<p>To get decreasing powers takes a bit of care, as <code>2^(-i)</code> is an error for positive <code>i</code>s, but <code>1/2^i</code> is not. (This is because powers with integers are expected to return integers, but division by integers is not.) Here then are decreasing powers of 2:</p><pre class="sourceCode julia">[1/2^i for i in 1:10]</pre>
+<pre class="output">
+10-element Array{Float64,1}:
+ 0.5        
+ 0.25       
+ 0.125      
+ 0.0625     
+ 0.03125    
+ 0.015625   
+ 0.0078125  
+ 0.00390625 
+ 0.00195313 
+ 0.000976563</pre>
+
+<p>Sometimes, the comprehension does not produce the type of output that may be expected. This is related to <code>Julia</code>'s more limited abilities to infer types at the command line. If the output type is important, the extra prefix of <code>T[]</code> can be used, where <code>T</code> is the desired type. We will see that this will be needed at times with symbolic math.</p><div class="alert alert-success" role="alert"><p>The <code>map</code> function. Using a comprehension is very convenient when the expression is to be typed in. However if the expression is a function call, then the <code>map</code> function yields a similar result and has a more convenient notation: <code>map(f, collection)</code> will also produce the output of <code>[f(x) for x in collection]</code>. </p></div>
+<h2>Random numbers</h2><p>This section discusses structured sets of numbers. On the opposite end of the spectrum are random numbers. <code>Julia</code> makes them easy to generate, especially random numbers chosen uniformly for $(0,1)$.</p><p>- The <code>rand()</code> function returns a randomly chosen number in $(0,1)$.</p><p>- The <code>rand(n)</code> function returns <code>n</code> randomly chosen numbers in $(0,1)$.</p><p>To illustrate, this will return a single number</p><pre class="sourceCode julia">rand()</pre>
+<pre class="output">
+0.48153820798096936</pre>
+
+<p>This call will return a vector of 10 such random numbers:</p><pre class="sourceCode julia">rand(10)</pre>
+<pre class="output">
+10-element Array{Float64,1}:
+ 0.212603 
+ 0.0281371
+ 0.25174  
+ 0.0670942
+ 0.851407 
+ 0.915935 
+ 0.860771 
+ 0.270888 
+ 0.301106 
+ 0.980674 </pre>
+
+<p>Easy to use. The only common source of confusion is the subtle distinction between <code>rand()</code> and <code>rand(1)</code>, as the latter is a vector of 1 random number and the former just 1 random number.</p><div class="alert alert-success" role="alert"><p>The documentation for <code>rand</code> shows that the value is in $[0,1)$, but in practice $0$ doesn't come up with any frequency – about 1 out of every $10^{19}$ numbers – so we say $(0,1)$. </p></div>
+<h2>Questions</h2><h6>Question</h6><p>Which of these will produce the odd numbers between 1 and 99?</p>
+<form name="WeaveQuestion" data-id="ZSWC6ucD" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ZSWC6ucD" value="1"><code>1:99</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ZSWC6ucD" value="2"><code>1:3:99</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ZSWC6ucD" value="3"><code>1:2:99</code>
+    </label>
+    </div>
+    
+
+
+<div id="ZSWC6ucD_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_ZSWC6ucD']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#ZSWC6ucD_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#ZSWC6ucD_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Which of these will produce the countdown numbers 10, 9, 8, ..., 3, 2, 1?</p>
+<form name="WeaveQuestion" data-id="FhYIQwXR" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_FhYIQwXR" value="1"><code>10:9:8:...:1</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_FhYIQwXR" value="2"><code>10:1:-1</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_FhYIQwXR" value="3"><code>10:1</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_FhYIQwXR" value="4"><code>10:-1:1</code>
+    </label>
+    </div>
+    
+
+
+<div id="FhYIQwXR_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_FhYIQwXR']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#FhYIQwXR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#FhYIQwXR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Which of these will create the sequence $2, 9, 16, 23, \dots, 72$?</p>
+<form name="WeaveQuestion" data-id="EMMJXEfF" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_EMMJXEfF" value="1"><code>72:-7:2</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_EMMJXEfF" value="2"><code>2:72</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_EMMJXEfF" value="3"><code>2:9:72</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_EMMJXEfF" value="4"><code>2:7:72</code>
+    </label>
+    </div>
+    
+
+
+<div id="EMMJXEfF_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_EMMJXEfF']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#EMMJXEfF_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#EMMJXEfF_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>How many numbers are in the sequence produced by <code>0:19:1000</code>?</p>
+<form name='WeaveQuestion' data-id='X7VSZt5E' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="X7VSZt5E" type="number" class="form-control">
+
+</div>
+  
+<div id='X7VSZt5E_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#X7VSZt5E').on('change', function() {
+  correct = Math.abs(this.value - 53) <= 0;
+
+  if(correct) {
+     $('#X7VSZt5E_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#X7VSZt5E_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Create the sequence $10, 100, 1000, \dots, 1,000,000$ using a list comprehension. Which of these works?</p>
+<form name="WeaveQuestion" data-id="khwFi9V3" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_khwFi9V3" value="1"><code>[10^i for i in 1:6]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_khwFi9V3" value="2"><code>[i^10 for i in [1:6]]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_khwFi9V3" value="3"><code>[10^i for i in [10, 100, 1000]]</code>
+    </label>
+    </div>
+    
+
+
+<div id="khwFi9V3_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_khwFi9V3']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#khwFi9V3_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#khwFi9V3_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Create the sequence $0.1, 0.01, 0.001, \dots, 0.0000001$ using a list comprehension. Which of these will work:</p>
+<form name="WeaveQuestion" data-id="OltzXR7X" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_OltzXR7X" value="1"><code>[10^-i for i in 1:7]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_OltzXR7X" value="2"><code>[(1/10)^i for i in 1:7]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_OltzXR7X" value="3"><code>[i^(1/10) for i in 1:7]</code>
+    </label>
+    </div>
+    
+
+
+<div id="OltzXR7X_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_OltzXR7X']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#OltzXR7X_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#OltzXR7X_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Evaluate the expression $x^3 - 2x + 3$ for each of the values -5, -4, $\dots$, 4, 5 using a comprehension. Which of these will work?</p>
+<form name="WeaveQuestion" data-id="3F73nAdN" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_3F73nAdN" value="1"><code>[x^3 - 2x + 3 for i in -5:5]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_3F73nAdN" value="2"><code>[x^3 - 2x + 3 for x in -(5:5)]</code>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_3F73nAdN" value="3"><code>[x^3 - 2x + 3 for x in -5:5]</code>
+    </label>
+    </div>
+    
+
+
+<div id="3F73nAdN_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_3F73nAdN']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#3F73nAdN_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#3F73nAdN_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>How many prime numbers are there between 1100 and 1200? (Use <code>filter</code> and <code>isprime</code>)</p>
+<form name='WeaveQuestion' data-id='lIlEfORI' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="lIlEfORI" type="number" class="form-control">
+
+</div>
+  
+<div id='lIlEfORI_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#lIlEfORI').on('change', function() {
+  correct = Math.abs(this.value - 12) <= 0;
+
+  if(correct) {
+     $('#lIlEfORI_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#lIlEfORI_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Which has more prime numbers  the range <code>1000:2000</code> or the range <code>11000:12000</code>?</p>
+<form name="WeaveQuestion" data-id="hmZXRkoJ" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio inline"> 
+    <label>
+      <input type="radio" name="radio_hmZXRkoJ" value="1"><code>1000:2000</code>
+    </label>
+    </div>
+    
+    <div   class="radio inline"> 
+    <label>
+      <input type="radio" name="radio_hmZXRkoJ" value="2"><code>11000:12000</code>
+    </label>
+    </div>
+    
+
+
+<div id="hmZXRkoJ_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_hmZXRkoJ']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#hmZXRkoJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#hmZXRkoJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>We can easily add an arithmetic progression with the <code>sum</code> function. For example, <code>sum(1:100)</code> will add the numbers $1, 2, ..., 100$.</p><p>What is the sum of the odd numbers between 0 and 100?</p>
+<form name='WeaveQuestion' data-id='AxnslzCD' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="AxnslzCD" type="number" class="form-control">
+
+</div>
+  
+<div id='AxnslzCD_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#AxnslzCD').on('change', function() {
+  correct = Math.abs(this.value - 2500) <= 0;
+
+  if(correct) {
+     $('#AxnslzCD_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#AxnslzCD_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>The sum of the arithmetic progression $a, a+h, \dots, a+n\cdot h $ has a simple formula. Using a few cases, can you tell if this is the correct one:</p><p>$$ h \cdot(a + n(n+1)/2) $$</p>
+<form name="WeaveQuestion" data-id="FJRcq48O" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio inline"> 
+    <label>
+      <input type="radio" name="radio_FJRcq48O" value="1">Yes, this is true
+    </label>
+    </div>
+    
+    <div   class="radio inline"> 
+    <label>
+      <input type="radio" name="radio_FJRcq48O" value="2">No, this is false
+    </label>
+    </div>
+    
+
+
+<div id="FJRcq48O_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_FJRcq48O']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#FJRcq48O_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#FJRcq48O_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A <em>geometric progression</em> is of the form $a^0, a^1, a^2, \dots, a^n$. These are easily generated by comprehensions of the form <code>[a^i for i in 0:n]</code>. Find the sum of the geometric progression $1, 2^1, 2^2, \dots, 2^{10}$.</p>
+<form name='WeaveQuestion' data-id='KzoTjL7i' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="KzoTjL7i" type="number" class="form-control">
+
+</div>
+  
+<div id='KzoTjL7i_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#KzoTjL7i').on('change', function() {
+  correct = Math.abs(this.value - 2047) <= 0;
+
+  if(correct) {
+     $('#KzoTjL7i_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#KzoTjL7i_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>Is your answer of the form $(1 - a^{n+1}) / (1-a)$?</p>
+<form name="WeaveQuestion" data-id="uj94u5mQ" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_uj94u5mQ" value="1">Yes
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_uj94u5mQ" value="2">No
+    </label>
+    </div>
+    
+
+
+<div id="uj94u5mQ_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_uj94u5mQ']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#uj94u5mQ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#uj94u5mQ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The <a href="http://en.wikipedia.org/wiki/Arithmetic_progression">product</a> of the terms in arithmetic progression has a known formula.  The product can be found by an expression of the form <code>prod(a:h:b)</code>.  Find the product of the terms in the sequence $1,3,5,\dots,19$.</p>
+<form name='WeaveQuestion' data-id='tuZBXkX4' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="tuZBXkX4" type="number" class="form-control">
+
+</div>
+  
+<div id='tuZBXkX4_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#tuZBXkX4').on('change', function() {
+  correct = Math.abs(this.value - 654729075) <= 0;
+
+  if(correct) {
+     $('#tuZBXkX4_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#tuZBXkX4_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+
+  </div>
+</div>  
+
+</body>
+</html>

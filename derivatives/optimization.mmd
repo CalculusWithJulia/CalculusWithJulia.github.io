@@ -1,0 +1,853 @@
+# Optimization
+
+This section discusses a basic application of calculus to answer
+questions which relate to the largest or smallest a function can be given
+some constraints.
+
+
+For example,
+
+
+> Of all rectangles with perimeter 20, which has of the largest area?
+
+
+The main tool is the extreme value theorem of Bolzano and Fermat's
+theorem about critical points: If the function $f(x)$ is continuous on
+$[a,b]$ and differentiable on $(a,b)$, then the extrema exist and must
+occur at either an end point or a critical point.
+
+
+Though not all of our problems lend themselves to a description of a
+continuous function on a closed interval, if they do, we have an
+algorithmic prescription to find the absolute extrema of a function:
+
+1) Find the critical points. For this we will can use a root-finding function like `fzero`.
+
+2) Evaluate the function values at the critical points and at the end points.
+
+3) Identify the largest and smallest values.
+
+With the computer we can take some shortcuts, as we will be able to
+graph our function to see where the extreme values will be.
+
+## Fixed perimeter and area
+
+The simplest way to investigate the maximum or minimum value of a
+function over a closed interval is to just graph it and look.
+
+We begin with the question of which rectangles of perimeter 20 have
+the largest area? The figure shows a few different rectangles with
+this perimeter and their respective areas.
+
+{{{perimeter_area_graphic}}}
+
+The basic mathematical approach is to find a function of a single
+variable to maximize or minimize. In this case we have two variables
+describing a rectangle: a base $b$ and height $h$. Our formulas are the area of a rectangle:
+
+$$
+A = bh,
+$$
+
+and the formula for the perimeter of a rectangle:
+
+$$
+P = 2b + 2h = 20.
+$$
+
+From this last one, we see that $b$ can be no bigger than 10 and no
+smaller than 0 from the restriction put in place through the
+perimeter. Solving for $h$ in terms of $b$ then yields this
+restatement of the problem:
+
+Maximize $A(b) = b \cdot (10 - b)$ over the interval $[0,10]$.
+
+This is exactly the form needed to apply our theorem about the
+existence of extrema (a continuous function on a closed
+interval). Rather than solve analytically by taking a derivative, we
+simply graph to find the value:
+
+```
+using Gadfly
+A(b) = b * (10 - b)
+plot(A, 0, 10)
+```
+
+You should see the maximum occurs at $b=5$ by symmetry, so $h=5$ as
+well, and the maximum area is then $25$. This gives the satisfying
+answer that among all rectangles of fixed perimeter, that with the
+largest area is a square. As well, this indicates a common result:
+there is often some underlying symmetry in the answer.
+
+### Exploiting polymorphism
+
+Before moving on, let's see a slightly different way to do this
+problem with `Julia`, where we trade off some algebra for a bit of
+abstraction. This was discussed in the section on
+[functions](../precalc/functions.html). Let's first write area as a
+function of both base and height:
+
+```
+A(b, h) = b*h
+```
+
+Here we write area, quite naturally, as a function of two variables.
+
+
+Then from the constraint given by the perimeter being a fixed value we
+can solve for `h` in terms of `b`. We write this as a function:
+
+```
+h(b) = (20 - 2b) / 2
+```
+
+Then to get `A(b)` we simply need to substitute `h(b)` into our
+formula for the area, `A`. However, instead of doing the substitution
+ourselves using algebra we let `julia` do it through composition of
+functions:
+
+```
+A(b) = A(b, h(b))
+```
+
+From this we can solve as before.
+
+
+```
+alert("""
+
+Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both is used. The advantage of multiple dispatch is illustrated: the same concept -- area -- has one function name, though there may be different ways to compute the area, so there is more than one implementation.
+
+""")
+```
+
+
+### Norman Windows
+
+Here is a similar, though more complicated, example where the analytic
+approach can be a bit more tedious, but the graphical one mostly
+satisfying, though we do use  a numerical algorithm to find
+an exact final answer.
+
+Let a "Norman" window consist of a rectangular window of top length
+$x$ and side length $y$ and a half circle on top. The goal is to
+maximize the area for a fixed value of the perimeter. Again, assume this perimeter is 20
+units.
+
+This figure shows two such windows, one with base length given by
+$x=4$, the other with base length given by $x=3$. The one with base
+length $4$ seems to have much bigger area.
+
+```
+ts = linspace(0, pi)
+x1,y1 = 4, 4.85840
+x2,y2 = 3, 6.1438
+delta = 4
+p = plot(
+layer(x=delta+x1*[0, 1,1,0], y=y1*[0,0,1,1], Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("blue"))),
+layer(x=delta+x1/2+x1/2*cos(ts), y=y1+x1/2*sin(ts), Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("red"))),
+
+layer(x=x2*[0, 1,1,0], y=y2*[0,0,1,1], Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("blue"))),
+layer(x=x2/2+x2/2*cos(ts), y=y2+x2/2*sin(ts), Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("red")))
+)
+Outputonly(p)
+```
+
+For this problem, we have two equations.
+
+The area is the area of the rectangle plus the area of the half circle ($\pi r^2/2$).
+
+$$
+A = xy + \pi(x/2)^2/2
+$$
+
+In `Julia` this is
+
+```
+A(x, y) = x*y + pi*(x/2)^2 / 2
+```
+
+
+The perimeter consists of 3 sides of the rectangle and the perimeter
+of half a circle ($\pi r$, with $r=x/2$):
+
+$$
+P = 2y + x + \pi(x/2) = 20
+$$
+
+We solve for $y$ in the first with $y = (20 - x - \pi(x/2))/2$ so that in `julia` we have:
+
+```
+y(x) = (20 - x - pi * x/2) / 2
+```
+
+And then we substitute in `y(x)` for `y` in the area formula through:
+
+```
+A(x) = A(x, y(x))
+```
+
+Of course both $x$ and $y$ are non-negative. The latter forces $x$ to
+be no more than $x=20/(1+\pi/2)$. 
+
+This leaves us the calculus problem of finding an absolute maximum of
+a continuous function over the closed interval
+$[0, 20/(1+\pi/2)]$. Our theorem tells us this maximum must occur, we
+now proceed to find it.
+
+We begin by simply graphing and estimating the values of the maximum and
+where it occurs.
+
+```
+plot(A, 0, 20/(1+pi/2))
+```
+
+The naked eye sees that maximum value is somewhere around $27$ and
+occurs at $x\approx 5.6$. Clearly from the graph, we know the maximum
+value happens at the critical point and there is only one such
+critical point.
+
+As reading the maximum from the graph is more difficult than reading a
+$0$ of a function, we plot the derivative using our approximate
+derivative.
+
+```
+using Roots			# provides D
+plot(D(A), 5.5, 5.7) 
+```
+
+We confirm that the critical point is around $5.6$.
+
+### Using fzero to locate critical points.
+
+Rather than zoom in graphically, we now use a root-finding algorithm,
+to find a more precise value. We know that the maximum will occur at a
+critical point, a zero of the derivative. The `fzero`
+function from the `Roots` package provides a non-linear root-finding
+algorithm similar to Newton's method. The only thing to keep
+track of is that solving $f'(x) = 0$ means we use the derivative and
+not the original function.
+
+We see from the graph that $[0, 20/(1+\pi/2)]$ will provide a bracket, as there is only one relative maximum:
+ 
+```
+x = fzero(D(A), 0, 20/(1+pi/2))
+```
+
+The value `x` is the critical point, and in this case gives
+the position of the value that will maximize the function. This value is
+sometimes referred to as the *argmax*, or argument which maximizes the
+function. The value and maximum area is then given by:
+
+```
+(x, A(x))
+```
+
+
+(Compare this answer to the previous, is the square the figure of
+greatest area for a fixed perimeter, or just the figure amongst all
+rectangles?)
+
+### A symbolic approach
+
+We could also do the above problem symbolically with the aid of `SymPy`. Here are the steps:
+
+```
+using SymPy
+
+width, height = symbols("width, height", real=true)
+Area = width * height + pi * (width/2)^2 / 2
+Perim = 2height + width + pi*width/2
+h0 = solve(Perim - 20, height)[1]
+Area = subs(Area, (height, h0))
+w0 = solve(diff(Area,width), width)[1]
+```
+
+
+We know that `w0` is the maximum in this example from our previous work. We shall see soon, that just knowing that the second derivative is negative at `w0` would suffice to know this. Here we check that condition:
+
+```
+subs(diff(Area, width, 2), width=w0)
+```
+
+As an aside, compare the steps involved above for a symbolic solution to those of previous work for a numeric solution:
+
+```
+Verbatim("""
+A(x, y) = x*y + pi*(x/2)^2 / 2
+y(x) = (20 - x - pi * x/2) / 2
+A(x) = A(x, y(x))
+fzero(D(A), 0, 20/(1+pi/2))
+""")
+```
+
+They are similar, except we solved for `h0` symbolically, rather than by hand, when we solved for `y(x)`.
+
+## Trigonometry
+
+Many maximization and minimization problems involve triangles, which
+in turn use trigonometry in their description. Here is an example, the
+"ladder corner problem." (There are many other [ladder](http://www.mathematische-basteleien.de/ladder.htm) problems.
+
+
+A ladder is to be moved through a two-dimensional hallway which has a
+bend and gets narrower after the bend. The hallway is 8 feet wide then
+5 feet wide. What is the longest such ladder that can be navigated
+around the corner?
+
+The figure shows a ladder of length $l_1 + l_2$ that got stuck -- it
+was too long.
+
+
+```
+p = plot(
+layer(x=[0, 0, 15], y=[15, 0, 0], Geom.line, Theme(default_color=color("gray"))),
+layer(x=[5, 5, 15], y=[15, 8, 8], Geom.line, Theme(default_color=color("gray"))),
+layer(x=[0,14.53402874075368], y=[12.1954981558864, 0], Geom.line, Theme(line_width=3px)),
+layer(x=[0,5], y=[8,8], Geom.line, Theme(default_color=color("orange"))),
+layer(x=[5,5], y=[0,8], Geom.line, Theme(default_color=color("orange"))),
+layer(x=[13,2.5, 10,2.5,5], y=[1,11,5,7.5,5], label=["θ", "l₁", "l₂", "l₂cos(θ)", "l₁sin(θ)" ], Geom.label)
+)
+Outputonly(p)
+```
+
+
+
+We approach this problem in reverse. It is easy to see when a ladder
+is too long. It gets stuck at some angle $\theta$. So for each
+$\theta$ we find that ladder length that is just too long. Then we
+find the minimum length of all these ladders that are too long. If a
+ladder is this length or more it will get stuck for some
+angle. However, if it is less than this length it will not get stuck.
+So to maximize a ladder length, we minimize a different
+function. Neat.
+
+Now, to find the length $l = l_1 + l_2$ as a function of $\theta$.
+
+We need to brush off our trigonometry, in particular right triangle
+trigonometry. We see from the figure that $l_1$ is the hypotenuse of a
+right triangle with opposite side $8$ and $l_2$ is the hypotenuse of a
+right triangle with adjacent side $5$. So, $8/l_1 = \sin\theta$ and
+$5/l_2 = \cos\theta$.
+
+
+That is, we have
+
+```
+l(l1, l2) = l1 + l2
+l1(t) = 8/sin(t)	
+l2(t) = 5/cos(t)
+
+l(t) = l(l1(t), l2(t))		# or simply l(t) = 8/sin(t) + 5/cos(t)
+```
+
+Our goal is to minimize this function for all angles between $0$ and $90$ degrees, or $0$ and $\pi/2$ radians.
+
+This is not a continuous function on a closed interval -- it is
+undefined at the endpoints. That being said, a quick plot will
+convince us that the minimum occurs at a critical point and there is
+only one critical point in $(0, \pi/2)$.
+
+```
+delta = 0.2
+plot(l, delta, pi/2 - delta)
+```
+
+The minimum occurs between 0.5 and 1.0 radians, we will use a bracketing method:
+
+```
+x = fzero(D(l), 0.5, 1.0)
+```
+
+So the minimum of the function $l$ is 
+
+```
+l(x)
+```
+
+That is, any ladder less than this length can get around the hallway.
+
+## Rate times time
+
+Ethan Hunt, a top secret spy, has a mission to chase a bad guy. Here
+is what we know:
+
+* Ethan likes to run. He can run at 10 miles per hour.
+* He can drive a car -- usually some concept car by BMW -- at 30 miles per hour, but only on the road.
+  
+For his mission, he needs to go 10 miles west and 5 miles north. He
+can do this by:
+
+* just driving 10 miles west then 5 miles north, or
+* just running the diagonal distance, or
+* driving $0 < x < 10$ miles west, then running on the diagonal
+
+
+A quick analysis says:
+
+* It would take $(10+5)/30$ hours to just drive
+* It would take $\sqrt{10^2 + 5^2}/10$ hours to just run
+  
+Now, if he drives $x$ miles west ($0 < x < 10$) he would run an amount
+given by the hypotenuse of a triangle with lengths $5$ and $10-x$. His
+time driving would be $x/30$ and his time running would be $\sqrt{5^2
++ (10-x)^2}/10$ for a total of:
+
+$$
+T(x) = x/30 + \sqrt{5^2 + (10-x)^2}/10, \quad 0 < x < 10
+$$
+
+With the endpoints given by
+$T(0) = \sqrt{10^2 + 5^2}/10$ and $T(10) = (10 + 5)/30$.
+
+
+Let's plot $T(x)$ over the interval $(0,10)$ and look:
+
+```
+T(x) = x/30 + sqrt(5^2 + (10-x)^2)/10
+```
+
+```
+plot(T, 0, 10) 
+```
+
+The minimum happens way out near 8. We zoom in a bit:
+
+```
+plot(T, 7, 9) 
+```
+
+It appears to be around 8.3. We now use `fzero` to refine our
+guess at the critical point using $[7,9]$ as a bracket:
+
+```
+x = fzero(D(T), 7, 9)
+```
+
+Okay, got it. Around 8.23. So is  our minimum time
+
+```
+T(x)
+```
+
+We know this is a relative minimum, but not that it is the global
+minimum over the closed time interlal. For that we must also check the
+endpoints:
+
+```
+sqrt(10^2 + 5^2)/10, T(x), (10+5)/30
+```
+
+Ahh, we see that $T(x)$ is not continous on $[0, 10]$, as it jumps at
+$x=10$ down to an even smaller amount of $1/2$.  It may not look as
+impressive as a miles-long sprint, but Mr. Hunt is advised to drive
+the whole way.
+
+## Unbounded domains
+
+Maximize the function $xe^{-(1/2) x^2}$ over the interval $[0, \infty)$.
+
+Here the extreme value theorem doesn't technically apply, as we don't
+have a closed interval. However, if we can eliminate the endpoints as
+candidates, then we should be able to convince ourselves the maximum
+must occur at a critical point of $f(x)$. (If not, then convince your
+self for all sufficiently large $M$ the maximum over $[0,M]$ occurs at
+a critical point, not an endpoint. Then let $M$ go to infinity.)
+
+So to approach this problem we first graph it over a wide interval.
+
+```
+f(x) = x * exp(-x^2)
+```
+
+```
+plot(f, 0, 100) 
+```
+
+Clearly the action is nearer to 1 than 100. We try graphing the
+derivative near that area:
+
+```
+plot(D(f), 0, 5) 
+```
+
+This shows the value of interest near $0.7$. We use `fzero` with $[0,1]$ as a bracket
+
+```
+x = fzero(D(f), 0,1)
+```
+
+The maximum is then at 
+
+```
+f(x)
+```
+
+### Minimize surface area of a can
+
+
+For a more applied problem of this type (infinite domain), consider a
+can of some soft drink that is to contain 355ml which is 355 cubic
+centimeters.  We use metric units, as the relationship between volume
+(cubic centimeters) and fluid amount (ml) is clear.  A can to hold
+this amount is produced in the shape of cylinder with radius $r$ and
+height $h$. The materials involved give the surface area, which would
+be:
+
+$$
+SA = h \cdot 2\pi r + 2 \cdot \pi r^2
+$$
+
+The volume satisfies:
+
+$$
+V = 355 = h \cdot \pi r^2
+$$
+
+Find the values of $r$ and $h$ which minimize the surface area.
+
+
+First the surface area in both variables is given by
+
+```
+SA(h, r) = h * 2pi * r + 2pi * r^2
+```
+
+And solving from the constraint on the volume for `h` in terms of `r` we have
+
+```
+h(r) = 355 / (pi * r^2)
+```
+
+And composing gives us a function of `r` alone:
+
+```
+SA(r) = SA(h(r), r)
+```
+
+This we minimize subject to the constraint that $r \geq 0$. A quick
+glance shows that as $r$ gets close to $0$, the can must get
+infinitely tall to contain that fixed volume, and would have infinite
+surface area as the $1/r^2$ in the first term implies. On the other
+hand, as $r$ goes to infinity, the height must go to 0 to make a
+really flat can. Again, we would have infinite surface area, as the
+$r^2$ term at the end indicates. With this observation, we can rule
+out the endpoints as possible minima, so any minima must occur at a
+critical point.
+
+We start by making a graph, making an educated guess that the answer
+is somewhere near a real life answer, or around 3-5 cms in radius:
+
+
+```
+plot(SA, 2, 10)
+```
+
+The minimum looks to be around 4cm. We can use `fzero` to zero
+in on the answer:
+
+```
+r0 = fzero(D(SA), 2.5, 5)
+```
+
+Okay, $3.837...$ is our computation for $r$. To get $h$, we use:
+
+```
+h(r0)
+```
+
+
+
+This produces a can which is about square in profile. This is not how
+most cans look though. Perhaps our model is too simple, or the cans
+are optimized for some other purpose than minimizing materials.
+
+## Questions
+
+###### Question
+
+A geometric figure has area given in terms of two measurements by
+$A=\pi a b$ and perimeter $P = \pi (a + b)$. If the perimeter is fixed
+to be 20 units long, what is the maximal area the figure can be?
+
+```
+A(a,b) = pi*a*b
+P = 20
+b(a) = 20/pi - a
+A(a) = A(a, b(a))
+x = fzero(D(A), 0, 10)
+val = A(x)
+numericq(val)
+```
+
+###### Question
+
+A geometric figure has area given in terms of two measurements by
+$A=\pi a b$ and perimeter $P=\pi \cdot \sqrt{a^2 + b^2}/2$. If the
+perimeter is 20 units long, what is the maximal area?
+
+```
+A(a,b) = pi*a*b
+P = 20
+b(a) = sqrt((P*2/pi)^2 - a^2)
+A(a) = A(a, b(a))
+x = fzero(D(A), 0, 10)
+val = A(x)
+numericq(val)
+```
+
+
+###### Question
+
+A rancher with 10 meters of fence wishes to make a pen adjacent to an
+existing fence. The pen will be a rectangle with one edge using the
+existing fence. Say that has length $x$, then $10 = 2y + x$, with $y$
+the other dimension of the pen. What is the maximum area that can be
+made?
+
+```
+Ar(y) = (10-2y)*y;
+val = Ar(fzero(D(Ar),  5))
+numericq(val, 1e-3)
+```
+
+Is there "symmetry" in the answer between $x$ and $y$?
+
+```
+yesnoq("no")
+```
+
+What is you were do do two pens like this back to back, then the
+answer would involve a rectangle. Is there symmetry in the answer now?
+
+```
+yesnoq("yes")
+```
+
+
+
+###### Question
+
+A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *smallest* perimeter it can have?
+
+```
+Prim(x,y) = 2x + 2y
+Prim(x) = Prim(x, 20/x)
+xstar = fzero(D(Prim), 5)
+val = Prim(xstar)
+numericq(val)
+```
+
+
+###### Question
+
+A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *largest* perimeter it can have?
+
+```
+choices = [
+"It can be infinite",
+"It is also 20",
+L"17.888"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+A rain gutter is constructed from a 30" wide sheet of tin by bending
+it into thirds. If the sides are bent 90 degrees, then the
+cross-sectional area would be $100 = 10^2$. This is not the largest
+possible amount. For example, if the sides are bent by 45 degrees, the cross sectional area is:
+
+```
+2 * (1/2 * 10*cos(pi/4) * 10 * sin(pi/4)) + 10*sin(pi/4) * 10
+```
+
+Find a value in degrees that gives the maximum. (The first task is to
+write the area in terms of $\theta$.
+
+
+```
+function Ar(t)
+	 opp = 10 * sin(t)
+	 adj = 10 * cos(t)
+	 2 * opp * adj/2 + opp * 10
+end
+t = fzero(D(Ar), pi/4);	## Has issues with order=8 algorithm, tol > 1e-14 is needed
+val = t * 180/pi;
+numericq(val, 1e-3)
+```
+ 
+###### Question (Thanks https://www.math.ucdavis.edu/~kouba)
+
+A movie screen projects on a wall 20 feet high beginning 10 feet above
+the floor.  This figure shows $\theta$ for $x=30$:
+
+```
+p = plot(
+layer(x=[0, 30,30], y=[0,0,10], Geom.line, Theme(default_color=color("blue"))),
+layer(x=[0, 30,30,0], y=[0,10,30,0], Geom.line(preserve_order=true), Theme(default_color=color("orange"))),
+layer(x=[15, 5, 30, 30], y=[1.5, 3.5, 5, 20], label=["x=30", "θ", "10", "20"], Geom.label)
+)
+Outputonly(p)
+```
+
+What value of $x$ gives the largest angle $\theta? (In degrees.)
+
+```
+theta(x) = atan(30/x) - atan(10/x)
+val = fzero(D(theta), 20); ## careful where one starts
+val = theta(val) * 180/pi
+numericq(val, 1e-1)
+```
+
+
+###### Question
+
+A maximum likelihood estimator is a value derived by maximizing a function. For example, if 
+
+```
+L(t) = t^3 * exp(-3t) * exp(-2t) * exp(-4t) ## 0 <= t <= 10
+```
+
+Then $L(t)$ is continuous and has single peak, so the maximum occurs
+at the lone critical point. It turns out that this problem is bit sensitive to an initial condition, so we bracket
+
+```
+x = fzero(D(L),  [0.1, 0.5])
+```
+
+Now if $L(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, explain why the same approach won't work:
+
+```
+choices=["It does work and the answer is x = 2.27...",
+	 "L(t) is not continuous on 0 to 10",
+         "L(t) takes its maximum at a boundary point -- not a critical point"];
+ans = 3;
+radioq(choices, ans)
+```
+
+##### Question
+
+Let $x_1$, $x_2$, $x_n$ be a set of unspecified numbers in a data
+set. Form the expression $s(x) = (x-x_1)^2 + \cdots (x-x_n)^2$. What
+is the smallest this can be (in $x$)?
+
+We approach this using `SymPy` and $n=10$
+
+```
+Verbatim("""
+using SymPy
+n = 10
+xs = [symbols("x\$i") for i in 1:n]
+x = symbols("x")
+s(x) = sum([(x-xs[i])^2 for i in 1:n])
+cps = solve(diff(s(x), x), x)
+""")
+```
+
+Based on the critical points found, what do you guess will be the
+minimum value in terms of the values $x_1$, $x_2, \dots$?
+
+```
+choices=[
+"The mean, or average, of the values",
+"The median, or middle number, of the values",
+L"The square roots of the values squared, $(x_1^2 + \cdots x_n^2)^2$"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Minimize the function $f(x) = 2x + 3/x$ over $(0, \infty)$.
+
+```
+f(x) = 2x + 3/x;
+val = fzero(D(f), 1);
+numericq(val, 1e-3)
+```
+
+
+###### Question
+
+Of all rectangles of area 4, find the one with smallest perimeter. What is the perimeter?
+
+```
+# 4 = xy
+Prim(x) = 2x + 2*(4/x);
+val = fzero(D(Prim), 1);
+numericq(Prim(val), 1e-3)		## a square!
+```
+
+
+###### Question
+
+A running track is in the shape of two straight aways and two half
+circles. The total distance (perimeter) is 400 meters. Suppose $w$ is
+the width (twice the radius of the circles) and $h$ is the
+height. What dimensions minimize the sum $w + h$?
+
+You have $P(w, h) = 2\pi \cdot (w/2) + 2\cdot(h-w)$.
+
+
+```
+Ar(w,h) = w + h
+h(w) = (400 - 2pi*w/2 + 2w) / 2
+Ar(w) = Ar(w, h(w)) ## linear
+val = Ar(0)
+numericq(val)
+```
+
+###### Question
+
+A cell phone manufacturer wishes to make a rectangular phone with
+total surface area of 12,000 $mm^2$ and maximal screen area. The
+screen is surrounded by bezels with sizes of 8$mm$ on the long sides
+and 32$mm$ on the short sides. (So, for example, the screen width is
+shorter by $2\cdot 8$ mm than the phone width.)
+  
+What are the dimensions (width and
+height) that allow the maximum screen area?  
+  
+The width is:
+
+```
+#A = w*h = 12000
+w(h) = 12_000 / h
+S(w, h) = (w- 2*8) * (h - 2*32)
+S(h) = S(w(h), h)
+hstar =fzero(D(S), 500)
+wstar = w(hstar)
+numericq(wstar)
+```
+
+The height is?
+
+```
+numericq(hstar)
+```
+
+###### Question
+
+Find the value $x > 0$ which minimizes the distance from the graph of
+$f(x) = \log_e(x) - x$ to the origin $(0,0)$.
+
+```
+f(x) = log(x) - x
+xs = linspace(0.2, 2)
+p = plot(layer(x=xs, y=map(f, xs), Geom.line),
+layer(x=[0,1], y =[0, f(1)], Geom.line, Geom.point, Theme(default_color=color("orange"))),
+layer(x=[.75], y=[f(.5)/2], label=["d = $(round(sqrt(.5^2 + f(.5)^2),2))"], Geom.label))
+Outputonly(p)
+```
+
+```
+d2(x) = sqrt((0-x)^2 + (0 - f(x))^2)
+xstar = fzero(D(d2), 1)
+val = d2(xstar)
+numericq(val)
+```
+

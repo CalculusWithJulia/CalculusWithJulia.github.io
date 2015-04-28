@@ -1,0 +1,487 @@
+# L'Hopitals Rule
+
+Let's return to limits of the form $f(x)/g(x)$ which have an
+indeterminate form of $0/0$ if both are evaluated at $c$. The typical
+example being the limit considered by Euler:
+
+$$
+\lim_{x\rightarrow 0} \frac{\sin(x)}{x}.
+$$
+
+We know this is $1$ using a bound from geometry, but might also guess
+this is one, as we know from linearization near $0$ that we have
+
+$$
+\sin(x) = x - \sin(\xi)x^2/2, \quad 0 < \xi < x.
+$$
+
+This would yield:
+
+$$
+\lim_{x \rightarrow 0} \frac{\sin(x)}{x} = \lim_{x\rightarrow 0} \frac{x -\sin(\xi) x^2/2}{x} = \lim_{x\rightarrow 0} 1 + \sin(\xi) \cdot x/2 = 1.
+$$
+
+This is because we know $\sin(\xi) x/2$  has a limit of $0$, when $|\xi| \leq |x|$.
+
+That doesn't look any easier, as we worried about the error term, but
+if just mentally replaced $\sin(x)$ with $x$ -- which it basically is
+near $0$ -- then we can see that the limit should be the same as $x/x$
+which we know is $1$ without thinking.
+
+
+Basically, we found that in terms of limits, if both $f(x)$ and $g(x)$
+are $0$ at $c$, that we *might* be able to just take this limit:
+$(f(c) + f'(c) \cdot(x-c)) / (g(c) + g'(c) \cdot (x-c))$ which is just
+$f'(c)/g'(c)$.
+
+Wouldn't that be nice? We could find difficult limits just by
+differentiating the top and the bottom at $c$ (and not use the messy quotient rule).
+
+
+Well, in fact that is more or less true, a fact that dates back to
+[L'Hopital](http://en.wikipedia.org/wiki/L%27H%C3%B4pital%27s_rule) --
+who wrote the first textbook on differential calculus -- though this result is
+likely due to one of the Bernoulli brothers.
+
+> **L'Hopital's rule**: Suppose, $f$ and $g$ are differentiable in $(a,b)$
+> with $a < c < b$. Moreover, $g(x) > 0$ for all $x$ in $(a,b)$ except
+> at $c$. Further suppose $f(c)=g(c) =0$. If $\lim_{x\rightarrow
+> c}f'(x)/g'(x)=L$ (the limit exists), then $L = \lim_{x \rightarrow
+> c}f(x)/g(x)$.
+
+That is *if* the limit of $f(x)/g(x)$ is indeterminate of the form $0/0$,
+but the limit of $f'(x)/g'(x)$ is known, possibly by simple
+continuity, then the limit of $f(x)/g(x)$ exists and is equal to that
+of $f'(x)/g'(x)$.
+
+To apply this rule to Euler's example, $\sin(x)/x$, we just need to consider that:
+
+$$
+1 = \lim_{x \rightarrow 0}\frac{\cos(x)}{1}
+$$
+
+This is due to $\cos(x)$ being continuous at $0$, so this limit is
+just $\cos(0)/1$. (More importantly, the tangent line expansion of
+$\sin(x)$ at $0$ is $\sin(0) + \cos(0)x$, so that $\cos(0)$ is why
+this answer is as it is, but we don't need to think in terms of
+$\cos(0)$, but rather the tangent-line expansion, which is $\sin(x)
+\approx x$, as $\cos(0)$ appears as the coefficient.
+
+#####  Examples
+
+- Consider this limit at $0$: $(a^x - 1)/x$. We have $f(x) =a^x-1$ has
+  $f(0) = 0$, so this limit is indeterminate of the form $0/0$. The
+  derivative of $f(x)$ is $f'(x) = a^x \log(a)$ which has $f'(0) = 1$.
+  The derivative of the bottom is also $1$ at $0$, so we have:
+
+$$
+1 = \frac{1}{1} = \frac{f'(0)}{g'(0)} = \lim_{x \rightarrow 0}\frac{f'(x)}{g'(x)} = \lim_{x \rightarrow 0}\frac{f(x)}{g(x)}
+= \lim_{x \rightarrow 0}\frac{a^x - 1}{x}.
+$$
+
+(Why rewrite in the "opposite" direction? Because the theorem's result ($L$ is the limit) is only true if the related limit involving the derivative exists.)
+
+- Consider this limit:
+
+$$
+\lim_{x \rightarrow 0} \frac{e^x - e^{-x}}{x}.
+$$
+
+It too is of the indeterminate form $0/0$. The derivative of the top
+is $e^x + e^{-x}$, which is $2$ when $x=0$, so the ratio of
+$f'(0)/g'(0)$ is seen to be 2. By L'Hopital's rule, the limit above is
+$2$.
+
+
+- Sometimes, L'Hopital's rule must be applied twice. Consider this
+  limit:
+
+$$
+\lim_{x \rightarrow 0} \frac{\cos(x)}{1 - x^2}
+$$
+
+By L'Hopital's rule *if* this following limit exists, the two will be equal:
+
+$$
+\lim_{x \rightarrow 0} \frac{-\sin(x)}{-2x}.
+$$
+
+But if we didn't guess the answer, we see that this is indeterminate
+of the form $0/0$. So that limit will exist and be equal to this
+limit, should it exist:
+
+$$
+\lim_{x \rightarrow 0} \frac{-\cos(x)}{-2} = 1/2.
+$$
+
+As $L = 1/2$ for this related limit, it must also be the limit of the original problem, by L'Hopital's rule.
+
+
+- Our "intuitive" limits can bump into issues. Take for example the limit of $(\sin(x)-x)/x^2$ as $x$ goes to $0$. Using $\sin(x) \approx x$ makes this look like $0/x^2$ which is still indeterminate. (Because the difference is higher order than $x$.) Using L'Hopitals, says this limit will exist (and be equal) if the following one does:
+
+$$
+\lim_{x \rightarrow 0} \frac{\cos(x) - 1}{2x}.
+$$
+
+This particular limit is indeterminate of the form $0/0$, so we again try L'Hopital's rule and consider
+
+
+$$
+\lim_{x \rightarrow 0} \frac{-\sin(x)}{x} = 0
+$$
+
+So as this limit exists, working backwards, the original limit in question will also be $0$.
+
+
+- This example comes from the Wikipedia page. It "proves" a discrete approximation for the second derivative.
+
+Show if $f''(x)$ exists at $c$ and is continuous at $c$, then
+
+$$
+f''(c) = \lim_{h \rightarrow 0} \frac{f(c + h) - 2f(c) + f(c-h)}{h^2}.
+$$
+
+This will follow from two applications of L'Hopital's rule to the
+right hand side. The first says, the limit on the right is equal to
+this limit, should it exist:
+
+$$
+\lim_{h \rightarrow 0} \frac{f'(c+h) - 0 - f'(c-h)}{2h}.
+$$
+
+We have to be careful, as we differentiate in the $h$ variable, not
+the $c$ one, so the chain rule brings out the minus sign. But again,
+as we still have an indeterminate form $0/0$, this limit will equal the
+following limit should it exist:
+
+$$
+\lim_{h \rightarrow 0} \frac{f''(c+h) - 0 - (-f''(c-h))}{2} =
+\lim_{c \rightarrow 0}\frac{f''(c+h) + f''(c-h)}{2} = f''(c).
+$$
+
+That last equality follows, as it is assumed that $f''(x)$ exists at $c$ and is continuous, that is, $f''(c \pm h) \rightarrow f''(c)$.
+
+The expression above finds use when second derivatives are numerically approximated. (The middle expression is the basis of the central-finite difference approximation to the derivative.)
+
+## Why?
+
+The proof of L'Hopital's rule takes advantage of Cauchy's
+[generalization](http://en.wikipedia.org/wiki/Mean_value_theorem#Cauchy.27s_mean_value_theorem)
+of the mean value theorem to two functions. Let $f(x)$ and $g(x)$ be
+continuous on $[a,b]$ and differentiable on $(a,b)$ so that on
+$[c,c+x]$ there exists a $\xi$ with $f'(\xi) \cdot (f(x) - f(c)) =
+g'(c) \cdot (g(x) - g(c))$. In our formulation, both $f(c)$ and $g(c)$
+are zero, so we have, provided we know that $g(x)$ is non zero, that
+$f(x)/g(x) = f'(\xi)/g'(\xi)$ for some $\xi$, $c < \xi < c + x$. That
+the right hand side has a limit as $x \rightarrow c+$ is true by the
+assumption that the limit of the derivative's ratio exists. (The $\xi$
+part can be removed by considering it as a composition of a function
+going to $c$.) Thus the right limit of the left hand side is
+known. Similarly, working with $[c-x, c]$ we can get the left limit is
+known and is equal to the right.
+
+### L'Hopital's picture
+
+{{{lhopitals_picture}}}
+
+## Generalizations
+
+L'Hopital's rule generalizes to other indeterminate forms, in
+particular $\infty/\infty$ can be proved at the same time as $0/0$
+with a more careful
+[proof](http://en.wikipedia.org/wiki/L%27H%C3%B4pital%27s_rule#General_proof).
+
+
+In addition, indeterminate forms of the type $0 \cdot \infty$, $0^0$
+and $\infty^\infty$ can be re-expressed to be in the form $0/0$ or
+$\infty/\infty$.
+
+
+For example, consider
+
+$$
+\lim_{x \rightarrow \infty} \frac{x}{e^x}.
+$$
+
+We see it is of the form $\infty/\infty$ (That we are taking a limit
+at $\infty$ is also a generalization.) We have by the generalized
+L'Hopital rule that this limit will exist and be equal to this one,
+should it exist:
+
+$$
+\lim_{x \rightarrow \infty} \frac{1}{e^x}.
+$$
+
+This limit is, of course, $0$, as it is of the form $1/\infty$. It is not
+hard to build up from here to show that for any integer value of $n>0$
+that:
+
+$$
+\lim_{x \rightarrow \infty} \frac{x^n}{e^x} = 0.
+$$
+
+This is an expression of the fact that exponential functions grow faster than polynomial functions.
+
+##### Examples
+
+- What is the limit $x \log(x)$ as $x \rightarrow 0+$?
+
+Rewriting, we see this is just:
+
+$$
+\lim_{x \rightarrow 0+}\frac{\log(x)}{1/x}.
+$$
+
+L'Hopital's rule clearly applies to one sided limits, as well as two
+(our proof sketch used one-sided limits), so this limit will equal the
+following, should it exist:
+
+$$
+\lim_{x \rightarrow 0+}\frac{1/x}{-1/x^2} = \lim_{x \rightarrow 0+} -x = 0.
+$$
+
+- What is the limit $x^x$ as $x \rightarrow 0+$? The expression is of the form $0^0$, which is indeterminate. (Even though floating point math defines the value as $1$.) We can rewrite this by taking a log:
+
+$$
+x^x = \exp(\log(x^x)) = \exp(x \log(x)) = \exp(\log(x)/(1/x)).
+$$
+
+Be just saw that $\lim_{x \rightarrow 0+}\log(x)/(1/x) = 0$. So by the
+rules for limits of compositions and the fact that $e^x$ is
+continuous, we see $\lim_{x \rightarrow 0+} x^x = e^0 = 1$.
+
+
+- L'Hopital himself was interested in this limit for $a > 0$
+
+$$
+\lim_{x \rightarrow a} \frac{\sqrt{2a^3\cdot x-x^4} - a\cdot(a^2\cdot x)^{1/3}}{ a - (a\cdot x^3)^{1/4}}.
+$$
+
+
+These derivatives can be done by hand, but to avoid any minor mistakes
+we utilize `SymPy` taking care to use rational numbers for the
+fractional powers, so as not to lose precision through floating point
+roundoff:
+
+```
+using SymPy
+a,x = symbols("a, x", positive=true, real=true)
+f(x) = sqrt(2a^3*x - x^4) - a * (a^2*x)^(1//3)
+g(x) = a - (a*x^3)^(1//4)
+```
+
+We can see that at $x=a$ we have the indeterminate form $0/0$:
+
+```
+f(a), g(a)
+```
+
+What about the derivatives?
+
+```
+fp, gp = subs(diff(f(x),x), x, a), subs(diff(g(x),x), x, a)
+```
+
+Their ratio will not be indeterminate, so the limit in question is just the ratio:
+
+```
+fp/gp
+```
+
+Of course, we could have just relied on `limit`, which knows about L'Hopital's rule:
+
+```
+limit(f(x)/g(x), x, a)
+```
+
+
+## Questions
+
+###### Question
+
+This function $f(x) = \sin(5x)/x$ is *indeterminate* at $x=0$. What type?
+
+```
+choices = [
+L"0/0",
+L"\infty/\infty",
+L"0^0",
+L"\infty - \infty",
+L"0 \cdot \infty"
+]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+This function $f(x) = \sin(x)^{\sin(x)}$ is *indeterminate* at $x=0$. What type?
+
+```
+choices = [
+L"0/0",
+L"\infty/\infty",
+L"0^0",
+L"\infty - \infty",
+L"0 \cdot \infty"
+]
+ans =3
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+This function $f(x) = (x-2)/(x^2 - 4)$ is *indeterminate* at $x=2$. What type?
+
+```
+choices = [
+L"0/0",
+L"\infty/\infty",
+L"0^0",
+L"\infty - \infty",
+L"0 \cdot \infty"
+]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+This function $f(x) = (g(x+h) - g(x-h)) / (2h)$ ($g$ is continuous) is *indeterminate* at $h=0$. What type?
+
+```
+choices = [
+L"0/0",
+L"\infty/\infty",
+L"0^0",
+L"\infty - \infty",
+L"0 \cdot \infty"
+]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+This function $f(x) = x \log(x)$ is *indeterminate* at $x=0$. What type?
+
+```
+choices = [
+L"0/0",
+L"\infty/\infty",
+L"0^0",
+L"\infty - \infty",
+L"0 \cdot \infty"
+]
+ans = 5
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+Does L'Hopital's rule apply to this limit:
+
+$$
+\lim_{x \rightarrow \pi} \frac{\sin(\pi x)}{\pi x}.
+$$
+
+```
+choices = [
+L"Yes. It is of the form $0/0$",
+"No. It is not indeterminate"
+]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+Use L'Hopital's rule to find the limit
+
+$$
+L = \lim_{x \rightarrow 0} \frac{4x - \sin(x)}{x}.
+$$
+
+What is $L$?
+
+```
+using SymPy
+f(x) = (4x - sin(x))/x
+L = float(N(limit(f, 0)))
+numericq(L)
+```
+
+###### Question
+
+
+Use L'Hopital's rule to find the limit
+
+$$
+L = \lim_{x \rightarrow 0} \frac{\sqrt{1+x} - 1}{x}.
+$$
+
+What is $L$?
+
+```
+using SymPy
+f(x) = (sqrt(1+x) - 1)/x
+L = float(N(limit(f, 0)))
+numericq(L)
+```
+
+
+
+###### Question
+
+
+Use L'Hopital's rule *two* or more times to find the limit
+
+$$
+L = \lim_{x \rightarrow 0} \frac{x - \sin(x)}{x^3}.
+$$
+
+What is $L$?
+
+```
+using SymPy
+f(x) = (x - sin(x))/x^3
+L = float(N(limit(f, 0)))
+numericq(L)
+```
+
+
+###### Question
+
+
+Use L'Hopital's rule *two* or more times to find the limit
+
+$$
+L = \lim_{x \rightarrow 0} \frac{1 - x^2/2 - \cos(x)}{x^3}.
+$$
+
+What is $L$?
+
+```
+using SymPy
+f(x) = (1 - x^2/2 - cos(x))/x^3
+L = float(N(limit(f, 0)))
+numericq(L)
+```
+
+###### Question
+
+By using a common denominator to rewrite this expression, use L'Hopital's rule to find the limit
+
+$$
+L = \lim_{x \rightarrow 0} \frac{1}{x} - \frac{1}{\sin(x)}.
+$$
+
+What is $L$?
+
+```
+using SymPy
+f(x) = 1/x - 1/sin(x)
+L = float(N(limit(f, 0)))
+numericq(L)
+```

@@ -1,0 +1,690 @@
+# Intermediate Value Theorem
+
+Continuity for functions is a valued property which carries
+implications. In this section we discuss two: the intermediate value
+theorem and the extreme value theorem.
+
+
+> The *intermediate value theorem*: If $f$ is continuous on $[a,b]$
+>  with, say, $f(a) < f(b)$, then for any $y$ with $f(a) < y < f(b)$
+>  there exists a $c$ in $[a,b]$ with $f(c) = y$.
+
+
+{{{IVT}}}
+
+In the early years of calculus, the intermediate value theorem was
+intricately connected with the definition of continuity, now it is a
+consequence.
+
+The basic proof starts with a set of points in $[a,b]$: $C = \{x
+\text{ in } [a,b] \text{ with } f(x) \leq y\}$. The set is not empty (as
+$a$ is in $C$) so it *must* have a largest value, call it $c$ (this
+requires the completeness property of the real numbers).  But it can be shown that $\lim_{x
+\rightarrow c-} f(x) =f(c) \leq y$ and $\lim_{y \rightarrow c+}f(x)
+=f(c) \geq y$, which forces $f(c) = y$.
+
+----
+
+To discuss the extreme value theorem, we define an *absolute maximum*
+of $f(x)$ over an interval $I$ to be a value $f(c)$, $c$ in $I$, where
+$f(x) \leq f(c)$ for any $x$ in $I$. Similarly, an *absolute minimum* of
+$f(x)$ over an interval $I$ can be defined.
+
+The extreme value theorem discusses an assumption that ensures such a value exists.
+
+> The *extreme value theorem*. If $f(x)$ is continuous in a closed
+>  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
+>  minimum over $[a,b]$.
+
+(By continuous over $[a,b]$ we mean continuous on $(a,b)$ and right
+continuous at $a$ and left continuous at $b$.)
+
+The assumption that $[a,b]$ includes its endpoints (it is closed)  is crucial to make a
+guarantee. There are functions which are continuous on open intervals
+for which this is not true. For example, $f(x) = 1/x$ on $(0,1)$. This
+will have no smallest value or largest value, as defined above.
+
+The extreme value theorem is an important theoretical tool for
+investigating maxima and minima of functions.
+
+## Bolzano and the bisection method
+
+Suppose we have a continuous function $f(x)$ on $[a,b]$ with $f(a) <
+0$ and $f(b) > 0$. Then as $f(a) < 0 < f(b)$, the intermediate value
+theorem guarantees the existence of a $c$ in $[a,b]$ with $f(c) =
+0$. This was a special case proved by Bolzano first. Such $c$ are
+called *zeros* of the function $f$. 
+
+
+It also gives us an algorithm -- the *bisection method* to locate the value $c$.
+
+{{{bisection_graph}}}
+
+
+Let's call $[a,b]$ a *bracket* if $f(x)$ is continuous on $[a,b]$ and $f(a)$ and $f(b)$ have different signs.
+We remark that $f(a) \cdot f(b) < 0$, as they have different signs.
+
+Then we can narrow down where a zero is in $[a,b]$ by following this recipe:
+
+- Pick $c = (a+b)/2$, the midpoint
+
+- if $f(c) = 0$ we are done.
+
+- Otherwise if must be that either $f(a)\cdot f(c) < 0$ or $f(c) \cdot
+  f(b) < 0$. If $f(a) \cdot f(c) < 0$, then let $b=c$ and
+  repeat. Otherwise, let $a=c$ and repeat.
+
+At each step we split the interval in half or find a root.
+
+For the real numbers this algorithm never stops, but we could stop
+when we have a zero or the length of the resulting interval is smaller
+than some agreed upon value. With floating-point numbers we can stop
+when the length of the interval is as small as possible, as at some
+level there are no floating point values between $a$ and $b$.
+
+We can write a relatively simple program to implement this:
+
+```
+function bisection(f, a, b)
+  if f(a) == 0 return(a) end
+  if f(b) == 0 return(b) end
+  if f(a) * f(b) > 0 error("[a,b] is not a bracket") end
+
+  c = (a+b)/2
+  while ((c !=a) & (c != b))
+    if f(c) == 0 return(c) end
+    if f(a) * f(c) < 0
+       a, b = a, c
+    else
+       a, b = c, b
+    end
+    c = (a+b)/2
+  end
+  c
+end
+```
+
+This function uses a `while` loop to repeat the process of subdividing
+$[a,b]$. A `while` loop will repeat until the condition is no longer `true`.
+That it stops is a consequence that we expect $a$ and $b$ to
+be floating point values.
+
+The value $c$ returned *need not* be a zero. Let's see:
+
+```
+c = bisection(sin, 3, 4)
+```
+
+This value of $c$ is a floating-point approximation to $\pi$, but is not a zero:
+
+```
+sin(c)
+```
+
+However, it should be that $c$ is a zero, or is such that the
+interval, $[a,b]$ it split has $f(a)\cdot f(b) < 0$. Hence there must be a
+sign change between $a$, $c$, and $b$.
+
+### The fzero function.
+
+The `Roots` package has a function `fzero` that implements the bisection method when called as `fzero(f, a, b)` where $[a,b]$ is a bracket. Its use is identical to `bisection` above. We will use it in the following:
+
+```
+using Roots
+fzero(sin, 3, 4)              # alternatively: fzero(f, [a, b])
+```
+
+```
+alert("""
+Notice, the call `fzero(sin, 3,4)` again fits the template `action(function, args...)` that we see repeatedly.
+""")
+```
+
+### Examples
+
+The polynomial $f(x) = x^5 - x + 1$ has a zero between $-2$ and $-1$. Find it.
+
+```
+f(x) = x^5 - x + 1
+c = fzero(f, -2 -1)
+(c, f(c))
+```
+
+We see as before that $f(c)$ is not quite $0$. (But you can check that `f(nextfloat(c))` is positive.)
+
+
+##### Example
+
+The function $f(x) = e^x - x^4$ has a zero between 5 and 10, as this graph shows:
+
+```
+using Gadfly
+f(x) = exp(x) - x^4
+plot(f, 5, 10)
+```
+
+Find the zero numerically. The plot shows $f(5) < 0 < f(10)$, so $[5,10]$ is a bracket. We thus have:
+
+```
+fzero(f, 5, 10)
+```
+
+
+
+##### Example
+
+Find all real zeros of $f(x) = x^3 -x + 1$ using the bisection method.
+
+A plot will show us a bracketing interval:
+
+```
+f(x) = x^3 - x + 1
+plot(f, -3, 3)
+```
+
+It appears (and a plot over $[0,1]$ verifies) that there is one zero between $-2$ and $-1$. It is found with:
+
+```
+fzero(f, -2, -1)
+```
+
+Of course, as discussed previously, for *polynomial* functions, the
+`fzeros` function of the `Roots` package returns the real roots, as we
+can see here:
+
+```
+fzeros(f)
+```
+
+
+
+##### Example
+
+The equation $\cos(x) = x$ has just one solution, as can be seen in this plot:
+
+```
+f(x) = cos(x)
+g(x) = x
+plot([f, g], -pi, 1pi)
+```
+
+Find it.
+
+We see from the graph that it is clearly between $0$ and $2$, so all we need is a function. (We have two.) The trick is to observe that solving $f(x) = g(x)$ is the same problem as solving for $x$ where $f(x) - g(x) = 0$. So we define the difference and use that:
+
+```
+h(x) = f(x) - g(x)
+fzero(h, 0, 2)
+```
+
+
+##### Example
+
+We wish to compare two trash collection plans
+
+* Plan 1: You pay 47.49 plus 0.77 per bag.
+
+* Plan 2: You pay 30.00 plus 2.00 per bag.
+
+There are some cases where plan 1 is cheaper and some where plan 2 is. Categorize them.
+
+
+Both plans are *linear models* and may be written in *slope-intercept* form:
+
+```
+plan1(x) = 47.49 + 0.77x
+plan2(x) = 30.00 + 2.00x
+```
+
+Assuming this is a realistic problem and an average American household
+might produce 10-20 bags of trash a month (yes, that seems too much!)
+we plot in that range:
+
+```
+plot([plan1, plan2], 10, 20)
+```	      
+
+
+We can see the intersection point is around 14 and that if a family
+generates between 0-14 bags of trash per month that plan 2 would be
+cheaper.
+
+Let's get a numeric value, using a simple bracket and an anonymous function:
+
+```
+fzero(x -> plan1(x) - plan2(x), 10, 20)
+```
+
+##### Example, the flight of an arrow
+
+The flight of an arrow can be modeled using various functions,
+depending on assumptions. Suppose an arrow is launched in the air from
+a height of 0 feet above the ground at an angle of $\theta =
+\pi/4$. With a suitable choice for the initial velocity, a model
+without wind resistance for the height of the arrow at a distance $x$
+units away may be:
+
+$$
+j(x) = \tan(\theta) x - (1/2) \cdot g(\frac{x}{v_0 \cos\theta})^2.
+$$
+
+In `julia` we have, taking $v_0=200$:
+
+```
+j(x; theta=pi/4, g=32, v0=200) = tan(theta)*x - (1/2)*g*(x/(v0*cos(theta)))^2
+```
+
+
+With a velocity-dependent wind resistance given by $\gamma$, again with some units, a similar
+equation can be constructed. It takes a different form:
+
+$$
+y(x) = (\frac{g}{\gamma v_0 \cos(\theta)} + \tan(\theta)) \cdot x  +
+      \frac{g}{\gamma^2}\log(\frac{v_0\cos(\theta) - \gamma x}{v_0\cos(\theta)})
+$$
+
+Again, $v_0$ is the initial velocity and is taken to be $200$
+and $\gamma$ a resistance, which we take to be $1$. With this, we have
+the following `julia` definition (with a slight reworking of $\gamma$):
+
+```
+function y(x; theta=pi/4, g=32, v0=200, gamma=1) 
+	 a = gamma * v0 * cos(theta)
+	 (g/a + tan(theta)) * x + g/gamma^2 * log((a-gamma^2 * x)/a)
+end
+```
+
+For each model, we wish to find the value of $x$ after launching where
+the height is modeled to be 0. That is how far will the arrow travel
+before touching the ground?
+
+
+For the model without wind resistance, we can graph the function
+easily enough. Let's guess the distance is no more than 500 feet:
+
+```
+plot(j, 0, 500)
+```
+
+Well, we haven't even seen the peak yet. Better to do a little spade
+work first. This is a quadratic equation, so we can use the `roots` function:
+
+```
+roots(j) 
+```
+
+
+We see that $1250$ is the largest root. So we plot over this domain to visualize the flight:
+
+```
+plot(j, 0, 1250)
+```
+
+
+
+As for the model with wind resistance,  a quick plot over the same interval, $[0, 1250]$ yields:
+
+```
+Verbatim("plot(y, 0, 1250)")
+```
+
+```
+Outputonly("DomainError")
+```
+
+Oh, "Domain Error." Of course, when the argument to the logarithm is negative we will have issues.
+We don't have the simplicity of using `roots` to find out the answer, so we solve for when $a-\gamma^2 x$ is $0$:
+
+```
+gamma = 1
+a = 200 * cos(pi/4)
+b = a/gamma^2
+```
+We try on the reduced interval avoiding
+the obvious _asymptote_ at `b`  by subtracting $1$:
+
+```
+plot(y, 0, b - 1) 
+```
+
+
+Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we solve:
+
+```
+x1 = fzero(y, b/2, b-1/10)
+```
+
+The answer is approximately $140.7$
+
+
+Finally, we plot both graphs at once to see that it was a very windy
+day indeed.
+
+```
+plot([j, u -> u <= x1 ? y(u) : NaN] , 0, 1250)
+```
+
+## Questions
+
+
+###### Question 
+
+There is negative root in the interval $[-10, 0]$ for the function
+$f(x) = e^x - x^4$. Find its value numerically:
+
+```
+f(x) = exp(x) - x^4
+val = fzero(f, [-10, 0]);
+numericq(val, 1e-3)
+```
+
+
+###### Question 
+
+There is  root in the interval $[0, 5]$ for the function
+$f(x) = e^x - x^4$. Find its value numerically:
+
+```
+f(x) = exp(x) - x^4
+val = fzero(f, [0, 5]);
+numericq(val, 1e-3)
+```
+
+###### Question
+
+The function `fzeros` for *polynomial* functions finds the real
+roots. For non-polynomial functions it will search for all zeros that
+*cross* the $x$ axis in the interval $[a,b]$. How many zeros does this
+find?
+
+```
+Verbatim("""
+f(x) = exp(x) - x^4
+fzeros(f, [-20, 20])
+""")
+```
+
+```
+f(x) = exp(x) - x^4
+vals = fzeros(f, [-20, 20])
+numericq(length(vals), 0)
+```
+
+
+(The `fzeros` function simply partitions `[a,b]` into many different
+intervals then looks for zeros in each. If the subinterval is a
+bracket, it is guaranteed to find a zero. Otherwise, the zeros in the
+subinterval may possibly escape detection. A graph should accompany
+its usage to ensure none are missed.)
+
+###### Question
+
+Let $f(x) = x^2 - 10 \cdot x \cdot \log(x)$. This function has two
+zeros on the positive $x$ axis. You are asked to find the largest
+(graph and bracket...).
+
+
+```
+b = 10
+f(x) =  x^2 - b * x * log(x)
+val = fzero(f, [10, 500])
+numericq(val, 1e-3)
+```
+
+###### Question
+
+The `airy` function has infinitely many negative roots, as the
+function oscillates when $x < 0$ and *no* positive roots. Find the
+*second largest root* using the graph to bracket the answer, and then
+solving.
+
+
+
+```
+val = fzero(airy, [-5, -4]);
+numericq(val, 1e-8)
+```
+
+###### Question
+
+(From [Strang](http://ocw.mit.edu/ans7870/resources/Strang/Edited/Calculus/Calculus.pdf), p. 37)
+
+Certainly $x^3$ equals $3^x$ at $x=3$. Find the largest value for which $x^3 = 3x$.
+
+```
+val = maximum(fzeros(x -> x^3 - 3^x, [0, 20]))
+numericq(val)
+```
+
+Compare $x^2$ and $2^x$. They meet at $2$, where do the meet again?
+
+```
+choices = ["Only before 2", "Only after 2", "Before and after 2"]
+ans = 3
+radioq(choices, ans)
+```
+
+Just by graphing, find a number in $b$ with $2 < b < 3$ where for
+values less than $b$ there is a zero beyond $b$ of $b^x - x^b$ and for values more than $b$ there isn't.
+
+```
+choices=[
+L"$b$ is around 2.2",
+L"$b$ is around 2.5",
+L"$b$ is around 2.7",
+L"$b$ is around 2.9"]
+ans = 3
+radioq(choices, ans)
+```
+
+
+
+
+###### Question <small>What goes up must come down...</small>
+
+{{{cannonball_img}}}
+
+In 1638, according to Amir D. [Aczel](http://books.google.com/books?id=kvGt2OlUnQ4C&pg=PA28&lpg=PA28&dq=mersenne+cannon+ball+tests&source=bl&ots=wEUd7e0jFk&sig=LpFuPoUvODzJdaoug4CJsIGZZHw&hl=en&sa=X&ei=KUGcU6OAKJCfyASnioCoBA&ved=0CCEQ6AEwAA#v=onepage&q=mersenne%20cannon%20ball%20tests&f=false),
+an experiment was performed in the French Countryside. A monk, Marin
+Mersenne, launched a cannonball straight up into the air in an attempt
+to help Descartes prove facts about the rotation of the earth. Though
+the experiment was not successful, Mersenne later observed that the
+time for the cannonball to go up was greater than the time to come
+down. ["Vertical Projection in a Resisting Medium: Reflections on Observations of Mersenne".](http://www.maa.org/publications/periodicals/american-mathematical-monthly/american-mathematical-monthly-contents-junejuly-2014)
+
+This isn't the case for simple ballistic motion where the time to go
+up is equal to the time to come down. We can "prove" this numerically. For simple ballistic
+motion:
+
+$$
+f(t) = -(1/2)\cdot 32 t^2 + v_0t.
+$$
+
+The time to go up and down are found by
+the two zeros of this function. The peak time is related to a zero of
+a function given by `D(f)`, which for now we'll take as a mystery
+function, but later will be known as the derivative. (The `D` operator is loaded with the `Roots` package.)
+
+Let $v_0= 390$. The three times in question can be found from the zeros of `f` and `D(f)`. What are they?
+
+```
+choices = ["(0.0, 12.1875, 24.375)",
+	"(-4.9731, 0.0, 4.9731)",
+	"(0.0, 625.0, 1250.0)"]
+ans = 1
+radioq(choices, ans)
+```
+
+
+
+###### Question <small>What goes up must come down... (again)</small>
+
+For simple ballistic motion you find that the time to go up is the
+time to come down. For motion within a resistant medium, such as air,
+this isn't the case. Suppose a model for the height as a function of time is given by
+
+$$
+h(t) = (\frac{g}{\gamma^2} + \frac{v_0}{\gamma})(1 - e^{-\gamma t}) - \frac{gt}{\gamma}
+$$
+
+([From "On the trajectories of projectiles depicted in early ballistic Woodcuts"](http://www.researchgate.net/publication/230963032_On_the_trajectories_of_projectiles_depicted_in_early_ballistic_woodcuts))
+
+Here $g=32$, again we take $v_0=390$, and $\gamma$ is a drag
+coefficient that we will take to be $1$.  This is valid when $h(t)
+\geq 0$.  In `Julia`, rather than hard-code the parameter values, for
+added flexibility we can pass them in as keyword arguments:
+
+```
+h(t; g=32, v0=390, gamma=1) = (g/gamma^2 + v0/gamma)*(1 - exp(-gamma*t)) - g*t/gamma
+```
+
+Now find the three times: $t_0$, the starting time; $t_a$, the time at
+the apex of the flight; and $t_f$, the time the object returns to the
+ground.
+
+```
+t0 = 0.0
+tf = fzero(h, 10, 20)
+ta = fzero(D(h), t0, tf)
+choices = ["(0, 13.187, 30.0)",
+	"(0, 32.0, 390.0)",
+	"(0, 2.579, 13.187)"]
+ans = 3
+radioq(choices, ans)
+```
+
+###### Question
+
+Part of the proof of the intermediate value theorem rests on knowing what the limit is of $f(x)$ when $f(x) > y$ for all $x$. What can we say about $L$ supposing $L = \lim_{x \rightarrow c+}f(x)$ under  this assumption on $f$?
+
+```
+choices = [L"It must be that $L > y$ as each $f(x)$ is.",
+L"It must be that $L \geq y$",
+L"It can happen that $L < y$, $L=y$, or $L>y$"]
+ans = 2
+radioq(choices, 2, keep_order=true)
+```
+
+###### Question
+
+The extreme value theorem has two assumptions: a continuous function
+and a *closed* interval. Which of the following examples fails to
+satisfy the consequence of the  extreme value theorem because the interval is not closed?
+
+```
+choices = [
+L"f(x) = \sin(x),~ I=(-2\pi, 2\pi)",
+L"f(x) = \sin(x),~ I=(-\pi, \pi)",
+L"f(x) = \sin(x),~ I=(-\pi/2, \pi/2)",
+"None of the above"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+The extreme value theorem has two assumptions: a continuous function
+and a *closed* interval. Which of the following examples fails to
+satisfy the consequence of the  extreme value theorem because the interval is not continuous?
+
+```
+choices = [
+L"f(x) = 1/x,~ I=[1,2]",
+L"f(x) = 1/x,~ I=[-2, -1]",
+L"f(x) = 1/x,~ I=[-1, 1]",
+"none of the above"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+
+The extreme value theorem has two assumptions: a continuous function
+and a *closed* interval. Which of the following examples fails to
+satisfy the consequence of the  extreme value theorem because the interval is not continuous?
+
+```
+choices = [
+L"f(x) = \text{sign}(x),~  I=[-1, 1]",
+L"f(x) = 1/x,~      I=[-4, -1]",
+L"f(x) = \text{floor}(x),~ I=[-1/2, 1/2]",
+"none of the above"]
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+The function $f(x) = x^3 - x$ is continuous over the interval
+$I=[-2,2]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum
+over $I$.
+
+```
+val = 2
+numericq(val)
+```
+
+
+###### Question
+
+
+The function $f(x) = x^3 - x$ is continuous over the interval
+$I=[-1,1]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum
+over $I$.
+
+```
+val = -sqrt(3)/3
+numericq(val)
+```
+
+
+###### Question
+
+Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?
+
+```
+choices = [
+L"There is no value $c$ for which $f(c)$ is an absolute maximum over $I$.",
+L"There is just one value of $c$ for which $f(c)$ is an absolute maximum over $I$.",
+L"There are many values of $c$ for which $f(c)$ is an absolute maximum over $I$."
+]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?
+
+```
+choices = [
+L"There is no value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.",
+L"There is just one value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.",
+L"There are many values $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$."
+]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+###### Question
+
+The extreme value theorem says that on a closed interval a continuous
+function has an extreme value $M=f(c)$ for some $c$. Does it also say
+that $c$ is unique? Which of these examples might help you answer this?
+
+```
+choices = [
+L"f(x) = \sin(x),\quad I=[-\pi/2, \pi/2]",
+L"f(x) = \sin(x),\quad I=[0, 2\pi]",
+L"f(x) = \sin(x),\quad I=[-2\pi, 2\pi]"]
+ans = 3
+radioq(choices, ans)
+```
+

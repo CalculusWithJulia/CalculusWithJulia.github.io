@@ -1,0 +1,540 @@
+# Related rates
+
+Related rates problems involve two (or more) unknown quantities that
+are related through an equation. As the two variables depend on each
+other, also so do their rates - change with respect to some variable
+which is often time, though exactly how remains to be
+discovered. Hence the name "related rates."
+
+## Examples
+
+The following is a typical "book" problem:
+
+> A screen saver displays the outline of a 3 cm by 2 cm rectangle and
+> then expands the rectangle in such a way that the 2 cm side is
+> expanding at the rate of 4 cm/sec and the proportions of the
+> rectangle never change.  How fast is the area of the rectangle
+> increasing when its dimensions are 12 cm by 8 cm?
+> [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
+
+{{{growing_rects}}}
+
+Here we know $A = w \cdot h$ and we know some things about how $w$ and
+$h$ are related *and* about the rate of how both $w$ and $h$ grow in
+time $t$. That means that we could expression this growth in terms of some functions $w(t)$ and $h(t)$, then we can figure out that the area -- as a function of $t$ -- will be expressed as:
+
+$$
+A(t) = w(t) \cdot h(t).
+$$
+
+We would get by the product rule that the *rate of change* of area with respect to time, $A'(t)$ is just:
+
+$$
+A'(t) = w'(t) h(t) + w(t) h'(t).
+$$
+
+As an aside, it is fairly conventional to suppress the $(t)$ part of
+the notation $A=wh$ and to use the Leibniz notation for derivatives:
+
+$$
+\frac{dA}{dt} = \frac{dw}{dt} h + w \frac{dh}{dt}.
+$$
+
+This relationship is true for all $t$, but the problem discusses a
+certain value of $t$ -- when $w(t)=8$ and $h(t) = 12$. At this same
+value of $t$, we have $w'(t) = 4$ and so $h'(t) = 6$. Substituting these 4 values into the 4 unknowns in the formula for $A'(t)$ gives:
+
+$$
+A'(t) = 4 \cdot 12 + 8 \cdot 6 = 96.
+$$
+
+Summarizing, from the relationship betwween $A$, $w$ and $t$, there is
+a relationship between their rates of growth with respect to $t$, a
+time variable. Using this and known values, we can compute. In this
+case $A'$ at the specific $t$.
+
+
+We could also have done this differently. We would recognize the following:
+
+-  The area of a rectangle is just:
+
+```
+A(w,h) = w * h
+```
+
+- The width -- expanding at a rate of $4t$ from a starting value of $2$ -- must satisfy:
+
+```
+w(t) = 2 + 4*t
+```
+
+- The height is a constant proportion of the width:
+
+```
+h(t) = 3/2 * w(t)
+```
+
+This means again that area depends on $t$ through this formula:
+
+```
+A(t) = A(w(t), h(t))
+```
+
+
+This is why the rates of change are related: as $w$ and $h$ change in
+time, the functional relationship with $A$ means $A$ also changes in
+time.
+
+
+
+Now to answer the question, when the width is 8, we must have that $t$ is:
+
+```
+using Roots
+tstar = fzero(x -> w(x) - 8, [0, 4])		# or solve by hand to get 3/2
+```
+
+The question is to find the rate the area is increasing at the given
+time $t$, which is $A'(t)$ or $dA/dt$. We get this by performing the
+differentiation, the substituting in the value.
+
+Here we do so with the aid of `Julia`, though this problem could readily be done "by hand." 
+
+We (again) re-express $A$ as a function of $t$ by composition, then differentiate that with the `D` operator of `Roots`:
+
+```
+A(t) = A(w(t), h(t))
+da_dt = D(A)(tstar)
+```
+
+So what? Why is 96 of any interest? It is if the value at a specific
+time is needed. But in general, a better question might be to
+understand if there is some pattern to the numbers in the figure,
+these being $6, 54, 150, 294, 486, 726$. Their differences are the
+*average* rate of change:
+
+```
+xs = [6, 54, 150, 294, 486, 726]
+ds = diff(xs)
+```
+
+Those seem to be increasing by a fixed amount each time, which we can see by one more application of `diff`:
+
+```
+diff(ds)
+```
+
+How can this relationship be summarized? Well, let's go back to what we know, though this time using symbolic math:
+
+```
+using SymPy
+t = symbols("t", real=true)
+diff(A(t), t)
+```
+
+This should be clear: the rate of change, $dA/dt$, is increasing
+linearly, hence the second derivative, $dA^2/dt^2$ would be constant,
+just as we saw for the average rate of change.
+
+So, for this problem, a constant rate of change in width and height
+leads to a linear rate of change in area, put otherwise, linear growth
+in both width and height leads to quadratic growth in area.
+
+##### Example
+
+A ladder, with length $l$, is leaning against a wall. We parameterize
+this problem so that the top of the ladder is at $(0,h)$ and the
+bottom at $(b, 0)$. Then $l^2 = h^2 + b^2$ is a constant.
+
+If the ladder starts to slip away at the base, but remains in contact
+with the wall, express the rate of change of $h$ with respect to $t$
+in terms of $db/dt$.
+
+We have from implicitly differentiating in $t$ the equation $l^2 = h^2 + b^2$,  noting that $l$ is a constant, that:
+
+$$
+0 = 2h \frac{dh}{dt} + 2b \frac{db}{dt}.
+$$
+
+
+Solving, yields:
+
+$$
+\frac{dh}{dt} = -\frac{b}{h} \cdot \frac{db}{dt}.
+$$
+
+
+* If $l = 12$ and $db/dt = 2$ when $b=4$, find $dh/dt$.
+
+We just need to find $h$ for this value of $b$, as the other two quantities in the last equation are known. But $h = \sqrt{l^2 - b^2}$, so the answer is:
+
+```
+l, b, dbdt = 12, 4, 2
+height = sqrt(l^2 - b^2)
+-b/height * dbdt
+```
+
+* What happens to the rate as $b$ goes to $l$?
+
+As $b$ goes to $l$, $h$ goes to 0, so $b/h$ blows up. Unless $db/dt$
+goes to $0$, the expression will become $-\infty$.
+
+
+
+##### Example
+
+{{{baseball_been_berry_good}}}
+
+A baseball player stands 100 meters from home base. A batter hits the
+ball directly at the player so that the distance from home plate is
+$x(t)$ and the height is $y(t)$.
+
+The player tracks the flight of the ball in terms of the angle
+$\theta$ made between the ball and the player. This will satisfy:
+
+$$
+\tan(\theta) = \frac{y(t)}{100 - x(t)}.
+$$
+
+What is the rate of change of $\theta$ with respect to $t$ in terms of that of $x$ and $y$?
+
+We have by the chain rule and quotient rule:
+
+$$
+\sec^2(\theta) \theta'(t) = \frac{y'(t) \cdot (100 - x(t)) - y(t) \cdot (-x'(t))}{(100 - x(t))^2}.
+$$
+
+If we have $x(t) = 50t$ and $y(t)=v_{0y} t - 5 t^2$ when is the rate of change of the angle happening most quickly?
+
+
+The formula for $\theta'(t)$ is
+
+$$
+\theta'(t) = \cos^2(\theta) \cdot \frac{y'(t) \cdot (100 - x(t)) - y(t) \cdot (-x'(t))}{(100 - x(t))^2}.
+$$
+
+This question requires us to differentiate *again* in $t$. Since we
+have fairly explicit function for $x$ and $y$, we will use `SymPy` to
+do this.
+
+```
+t = symbols("t", real=true)
+theta = symbols("theta", cls=SymFunction)
+
+v0 = 5
+x(t) = 50t
+y(t) = v0*t - 5 * t^2
+eqn = tan(theta(t)) - y(t) / (100 - x(t))
+```
+
+```
+thetap = diff(theta(t),t)
+dtheta = solve(diff(eqn, t), thetap)[1]
+```
+
+We could proceed directly by evaluating:
+
+```
+d2theta = subs(diff(dtheta, t), thetap, dtheta)
+```
+
+That is not so tractable, however.
+
+It helps to simplify
+$\cos^2(\theta(t))$ using basic right-triangle trigonometry. Recall, $\theta$ comes from a right triangle with
+height $y(t)$ and length $(100 - x(t))$. The cosine of this angle will
+be $100 - x(t)$ divided by the length of the hypotenuse. So we can
+substitute:
+
+```
+dtheta = subs(dtheta, cos(theta(t))^2, (100 -x(t))^2/(y(t)^2 + (100-x(t))^2))
+```
+
+
+Plotting reveals some interesting things. For $v_{0y} < 10$ we have graphs that look like:
+
+```
+using Gadfly
+plot(dtheta, 0, v0/5)
+```
+
+The ball will drop in front of the player, and the change in $d\theta/dt$ is monotonic.
+
+
+
+But let's rerun the code with $v_{0y} > 10$:
+
+```
+v0 = 15
+x(t) = 50t
+y(t) = v0*t - 5 * t^2
+eqn = tan(theta(t)) - y(t) / (100 - x(t))
+thetap = diff(theta(t),t)
+dtheta = solve(diff(eqn, t), thetap)[1]
+dtheta = subs(dtheta, cos(theta(t))^2, (100 - x(t))^2/(y(t)^2 + (100 - x(t))^2))
+plot(dtheta, 0, v0/5)
+```
+
+
+In the second case we have a different shape. The graph is not
+monotonic, and before the peak there is an inflection point.  Without
+thinking too hard, we can see that the greatest change in the angle is
+when it is just above the head ($t=2$ has $x(t)=100$).
+
+That these two graphs differ so, means that the player may be able to
+read if the ball is going to go over his or her head by paying
+attention to the how the ball is being tracked.
+
+##### Example
+
+Hipster pour-over coffee is made with a conical coffee filter. The
+cone is actually a [frustum](http://en.wikipedia.org/wiki/Frustum) of
+a cone with small diameter, say $r_0$ chopped off. We will parameterize
+our cone by a value $h \geq 0$ on the $y$ axis and an angle $\theta$
+formed by a side and the $y$ axis. Then the coffee filter is the part
+of the cone between some $h_0$ (related  $r_0=h_0 \tan(\theta)$) and $h$.
+
+The volume of a cone of height $h$ is $V(h) = \pi/3 h \cdot
+R^2$. From the geometry, $R = h\tan(\theta)$. The volume of the
+filter then is:
+
+$$
+V = V(h) - V(h_0).
+$$
+
+What is $dV/dh$ in terms of $dR/dh$?
+
+Differentiating implicitly gives:
+
+
+$$
+\frac{dV}{dh} = \frac{\pi}{3} ( R(h)^2 + h \cdot 2 R \frac{dR}{dh}).
+$$
+
+We see that it depends on $R$ and the change in $R$ with respect to $h$. However, we visualize $h$ -- the height -- so it is better to re-express. Clearly, $dR/dh = \tan\theta$ and using $R(h) = h \tan(\theta)$ we get:
+
+$$
+\frac{dV}{dh} = \pi h^2 \tan^2(\theta).
+$$
+
+The rate of change goes down as $h$ gets smaller ($h \geq h_0$) and gets bigger for bigger $\theta$.
+
+How do the quantities vary in time?
+
+For an incompressible fluid, by balancing the volume leaving with how
+it leaves we will have $dh/dt$ is the ratio of the cross-sectional
+area at bottom over that at the height of the fluid $(\pi \cdot (h_0\tan(\theta))^2) /
+(\pi \cdot ((h\tan\theta))^2)$ times the outward velocity of the fluid.
+
+That is $dh/dt = (h_0/h)^2 \cdot v$. Which makes sense -- larger openings
+($h_0$) mean more fluid lost per unit time so the height change
+follows, higher levels ($h$) means the change in height is slower, as
+the cross-sections have more volume.
+
+
+By [Torricelli's](http://en.wikipedia.org/wiki/Torricelli's_law) law,
+the out velocity follows the law $v = \sqrt{2g(h-h_0)}$. This gives:
+
+$$
+\frac{dh}{dt} = \frac{h_0^2}{h^2} \cdot v = \frac{h_0^2}{h^2} \sqrt{2g(h-h_0)}.
+$$
+
+If $h >> h_0$, then $\sqrt{h-h_0} = \sqrt{h}\sqrt(1 - h_0/h) \approx \sqrt{h}(1 - (1/2)(h_0/h)) \approx \sqrt{h}$. So the rate of change of height in time is like $1/h^{3/2}$.
+
+
+Now, by the chain rule, we have then the rate of change of volume with respect to time, $dV/dt$, is:
+
+$$
+\frac{dV}{dt} =
+\frac{dV}{dh} \cdot \frac{dh}{dt} =
+\pi h^2 \tan^2(\theta) \cdot \frac{h_0^2}{h^2} \sqrt{2g(h-h_0)} =
+\pi \sqrt{2g} \cdot (r_0)^2 \cdot \sqrt{h-h_0}.
+$$
+
+
+
+This rate depends on the square of the size of the
+opening ($r_0^2$) and the square root of the height ($h$), but not the
+angle of the cone.
+
+## Questions
+
+###### Question
+
+Supply and demand. Suppose demand for product $XYZ$ is $d(x)$ and supply
+is $s(x)$. The excess demand is $d(x) - s(x)$. Suppose this is positive. How does this influence
+price? Guess the "law" of economics that applies:
+
+```
+choices = [
+L"The rate of change of price will be $0$",
+"The rate of change of price will increase",
+"The rate of change of price will be positive and will depend on the rate of change of excess demand."
+]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+Which makes more sense from an economic viewpoint?
+
+```
+choices = [
+"If the rate of change of unemployment is negative, the rate of change of wages will be negative.",
+"If the rate of change of unemployment is negative, the rate of change of wages will be positive."
+]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+###### Question
+
+In chemistry there is a fundamental relationship between pressure
+($P$), temperature ($T)$ and volume ($V$) given by $PV=cT$ where $c$
+is a constant. Which of the following would be true with respect to time?
+
+```
+choices = [
+L"The rate of change of pressure is always increasing by $c$",
+"If volume is constant, the rate of change of pressure is proportional to the temperature",
+"If volume is constant, the rate of change of pressure is proportional to the rate of change of temperature",
+"If pressure is held constant, the rate of change of pressure is proportional to the rate of change of temperature"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+A pebble is thrown into a lake causing ripples to form expanding
+circles. Suppose the circle expand as rate of 1 foot per second and
+the radius of the circle is 10 feet, what is the rate of change of
+area enclosed by the circle?
+
+```
+# a = pi*r^2
+# da/dt = pi * 2r * drdt
+r = 10; drdt = 1
+val = pi * 2r * drdt
+numericq(val, units=L"feet$^2$/second")
+```
+
+###### Question
+
+A pizza maker tosses some dough in the air. The dough is formed in a
+circle with radius 10. As it rotates, its area increases at a rate of
+1 inch$^2$ per second. What is the rate of change of the radius?
+
+```
+# a = pi*r^2
+# da/dt = pi * 2r * drdt
+r = 10; dadt = 1
+val =  dadt /( pi * 2r)
+numericq(val, units="inches/second")
+```
+
+###### Question
+
+
+An FBI agent with a powerful spyglass is located in a boat anchored
+400 meters offshore.  A gangster under surveillance is driving along
+the shore. Assume the shoreline is straight and that the gangster is 1
+km from the point on the shore nearest to the boat.  If the spyglasses
+must rotate at a rate of $\pi/4$ radians per minute to track
+the gangster, how fast is the gangster moving? (In kilometers per minute.)
+[Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
+
+
+```
+## tan(theta) = x/y
+## sec^2(theta) dtheta/dt = 1/y dx/dt (y is constant)
+## dxdt = y sec^2(theta) dtheta/dt
+dthetadt = pi/4
+y0 = .4; x0 = 1.0
+theta = atan(x0/y0)
+val = y0 * sec(theta)^2 * dthetadt
+numericq(val, units="kilometers/minute")
+```
+
+
+###### Question
+
+A flood lamp is installed on the ground 200 feet from a vertical
+wall. A six foot tall man is walking towards the wall at the rate of
+4 feet per second. How fast is the tip of his shadow moving down the
+wall when he is 50 feet from the wall?
+[Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
+(The answer is positive, as the question is written.)
+
+```
+## y/200 = 6/x
+## dydt = 200 * 6 * -1/x^2 dxdt
+x0 = 200 - 50
+dxdt = 4
+val = 200 * 6 * (1/x0^2) * dxdt
+numericq(val, units="feet/second")
+```
+
+
+###### Question
+
+
+Consider the hyperbola $y = 1/x$ and think of it as a slide. A
+particle slides along the hyperbola so that its x-coordinate is
+increasing at a rate of $f(x)$ units/sec. If its $y$-coordinate is
+decreasing at a constant rate of $1$ unit/sec, what is $f(x)$?
+[Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
+
+```
+choices = [
+L"f(x) = 1/x",
+L"f(x) = x^0",
+L"f(x) = x",
+L"f(x) = x^2"
+]
+ans = 4
+radioq(choices, ans)
+```
+
+###### Question
+
+A balloon is in the shape of a sphere. Fortunately, as this gives
+$V=4/3 \pi r^3$ for the volume. If it is being filled with a rate of
+change of volume per unit time is $2$ and the radius is $3$, what is
+rate of change of radius per unit time?
+
+```
+r, dVdt = 3, 2
+drdt = dVdt / (4 * pi * r^2)
+numericq(drdt, units="units per unit time")
+```
+
+###### Question
+
+Consider the curve $f(x) = x^2 - log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?
+
+```
+choices = [
+L"y = 1 - x^2 - \log(x)",
+L"y = 1 - x^2",
+L"y = 1 - \log(x)",
+L"y = x(2x - 1/x)"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+If $dx/dt = -1$, what is $dy/dt$?
+
+```
+choices = [
+L"dy/dt = 2x + 1/x",
+L"dy/dt = 1 - x^2 - \log(x)",
+L"dy/dt = -2x - 1/x",
+L"dy/dt = 1"
+]
+ans=1
+radioq(choices, ans)
+```

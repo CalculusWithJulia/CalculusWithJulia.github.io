@@ -1,0 +1,791 @@
+# Newton's method
+
+The Babylonian method, was an algorithm to find a value for $\sqrt{k}$. 
+It was described by the first-century Greek mathematician Hero of
+[Alexandria](http://en.wikipedia.org/wiki/Babylonian_method).
+
+The method starts with some initial guess, called $x_0$. It then
+applies a formula to produce an improved guess. This is repeated until
+the improved guess is accurate enough or it is clear the algorithm
+fails to work.
+
+For the Babylonian method, the next guess, $x_{i+1}$ derived from the current guess, $x_i$, is:
+
+
+$$
+x_{i+1} = \frac{1}{2}(x_i + \frac{k}{x_i})
+$$
+
+
+We use this algorithm to approximate the square root of $2$, a value known to
+the Babylonians.
+
+Start with x, then form x/2 + 1/x, from this form x/2 + 1/x, repeat
+
+Let's look starting with $x = 2$ and use rational numbers at first:
+
+```
+x = 2//1
+x = x//2 + 1//x
+x, x^2.0
+```
+
+Our estimate improved from something which squared to $4$ down to something which squares to $2.25$. A big improvements, but there is still more to come.
+
+
+```
+x = x//2 + 1//x
+x, x^2.0
+```
+
+We now see accuracy until the third decimal point.
+
+```
+x = x//2 + 1//x
+x, x^2.0
+```
+
+This is now accurate to the sixth decimal point.  That is about as far
+as we, or the Bablyonians, would want to go by hand. Using rational
+numbers quickly grows out of hand. The next step shows the explosion:
+
+```
+x = x//2 + 1//x
+```
+
+However, with the advent of floating point numbers, the method stays quite manageable:
+
+
+```
+x = 2.0
+x = x/2 + 1/x   # 1.5, 2.25
+x = x/2 + 1/x   # 1.4166666666666665, 2.006944444444444
+x = x/2 + 1/x   # 1.4142156862745097, 2.0000060073048824
+x = x/2 + 1/x   # 1.4142135623746899, 2.0000000000045106
+x = x/2 + 1/x   # 1.414213562373095,  1.9999999999999996
+x = x/2 + 1/x   # 1.414213562373095,  1.9999999999999996
+```
+
+We see that the algorithm -- to the precision offered by floating
+point numbers -- has resulted in an answer `1.414213562373095`. This
+answer is an *approximation* to the actual answer, which is necessary
+as $\sqrt{2}$ is an irrational number, so can never be exactly
+represented in floating point. That being said, we see that the value
+of $f(x)$ is accurate to the last decimal place, so our approximation
+is very close.
+
+## Newton's generalization
+
+Let $f(x) = x^3 - 2x -5$. The value of 2 is almost a zero, as $f(2) =
+-1$. We can check that there are no *rational* roots. Though there is
+a method to solve the cubic it may be difficult to compute and will
+not be as generally applicable as some algorithm like the Babylonian
+method to produce an approximate answer.
+
+Is there some generalization to the Babylonian method?
+
+We know that the tangent line is a good approximation to the function
+at the point. Looking at this graph gives a hint as to an algorithm:
+
+```
+using Gadfly
+f(x) = x^3 - 2x - 5
+fp(x) = 3x^2 - 2
+c = 2
+p = plot([f, x->f(2) + fp(2)*(x-2), x->0 ], 1.75, 2.25)
+Outputonly(p)
+```
+
+The tangent line and the function nearly agree near $2$. So much so,
+that the intersection point of the tangent line with the $x$ axis
+nearly hides the actual zero of $f(x)$ that is near $2.1$.
+
+That is, it seems that the intersection of the tangent line and the
+$x$ axis should be a improved approximation for the zero of the
+function.
+
+Let $x_0$ be $2$, and $x_1$ the intersection point of the tangent line
+at $(x_0, f(x_0))$ with the $x_axis$. Then by the definition of the
+tangent line:
+
+$$
+f'(x_0) = \frac{\Delta y }{\Delta x} = \frac{f(x_0)}{x_0 - x_1}.
+$$
+
+This can be solved for $x_1$ to give $x_1 = x_0 - f(x_0)/f'(x_0)$. In general, if we had $x_i$ and used the intersection point of the tangent line to produce $x_{i+1}$ we would have Newton's method:
+
+$$
+x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}.
+$$
+
+
+That is starting from $2$, we get:
+
+```
+x0 = 2
+x1 = x0 - f(x0)/f'(x0)
+```
+
+We can see we are closer to a zero:
+
+```
+f(x0), f(x1)
+```
+
+Trying again, we have
+
+```
+x2 = x1 - f(x1)/ f'(x1)
+x2, f(x2), f(x1)
+```
+
+And again:
+
+```
+x3 = x2 - f(x2)/ f'(x2)
+x3, f(x3), f(x2)
+```
+
+
+```
+x4 = x3 - f(x3)/ f'(x3)
+x4, f(x4), f(x3)
+```
+
+We see now that $f(x_4)$ is within machine tolerance of $0$, so we
+call $x_4$ an *approximate zero* of $f(x)$.
+
+
+> Newton's method. Let $x_0$ be an initial guess for a zero of
+> $f(x)$. Iteratively define $x_{i+1}$ in terms of the just
+> generated $x_i$ by: $x_{i+1} = x_i - f(x_i) / f'(x_i)$. Then for
+> most functions and reasonable initial guesses, the sequence of
+> points converges to a zero of $f$.
+
+On the computer, we know that actual convergence will likely never
+occur, but accuracy to a certain tolerance will happen quite
+quickly. In the example above, we kept track of the previous
+values. This is unnecessary if only the answer is sought. In that case,
+the update step can use the same variable:
+
+```
+x = x - f(x) / fp(x)
+```
+
+The assignment will update `x` using the previous value of `x`.
+
+We implement the algorithm by repeating the step until either we
+converge or it is clear we won't converge. For good guesses and most
+functions, convergence happens quickly.
+
+
+```
+note("""
+
+Newton looked at this same example in 1699 (B.T. Polyak, _Newton's
+method and its use in optimization_, European Journal of Operational
+Research. 02/2007; 181(3):1086-1096.) though his technique was
+slightly different as he did not use the derivative, *per se*, but
+rather an approximation based on the fact that his function was a
+polynomial (though identical to the derivative). Raphson (1690)
+proposed the general form, hence the usual name of Newton-Raphson
+method.
+
+
+""")
+```
+
+## Examples
+
+This  graphic demonstrates the method:
+
+{{{newtons_method_example}}}
+
+
+
+For the function $f(x) = \cos(x) - x$, we see that SymPy can not solve symbolically for a zero:
+
+```
+using SymPy
+x = symbols("x", real=true)
+solve(cos(x) - x)
+```
+
+We can find a numeric solution, even though there is no closed-form answer. Here we try Newton's method:
+
+```
+f(x) = cos(x) - x
+fp(x) = -sin(x) - 1
+x = .5
+x = x - f(x)/fp(x)  # 0.7552224171056364
+x = x - f(x)/fp(x)  # 0.7391416661498792
+x = x - f(x)/fp(x)  # 0.7390851339208068
+x = x - f(x)/fp(x)  # 0.7390851332151607
+x = x - f(x)/fp(x)
+```
+
+This answer is close, to machine tolerance it produces $0.0$:
+
+```
+x, f(x)
+```
+
+
+
+##### Example division as multiplication
+
+[Newton-Raphson Division](http://tinyurl.com/kjj9w92) is a means to divide by multiplying.
+
+Why would you want to do that? Well, even for computers division is
+harder (read slower) than multiplying. The trick is that $p/q$ is
+simply $p \cdot (1/q)$, so finding a means to compute a reciprocal by
+multiplying will reduce division to multiplication.  (This trick is
+used by
+[yeppp](http://www.yeppp.info/resources/ppam-presentation.pdf), a high
+performance library for computational mathematics.)
+
+
+Well suppose we have $q$, we could try to use Newton's method to find
+$1/q$, as it is a solution to $f(x) = x - 1/q$. The Newton update step
+simplifies to:
+
+$$
+x - f(x) / f'(x) \quad\text{or}\quad x - (x - 1/q)/ 1 = 1/q
+$$ 
+
+That doesn't really help, as Newton's method is just $x_{i+1} = 1/q$
+-- that is it just jumps to the answer, the one we want to compute by
+some other means!
+
+
+Trying again, we simplify the update step for a related function:
+$f(x) = 1/x - q$ and then one step of the process is:
+
+$$
+x_{i+1} = -qx^2_i + 2x_i.
+$$
+
+Now for $q$ in the interval $[1/2, 1]$ we want to get a *good* initial
+guess. Here is a claim. We can use $x_0=48/17 - 32/17 \cdot q$. Let's check
+graphically that this is a reasonable initial approximation to $1/q$:
+
+```
+g(q) = 1/q
+h(q) = 1/17 * (48 - 32q)
+plot([g,h], 1/2, 1)
+```
+
+
+
+It can be shown that we have for any $q$ in $[1/2, 1]$ with initial guess $x_0 =
+48/17 - 32/17\cdot q$ that Newton's method will converge to 16 digits in no more
+than this many steps:
+
+$$
+\log_2(\frac{53 + 1}{\log_2(17)}).
+$$
+
+
+
+```
+a = log2((53 + 1)/log2(17))
+ceil(Integer, a)
+```
+
+That is 4 steps suffices.
+
+For $q = 0.80$, to find $1/q$ using the above we have
+
+```
+q = 0.80
+x = (1/17) * (48 - 32q)
+x = -q*x*x + 2*x
+x = -q*x*x + 2*x
+x = -q*x*x + 2*x
+x = -q*x*x + 2*x
+```
+
+Timing this shows the method to be slightly faster than a regular
+division.
+
+## A function
+
+In the previous example, a bound ensures convergence in 4 steps. In
+general, this is not the case with Newton's method where the algorithm
+is iterated until convergence.  Having to repeat steps until something
+happens is a task best done by the computer. The `while` loop is a
+good way to repeat commands until some condition is met. With this, we
+present a simple function implementing Newton's method, we we iterate
+until the update step gets really small (the `delta`) or the
+convergence takes more than 50 steps.
+
+```
+function nm(f, fp, x0)
+  tol = 1e-14
+  ctr = 0
+  delta = Inf
+  while (abs(delta) > tol) & (ctr < 50)
+    delta = f(x0)/fp(x0)
+    x0 = x0 - delta
+    ctr = ctr + 1
+  end
+
+  ctr < 50 ? x0 : NaN
+end
+```
+
+##### Examples
+
+
+- Find a zero of $\sin(x)$ starting at $x_0=3$:
+
+```
+nm(sin, cos, 3)
+```
+
+This is an approximation for $\pi$, that historically found use, as the convergence is fast.
+
+- Find a solution to $x^5 =  5^x$ near $2$:
+
+Writing a function to handle this, we have:
+
+```
+f(x) = x^5 - 5^x
+```
+
+We can find the derivative, but in this example will let the `D` function from the `Roots` package do so for us:
+
+```
+using Roots
+alpha = nm(f, D(f), 2)
+alpha, f(alpha)
+```
+
+### Functions in the Roots package
+
+Typing in the `nm` function might be okay once, but would be tedious
+if it was needed each time. The `Roots` package provides the `newton`
+function.
+
+```
+newton(sin, cos, 3)
+```
+
+Or, if a derivative is not specified, one is computed using `D`:
+
+```
+newton(f, 2)
+```
+
+The argument `verbose=true` will force a print out of a message on each step.
+
+More generally, the function `fzero` provides a derivative-free
+algorithm for finding roots of functions. It is similar to Newton's
+method in that only a good initial guess is needed. However, the
+algorithm is engineered to be more robust to the choice of initial
+estimate than Newton's method. Here we see how to call the function
+(identically to the `nm` function we defined):
+
+```
+f(x) = cos(x) - x
+x0 = 1
+fzero(f, x0)
+```
+
+Compare to this related call which uses the bisection method:
+
+```
+fzero(f, 0, 1)           ## could also be fzero(f, [0,1]) to emphasize bracket
+```
+
+For this example both give the same answer, but the bisection method
+is a bit more inconvenient as a bracket must be found.
+
+## Convergence
+
+Newton's method is famously known to be quadratically converging. What
+does this mean? Let the error in the $i$th step be called $e_i = x_i -
+\alpha$. Then Newton's method satisfies a bound of the type:
+
+$$
+\lvert e_{i+1} \rvert \leq M_i \cdot e_i^2.
+$$
+
+If $M$ were just a constant and we suppose $e_0 = 10^{-1}$ then $e_1$
+would be less than $M 10^{-2}$ and $e_2$ less than $M^2 10^{-4}$,
+$e_3$ less than $M^3 10^{-8}$ and $e_4$ less than $M^4 10^{-16}$ which
+for $M=1$ is basically the machine precision. That is for some
+problems, with a good initial guess it will take around 4 or so steps
+to converge.
+
+The actual value of $M$ depends on $i$ and $f$, so the answer isn't always so easy. To see what $M$ is,
+the basic assumption of $f$ is such that this fact of linearization holds at each $x_i$:
+
+$$
+f(x) = f(x_i) + f'(x_i) \cdot (x - x_i) + \frac{1}{2} f''(\xi) \cdot (x-x_i)^2.
+$$
+
+The value $\xi$ is from the mean value theorem and is between $x$ and $x_i$.
+
+Let $x=\alpha$, the zero of $f(x)$ that is being sought. Then $f(\alpha)=0$. For this value, we have
+
+$$
+x_{i+1} - \alpha = x_i - \alpha - \frac{f(x_i)}{f'(x_i)}
+= (x_i - \alpha) + (\alpha - x_i) + \frac{1}{2}\frac{f''(\xi) \cdot(\alpha - x_i)^2}{f'(x_i)}
+=  \frac{1}{2}\frac{f''(\xi)}{f'(x_i)} \cdot(x_i - \alpha)^2.
+$$
+
+That is
+
+$$
+\lvert e_{i+1}\rvert \leq \frac{1}{2}\frac{\lvert f''(\xi)\rvert}{\lvert f'(x_i)\rvert} e_i^2.
+$$
+
+
+This convergence will be quadratic *if*:
+
+- The initial guess $x_0$ is not too far from $\alpha$, so $e_0$ is
+  managed.
+
+- The derivative at $x_i$ is not too close to $0$. (As it appears in
+  the denominator). That is, the function can't be too flat, which
+  should make sense, as then the tangent line is nearly parallel to
+  the $x$ axis and would intersect far away.
+
+- The second derivative is not too big (in absolute value) near the
+  zero. A large second derivative means the function is very concave,
+  which means it is "turning" a lot. In this case, the function turns
+  away from the tangent line quickly, so the tangent line's zero is
+  not necessarily a better approximation to the actual zero, $\alpha$.
+
+
+What can go wrong when one of these isn't the case is illustrated next:
+
+### Poor initial step
+
+{{{newtons_method_poor_x0}}}
+
+{{{newtons_method_flat}}}
+
+### The second derivative is too big
+
+{{{newtons_method_cycle}}}
+
+### The tangent line at some $x_i$ is flat
+
+{{{newtons_method_wilkinson}}}
+
+###### Example
+
+Suppose $\alpha$ is a simple zero for $f(x)$.  (The value $\alpha$ is
+a zero of multiplicity $k$ if $f(x) = (x-\alpha)^kg(x)$ where
+$g(\alpha)$ is not zero. A simple zero has multiplicity $1$. If
+$f'(\alpha) \neq 0$ and the second derivative exists, then a zero
+$\alpha$ will be simple.)  Around $\alpha$, quadratic convergence should
+apply. However, consider the function $g(x) = f(x)^k$ for some integer
+$k \geq 2$. Then $\alpha$ is still a zero, but the derivative of $g$
+at $\alpha$ is zero, so the tangent line is basically flat. This will
+slow the convergence up. We can see that the update step $g'(x)/g(x)$
+becomes $(1/k) f'(x)/f(x)$, so an extra factor is introduced.
+
+The calculation that produces the quadratic convergence now becomes:
+
+$$
+x_{i+1} - \alpha = (x_i - \alpha) - \frac{1}{k}(x_i-\alpha + \frac{f''(\xi)}{2f'(x_i)}(x_i-\alpha)^2) =
+\frac{k-1}{k} (x_i-\alpha) + \frac{f''(\xi)}{2kf'(x_i)}(x_i-\alpha)^2.
+$$
+
+As $k > 1$, the $(x_i - \alpha)$ term dominates, and we see the
+convergence is linear with $\lvert e_{i+1}\rvert \approx (k-1)/k
+\lvert e_i\rvert$.
+
+
+
+## Questions
+
+###### Question
+
+
+Let $f(x) = x^2 - 3^x$. This has derivative $2x - 3^x \cdot
+\log(3)$. Starting with $x_0=0$, what does Newton's method converge on?
+
+```
+using Roots
+f(x) = x^2 - 3^x;
+fp(x) = 2x - 3^x*log(3);
+val = newton(f, fp, 0);
+numericq(val, 1e-14)
+```
+
+###### Question
+
+
+Let $f(x) = \exp(x) - x^4$. There are 3 zeros for this function. Which one does Newton's method converge to when $x_0=2$?
+
+
+
+```
+f(x) = exp(x) - x^4;
+fp(x) = exp(x) - 4x^3;
+xstar= newton(f, fp, 2);
+numericq(xstar, 1e-1)
+```
+
+###### Question
+
+
+
+Let $f(x) = \exp(x) - x^4$. As mentioned, there are 3 zeros for this function. Which one does Newton's method converge to when $x_0=8$?
+
+
+
+```
+f(x) = exp(x) - x^4;
+fp(x) = exp(x) - 4x^3;
+xstar = newton(f, fp, 8);
+numericq(xstar, 1e-1)
+```
+
+###### Question
+
+
+Let $f(x) = \sin(x) - \cos(4\cdot x)$.
+
+Starting at $\pi/8$, solve for the root returned by Newton's method
+
+
+```
+k1=4
+f(x)  = sin(x) - cos(k1*x);
+fp(x) = cos(x) + k1*sin(k1*x);
+val = newton(f, fp, pi/(2k1));
+numericq(val)
+```
+
+
+###### Question
+
+Using Newton's method find a root to $f(x) = \cos(x) - x^3$ starting at $x_0 = 1/2$.
+
+```
+f(x) = cos(x) - x^3
+val = newton(f, 1/2)
+numericq(val)
+```
+
+
+###### Question
+
+Use Newton's method to find a root of $f(x) = x^5 + x -1$. Make a quick graph to find a reasonable starting point.
+
+```
+f(x) = x^5 + x - 1
+val = newton(f, -1)
+numericq(val)
+```
+
+
+###### Question
+
+Will Newton's method converge for the function $f(x) = x^5 - x + 1$ starting at $x=1$?
+
+```
+choices = [
+"Yes",
+"No. The initial guess is not close enough",
+"No. The second derivative is too big",
+L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+###### Question
+
+Will Newton's method converge for the function $f(x) = 4x^5 - x + 1$ starting at $x=1$?
+
+
+```
+choices = [
+"Yes",
+"No. The initial guess is not close enough",
+"No. The second derivative is too big, or does not exist",
+L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+Will Newton's method converge for the function $f(x) = x^{10} - 2x^3 - x + 1$ starting from $0.25$?
+
+
+```
+choices = [
+"Yes",
+"No. The initial guess is not close enough",
+"No. The second derivative is too big, or does not exist",
+L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+Will Newton's method converge for $f(x) = 20x/(100 x^2 + 1)$ starting at $0.1$?
+
+
+```
+choices = [
+"Yes",
+"No. The initial guess is not close enough",
+"No. The second derivative is too big, or does not exist",
+L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+###### Question
+
+Will Newton's method converge to a zero for $f(x) = \sqrt{(1 - x^2)^2}$?
+
+
+```
+choices = [
+"Yes",
+"No. The initial guess is not close enough",
+"No. The second derivative is too big, or does not exist",
+L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+Use `fzero` to find a root of $f(x) = 4x^4 - 5x^3 + 4x^2 -20x -6$ starting at $x_0 = 0$.
+
+```
+val = fzero(x -> 4x^4 - 5x^3 + 4x^2 -20x -6, 0)
+numericq(val)
+```
+
+###### Question
+
+Use `fzero` to find a zero of $f(x) = \sin(x) - x/2$ that is *bigger* than $0$.
+
+```
+f(x) = sin(x) - x/2
+val = fzero(f, 2)
+numericq(val)
+```
+
+
+###### Question
+
+The Newton baffler is so named, as Newton's method will fail to find the root. The function can be 
+
+```
+function newton_baffler(x) 
+    if ( x - 0.0 ) < -0.25 
+        0.75 * ( x - 0 ) - 0.3125 
+    elseif  ( x - 0 ) < 0.25 
+        2.0 * ( x - 0 ) 
+    else
+        0.75 * ( x - 0 ) + 0.3125
+    end
+end
+```
+
+Will `fzero` find the zero at $0.0$ starting at 1?
+
+```
+yesnoq("yes")
+```
+
+Will Newton's method find the zero at $0.0$ starting at $1$?
+
+
+```
+yesnoq("no")
+```
+
+###### Question
+
+Consider this crazy function defined by:
+
+```
+f(x) = cos(100*x)-4*erf(30*x-10)
+```
+
+(The `erf` function is the error function.)
+
+Make a plot over the interval $[-3,3]$ to see why it is called "crazy".
+
+Does `fzero` find a zero to this function starting from $4$?
+
+
+```
+yesnoq("yes")
+```
+
+If so, what is the value?
+
+```
+val = fzero(f, 4)
+numericq(val)
+```
+
+If not, what is the reason?
+
+```
+choices = [
+"The zero is a simple zero",
+"The zero is not a simple zero",
+"The function oscillates too much to rely on the tangent line approximation far from the zero",
+"We can find an answer"
+]
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+
+###### Question
+
+Let $f(x) = \sin(x) - x/4$. Starting at  $x_0 = 2\pi$ Newton's method will converge to a value, but it will take many steps. Using `verbose=true` when calling the `newton` function in the `Roots` package, how many steps does it take:
+
+```
+f(x) = sin(x) - x/4
+val = 22
+numericq(val)
+```
+
+What is the zero that is found?
+
+```
+val = newton(f, 2pi)
+numericq(val)
+```
+
+Is this the closest zero to the starting point, $x_0$?
+
+```
+yesnoq("no")
+```
+
+###### Question
+
+Quadratic convergence of Newton's method only applies to *simple*
+roots. For example, we can see (using the `verbose=true` argument to
+the `Roots` package's `newton` method, that it only takes $4$ steps to
+find a zero to $f(x) = \cos(x) - x$ starting at $x_0 = 1$. But it takes
+many more steps to find the same zero for $f(x) = (\cos(x) - x)^2$.
+
+How many?
+
+```
+val = 22
+numericq(val, 2)
+```

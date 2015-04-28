@@ -1,0 +1,433 @@
+# Ranges and Sets
+
+Sequences of numbers are prevalent in math. A simple one is just counting by ones:
+
+$$
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+$$
+
+Or counting by sevens:
+
+$$
+7, 14, 21, 28, 35, 42, 49
+$$
+
+More challenging for humans is [counting backwards](http://www.psychpage.com/learning/library/assess/mse.htm) by 7:
+
+$$
+100, 93, 86, 79, ...
+$$
+
+These are examples of [arithmetic sequences](http://en.wikipedia.org/wiki/Arithmetic_progression). The form of these is:
+
+$$
+a_0, a_0 + h, a_0 +2h, a_0 + 3h, \dots, a_0 + nh
+$$
+
+
+The formula for the $n$th term can be written in terms of $a_0$, or
+any other $0 < m \leq n$ with $a_n = a_m + (n-m)\cdot h$.
+
+
+A typical question might be: The first term of an arithmetic sequence
+is equal to 200 and the common difference is equal to -10. Find the
+value of the 20th term. We could find this using $a_n = a_0 + n\cdot h$:
+
+```
+a0, h, n = 200, -10, 20
+a0 + n * h
+```
+
+More complicated questions involve solving for an unknown first, as
+with: an arithmetic sequence has a common difference equal to 10 and
+its 6th term is equal to 52. Find its 15th term. Here we have to
+answer: $a_0 + 15 \cdot 10$, but to find $a_0$, we use $52 = a_0 +
+6\cdot(10)$. This yields $a_0=-8$, and so:
+
+```
+a0, h, n = -8, 10, 15
+a0 + n * h
+```
+
+
+Rather than express sequences by the $a_0$, $h$, and $n$, `Julia` uses
+the starting point (`a`), the difference (`h`) and a suggested
+stopping value (`b`).  That is, we need three values to specify these
+ranges of numbers: a `start`, a `step`, and an `endof`. `Julia` gives
+a convenient syntax for this: `a:h:b`. When the difference is just $1$, all
+numbers between the start and end are specified by `a:b`, as in
+
+```
+1:10
+```
+
+But wait, nothing printed? This is because `1:10` is efficiently
+stored. Basically, only the current state and a means to generate the
+next values are kept. To expand the values, you have to ask for them
+to be `collect`ed:
+
+```
+collect(1:10)
+```
+
+
+When a non-default step size is needed, it goes in the middle, as in
+`a:h:b`. For example, counting by sevens from 1 to 50 is achieved by:
+
+```
+collect(1:7:50)
+```
+
+Or counting down from 100:
+
+```
+collect(100:-7:1)
+```
+
+In this last example, we said end with 1, but it ended with 2. The
+ending value in the range is a suggestion to go up to, but not exceed.
+
+```
+note(L"""
+
+The `linspace` function is related to the colon operation. It generates `n` values evenly spaced between `a` and `b` with the call `linspace(a, b, n)`. The `n` is optional, defaulting to $100$. Specifying the number of numbers is more convenient in some cases, than specifying the step size. On particular case arises when generating points to produce a graph of a function.
+
+""")
+```
+
+
+## Filtering and modifying arithmetic progressions
+
+Within `Julia`, there are other, specific, ways to achieve a different
+step size. We don't pursue them, but rather concentrate on some more
+general styles to modify a sequence to produce a new sequence.
+
+For example, another way to get the values between 0 and 100 that are
+multiples of 7 is to start with all 101 values and throw out those
+that don't match. To check if a number is divisible by $7$, we could
+use the `%`operator for modulo division (`m%n` is the remainder when
+dividing `m` by `n`). Multiples of `7` match `m % 7 == 0`. Checking
+for divisibility by seven is unusual enough there is nothing built in
+for that, but checking for division by $2$ is common, and for that,
+there is a built-in function `iseven`.
+
+The act of throwing out elements of a collection based on some
+condition is called *filtering*. The `filter` function does this in
+`Julia`. The basic syntax being
+`filter(predicate_function,collection)`.
+The "`predicate_function`" is one that returns either
+`true` or `false`, such as `iseven`. The output of `filter` consists
+of the new collection of values -- those where the predicate returns `true`.
+
+To see it used, lets start with the numbers between `0` and `100`
+(inclusive) and filter out those that are even:
+
+```
+filter(iseven, 0:100)
+```
+
+
+To get the numbers between 1 and 100 that are divisible by $7$
+requires us to write a function akin to `iseven`, which isn't hard (e.g.,
+`is_seven(x)=x%7==0`), but isn't something we continue with just yet.
+
+For another example, here is an inefficient way to list the prime
+numbers between 100 and 200 using the built-in `isprime` function:
+
+```
+filter(isprime, 100:200)
+```
+
+(The `primes` function will list all primes less than its argument `n`
+in a much more efficient manner.)
+
+Illustrating `filter` at this point is mainly a motivation to
+illustrate that we can start with a regular set of numbers and then
+modify or filter them. The function takes on more value once we discuss how
+to write predicate functions.
+
+## Comprehensions
+
+Let's return to the case of even numbers between 0 and 100. We have many ways to describe this set:
+
+- The collection of numbers $0, 2, 4, 6 \dots, 100$, or the arithmetic
+  sequence with step size 2, which is returned by `0:2:100`.
+
+- The numbers between 0 and 100 that are even, that is `filter(iseven, 0:100)`.
+
+- The set of numbers $\{2k: k=0, \dots, 50\}$.
+
+While `Julia` has a special type for dealing with sets, we will use a
+vector for such a set. (Unlike a set, vectors can have repeated
+values, but as vectors are more widely used, we demonstrate them.)
+Vectors are constructed using square brackets: `[]` (a special syntax
+for
+[concatenation](http://docs.julialang.org/en/latest/manual/arrays/#concatenation)). Square
+brackets are used in many different contexts within `Julia`, in this
+case we use them to create a *collection*. If we separate single
+values in our collection by commas (or semicolons), we will create a
+vector:
+
+```
+x = [0,2,4,6,8,10]
+```
+
+
+That is of course only part of the set of even numbers we want.
+Creating more might be tedious were we to type them all out, as above. In such
+cases, it is best to *generate* the values. 
+
+
+For this simple case, a range can be used, but more generally a 
+[comprehension](http://julia.readthedocs.org/en/latest/manual/arrays/#comprehensions)
+provides this ability using a construct that closely mirrors  a set definition, such as $\{2k:
+k=0, \dots, 50\}$. The simplest use of a comprehension takes this
+form:
+
+`[expr for variable in collection]`
+
+
+The expression typically involves the variable specified after the keyword
+`for`. The collection can be a range, a vector, or many other items
+that are *iterable*. Here is how the mathematical set $\{2k: k=0,
+\dots, 50\}$ may be generated by a comprehension:
+
+```
+[2k for k in 0:50]
+```
+
+The expression is `2k`, the variable `k` and the collection is the range
+of values, `0:50`. The syntax is basically identical to how the math
+expression is typically read aloud.
+
+
+For some other examples, here is how we can create the first 50 numbers divisible by 7:
+
+```
+[7k for k in 1:50]
+```
+
+Here is how we can square the numbers between 1 and 10:
+
+```
+[x^2 for x in 1:10]
+```
+
+To generate other progressions, such as powers of 2, we could do:
+
+```
+[2^i for i in 1:10]
+```
+
+To get decreasing powers takes a bit of care, as `2^(-i)` is an error
+for positive `i`s, but `1/2^i` is not. (This is because powers with
+integers are expected to return integers, but division by integers is
+not.) Here then are decreasing powers of 2:
+
+```
+[1/2^i for i in 1:10]
+```
+
+
+
+Sometimes, the comprehension does not produce the type of output that
+may be expected. This is related to `Julia`'s more limited abilities
+to infer types at the command line. If the output type is important,
+the extra prefix of `T[]` can be used, where `T` is the desired
+type. We will see that this will be needed at times with symbolic math.
+
+
+```
+alert("""
+The `map` function. Using a comprehension is very convenient when the expression is to be typed in. However if the expression is a function call, then the `map` function yields a similar result and has a more convenient notation: `map(f, collection)` will also produce the output of `[f(x) for x in collection]`.
+""")
+```
+
+## Random numbers
+
+This section discusses structured sets of numbers. On the opposite end of the spectrum are random numbers. `Julia` makes them easy to generate, especially random numbers chosen uniformly for $(0,1)$.
+
+- The `rand()` function returns a randomly chosen number in $(0,1)$.
+
+- The `rand(n)` function returns `n` randomly chosen numbers in $(0,1)$.
+
+To illustrate, this will return a single number
+
+```
+rand()
+```
+
+This call will return a vector of 10 such random numbers:
+
+```
+rand(10)
+```
+
+Easy to use. The only common source of confusion is the subtle distinction between `rand()` and `rand(1)`, as the latter is a vector of 1 random number and the former just 1 random number.
+
+```
+alert(L"""
+The documentation for `rand` shows that the value is in $[0,1)$, but in practice $0$ doesn't come up with any frequency -- about 1 out of every $10^{19}$ numbers -- so we say $(0,1)$.
+""")
+```
+
+
+## Questions
+
+###### Question
+
+Which of these will produce the odd numbers between 1 and 99?
+
+```
+choices = [
+q"1:99",
+q"1:3:99",
+q"1:2:99"
+]
+ans = 3
+radioq(choices, ans)
+```		   
+
+
+###### Question
+
+Which of these will produce the countdown numbers 10, 9, 8, ..., 3, 2, 1?
+
+```
+choices = [q"10:1", q"10:9:8:...:1", q"10:1:-1", q"10:-1:1"]
+ans = 4
+radioq(choices, ans)
+```
+
+
+###### Question
+
+Which of these will create the sequence $2, 9, 16, 23, \dots, 72$?
+
+```
+choices = [q"2:7:72", q"2:9:72", q"2:72", q"72:-7:2"]
+ans = 1
+radioq(choices, ans)
+```
+
+
+###### Question
+How many numbers are in the sequence produced by `0:19:1000`?
+
+```
+val = length(collect(0:19:1000))
+numericq(val)
+```
+
+
+###### Question
+
+Create the sequence $10, 100, 1000, \dots, 1,000,000$ using a list comprehension. Which of these works?
+
+```
+choices = [q"[10^i for i in 1:6]", q"[10^i for i in [10, 100, 1000]]", q"[i^10 for i in [1:6]]"]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Create the sequence $0.1, 0.01, 0.001, \dots, 0.0000001$ using a list comprehension. Which of these will work:
+
+```
+choices = [
+q"[10^-i for i in 1:7]",
+q"[(1/10)^i for i in 1:7]",
+q"[i^(1/10) for i in 1:7]"]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+Evaluate the expression $x^3 - 2x + 3$ for each of the values -5, -4, $\dots$, 4, 5 using a comprehension. Which of these will work?
+
+```
+choices = [q"[x^3 - 2x + 3 for i in -5:5]", q"[x^3 - 2x + 3 for x in -(5:5)]", q"[x^3 - 2x + 3 for x in -5:5]"]
+ans = 3
+radioq(choices, ans)
+```
+
+###### Question
+
+How many prime numbers are there between 1100 and 1200? (Use `filter` and `isprime`)
+
+```
+val = length(filter(isprime, 1100:1200))
+numericq(val)
+```
+
+
+###### Question
+
+Which has more prime numbers  the range `1000:2000` or the range `11000:12000`?
+
+```
+n1 = length(filter(isprime, 1000:2000))
+n2 = length(filter(isprime, 11_000:12_000))
+booleanq(n1 > n2, labels=[q"1000:2000", q"11000:12000"])
+```
+
+###### Question
+
+We can easily add an arithmetic progression with the `sum`
+function. For example, `sum(1:100)` will add the numbers $1, 2, ..., 100$.
+
+
+What is the sum of the odd numbers between 0 and 100?
+
+```
+val = sum(1:2:99)
+numericq(val)
+```
+
+###### Question
+
+The sum of the arithmetic progression $a, a+h, \dots, a+n\cdot h $ has
+a simple formula. Using a few cases, can you tell if this is the
+correct one:
+
+$$
+h \cdot(a + n(n+1)/2)
+$$
+
+```
+booleanq(true, labels=["Yes, this is true", "No, this is false"])
+```
+
+
+###### Question
+
+A *geometric progression* is of the form $a^0, a^1, a^2, \dots,
+a^n$. These are easily generated by comprehensions of the form
+`[a^i for i in 0:n]`. Find the sum of the geometric progression $1,
+2^1, 2^2, \dots, 2^{10}$.
+
+```
+as = [2^i for i in 0:10]
+val = sum(as)
+numericq(val)
+```
+
+Is your answer of the form $(1 - a^{n+1}) / (1-a)$?
+
+```
+yesnoq(true)
+```
+
+
+###### Question
+
+The [product](http://en.wikipedia.org/wiki/Arithmetic_progression) of
+the terms in arithmetic progression has a known formula.  The product
+can be found by an expression of the form `prod(a:h:b)`.  Find the product of the terms in the sequence $1,3,5,\dots,19$.
+
+```
+val = prod(1:2:19)
+numericq(val)
+```

@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+
+
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) { 
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();                                    
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();  
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>Integration By Parts</h1><p>So far we have seen that the <em>derivative</em> rules lead to <em>integration rules</em>. In particular:</p><ul><li>$[au(x) + bv(x)]' = au'(x) + bv'(x)$ gives rise to an integration rule: $\int (au(x) + bv(x))dx = a\int u(x)dx + b\int v(x))dx$. (That is the linearity of the derivative means the integral has linearity.)</li></ul><ul><li>$[f(g(x))]' = f'(g(x)) g'(x)$ gives $\int_a^b f(g(x)) g'(x) dx = \int_{g(a)}^{g(b)} f(x) dx$.</li></ul><p>Now we turn our attention to the implications of the <em>product rule</em>: $[uv]' = u'v + uv'$. The resulting technique is called integration by parts.</p><p>First, we have:</p><p>$$ u(x)\cdot v(x)\big|_a^b = \int_a^b [u(x) v(x)]' dx = \int_a^b u'(x) \cdot v(x) dx + \int_a^b u(x) \cdot v'(x) dx. $$</p><p>This is re-expressed as</p><p>$$ \int_a^b u(x) \cdot v'(x) dx = u(x) \cdot v(x)\big|_a^b -  \int_a^b v(x) \cdot u'(x) dx, $$</p><p>Or more informally as $\int udv = uv - \int v du$.</p><p><div class="well well-sm">   <figure>     <img src="data:image/gif;base64, iVBORw0KGgoAAAANSUhEUgAAAhcAAAF6CAYAAACqW3pRAAAABmJLR0QA/wD/AP+gvaeTAAAgAElEQVR4nOzde3gU1fkH8O97ZrMkkUsEFQUlCeANJLsbLLW2lQS8AAkoVbBSrVYqXqC1VbG/3izai7ZWWyu0FS9V662gxQp4oZJJ1FJB2J1JmoqtZHcJqEA1USAhuzvn/f2RBBFZuSUzyeb9PI/P4+7OnvebZc/kZObMGUAIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYTwRDQaza6tre/vdQ4hMl1tbX3/aDSa7XUOITJdOLxxkFu1lFuFupvGRipOJvVcr3MIkemSST23sZGKvc4hRKYj4ifdqiWDizSYqZGI3/Y6hxCZjojfZqZGr3MIkemIeJ1rtdwq1Bm+O+27OckjkuXzH56/eF+v33zllX12OjkTiSiRtTPrpd8s/k2z2xmFEEKInqbbHrm47hvXnZA8ouV2EH93X6/PmjUrq0nnvApgGoBzkrktzx1M+6tXbxpQXV0/qiOyCiHSq66uH7V69aYBXucQItNFItESt2p128GF0vR7QH0+3ev+pP9iEOILHlkwbf7D82eD6Kg5l80pPND2/f7UyVrrGR2TVgiRjtZ6ht+fOtnrHEJkPnWra5XcKtTR5j+yYDJrviHtBoyRYLI/fkxvkk+PPtD2mfVmIl11eCmFEPtDpKuY9WavcwiR6Yj0E27V8rlVyHXMA4nwWvtDIn4XwLEH+vbi4qFxAPHOiCaE+FggUPii1xmE6AmCwcL73KqVsYMLJlQDPLj9sQb6Gw6W7bmNZcXLifh6rfFwKFTweCQSm6sUzmXGzYahPtKaFwKs+/blyU1NR/hSqaYlzFwXDBZebVl1Y4jUz7Xm5aFQ4W8jkejlStGlAN8VCBS+aFnRXxJRcTLpzDz99GEbLSv6HJHSgUD+BZFItEApul9reiMUyv9BdXVsIjNuAOjPgUD+o5YVu4EIEx1Hfb+4eMhay4o9QIR8IPuCnTuT+ogjnOeYEQ8GC75ZXR0fzcx3MOPFYLDgLsuKX0rEl2uN34ZCBcsjkfgvlOLPAZgVCBRELSu2BIAvGCyYbNubjgdSf2LmcDBY+D3LqjuXSM3Vmh8PhQoftu349QCXA/yjQKBwtWVF7yOioc3NyQsHDEBLU1PWMoA2BwL5V0Qi0aBSdKfW9PdQKP9Xth29BKArAfpdIJC/1LJiPyXCGamUce3o0Se8bVmxp5mRGwoVTAqHNw4yDP0IM+xgsOAm246PB/j/ADwVCBQ8aFmxOUQ4X2v8JBQqWBWJxH6vFE4kounvvz9ke//+8ReY8V4wWHBZdXX9KGbnboArAoHC2y0rPp2Ir9KaF4RChc9GItF5StEXAT0nEBj6lmVF/wKovGAw/7yamrqBWqvHAPpXIJD/3UgkWqIU/ZCZFgeD+QttO3otQF8B1G2BwJBXLSt2LxFOSSb9l4wefdz71dXxFVpjWyhUMCMcjo8wDL6HGVXBYMHPbDt2IYBrAPwxECh4xrJiPybCWY5D1xcX5/87Eok9oRSOLirKP3fduncHZGUlnmTGm8Fgwbdte+OXAX0LwH8NBAr/YFnxWUQ8TWv+eShUWBmJRH+rFI1USl86atTQLZYVfwnQjcFg4cW2XXcyoOYD9FogkH9rJBK9QCmazUz3B4P5i2w7+n2AxhEZNxQVnVBjWbE/E+HYDz7InzhgwMY+zLwIwH8CgYLZkUjsTKVwKzP+FgwWzLft2EwAXwXojkAgf6Vlxe4iQpHjqMuLi4e8E4nEnidCUzBYcFEksuFEpYzfM+OfwWDBLbYdnwzwtwF+iJl2AXQGERc7jr6puHiobdvxhwEenJubLH//ffTKycl6hpk2BIP519h29AyAfgrQskAg/55IJHqFUvQ1Zn1nMDh0hW3HfgUgBPi+EQgcv8myYksBpILBgqnV1fGhzHyf1lgTChX8MBKJlSmF7zDTI8Fg/mOWFbuRCBMAfC8QKAhbVuxBIgzZudOYcsQRWQrY9azWiIVCBVdFIhs/p5T+BTNeCAYL7rbt+NcBvowIdxcVFbxgWfHbifh0x9HfLC4eGrft+LPMWgWDhVPC4bp8w1APMPO6YLDw/2w7OgGgG7Xmx0Khwkcikeh3lKIyrdUPQqEhb9h2bCGAQp8vd2pu7s7URx/RUmbaFAzmf8O2Y8UAfqk1VoRCBXdGIrGvKYUrmOmeYDB/mW3Hfgbg80R0dVFRfp1lxZ4B0CsYLCi3rPrBRM7DWsMKhQrmRiLxc5Tim5nxZDBY8JBtx78N8GSAfxwIFL5uWfE/EPHwZNK5CGhoyso66nmt+Z1QqPDycLguYBjq18y8MhgsvMO2o18FaKbWPD8UKvybZUVvJaIztXauC4WG/de2Y4uY0ScYLJhYWxs9NpWiPzOjJhgsuMG2Y+MAfF9rWhQK5d8ficRmK4ULtKZ5oVD+PywrNp8IJ/t8xsUjRhzfWF0df4kZW4LBgktte+NpgP6N1qgMhQp+HonEpynFs5jxh2Cw4K+WFb+FiL9MxN8qKipcb1mxJwEeEAwWnhsO//dow8h6gpn/HQwWXh8OR8caBv2ImZ8JBgv/aFnRa4joQiL906Kioa9YVvQeIhrhOMkZxcUnbrOs6AqA3g8GCy5Zty52qs+H3zHTq8Fg/m2WFfsKEa7VmhaGQvmLI5HYD5VCCTN9JxjMr7Ws2GNEGFhUlH/ev/+9KS+Vcv7CjLeCwYI5lhX/EhH/RGs8GwoVLIhE4lcpxdMB3B4IFFRYVuxuIozy+fiykSML37Os2AtE2B4IFEy3rA0nERkLmh28fmPTwC9+N2vb/Sdm6ysBfjAQKHzKsqL/R0TjldI3jho1tLrTfzl3B7O/PvsLc74xe1X742nTphnXXnntUACYc/mcL865YrYJANfOuPbI2VfMjs7++uwDnjQWicTOtKz47R2fWgixJ8uK3x6JxM70OocQGc3k3jCZ8RIf40a5jDpyMSB7wABDqw0AaEvTltcHHnH0lm9dMXsNA0OI8Yt7H13w/oG2lUj43srJ4e2dGFcIAUAp9URzM73jdQ4hMpoPWUgByEXS6ygZYc6VcwbdfOWVfbzOIYQQQnhmBQ+CyYxVnON1lB6tpqauyLJic7zOIUSms6zYnJqauiKvcwiR0ar4VMPklFvluu2lqJ0tlVK9ARq8/y2FEIeHBrf2NyFEp9Hol0tau1Uuo+ZcdKTGxvw1vXptinidQ4hM19SkbmtpOV7OAwvRmRjH7CT1X69jCCGEECJTmHwNKvklt8rJaZE05FJUIdwhl6IK4QLGoBJfU8CtcjK4SEMp7GLmD7zOIUSmY+YPlMIur3MIkeGG91d6m9chhBBCCJEpTF4Dky91q5wcuUhj7doN/datqx/udQ4hMt26dfXD167d0M/rHEJkuOEX+7dnuVVMBhdpGIYx0jD0TK9zCJHpDEPPNAxjpNc5hMhYKzkfjH5zchpd+50mg4s0lNLvM3ON1zmEyHTMXKOUPuCl+YUQB8lAEQgb+ihnpddRhBBCCJEJKvgWmLzIzZJy5CINy6ofHA5Hx3qdQ4hMFw5Hx1pWvayGK0RnIZwJwj8jkdgMt0rK4CINZidfKTXB6xxCZDql1ARmJ9/rHEJkJGYC4XPQWAPQ1W6VleW/0/D59AbHwRKvcwiR+ZwlPh/iXqcQIiO9gtMAZGMX1iqFX3sdRwghhBDdXQXfAJNfcLusnBZJw7brTnbz/JQQPVUkEpth23Une51DiIxEOBuECgCwrOitbpWVwUUaWqsBRDTK6xxCZDoiGqW1GuB1DiEyzvPcF4TxYCwFAGZV4lZpmXORht+fW51Mtsh5YCE6nZrv9/f60OsUQmScHJwLRhyltB4AlHJmeR1JCCGEEN2ZyQ+jku/xorScFknDsurGWFb8Fq9zCJHpLCt+i2XVjfE6hxAZZRXnAPgKHPyl/SnLii1zq7wMLtJgVj4AOV7nEKIHyGnrb0KIjrIL5wL4EK/i9fanmKmPh4mEEEII0a2ZvBgV/CuvY4i9RKPR7Nra+v5e5xAi09XW1vePRqPZXucQImOYfCxMTuBlPmnPp8PhjYPciiCnRdJobKTiZFLP9TqHEJkumdRzGxup2OscQmQMxnQA63A2/WfPp4n4SbciyOAiDZ9P7wB4s9c5hMh8vLm1vwkhDhszQeFqEBbu48X/fPo5IYQQQojPUsHnweT3sIj9XsaQIxdprF69aUB1db2s0ClEJ6uurh+1evUmWaFTiI5AuAaERzCdEnu/FIlES9yKIYOLNPz+1Mlaa7m3iBCdTGs9w+9Pyb1FhDhcFTwSwEQ4+N2+N1BybxGvMevNRLrK6xxCZDoiXcWsZX6TEIdL4QYAT2E87bM/EeknXE4khBBCiG7r7zwEJu/Cy1zkdRTxGcLhunzbjk7wOocQmc62oxPC4bp8r3MI0a1V8n0w+anP2sSyole7FUdOi6RBpAYzq7Fe5xAi0zGrsURqsNc5hOi2TD4ejMvg4BeftRmzcm0eoaznn0Yi4XsrJ4e3e51DiEynlHqiuZne8TqHEN3YT0FYirOp+rM30z9xJ44QQgghuq+VXAyTm2FygddRxAGoqakrsqzYHK9zCJHpLCs2p6amTiahCXEoTF6GSl5wIJtGIrH7OztOOzktkkYqpXoTkZwHFqLT0eBUSvX2OoUQ3c5KPhfAWCRwgOvE0En736ZjyOAijbw8Djc1Geu9ziFEpsvKUnfm5qaavM4hRLfyPPeCwu9BuA3nHticJWa6pLNjCSGEEKK7Mvl6VPIGmJztdRRxECKR2JmWFb/d6xxCZDrLit8eicTO9DqHEN1GFRfC5B2o4INaLiESibu26rSsc5GGUtjFzB94nUOITMfMHyiFXV7nEKLb0PgVCMsxjg5qsEDEcsm3EEIIIfZSyZNhcgNW8CCvo4hDUFu7tbdl1cvVIkJ0MsuqH1xbu1WuFhFif17ho2HyVpj8tUN5u23XuXb3YTktkkYi0VQEaFnnQohOp+e09jchxGfSuAPAOpTS44f0dm0s7OBEacmlqGkopd/XWtV4nUOITMfMNUrp973OIUSXZnI5GBdCYdShNkGkKzswkRBCCCG6rVf4OJi8DRXs2o3HRCexrPrB4XBU7ooqRCcLh6NjZX6TEJ/B5GdRyX873GYikZhrgxOZc5EGs5OvlJrgdQ4hMp1SagKzk+91DiG6JJNnAxiDFlx1+I3R1YffxoGRORdpEBlxrVMvep1DiEyntX5RKV/c6xxCdDkV/HkAvwbhXJxHWw+/Qb7v8NsQQgghRPf0GveByW/C5J96HeVQyGmRNGy77mQ3z08J0VNFIrEZbl5/L0SXx0xI4nEAUVThJx3VrGVFb+2otvZHToukobUaQESHfMmPEOLAENEorVXM6xxCdBmVuB5ACAmMxjzSHdUssyrpqLb2RwYXafj9udXJZIucBxai06n5fn+vD71OIUSX0Hozsp923DyLjynlzOrI9oQQQgjR1Zk8HJX8/qEu7y26AduOFUcisble5xAi00Uisbm2HSv2OocQnvo794PJEZh8b2eVsKzYk53V9t7ktEgaWiObiPp7nUOITEdE/bXmbK9zCOEZk30gLALjf+iDGzqrDDPJnVSFEEKIHsHkP8FkC69xH6+jiE4WjUaza2vr5ciFEJ2stra+fzQalSMXomeq4Btg8la8zEM7u1Q4vNG1IxeyzkUajY1UnExqmXMhRCdLJvXcxkaSORei56ng6SD8HISLcTbVdXY5InZtzoUMLtLw+fQOgDd7nUOIzMebW/ubED3ISj4XhEdAmI4SMt0pyv9xp44QQggh3PUyF8HkD2DyTV5HES5bvXrTgOrqelmhU4hOVl1dP2r16k0DvM4hRGdg5q80O/z4jhS/zMw/nfIv/iJM3oZKdm0p7naRSLTErVpyKWoafn/qZK1pMoDve51FiEymtZ7h9/NSAKu8ziJER2Fm1cxY8mEK5/5uM7L/lwTO6IMvVe/ADwuysSx2Bua5n0rdCmCsG5VkcJEGs96sFFV5nUOITEekq7SW+U0i43x1RwrnjFyD7G3J1id+B/Q69Qjw6mKc1peI3Q5EpJ9wrZZbhbojfgITAPT1OocQQojupXnSf264q+HEz/849snncw3goy9BG4STiGiDJ+FcIEcu0giH6/KTb3/5h1nJzTleZxEik2mjX1/SzbuIEwmvswjRUfSubSd+kDrxU883OUCS4RiE3m5nsqzo1cFg4X1u1xV7iERiZ1pW/HavcwiR6SwrfnskEjvT6xxCdCSH+RdPb+VdMJn3/G/0WuaU5gQzuz64iETirp3ql3Uu0kgkfG8ppVw7PyVET6WUeiKR8L3ldQ4hOtIDm/DkbTFknZILzjMAHwFf7Af89TQ0pxjziciDtV30T9yvKYQQQojD9zz3hcmv9X2VX3+vhSPcJqm5JenwrcwsUxJ6qnA4PsK2YzO9ziFEprPt2MxwOD7C6xwivfKS8nnTpk3zH8g25aXl48tLyr+29+tlJWWXTjpr0mGtHVReUj6vrLTsvANpvyPqHZJX+UiYvAYmv4ilnAsAvOy0S/m5Yf/2elBhWbG73aolp0XSIOI8ZhrudQ4hMh0zDSfiPK9ziH0rH1c+hsDZixcvTjvhds9tGJwP0iP33sbvT65Qin5zuDkADD6Q9g+33iF5hY9GChUgvItmnI/J1AQAaPzXTmzfkCSilKt59sJMo92qJYOLNPLyOJyVpe70OocQmS4rS92Zl8dhr3OINBz9U4LxwJSzJobKSsoubX+6rKTsxinjpwzcc5vd72HVd3JJ2a/LxpYtKCspOw0AlqxYsZWAd8vGlpWmKzW5pOyHE8dNHNb+uLx00i8uKLkg71M1DqD9A6nXoVbyYGhUglCH3rgIk6jFlboHgZkucauWDC7SKCws3DVy5AkfeJ1DiEw3cuQJHxQWFu7yOofYJwJR0XOVz21wSA1XwNl7vHARO3zkntt8/Db+OoMiACqJ8dLEiRP7AgAzVxPx+emKaSDP0MZlADDprEmjwDTp2cpnGz9d48Da31+9DlPFo6DwBoDXsRXTcTolO73mISguHvKOW7VkcJGGXIoqhDvkUtSu64KSCfkEbAOQdjXJfW9DK5ZVLnt8edXyxQQsM5qNia3Pq/UAfeqURjvW/CjAFwEAKboYoD/tu8aBtv/Z9TrEy1wEjRVgLMNWzMJ0cjq13mGQS1G7ACKdAtDsdQ4heoDmtv4muhgHWcczsM9LJpm5b7ptCPx2+/9rwjYARwKANvSHANL+8n3+ledrAEpMLpl8CgFfIdDj+6pxoO3vr95hq+CxMFAF4BGU4uquPLAAACLe7lYtuRwmjWBw6BoAa7zOIUSmCwbzb/M6g9g3VhyFxkkAAEIDMx8HAFPOmTJIJ51hn9qm/X3AWfPmzVNLly41CDReK/1VADA0hmqgZtq0aUZTQ1P+8peX132qJvhRBt9BwPqllUv/t68a+2u/fbu9H3eoCp4BhfvBmI1SerhTanSwYLCg3K1acuQijdrarb0tq36w1zmEyHSWVT+4tnar66sViv1bVrFsM4CGqeOnDshF7uuA+l/52LJ1nHQeBPNbe2+z+40MXlu59h/H9T52PZj//XzF8/HW5+lExVyd2JIYRCns874afn/yCQLKwK2nRPZZYz/tf5xjr8cdxeTZIDwAxpXdZWABALZdd7JbteTIRRqJRFMRkdxyXYjOp+ckEk1yy/Wuiuj+ZCr5lSVVS+4H8LWJEyf2feGFFz7a1zYA7l9uLn8IwEPTvjAtpyW3pe9zK5/b0r4Zg87IodzbF1ct3jG5pOyX+yq3ZMWKrQCy0uVYXrX8/v21n+7xYWMmmPglgKtAKEMJmR3Wtgu0NhbCpVuuy5GLNJTS7zNz5xxOE0Lsxsw1Sun3vc4h9m0H7/gdEZ8/b948BQCfGljsYxsAWPzPxc17/uKfXDKpnBX/ZXHl4h0TJ07sS1r/5XByfFb7+3p82JZyLiqxBArnQ+P07jawAAAiXel1BiGEEAIAMGX8lIGjR4/+9NGEg9hmyjlTBk2bNs3orBx7t98R9XYz+SiY/CpMDuOV1nknB4Mfw1R+HHaHZBHdW01N3UDLqhvjdQ4hMp1l1Y2pqakb6HUOIfapik+FyW/D5GfxEh9xKE10lcGFbccnu1VLToukkUqpYYAx1escQmQ+Y2prfxOiizH5bGisArAEVfgKzqOdXkc6HFrjJrdqyYTONIiMuNapF73OIUSm01q/qJQv7nUOIT6hgq8D4U4wrkcpPbD/N3QHfJ/XCYQQQoieZxXnoIKfgMkbUcWhjmiyq5wWcZOcFknDtutOjkRiM7zOIUSmi0RiM9y8/l6ItEw+Ci14AYQRAM7CWIp4HakjWVb0VrdqyeAiDa3VACIa5XUOITIdEY3SWg3Y/5ZCdKKVXAxgLYD/AfgSSinmbaCOx6xK3Kolcy7ScBynlsi/1escQmQ6x1EPMie2eZ1D9GAVPAuEu8C4EeNooddxOgsz3eh1BiGEECKzreUsmPxbmPwBTJ7QWWVkzoXYzbZjxZFIbK7XOYTIdJFIbK5tx4q9ziF6mBU8CNtRAWASgDNRShl/daBlxZ50q5YMLtLQGtlE1N/rHEJkOiLqrzWyvc4hepAKPg9ZqAawCUAxSmm915HcwEyDvM4ghBBCZBZmQiXPhcnNMPl7YCZXysppEdHONNm3alV9jtc5hMh0q1bV55gmy+Ry0ble5P6oxN/A+C6AiSilX4KIvY7lpvXr1/dxq5YMLtLIy4uPyc3Vt3idQ4hMl5urb8nLi8t9fETnWclj0AthEI6AgxBKqdLrSF5obs5Z5lYtGVyk4fPpHQBv9jqHEJmPN7f2NyE6GDOhgm+AQiUIj2ArzsXZtGX/b8xU/B+vEwghhBDd1woeBJMrUMkbsJI9PTImcy7EbqtXbxpQXV0vK3QK0cmqq+tHrV69SVboFB2ngsciC2sAtEDhDIynNV5H6goikWiJW7VkcJGG3586WWst9xYRopNprWf4/Sm5t4g4fCb7YPJPQXgBwG9Rgkk4i2T1192Ua/cWkRnaafh8aovjaBntCtHpeI3Pp3rweXDRIUw+DcCTABw4OB1n07+9jtTVKMVLvc4ghBBCdA8mX4pK/hCV/CBM7u11nL3JnAuxWzhcl2/b0U5ba14I0cq2oxPC4bp8r3OIbuhVPhImPwXCPWDMRAnNRCnJlUdpWFb0ardqyeAiDSI1mFmN9TqHEJmOWY0lUoO9ziG6mUqeDAfrQciBwikopae9jtTVMSvX5hHKnIs0EgnfWzk5vN3rHEJkOqXUE83N9I7XOUQ3YXI2CD8HcA0YP0QJ7ulpK20eOv0TrxMIIYQQXctKPgsm16GSq1DFhV7HOVAy50LsFg7HR9h2bKbXOYTIdLYdmxkOx0d4nUN0YSb7UMG3QOFFEP6M3jgbYynqdazuxrJid7tVS06LpEHEecw03OscQmQ6ZhpOxG96nUN0Ua2XmD4MQi4IY1FCb3gdqbtiptFu1ZLBRRp5eRxuajLWe51DiEyXlaXuzM1NNXmdQ3Qxi9iPo3EbCN8C4zYAd6GEUl7H6s6Y6RKvMwghhBDeqOJTUcmrUclvYSWf6XWcwyVzLsRukUjsTMuK3+51DiEynWXFb49EYt3+F4joAK1zK34AjXXQ+Af8CGI8rfI6VqaIROJVbtWS0yJpEOkUYDR7nUOIHqC5tb+JHq31zqUPgZAC4wsYRz3qL303EMnyCkIIIXqC57kXKvg2VHILTL4XL/ERXkfqaHJaROxWW7u1t2XVy6qBQnQyy6ofXFu7tcvdD0K4YCWfiRxEQPgqNM5FKX0L59FOr2NlKtuuc+3uwzK4SCORaCoC9ByvcwiR+fSc1v4meozXuA9MvhcGTADPoRcCGEeuzQfoqbQ2FrpVS+ZcpMFMjUrx217nECLTEfHbWlOj1zmESyp5MpJYAMI2EM5ACUW8jtRTEPE6rzMIIYQQHWcl56OSl6OSP0QFzwIzeR3JLTLnQuxWU1M30LLqxnidQ4hMZ1l1Y2pq6gZ6nUN0knmsYPI1UG2/XBkBjKOFcrMx99l2fLJbteS0SBqplBpGRJMBrPE6ixCZzZiaSvFSAFu8TiI62MtcBAN/BFAI4BqU0FNeR+rJtMZNAJa6UUuOXKRBZMS11i96nUOITKe1fpHIiHudQ3Sgl3kAKvhRGFgDYAV2YBhKZWDhPb7P6wRCCCHEwavg81HJcZgcblsYq8eTORdit5qajcMsKzbV6xxCZDrLik2tqdk4zOsc4jC9zENh8jIoPArG3diGz2E8yWnlLsS2Yze5VUsGF2mkUnogQDLqFqLT0ZjW/ia6JZN7o5LvgYF/g7ABu1CIUroH08nxOpr4JK1JJnR6zXGcWiL/Vq9zCJHpHEc9yJzY5nUOcQgq+RwwFoDhQGMSxlOF15FEesx0o9cZhBBCiH1bwYNQyX+BydtRwTdjEfu9jtSVyZwLsZttx4ojkdhcr3MIkekikdhc244Ve51DHACTfTD5O/DjTTA0NE7BOPoVplPC62hi/ywr9qRbteS0SBpaI5uI+nudQ4jDNXHcxGGGVj/7+Bl6n0BPLa1c+pp3qT5GRP215myvc4j9MLkEwO/Q+kfpBSgl09tA4mAx0yC3asngIo3Gxvw1vXptkjXvRbdnwBgAIASFr5N2lGYVIuKK8758Xv5Lr770rtf5mprUbS0txye9ziHSqOJTofE7EIqgMRev4DHMI+11LHHwcnKay92qJYMLIXoC5p3LKpa3Xxa4unxs2U1ZWVknAPB8cCG6qFWcg12YC425YDwJAzNQQjLxVhwQGVykkZcXH9O2/Pf3vc4ixGEjPrq8ZNJsZlKKMJqB6LKKZW94HQsAcnP1LTk58aUAVnmdRbSp4Olowa9A2ASNsRhPYa8jibMyYjcAACAASURBVMPX3JyzDMBYN2rJhM40fD69A+DNXucQoiMRETPxOwBGlpeWF3mdpxVvbu1vwnMmfwkmrwXhFyB8C6X0JRlYZBL+j1uVuu2Ri5uvvLLPTidnIhElsnZmvfSbxb9p3nub6664boKC6tP+OOFPPLtw4cIDOrc7atTQagDVHRhZCO8wbVtWtXxB+8PyknIi8EwA3/YwFQAgGCyY73WGHs/kYwH8DMDFYNyJnfg1JlOT17FExwqFCq5yq5YrRy6mT5z+4+mTLvrRns99tfyikumTLvrLtGnTcg62vVmzZmU16ZxXAUwDcE4yt+W5fW1HoD8A/OX2/xKJhHGgNdau3dBv3br64QebTYiublLJpGMBPZKZNnidBQDWrasfvnbthn5e5+iRVnEOKvgHILwFIBvAqRhHt8nAIjOFwxtPd6uWK0cuSOlGZrpj8uTJdy9durQJALTGLICOWrx48aeOOOyPP+m/GMTxBQ8vmAYAc66YHZlz2ZzC+X+eH23fZvbXZw8AITr/TwsO6S8zwzBGEmmZcyEyAhFGlZdM2ggAYDIAvJjolXjA21StDEPPZDZkzoWbFrGBozATLZgHggXCGSihN72OJToXEd8Fl+ZcuDK4SCSdv2T5fHfnODkTATxzRckV2U20czIxH9ohWcZIgD5e7YzpTfLp0QB2Dy5gYDgxjpxzxewVDGwFY+GCRxa8cqAlfD61xXG03HRHdHvLKpatAdCFV1DkNT6f2uJ1ih6jkr8Axl0AjgPwXZRgEYjY61ii8ynFS92q5crgYsmKJVunl01bAY2LADzTlNM0AQyfj3s9c0gNMg8kwu4FgIj4XQDH7rkJafIR8T9Y0S/g8KlEWDxr1qyRCxcu/F/7NuvWxU41DPoywG8EgwWRSCRaQqROAtTyUaNO2GBZ8dGWFZ/V0DDkoeOPf9vYudN/ORE+CATyn66pefsEx8maSERvBgJDXg2HN56uFBcTOVWBwNC3IpFYGRENZtaLQqHCRsuKfoMZHAoVPlxbW98/mdQXKcX1RUUFL1RXR0/RWp2lFNYVFeWvq66uO0tr4xQi4/lA4PhNkUh8GhGOzMra8XBzczP7fEd/gxkNoVD+YtvedDyzM0lr/VZxcWGVbceKmel0x+FXR48ueLO6OjZRazohK0s9PXLkCR9EItHLicgIBgseikSieURqOjNvDoUKllvWhpMAXwkzRUKhIW/Y9sYvM/OpqVTqxdNPH7bRtmMXMtOAfv30o7FYQerIIzdeCegPg8HCv4TDGwcpxeUA/zcYLDAtKxYC6HNa47Xi4vx/W1b0PEDlp1JZfz399EH/s+341wHOCgQKHnz99f/2zc72f5UI7wYC+UsjkQ0nEvlKAccKBoeuiUTiXyTCSK2dl4qLh8YtK/YVgI5qalJ//sIXjm+x7Y3fJNLbA4HCJ9eujR3n89FkIn47ECioCIfrAkoZnyeiVYHAkH9ZVt25gFGgdWJJcfGJ2ywrfikzckKh/Ptra7f2TiabZxDRe4HAkOdqajYOcxweT6SrA4HC18Ph2BeUolFE/PdAoCAaiUQvIFLHEPV6PBA4dqdlxWcx845QqOCJmpq6gY5jnK816oqL81+urq4fpbX+glLqn0VFJ9SEw/GzlcJQw3D+NmrU0C2RSGwGEfUOBvMX2vZ7RzC3fI1Zbw2FCp+17VghM52jNdcUFxf807ajZzCrIsOglaNGDdlg2xunMPOxWVk5T4wcecyOSCR+FRGag8H8x2z77WOYsy5gRjQUyv+7bW88jZnP1NpZXVw81Lbt2DhmGp6VpZ8bObLwPduOXsKs+gQCQx745z839crN1ZcBvC0YLFgSiUQLiNS5zKgNhfL/YVl1YwAjyJwyQ6Fh/7Xt+GRmHLdrV+KpM8448SPbjs0EKBkI5D+6du07R/l8ya8AOh4MFr4UDsdHKIUvtfW9JZYVK7Ws+HitaVlx8ZB3LCt6MaD6NTQMeaigIOb78EP1dSJ+PxAoeGbt2g1DfD7fhPa+F4ls/BwRh4BUZTA47D+f7nuxK5nZCYUKH9m777XvA4h4bSBQEA6Ho2OVUicDankweMJmy4pPB5CXSm37U05ODiWTva/Yex+glLO+qGjoK9XV8dFaY7RS+pWiosL1kUhsEhEdrxQWFxXlN0Qi0SuIQMFg4Z+qq+NHao1pzLwpFCp43rbrTmY2xmpN4eLiIWvb+55hJF8YNWp4vW3HL2JG/yOOSDyyadNwp7XvoTEYzF9kWfWDAV3GrP8TChVWtve99n2AbUcnMKshN3x03NoKnfU9HzD5TH/z868kcsat7VPXy2f7roIVfycYzF/W3vfa9wGWFf8SgBF7971+/fSjb7xRkDzppI0zifRHgUDhU3vvAyKRaJBIjQHwj2Awv3bvfYBlxS8j4l6BQMED69ev77NrV84l7fuAdevqhxuGHkek7UCgcHUkEjuTiE5j1itCocJY6x2r6ehUKuux0aOPa7btjVe1973a2uixyaSaQoQNgUD+ypqauiLHMc5o73uRSPwcIhQSJZ8NBIZvjURiXyOiI4LB/IXt+wBmvSUUKvxbdXV8qNY4u73vte8DlMLLRUX5dZFI9HwiNbC977XtA3aGQgWP79n3UJsPVtnZlvXWLMNwXh81ami1bcfHM2NYe99r3wcEAkPuX7fu3RyfL3np3vsAZv5XKFSwyrajn2dWAcdRFaNHn/B2+z4gO7v5yVNOOWW7bce+yUwtwWD+n8Ph/x6tlH8q4MQCgYJfW1Z8JIAvMus1oVChZVmxUoBOTKV46emnF3TYpenuTehkegyKF15RckV2M+2cBuBvj7/w+EeH1hSqAR7c/lgD/Q0Hy/bcZv4j8/8B4B9tD9/51hWzX+qVyJoC4KH2bfx+lUiluEFr7Gp9xtjJzA1KtSTD4bp8wDmJ2XgLABKJBDP7GwDnIwBoafGlDAMNSnETACjFzcxoIFIJADAMvd1xjIaWllTbYjPUCDADQHNzwjEMXwOz2gEAzNTCjN05UilfExE3ZGUlUwBApD9iVmhububt20dzXt7GBiL9UWvdRDKVMhoAYycAOA7tIkJDVha1tLatdjBzQ3Nzov0OhY1om2uTk9PiNDfnNBiG3t62bQJAg1JoO1WldzJTA2AkAUBr+giAampq0tu2gfPy0GAYtKP1502ktM5qINJtObBLqU/mANBgGC2pPT6PLADo06efTiSaG5jbc1Ciddus5tafn5tac/h25yCCcdxxKW7dHg3MtLP180immP0NRLyzNRd2aY0G5uQncvTqle20to0PiVo/9+bmlDYMNACtOYBEgjmrwTBa/42JuJmZGohacyiltmuNrKampG7PAaAJAJqa/Cm/32kwjNarILROtDD7GrROtLS2zTuZqaGpyd/2eeBDZiQBYOfOpM7JQYNS1NY/fElmp4GIm9u+a02pFBqARKK1rt7OTL2am1u/a0qhAUALAPh8vVKJhG4AWj8PrZMtgK/BMNq/8605mpt7pdo+2w8BpADguONS3NioGphpe+vP70sy6wai9u98VrPj6Ia2fy9orbcDKrtPn37tCyw1ApQEAL8/6TgOGoDW73xWFrW09z3bjk4AtF9ro8EwEqnWtukjx4Hetg18zDFNmrl3A3P752EkW/uabvs3R7PWaABU2+fBOwBqyMlpaf/ONwDQrf/GrX1P69afKSuLWhwHDVrTJ/YBPl+y7d9Ff8isePv20Qysg2H03r0PUMpIplJoSKV87ad6d7V9F1s+/n5wQ1PTnn2PqPX7kXB69fLv/n4AKsGMBqV493deazQo1dr3mJ2PmA1KJBK7v/NKtX5PDSOZ+uQ+oLXv+f2tn4flZNOdO/uX/yvluwcKT/w+973rxvhbPgp+sWBXTu1W3776Xvs+oDXHx32v7btgpFIpnjYNbFloUIrafoaWZGvf07v7Xutnqz7R9/z+ZHvfa0TbEbWWljzN3LJHjkSC2ddgGNy2L2rdB7T3PSL6SGv4Bgxo+VTfa27ulTKM5O4cWqOFGQ2Ok9i15/cjK6tX2/6VPmRGovW9rfsApdq/88kkc1YDoNvmoOgmZqOB2Ui0fU+3aw1/e99r/V5SMwDs2pXt+P1OQ2s99GbN3Lafb9sH6J3Manffwx77gAEDWnRjo2pQSrV9HkaCWTcAH/++SaXQwPzJfUBLS15732sgav2ZfD5/qr3vWVb0asdRK5XSe+wD9E5mo0Gp9u98x6CObOyzTJ48OTdHZ28h8FXMtJAJlyxevnj5obQ15/I5XwTxz+Y/vKD02hnXHqn8KgyN07c2b208qs9R+X946A91cy6fM5OIT7v34QXfnTVrVpY/kbWOWE2995F7D2gSW9tIeXIwmC9zLoToRJYVv52Zl4ZCBTLnoiMtYj+OwWwAPwKjBho3yGWl3uDHMBWEefQ1BLzMEYnEq0Kh/Mxa52Lp0qVNYPorM90JoHnbzm0vHWpbW5q2vA7wlm9dMXuN4VdvKsZvFjy64P0B2QMGGFptAIBsnf0UEz4/5xvXPe9P+OMAvXqgAwsA8Pn0BsBZcqgZhRAHylnS2t9Eh1jEBip4Fo5GHRiXgXExSqlEBhZCKfza6wydYtqkaedMnzSNp0+86M6OaG/OlXMG3XzllX0+a5vvXDrruO9c8Z28jqgnhBBdmsklMHkNTH4XJl8Nk7vtWkaZpCfect1VF5ZfeOL0SdP0heUXnuh1lv0Jh+MjWiekCSE6k23HZobD8RFe5+jWqngUKnk5TN4Ok+fB5N5eRxIf6yqDC8uK3e1WLVdGtSUlJb6jjz46S+3ATazwwjPLnvmvG3UPBxHnMZMsoiVEJ2Om4UQsaywciio+ERo/B6MMjHvRgsswgT7wOpbomphptFu1XBlcHJ199DDaifVMWENQ3eJoQF4eh5uajPVe5xAi02VlqTtzc1OyIuTBeJkHwMD3oXEdCEvBCKCU3vY6lujamOkSt2q5MrgYecbI/64Prx/81HNPveNGvY5QWFi4C2i/VEcI0VlGjjxB/tI+UC/xEfDjOwDmAngDwFkoobUepxLdRHHxkG7zOzhjWVbdGMuK3+J1DiEynWXFb2ldkEuktYpzYPL3UMnvw2QTJp/hdSRx4LrQnItl+9+qY8hMYiGE6KrmscJYzEACtwJIgnE1SvCMLNcthBBCiIPDTDD5AphcA5M3wuRvymWl3VdXOXLhJtcW0epuamu39m5ds18I0Zksq35wbe1WuXSyXQWPRyX+CWAhgAcBnIRSegCl1KHLM4uex7brTnarlgwu0kgkmooAPcfrHEJkPj2ntb/1cCv5TFTyShCeAWE5gKEopd+ilGRiuegQWhsL3aolh9nSYKZGpVgu7RKikxHx21pTo9c5PFPBY0H4OYCRYNwB4HyUtN8MTIiOQ8TrvM4ghBCiM73MI2Dy0zC5CSb/Fi/zQK8jic4hcy7EbjU1dQPl8jghOp9l1Y2pqanrOb9YX+aTUMmPw8A6AP9D65yK7+Bs2uJ1NJHZbDs+2a1aMrhII5VSwwBjqtc5hMh8xtTW/pbhKjgAk5fCgAVGPRLIRyldg1La5HU00TNojZvcqiVzLtIgMuJap170OocQmU5r/aJSvrjXOTrNSs4H4YcgXAbgaSgEMJa6/P2VRCbi+7xOIIQQ4nBU8Qkw+Q8wuRkmP4kqPtXrSMIbMudC7FZTs3GYZcXktIgQncyyYlNrajZmzmmRKj4RJi8C420QFIBTUUqXYCzJnV+Fp2w75tppERlcpJFK6YEAyYROITodjWntb92cycfD5PnQsAEQGKNRQlejlGJeRxMCALQm1yZ0ypyLNBzHqSXyb/U6hxCZznHUg8yJbV7nOGRVfAIY/wfGlQCWwcEZOJuqvY4lxN6Y6UavMwghhPgsf+chqODft82pWIQqHuV1JNE1yZwLsZttx4ojkdhcr3MIkekikdhc244Ve53jgJlcgEq+Dz68BYUBAD6HUpqOsVTjdTQhPotlxZ50q5acFklDa2QTUX+vcwiR6Yiov9ac7XWO/ariEDRuAzAewP0ATkWJzKcQ3QczDXKrlgwu0mhszF/Tq9emiNc5hMh0TU3qtpaW45Ne50irgk+Gwg+gMR2ERUghiLPpP17HEuJg5eQ0l7tVSwYXQgixL1U8Cho/AHABGI9D4zSMpw1exxKiO5A5F2nk5cXH5ObqW7zOIUSmy83Vt+TlxbvOZd8reRxMfg2M1wC81bZM9zdlYCG6u+bmnGVu1ZIjF2kohV1a8wde5xAi0zHzB0phl9c5UMFfhMIPwBgLxkIkMR3n0jtexxKioxCxfJ+FEMIVlXwOTDZh8q625bqP9TqSyCxyKarYbe3aDf3Wrasf7nUOITLdunX1w9eu3dDP1aLMhAqegkpeDcYSEMJIYihK6VqU0nuuZhHCJeHwxtPdqiWDizQMwxhpGHqm1zmEyHSGoWcahjHSlWKL2EAlX4JK2CA8AsYKAAUooRvlFIjIdER8l1u1ZM5FGj6f2uI4eo3XOYTIfLzG51NbOrXE89wL2bgchJvB6A3gt2jG7zGJPurUukJ0IUrxUq8zCCFE92dyb1TwDajkzTA5BpPnYBXneB1L9Cwy50LsZln1g8Ph6FivcwiR6cLh6FjLqh/coY2afBQq+VYQ4iB8E4wfoA9ORCnNx5nU3KG1hOgmIpHYDLdqyeAiDWYnXyk1wescQmQ6pdQEZie/Qxqr4JNRwY+CsBmMYjDORymNQCk9gtOp664CKoQr6Gq3KsmcizR8Pr3BcbDE6xxCZD5nic+H+GE1UcWnQuNmAF8DUAkHEzGeKjoknhAZQin82usMQgjR9VXyF2DyszA5CZMXoYJHex1JiL3JnAuxWzgcH2HbMbkUVYhOZtuxmeFwfMQBv2ERG6jgr8PkCBgvAFiPFIahlKZjHK3rvKRCdG+WFbvbrVpyWiQNIs5jJllES4hOxkzDifjN/W5osg+M6VD4Hhj5AP4I4Ley6JUQB4aZXDuyJ4OLNPz+3OpksuXwzgMLIQ6Amu/39/ow7csmZwO4AoS5IGRD4x7swh9ljQohDo5SziyvMwghhLee576o4Jth8rsw+d+o4CuxiP1exxLiYMmcC7GbZdWNsay43HJdiE5mWfFbLKvu41uur+BBMPkO5CAOwhQwrkYVTsM4egjTKeFhVCG6NcuKyS3XhRA9TAV/HoQfATgHjEUASjCOetRfe0IIIYToCCaXwORlqOSdMPmPqOITvY4kREeS0yJit2g0ml1bW9/f6xxCZCSTfTD5Ypj8BgFP+1lXowWFKKVrMJb+63U8ITJROLxxkFu15LRIGo2NVEykJwP4vtdZhMgYL3J/9MK3AVwDYBsYd/6j38bTchQvC4UKtnodT4hMRsRPAnDlnlly5CINZmok4re9ziFERljJg2HyHeiFDSCcA8Z1qEIA4+jRI3z8FjM1eh1RiExHxLLInBAiA5gcRAU/CpObYfLTWMlneh1JCLfJnAuxW01N3cBPXB4nhDgwJvvaludeC8JKEOoAFKKULsJ4WrX35pZVN6ampm6gB0mF6FFsOz7ZrVoy5yKNVEoNI6LJANZ4nUWIbsHkbBAuA/AdEPLAuBcG7sOXqeGz32hMTaV4KYAtbsQUoqfSGjcBWOpGLRlcpMGsNytFVV7nEKLLe5kHwofrwLgWjE0g3IGt+MuBLnhFpKu05s2dHVOIno5IP+F1BiGE+GwmnwaTH4DJTTB5KVbyOK8jCdEVyZwLsVtNzcZhlhWb6nUOIboUZkIlT4TJKwC8DiAJRgilNBnjqeJQmrSs2NSamo3DOjaoEGJvth27ya1aMrhII5XSAwGSCZ1CAMCrfCRM/h4qsQGM34DxNLJwHErpWoyjtw6vcRrT2t+EEJ1Ja5IJnV5zHKeWyC+L+oiebQUPgh+zkcLVAGIAfoxtWNyRNxBzHPUgc2JbR7UnhNg3ZrrR6wxCiJ7M5NNh8mMwuRmV/AxW8lleRxKiu5I5F2K3mpq6IsuKzfE6hxCuMTkbFTwLJocBvADgbQCFKKELMZ5e6ayylhWbU1NTV9RZ7QshWkUisfvdqiWnRdJIpVRvIhrsdQ4hOp3JeQC+CWAOCEkw7oUff8KXaLs7AWhwKqV6u1NLiJ6MTnKrkgwu0mhszF/Tq9emiNc5hOg0FXwyFL4NxuUA1oJxPV7BUswj7WaMpiZ1W0vL8Uk3awrRE+XkNJe7VUsGF0L0JCb7QJgKxvUghAA8AIWQ3OZcCNGRZHCRRl5efEzb8t9yy3XR/ZncG4yvA/gWGAMBLISDizGePF8ZMzdX35KTE18K4FP3HRFCdJzm5pxlcOmW6zK4SEMp7NKaP/A6hxCH5WUeCh9mg3ElCO+BcS8Ij6KUdngdrR0zf6AUdnmdQ4hMR8TveJ1BCNFFMXMvZi5k5uy0G63kcTD5WZicRCUvRwWfB2ZyMaYQoo1ciip2W7t2Q7916+qHe51DiHbM3Hdniv/EQDOAOgBNTSlewszHAQCWcm7bpaQ1UHgWjI1QGIESKsM4eglE7OkPkMa6dfXD167d0M/rHEJkunB44+lu1ZLBRRqGYYw0DD3T6xxCAAAzU5ODFau345KTV4OoEih8HVTRiImrPsRrRiXfj954DwqzwbgTzTga4+jb3WGipmHomYZhjPQ6hxCZjojvcquWzLlIw+dTWxxHr/E6hxBtzmJCcEoNeu1wWp+I7QKm1KCXIgw91o/GzQlcjEq85PalpIeP1/h8aovXKYTIdErxUrdqyTnYz8BPYDEY+V7nEAIjbj7mH0PmnfCl6pxPHW2cPxwts4/HPCK6w4toQojPxo9hKgjz6GsIeJ3FLXLkIg3Lqh/8/qbvrh3w4dPPeJ1FiJf94y/43abs4/f1WrAPUgC6zNUfByscjo5Vyvd2MHiC55fFCpHJIpHYjFCo4Ak3asngIg1mJ3/T8XflHVX+9C+9ziJ6KGZCJc4DMAdbcd6kAaBgb8DaYxgxpi/w+b7oBeBFr2IeLqXUBGZnKQAZXAjRqehqADK48JLPpzc4DpZ4nUP0QH/nfvDhClRiNoCjADwEjeuXjsI5mvG7h7eArO3wjchlfdUgcsD4ESl62+vYh85Z4vMh7nUKITKdUvi11xmEEG5byWfC5EUweRdM/jsqeRoWsX/PTZh5VCK1676md0xOtHzwZ2b+xKVl5SXl86ZNm+bHZ9jfNmUlZZdOOmvSqION/1nt7t3modboic4+++x+ZaVlT5SPKx/jdRZxaGSdC7FbOBwfYdsxuRRVdC6TfajgC2FyBRQqAQAa56KUzkEJLcZ0Suy5ORHVZP05+/ocsxRZf+3/PSJa2/5a+bjyMQTOXrx4cQJpHMg2fn9yhVL0m4P5MfbX7t5t7vnYtmMzw+H4iIOp15NkJ7OnE6OUNF/ndRbRvVlW7G63asngIg0izmMmWURLdI6X+BiY/EMAURDmg/AqkihAKU3HeHrlkNp09E8JxgMAMOWsiaGykrJL218qKym7ccr4KQP33Kbt+bPLSsoeKB9bfs+k0kmfB4AlK1ZsJeDdsrFlpXs2P7mk7IcTx00c1v64vHTSLy4ouSBv79oH0uaej5lpOBHnHdLP3BMQf4MJ32Tg/MmTJ+d6HUd0X8w02q1aMrhIw+/PrQbUfK9ziAxj8hkw+TH4sRHARABzsQ35KKGf4Fw6nHX/CURFz1U+twEAHFLDFXD2Hi9e5CSd/ntuM3HixL7E+DkT368N/Yxi+vPo0aOzAICZq4n4/D0LaCDP0MZlADDprEmjwDTp2cpnG/esfTBtfvxYzW/tb2JvU0onnAwgb7m5fDkDb2CHc4HXmUT3pZQzy61aMqEzjZEjj9mBbnx5n+hCVnEOduESKMwGcAoYTwA4A6VkdVSJC0om5DvANgBpl/gmwxlEbOzeprm5OdHX13cKszMMjOEAjj0m95g8ANsAtR7gc/d8P2t+lBSeBDCPFF0M0J/2rn1wbbY+lktQ09NQl4Pp72Vnlw1FEq8CdBlcmu0vMk8gMPQtt2rJkYs0LKtujGXFb/E6h+jGXuYiVPJ9aMEWKFwPjfvAGIhSuqojBxYA4CDreP6MwTAz9wX7jt1zm1wjd4h2nJVKYxoYDsCN7a9pQ38IwNmzjf9v7+7DqyjPNIDfz5wkJAhawY+WD885YIUtJTMnKHaxmkTFFUhYqSKKCshHEAmuttbWbauxtatt7dJVKBVFlKq0WC9cg4itcIJWKyo5M8lS1lZy5hDUC/CDVgFJzpln/wAsqx5MJJkhJ/fvuvhjwss8d7iuyXnyzsz7rn5udSMgLZVllUMF+IZAHvl47fac8+Cxbaduse0mPqz4MTU1NQZUrgL0VGnFPQJ8TYGzxpaN/WLQ2ahrsm13lV+12FxkoWrkASgKOgd1MTVqIK4ViOtqhLARin4ALkUdYjhXFnfWVudqaBLAaR99QfDewQ3Nxo8e308Eg0Vk26FjQhl8Q4BVtXVP3SAqfwHko0W6Qh4GKdAIABMnTgyNO3/cIABQ6DIP3p0A/re2rvbtj9du6zk/dlx04HqjQ7yy/pXRAJKr1j817uAfQFeHFJcHnY26JlXp7VctNhdZxGKRFy0rfHPQOaiLiOsJiOt3UIrXASyFoBEGTkO5VKJc1nT2fh+r1q16A8B7E86b0BcAeqLnS4DxdkXpuI3amlkC1deg2H7oGCOkTyrkosrScY+r6HcEqDMMoxoAoPJlQ7UBAFq2t/STNLYAQEFB66MCjIPuvyXy8dptPeehx5YVvjkWi7zYmf8/XZEopqng4f/3RTV+q2JcFVAk6uJisXBp0Bm6vWQyWbhpU3OfoHPQUUxVENfzEddaxDV9YG2KSqzQUKeWXYpCfQSqy9Hv0K9XlFfcVFFaMevQr40ZM+bYw40pKyvLGz96fD9g/zT8wbc/Kkor1k4sm9jr4LjKsnGH3bfk0PO29ZwHjzdtau6TTCYL2/e/QNR1HC3rXNTXb+332aOoUyUSEwjdTwAAF4FJREFU7ijbTt0RdA46CsW1EHV6Nep0I+p0N+J6P9apb694ZWsuysrKCivLxq2qqanJOiPZljGVZWMrxpWP++ip8jFjxhw7/pwxscNl+qzzfvychx7bduqORMIddbjzE3VlR0tzkUik1vtVi7dFslCVXSLahZdUpg63VsOI650AmqG4GR4eQQgDUC4zca5sDDpeXV3dhxIKzaitrc06c9KWMZKfV9/zhJ5LDh4//fTTf3/yuacTR1L74+c89FhEX1eVXZ/274io44ho4D+niAgAVmgIdTrxwC2P3ajTe/2cpfg02WYuiOjodLTMXPiJMxdZbNiwrW9DQzP3Puiu/qDHoU7n4UQ0QnE3gJcgGIoymX00zFLkkoaG5uEbNmzrG3QOolyXSCTL/KrF5iKLgoL0EM/zJgedg3y2VksQ1/uQhzeg+AYUNeiNU1AuP0CpNAcdLxd5nje5oCA9JOgcRLnPuM2vSny3PAtV7w3DEN8efqEAxbUQwCQAc7B/Bc1lCOEMlMrmgJN1CyLees9TrtJJ1MlEPN9Wd2VzkUVJyaAUgFTQOagTPaunIQ+zAUwD4EKxCC1Yjn+R3QEn61ZMM7om6AxE3YFlRe/1qxZvi2TR2Lh1sG27E4LOQR3sRS3COq1CXF9FCC9B0QrFWSiTESiX+9lY+M+23QmNjVsHf/ZIIjoSjuPe6FctzlxkkU57J4vISAArg85CHSCuAyCYhRbMhOB9CO5FCA/ibHkv6GgkI9NpbzuwfxVQIuocnieVAO7yoxabiyxaWvJeKyrS94POQUegRg2U4gIAswFcCMUqKKagHOsgknX3UPKXYRiP7t17RNvNE1GbeLf6VYnNRRZnnjngHQDvBJ2DPoe1GoaBOQCmAHgXirshuBrlXKjpaFRcPLDxs0cR0ZGKxaJ1ftXiMxdZNDY2Fdu2Wx10DmqHtXoO1umjMLAZguEQzMZOmAd2I2VjcZSybbe6sbGpOOgcRLkukXDv86sWZy6ySKeNXiLSP+gc9Bni+gUopsDAbChOBLAEwFdQJm7AyajNpH86bfT67HFEdGTkNL8qsbnIYteu8Ms9emw77H4KFKC1OhKCayCYBKABwJ3YixUYK/uCjkbts2eP8cN9+wa0Bp2DKNcVFe2t8KsWm4ssysslDSAddA46xB+1N1oxGcBsCIZAsRwZnI3zpD7oaPT5jRo1cG/QGYi6g6FDh/r2kgKfuciCW64fRdZrDHH9FVrxBgTXQfEgFP1RLjPZWHR93HKdyB9+brnOmYssDAMfep6+G3SObqtWe6I3JkExGx4sCB5HBhU4T54LOhp1LFV91zDwYdA5iHKdiPr2yjebiyxMM1IPgL8V+22dDsP+2x5XQbETwGIAFSiTtwNORp0kFov8LOgMRN2BZUUu96sWm4ssXn11y3EiBSeOGDHw9aCz5Ly49oJiMgRVAIZC8Ag8nM+tzbuHjRubT1Vt2Xn66YP/FnQWolxWX7/19JKSU171oxafucgiFAoNC4W8GUHnyGlxHYp1+p8QpGDgOwB+hwwGo0xms7HoPkIhb0YoFBoWdA6iXCeiP/erFmcusjAM7x3PM7hyYEdbrT1QiIsPzFKMgoFaZHA5nsezqBEv6HjkP1VtNAyPq+ESdTIRr86vWmwusjDNQa8BeC3oHDljvcaguAbAZVCkoFgAwUUo48qZ3V0sFnk06AxE3YFlRX3bW4S3RbKw7eb+9fXJ0qBzdGmrtQfiehniug4eNkBxEoDLsB4Wl+Smg+rrk6W23czVcIk6WSLhTvarFmcuslDNhA3DuBCAb+8F54xn9TSEMAvAVAB7IFiCFlyJC7jzJX2SYRgXqmZqAbwRdBai3CazAfgyU8jmIou8PG9LJoOVQefoMlZoAU7ENwBUAfg6gNVQTMNzWMNnKejwMivz8pAKOgVRrjMM3OVXLTYXWQwfPmg7gO1B5zjqHTpLIdgL4H5kcBXOE/4WSm1iWYNeDjoDUXdgmuFav2rxmYssHKdpiJ/3p7qUZ/QYrNMqxPVVhGBDcCwUY1AmYZTJj9hYUHskEu5kx2kaEnQOolxn28nb/KrFmYssPM/oKyLDg85xVFmnQyCYCWAagN0QLEEG/8pmgo6EiAz3PMMNOgdRrlM1yvyqxeYii4KCng2trft4H/gf61LMAnAW9j9LMZXPUlDHMRYUFPTg6pxEncwwMlV+1WJzkcWwYSd9AOCDoHMEZq2WIITZ+P/rUkzg66PU0SxrIGe+iHxwYP0mX/CZiyxsu2mkbaduCTqHr+JaiLheiTpdDwMvATgBiklcl4I6k22nbrHtppFB5yDKdbbtrvKrFmcuslA18kRQFHQOX6zTYQdue0yB4D0A9yOEy3COvBV0NOoWilQN/iwi6mSq0tuvWrygs4jFIi8CeDHoHJ1mjfZBD8yCYAoU4QM7kY5GOTcMI39ZVvjmoDMQdQexWNi3Vad5WySLZDJZuGlTc5+gc3S4Z7UYcV2AHtgCYAY8PIQWDOJOpBSUTZua+ySTycKgcxDluvr6rf38qsWZiyx27ZISEa8SQNf/rSquvQBMAjALgAVgJTxcjHMRh4gGG466u9ZW79u7dkktcnmmkOgoIKLLAfgye8HmIgtV2WUY+nrQOY7IOh0BwSwILofiTSjug6AC5fJ20NGIDhLR1z2PDwsTdTYR9W12ms1FFiUl4T8D+HPQOdpttR6LIkyGYBYUXwHwO2RQifPkuaCjEX0a04wsCToDUXdgWZFv+lWLz1xksWHDtr4NDc1dY4VOVUFcz0dcV6AIOwBcDOBO9EAflMtVbCzoaNbQ0Dx8w4ZtfYPOQZTrEolkmV+12FxkUVCQHuJ53tG9t0hcv4A6nYc6OACegOIDCMpRLqNRJo9hlOwNOiLRZ/E8b3JBQZp7ixB1OoN7iwRN1XvDMGR90Dk+VZ2eDQ+zAFwCYDMEi9CKRzFauIQydTki3nrPU67SSdTJRLxH/arF5iKLkpJBKQBHz94iazUMA3MAXAFFDwgegCKGcvFtOVeizmCa0TVBZyDqDiwreq9ftXhbJIvGxq2DbdudEGiI/c9SlCGuy2HgNex/hagGwCCUy3dxLhsL6vps253Q2Lh1cNA5iHKd47g3+lWLMxdZpNPeySIyEsBK34uv0T4oxFTUoQrAyVA8jBDOQKk0+p6FqNPJyHTa2w5gS9BJiHKZ50klgLv8qMXmIouWlrzXior0fd8KqgrqcB6Af4PgAij+G8A87EQcl0rGtxxEPjMM49G9e+XNoHMQ5T7vVr8qsbnI4swzB7wD4J1OL7RG+6AAV6IOswCcDGAZPNzIWx7UXRQXD+SMHJEPYrFonV+1+MxFFo2NTcW27VZ3yslVBeu0FHF9GIVohqACih9hJwagXNhYULdi2251Y2NTcdA5iHJdIuHe51ctzlxkkU4bvUSkf4ee9Bk9CT0wFesxEwZ6QbEUaQzH+dLUoXWIuhTpn04bvYJOQZT75DS/KrG5yGLXrvDLPXpsSxzxiWrUwDkYDcFMABVQPAvFTRA8hXJJH3lSoq5tzx7jh/v2DWgNOgdRrisq2lvhVy02F1mU7//g//wf/mt1MAzMAjAVgj1QLEYG1ThftndYSKIcMGrUQK4kS+SDoUOH+vaSAp+5yCKRcEfZduqOdv2juOZhnY5HXGthYDMAE8AcKIagXH7CxoLok2w7dUci4Y4KOgdRrkskUr6tOt1lZy5umj699+5M0RgRacnfnf/M/Mfmf+K3n7aMycYw8KHn6bttGrxeo/AwA4KrARhQLEUI16FUkm3/joi6J1V91zDwYdA5iHKdiPr2yneXbC6qqqry97TkPw/grwB2tPbcNxfA6PaOORzTjNQDqM864Bk9Bvm4AoIqeCjG/o3DpmI91qFGvM/xbRF1S7FY5GdBZyDqDiwrcrlftbrkbZGC1oJJEKQWPrRw4oIHF8yFyAnVV1VH2zvmcDZt2tHLtps/+bZIXIcirnehAEkY+B6AWhgYjHK5FOXyLBsLovax7eb+mzbt4NsiRJ3McZp82324SzYXUAyDivOPY9ksed6Ido85jJaWPcWAt3+dixe1COt0CuL6HIAGAIMgmIo6RFEut6FUmo/sGyLqzrzq/dcbEXUmzwst9qtWl7wtAtWTRfDHg4ci+haAL7Z7zGEYhvfOL/f2UcR1BfahEoL/hWIRMqjk1uZEHUdVGw3D6/zVcIm6ORGvzq9aXbK5UEEDoB/dsvCAPqEMVrV3jOO4F6viZhEsMs3IkkQiWSMiFarGHHPlwI1fLE9Xn5O/p/V/Wgsm/Lb31j+dmBdaC6DcAi5PJFJnieh/qWJlLBb5sW0nrwFkpojxQ9M85UnHcReq4kwRTDTNSNK2k8+JiGeakbLGxq2DMxnvtwD+ZFmReYlE8iIR+T4giy0rvNi23e8DuMjzMK+kJPInx3FXqGJQfn7Psr17015eXstzqkjGYpGJjpP8mqosAORJywr/0HHcmaq4BsCPLSuy0rbduwGMymRCl40YMfB123bXAci3rMjZ9fVNYcMwHlfFy7FY5FrHSVWq6q0iusQ0o4scJ3mzqlwMyPWWFf6jbbvLAXw5nc6cd9xx3oe7d+e/AKDZsiITEomtZ4h4iwB9yrKit9p28mpA5orInaYZ/p3jpOar6tki3hWmOeg1x3H/AOAY04yMcpxtA1TTTwC60bKisxsa3DGehx8BeNCyIgsSidRNInqp5+m3Skqi623b/TWAf8rPD12wY8eAvx9/fOolQN+0rOh423ZjAO4TwRrTjHzfcVJTVPU6Eb3LNKO/SSTcn4mg3PNkSklJ+M+2nVoDeH0sKzry1VfdL+XloRaAbVmRmbbddAFg/IeqPhyLRX9h2+63AFwugptMM7LOcVIPqupXRdJji4sH73Sc1Csi2G6akXGNjU3FmYzxACB/sKzwzYmEe4UIblDF/Fgs8ohtJ+8E5HzDCF1dXDyw0XHcp1RxsmmGz2ho2HKiat5qQBotK3y146TOU9WfAFhuWZGfN8Y2X9v/zZrtO/vMPAMY/d+27S4BYKbTqDz99Mhbtp18GTDetazwhbadGgboQ6qIx2KRbztO8jJVuVFE7jbN8DLHcW9XxYUAZllWJGHbyScB6ffee+GvnXTStmNbWzO/B7DZsiJXJRLJMhG5S1VWxGLhnx5YwXaaYeAHxcWRpx3HXayKEpG8i0xzwDbHcV8EsNs0I6MbGpJDPU8eBvCcZUW+6TipS1T1u4AutKzIUttO3mbb7jjPM64pKTnlVdt2VwIYeMwxrWf97W9GYV5eaK0q/hKLRSY7ztazVb35Ivq4aUbvcJzkHFWZISK3mWa41rZTiwA9w/O8i0tKBqVs230eQKtlRc5NJLZ8WSS0HNAXLCv6bwd2Pv6eCH5lmpH7bTt1C6DjRXSuaUY3JBLuYyKIptMF5xQV5RmtrXvqAN1iWdFJ9fXuPxsG7gHwhGVFbrftVBWgVap6eywWfcK23XsA/LNhyKXFxeEmx3HrVNWwrOg5juNGVfEYgJcsK1LtOFvHq3q3AHq/ZUV/lUi43xPBBFVcF4tFXrTt1G8APfXDD1vP9bzC1p49M88DSFlW5GLbbhoJGL9U1VWxWLTGcdwZqpgjgjtMM/J4IpH8hYh8XTVzeSw2+K+27a4FUGhZkbMaG18fmMnkrQTkFcsKz0kk3HEiuE0VS2OxyELbTn4XkEtEjBtM85TnHcd9RBVDDENGh0If7G5tPeZFEdlmmuGLGhpSIzxP7wXwtGVFfpBIJKeJSDUgP7Ws8Arbdn8OoDSTwVUjRkQ223by94Aca1mRr9XXb+1nGN6TqkjEYpFZjpO8UFVuF5Flphm+23HcG1VxGYBvW1YkbtvuMgBfSacLLhwx4kvvOk7qZQBvWVakMpFIWiJyv6r8PhYL/7ttp64E9HoR/blpRpc7jvtTVZwrYkwzzVP+J5FwVxsGTjTNyBmNjU0nZzLGUwAaLCsyPZFIjRbROwB9xLKi8207eQMgV3iefLekJPysbaeWAjo8FPLGDR8+aLvjuK94HnbGYpGxDQ3Nwz0vsxTQtWiI/vrvx53XaNtLXgXkF5YVfnj/24g62vO8GSUlgxzbdmsBfMk0wyM3bnyrT15eyxpV3RSLRafatlsO4Gci+I1pRu5ynNR1qjpFRL9vmtE1iYR7nwhinmeMLyk55U3bdl8C9O+WFb1g40b3n0Ih/BpAnWVFbrTt1KWA3qSqC2Kx6IO27f4IwBgRVB141rBDSEedyE/VU6vPgujtCx5cWD5n8pzjjQKjHh5O37F3x64Tep8QXvTAoqZsYxYuW9im35Bsu7n/B+nMaV8/PRLv7O+HqDurr0+WGkbe65Y18I2gsxDlskTCnRyLRR71o1aXfOZi+57tLwG6fd60uS+HCozNhmL+wmUL3+lb2LdvyDO2HG5MW2uoZsK98uSCzvsuiAgADMO4UDUTDjoHUe6T2UEn6BKqp1f3u2n69N5HOubT2HZz//r6ZOnnT0dEbVFfnyz91DeziKhDJRLu5KAzEBEREVFHcpymIezyiDpfIuFO9vP9e6LuyraTt/lVq0s+c+EHzzP6isjwoHMQ5ToRGe55Rt+gcxDlOlWjzK9aXfJVVD8UFPRsaG3dlwo6B1HuMxYUFPTg2jFEncwwMlVBZyAiIiIiIiIiIiIiIsoxXXKFzo520/TpvXdnisaISEv+7vxn5j82f+/nGUNE2bXlGrp22rUXGjA+WpempaDlicWLF7f6m5So67th4g1Frce0Vix4cMFjn/b3nf2Z1u0f6Kyqqsrf05L/PIC/AtjR2nPfXACj2zuGiLJr6zUkkEWA1h48bmlpqQXA5oKoHa69+tqBrbrvWxAZCeATzYUfn2ndvrkoaC2YBNHUwgcXTgSA6mlzE9VXVUcX/HpBsj1jiCi7tlxDc6fM7QtBcsHShdcFl5So6zM8+SVETgBUP+3v/fhM4zoXimFQcf5xLJslzxvR7jFElF1brqEQThXF8dXT5v5+7rS5D8+dOvccv2MS5YIFDy2sVE+/mXWAD59pbC5UTxaoe/BQRN8C8MV2jyGi7NpwDYkneQK8AEOmQbFUBI9VVVWd4HdUopznw2dat78tooIGQD/aNMkD+oQyWNXeMUSUXVuuoQUPLXgBwAsHDt+cN23uMz1a8scDeMDHqEQ5z4/PtG4/cyEqrwByLgDMmTzneABlGUjDxIkTQ3Omzxl0uDHBpSbqWtpynVVPrZ4xb9rc+cD+B84UsKDG+gBjE+UMvz/Tun1zsX3P9pcA3T5v2tyXQwXGZkMxf+Gyhe/0LezbN+QZWw43JujsRF1FW66zQq/wNyo4s/rqa1cXtBSkAHn+nofu2RJ0dqJcwM+0gFRPr+530/TpvY90DBFl15Zr6Porq750/bTrv+BXJqLuip9pREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREdIAEHYCIup9Lx106FeqNDYXy5y6vXf42AEwaO/EOKFp++/Rjtwadj4iOjBF0ACLqfloLWlcBco6XSf8XAEwad8llCnwbMJ4OOhsRHTnOXBBRICaNvaRCIbVQmQHRn4jil5y1IMoNoaADEFH3tOmvf/7LV788bCAENQA27di7c6rrul7QuYjoyPG2CBEFRkW3AwAEO+vq6tIBxyGiDsKZCyIKxGVjLz5TYTwA0R9D5ephp371rU2vb6oPOhcRHTnOXBCR7yorK3t6MJYBeGLFU7+7BZCfwtD/nFg5MRp0NiI6cmwuiMh3Pb3CnwA4KZ3JzAOA9/X926BoRgYP1dTU8OcSERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERUbfwf5V1g0zAEJPDAAAAAElFTkSuQmCC"/>     <figcaption>Illustration of integration by parts of the integral $(uv)'$ over $[a,b]$ <a href="http://en.wikipedia.org/wiki/Integration_by_parts#Visualization">original</a>. The figure is a parametric plot of $(u,v)$ with the points $(u(a), v(a))$ and $(u(b), v(b))$ marked. The difference $u(b)v(b) - u(a)v(a) = u(x) \big|_a^b$ is illustrated as the difference of two rectangular regions. This area breaks into two pieces, $A$ and $B$, partitioned through the curve. If $u$ is increasing and the curve is parameterized by $t \rightarrow u^{-1}(t)$, then $A=\int_{u^{-1}(a)}^{u^{-1}(b)} v(u^{-1}(t))dt$. A $u$-substitution with $t = u(x)$ changes this into the integral $\int_a^b v(x) u'(x) dx$. Similarly, for increasing $v$, it can be seen that $B=\int_a^b u(x) v'(x) dx$. Combining gives the integration by parts formula.</p> <p></figcaption>   </figure> </div></p><p>This can sometimes be confusingly written as:</p><p>$$ \int f(x) g'(x) dx = f(x)g(x) - \int f'(x) g(x) dx. $$</p><p>(The confusion coming from the fact that the indefinite integrals are only defined up to a constant.)</p><p>How does this help? It allows us to differentiate parts of an integral in hopes it makes the result easier to integrate.</p><p>An illustration can help.</p><p>Consider the integral $\int_0^\pi x\sin(x) dx$. If we let $u=x$ and $dv=\sin(x) dx$, the $du = 1dx$ and $v=-\cos(x)$. The above then says:</p><p>$$ \begin{align} \int_0^\pi x\sin(x) dx &= \int_0^\pi u dv\\ &= uv\big|_0^\pi - \int_0^\pi v du\\ &= x \cdot (-\cos(x)) \big|_0^\pi - \int_0^\pi (-\cos(x)) dx\\ &= \pi (-\cos(\pi)) - 0(-\cos(0)) + \int_0^\pi \cos(x) dx\\ &= \pi + \sin(x)\big|_0^\pi\\ &= \pi. \end{align} $$</p><p>The technique means one part is differentiated and one part integrated. The art is to break the integrand up into a piece that gets easier through differentiation and a piece that doesn't get much harder through integration.</p><h2>Examples</h2><p>Consider $\int_1^2 x \log(x) dx$. We might try differentiating the $\log(x)$ term, so we set $u=\log(x)$ and $dv=xdx$. Then we get $du = 1/x dx$ and $v = x^2/2$. Putting together gives:</p><p>$$ \begin{align} \int_1^2 x \log(x) dx &= (\log(x) \cdot \frac{x^2}{2}) \big|_1^2 - \int_1^2 \frac{x^2}{2} \frac{1}{x} dx\\ &= (2\log(2) - 0) - (\frac{x^2}{4})\big|_1^2\\ &= 2\log(2) - (1 - \frac{1}{4}) \\ &= 2\log(2) - \frac{3}{4}. \end{align} $$</p><h5>Example</h5><p>This related problem uses the same idea, though perhaps harder to see at first glance, as $dv=dx$ seems too trivial.</p><p>$$ \begin{align} \int \log(x) dx &= \int u dv\\ &= uv - \int v du\\ &= (\log(x) \cdot x) - \int x \cdot \frac{1}{x} dx\\ &= x \log(x) - \int dx\\ &= x \log(x) - x \end{align} $$</p><p>We're this a definite integral problem, we would have written:</p><p>$$ \int_a^b \log(x) dx = (x\log(x))\big|_a^b - \int_a^b dx = (x\log(x) - x)\big|_a^b. $$</p><h5>Example</h5><p>Sometimes integration by parts is used two or more times. Here we let $u=x^2$ and $dv = e^x dx$:</p><p>$$ \int_a^b x^2 e^x dx = (x^2 \cdot e^x)\big|_a^b - \int_a^b 2x e^x dx. $$</p><p>But we can do $\int_a^b x e^xdx$ the same way:</p><p>$$ \int_a^b x e^x = (x\cdot e^x)\big|_a^b - \int_a^b 1 \cdot e^xdx = (xe^x - e^x)\big|_a^b. $$</p><p>Combining gives the answer:</p><p>$$ \int_a^b x^2 e^x dx = (x^2 \cdot e^x)\big|_a^b - 2( (xe^x - e^x)\big|_a^b ) = e^x(x^2  - 2x - 1) \big|_a^b. $$</p><p>In fact, it isn't hard to see that an integral of $x^m e^x$, $m$ a positive integer, can be handled in this manner. For example, when $m=10$, <code>SymPy</code> gives:</p><pre class="sourceCode julia">using SymPy
+x = symbols("x")
+integrate(x^10 * exp(x), x)</pre>
+<div class="well well-sm">
+$$\left(x^{10} - 10 x^{9} + 90 x^{8} - 720 x^{7} + 5040 x^{6} - 30240 x^{5} + 151200 x^{4} - 604800 x^{3} + 1814400 x^{2} - 3628800 x + 3628800\right) e^{x}$$</div>
+
+<p>The general answer is $\int x^n e^xdx = p(x) e^x$, where $p(x)$ is a polynomial of degree $n$. </p><h5>Example</h5><p>The same technique is attempted for  this integral, but ends differently. First in the following we let $u=\sin(x)$ and $dv=e^x dx$:</p><p>$$ \int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx. $$</p><p>Now we let $u = \cos(x)$ and again $dv=e^x dx$:</p><p>$$ \int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx = \sin(x)e^x - \cos(x)e^x - \int (-\sin(x))e^x dx. $$</p><p>But simplifying this gives:</p><p>$$ \int e^x \sin(x)dx = - \int e^x \sin(x)dx +  e^x(\sin(x) - \cos(x)). $$</p><p>Solving for the "unknown" $\int e^x \sin(x) dx$ gives:</p><p>$$ \int e^x \sin(x) dx = \frac{1}{2} e^x (\sin(x) - \cos(x)). $$</p><h5>Example</h5><p>Positive integer powers of trigonometric functions can be addressed by this technique. Consider  $\int \cos(x)^n dx$. We let $u=\cos(x)^{n-1}$ and $dv=\cos(x) dx$. Then $du = (n-1)\cos(x)^{n-2}(-\sin(x))dx$ and $v=\sin(x)$. So,</p><p>$$ \begin{align} \int \cos(x)^n dx &= \cos(x)^{n-1} \cdot (\sin(x)) - \int (\sin(x)) ((n-1)\sin(x) \cos(x)^{n-2}) dx \\ &= \sin(x) \cos(x)^{n-1} + (n-1)\int \sin^2(x) \cos(x)^{n-1} dx\\ &= \sin(x) \cos(x)^{n-1} + (n-1)\int (1 - \cos(x)^2) \cos(x)^{n-2} dx\\ &= \sin(x) \cos(x)^{n-1} + (n-1)\int \cos(x)^{n-2}dx - (n-1)\int \cos(x)^n dx. \end{align} $$</p><p>We can then solve for the unknown ($\int \cos(x)^{n}dx$) to get this <em>reduction formula</em>:</p><p>$$ \int \cos(x)^n dx = \frac{1}{n}\sin(x) \cos(x)^{n-1} + \frac{n-1}{n}\int \cos(x)^{n-2}dx. $$</p><p>This is called a reduction formula as it reduces the problem from an integral with a power of $n$ to one with a power of $n - 2$, so could be repeated until the remaining indefinite integral required knowing either $\int \cos(x) dx$ (which is $-\sin(x)$) or $\int \cos(x)^2 dx$, which by a double angle formula application, is $x/2 - \sin(2x)/4$.</p><p><code>SymPy</code> is quite able to do this repeated bookkeeping. For example with $n=10$:</p><pre class="sourceCode julia">integrate(cos(x)^10, x)</pre>
+<div class="well well-sm">
+$$\frac{63 x}{256} + \frac{1}{10} \sin{\left (x \right )} \cos^{9}{\left (x \right )} + \frac{9}{80} \sin{\left (x \right )} \cos^{7}{\left (x \right )} + \frac{21}{160} \sin{\left (x \right )} \cos^{5}{\left (x \right )} + \frac{21}{128} \sin{\left (x \right )} \cos^{3}{\left (x \right )} + \frac{63}{256} \sin{\left (x \right )} \cos{\left (x \right )}$$</div>
+
+<h5>Example</h5><p>The visual interpretation of integration by parts breaks area into two pieces, the one labeled "B" looks like it would be labeled "A" for an inverse function for $f$. Indeed, integration by parts gives a means to possibly find antiderivatives for inverse functions.</p><p>Let $uv = x f^{-1}(x)$. Then we have $[uv]' = u'v + uv' = f^{-1}(x) + x [f^{-1}(x)]'$. So,</p><p>$$ \begin{align} \int f^{-1}(x) dx &= xf^{-1}(x) - \int x [f^{-1}(x)]' dx\\ &= xf^{-1}(x) - \int f(u) du.\\ \end{align} $$</p><p>The last line follows from the $u$-substitution $u=f^{-1}(x)$ for then $du = [f^{-1}(x)]' dx$ and $x=f(u)$.</p><p>We use this to find an antiderivative for $\sin^{-1}(x)$:</p><p>$$ \int \sin^{-1}(x) = x \sin^{-1}(x) - \int \sin(u) du =  x \sin^{-1}(x) + \cos(u) = x \sin^{-1}(x) + \cos(\sin^{-1}(x)). $$</p><p>Using right triangles to simplify, the last value $\cos(\sin^{-1}(x))$ can otherwise be written as $\sqrt{1 - x^2}$.</p><h5>Example</h5><p>The <a href="http://en.wikipedia.org/wiki/Trapezoidal_rule">trapezoid</a> rule is an approximation to the definite integral like a Riemann sum, only instead of approximating the area above $[x_i, x_i + h]$ by a rectangle with height $f(c_i)$ (for some $c_i$), it uses a trapezoid formed by the left and right endpoints. That is this area is used in the estimation: $(1/2)\cdot (f(x_i) + f(x_i+h)) \cdot h$.</p><p>Even though we suggest just using <code>quadgk</code> for numeric integration, estimating the error in this approximation is still of some theoretical interest. Recall, just using <em>either</em> $x_i$ or $x_{i-1}$ for $c_i$ gives an error that is "like" $1/n$, as $n$ gets large, though the exact rate depends on the function and the length of the interval.</p><p>This <a href="http://www.math.ucsd.edu/~ebender/20B/77_Trap.pdf">proof</a> for the error estimate is involved, but is reproduced here, as it nicely integrates many of the theoretical concepts of integration discussed so far.</p><p>First, for convenience, we consider the interval $x_i$ to $x_i+h$. The actual answer over this is just $\int_{x_i}^{x_i+h}f(x) dx$. By a $u$-substitution with $u=x-x_i$ this becomes $\int_0^h f(t + x_i) dt$. For analyzing this we integrate once by parts using $u=f(t+x_i)$ and $dv=dt$. But instead of letting $v=t$, we choose to add – as is our perogative – a constant of integration $A$, so $v=t+A$:</p><p>$$ \int_0^h f(t + x_i) dt = (t+A)f(t+x_i)\big|_0^h - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>We choose $A$ to be $-h/2$, for then the term $(t+A)f(t+x_i)\big|_0^h$ becomes $(1/2)(f(x_i+h) + f(x_i)) \cdot h$, or the trapezoid approximation. This means, the error over this interval – actual minus estimate – satisfies:</p><p>$$ \text{error}_i = \int_{x_i}^{x_i+h}f(x) dx - \frac{f(x_i+h) -f(x_i)}{2} \cdot h  = - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>For this, we <em>again</em> integrate by parts with $u=f'(t+x_i)$ and $dv=(t+A)dt$. Again we add a constant of integration to get $v=(t+A)^2/2 + B$, and our error becomes:</p><p>$$ \text{error}_i = -(\frac{(t+A)^2}{2} + B)f'(t+x_i)\big|_0^h + \int_0^h (\frac{(t+A)^2}{2} + B) \cdot f''(t+x_i) dt. $$</p><p>With $A=-h/2$, $B$ is chosen to be $-h^2/8$ which causes the first term to vanish and the absolute error to simplify to:</p><p>$$ \lvert \text{error}_i  \rvert = \lvert \int_0^h \left(\frac{(t-h/2)^2}{2} - \frac{h^2}{8}\right) \cdot f''(t + x_i) dt \rvert. $$</p><p>Now, we assume the $\lvert f''(t)\rvert$ is bounded by $K$ for any $a \leq t \leq b$. This will be true, for example, if the second derivative is assumed to exist and be continous.  Using this fact about definite integrals $\lvert \int_a^b g dx\rvert \leq \int_a^b \lvert g \rvert dx$ we have:</p><p>$$ \lvert \text{error}_i  \rvert \leq K \int_0^h \lvert (\frac{(t-h/2)^2}{2} - \frac{h^2}{8}) \rvert dt. $$</p><p>But what is the function in the integrand? Clearly it is a quadratic in $t$. Expanding gives $1/2 \cdot (t^2 - ht)$.  This is negative over $[0,h]$ (and $0$ at these endpoints, so the integral above is just:</p><p>$$ \frac{1}{2}\int_0^h (ht - t^2)dt = \frac{1}{2} (\frac{ht^2}{2} - \frac{t^3}{3})\big|_0^h = \frac{h^3}{12} $$</p><p>This gives the bound: $\vert \text{error}_i \rvert \leq K h^3/12$. The <em>total</em> error may be less, but is not more than the value found by adding up the error over each of the $n$ intervals. As our bound does not depend on the $i$, we have this sum satisfies:</p><p>$$ \lvert \text{error}\rvert \leq n \cdot \frac{Kh^3}{12} = \frac{K(b-a)^3}{12}\frac{1}{n^2}. $$</p><p>So the error is like $1/n^2$, in contrast to the $1/n$ error of the Riemann sums. One way to see this, for the Riemann sum it takes twice as many terms to half an error estimate, but for the trapezoid rule only $\sqrt{2}$ as many, and for Simpson's rule, only $2^{1/4}$ as many.</p><h2>Questions</h2><h6>Question</h6><p>In the integral of $\int \log(x) dx$ we let $u=\log(x)$ and $dv=dx$. What are $du$ and $v$?</p>
+<form name="WeaveQuestion" data-id="RzfOyfH1" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RzfOyfH1" value="1">$du=x\log(x) dx\quad v = 1$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RzfOyfH1" value="2">$du=1/x dx\quad v = x^2/2$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RzfOyfH1" value="3">$du=1/x dx \quad v = x$
+    </label>
+    </div>
+    
+
+
+<div id="RzfOyfH1_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_RzfOyfH1']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#RzfOyfH1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#RzfOyfH1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>In the integral $\int \sec(x)^3 dx$ we let $u=\sec(x)$ and $dv = \sec(x)^2 dx$. What are $du$ and $v$?</p>
+<form name="WeaveQuestion" data-id="aHHFFdOL" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_aHHFFdOL" value="1">$du=\csc(x) dx \quad v=\sec(x)^3 / 3$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_aHHFFdOL" value="2">$du=\sec(x)\tan(x)dx \quad v=\tan(x)$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_aHHFFdOL" value="3">$du=\tan(x)  dx \quad v=\sec(x)\tan(x)$
+    </label>
+    </div>
+    
+
+
+<div id="aHHFFdOL_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_aHHFFdOL']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#aHHFFdOL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#aHHFFdOL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>In the integral $\int e^{-x} \cos(x)dx$ we let $u=e^{-x}$ and $dv=\cos(x) dx$.  What are $du$ and $v$?</p>
+<form name="WeaveQuestion" data-id="ojJ853v7" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ojJ853v7" value="1">$du=\sin(x)dx \quad v=-e^{-x}$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ojJ853v7" value="2">$du=-e^{-x} dx \quad v=\sin(x)$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_ojJ853v7" value="3">$du=-e^{-x} dx \quad v=-\sin(x)$
+    </label>
+    </div>
+    
+
+
+<div id="ojJ853v7_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_ojJ853v7']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#ojJ853v7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#ojJ853v7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Find the value of $\int_1^4 x \log(x) dx$. You can integrate by parts.</p>
+<form name='WeaveQuestion' data-id='JbqTBgLS' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="JbqTBgLS" type="number" class="form-control">
+
+</div>
+  
+<div id='JbqTBgLS_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#JbqTBgLS').on('change', function() {
+  correct = Math.abs(this.value - 7.340354888959128) <= 0.001;
+
+  if(correct) {
+     $('#JbqTBgLS_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#JbqTBgLS_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Find the value of $\int_0^{\pi/2} x\cos(2x) dx$. You can integrate by parts.</p>
+<form name='WeaveQuestion' data-id='ukvIkW7F' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="ukvIkW7F" type="number" class="form-control">
+
+</div>
+  
+<div id='ukvIkW7F_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#ukvIkW7F').on('change', function() {
+  correct = Math.abs(this.value - -0.49999999999999983) <= 0.001;
+
+  if(correct) {
+     $('#ukvIkW7F_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#ukvIkW7F_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Find the value of $\int_1^e (\log(x))^2 dx$. You can integrate by parts.</p>
+<form name='WeaveQuestion' data-id='KWwUdwdT' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="KWwUdwdT" type="number" class="form-control">
+
+</div>
+  
+<div id='KWwUdwdT_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#KWwUdwdT').on('change', function() {
+  correct = Math.abs(this.value - 0.7182818284590451) <= 0.001;
+
+  if(correct) {
+     $('#KWwUdwdT_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#KWwUdwdT_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Integration by parts can be used to provide "reduction" formulas, where an antiderivative is written in terms of another antiderivative with a lower power. Which is the proper reduction formula for $\int (\log(x))^n dx$?</p>
+<form name="WeaveQuestion" data-id="5RynBkAB" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_5RynBkAB" value="1">$\int (\log(x))^{n+1}/(n+1) dx$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_5RynBkAB" value="2">$x(\log(x))^n - \int (\log(x))^{n-1} dx$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_5RynBkAB" value="3">$x(\log(x))^n - n \int (\log(x))^{n-1} dx$
+    </label>
+    </div>
+    
+
+
+<div id="5RynBkAB_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_5RynBkAB']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#5RynBkAB_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#5RynBkAB_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The <a href="http://en.wikipedia.org/wiki/Integration_by_parts">Wikipedia</a> page has a rule of thumb with an acronym LIATE to indicate what is a good candidate to be "$u$": <strong>L</strong>og function, <strong>I</strong>nverse functions, <strong>A</strong>lgebraic functions ($x^n$), <strong>T</strong>rigonmetric functions, and <strong>E</strong>xponential functions.</p><p>Consider the integral $\int x \cos(x) dx$. Which letter should be tried first?</p>
+<form name="WeaveQuestion" data-id="RE4Sc5yS" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RE4Sc5yS" value="1">L
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RE4Sc5yS" value="2">I
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RE4Sc5yS" value="3">A
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RE4Sc5yS" value="4">T
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_RE4Sc5yS" value="5">E
+    </label>
+    </div>
+    
+
+
+<div id="RE4Sc5yS_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_RE4Sc5yS']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#RE4Sc5yS_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#RE4Sc5yS_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>––</p><p>Consider the integral $\int x^2\log(x) dx$. Which letter should be tried first?</p>
+<form name="WeaveQuestion" data-id="QPiHQbue" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_QPiHQbue" value="1">L
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_QPiHQbue" value="2">I
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_QPiHQbue" value="3">A
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_QPiHQbue" value="4">T
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_QPiHQbue" value="5">E
+    </label>
+    </div>
+    
+
+
+<div id="QPiHQbue_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_QPiHQbue']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#QPiHQbue_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#QPiHQbue_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>––</p><p>Consider the integral $\int x^2 \sin^{-1}(x) dx$. Which letter should be tried first?</p>
+<form name="WeaveQuestion" data-id="jg76kA2p" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_jg76kA2p" value="1">L
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_jg76kA2p" value="2">I
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_jg76kA2p" value="3">A
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_jg76kA2p" value="4">T
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_jg76kA2p" value="5">E
+    </label>
+    </div>
+    
+
+
+<div id="jg76kA2p_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_jg76kA2p']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#jg76kA2p_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#jg76kA2p_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>––</p><p>Consider the integral $\int e^x \sin(x) dx$. Which letter should be tried first?</p>
+<form name="WeaveQuestion" data-id="AJ4BY0zL" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_AJ4BY0zL" value="1">L
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_AJ4BY0zL" value="2">I
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_AJ4BY0zL" value="3">A
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_AJ4BY0zL" value="4">T
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_AJ4BY0zL" value="5">E
+    </label>
+    </div>
+    
+
+
+<div id="AJ4BY0zL_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_AJ4BY0zL']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#AJ4BY0zL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#AJ4BY0zL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Find an antiderivative for $\cos^{-1}(x)$ using the integration by parts formula.</p>
+<form name="WeaveQuestion" data-id="xnMBJr29" data-controltype="radio">
+<div class="form-group ">
+
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_xnMBJr29" value="1">$x^2/2 \cos^{-1}(x) - x\sqrt{1-x^2}/4 - \cos^{-1}(x)/4$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_xnMBJr29" value="2">$-\sin^{-1}(x)$
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_xnMBJr29" value="3">$x\cos^{-1}(x)-\sqrt{1 - x^2}$
+    </label>
+    </div>
+    
+
+
+<div id="xnMBJr29_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+
+$("input:radio[name='radio_xnMBJr29']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#xnMBJr29_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#xnMBJr29_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+
+  </div>
+</div>  
+
+</body>
+</html>

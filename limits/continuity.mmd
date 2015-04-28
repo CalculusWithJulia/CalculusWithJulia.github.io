@@ -1,0 +1,285 @@
+# Continuity
+
+The definition google finds for *continuous* is *forming an unbroken whole; without interruption*.
+
+The concept as transferred to functions in calculus is
+similar. Roughly speaking, a continuous function is one whose graph
+can be drawn without having to lift the pencil drawing it.
+
+Consider these two graphs:
+
+```
+using Gadfly
+p = plot(layer(x=[-1,0], y=[-1,-1], Geom.line),
+         layer(x=[0, 1], y=[ 1, 1], Geom.line))
+Outputonly(p)	 
+```
+
+and
+
+```
+using Gadfly
+p = plot(layer(x=[-1,-.1, .1, 1], y=[-1,-1, 1, 1], Geom.line))
+Outputonly(p)
+```
+
+Though similar at some level, the first has a "jump" from $-1$ to $1$
+instead of the transition in the second one. The first is not
+continuous at $0$ -- a break is needed to draw it -- where as the second is continuous.
+
+
+
+A formal definition was a bit harder to come to. At
+[first](http://en.wikipedia.org/wiki/Intermediate_value_theorem) the
+concept that for any $y$ between any two values in the range for
+$f(x)$, the function should take the value $y$ was
+included. [Cauchy](http://en.wikipedia.org/wiki/Cours_d%27Analyse)
+defined continuity by $f(x + \alpha) - f(x)$ being small whenever
+$\alpha$ was small. This basically rules out "jumps".
+
+
+The [modern](http://en.wikipedia.org/wiki/Continuous_function#History)
+definition simply pushes the details to the definition of the limit:
+
+> A function $f(x)$ is continuous at $x=c$ if $\lim_{x \rightarrow c}f(x) = f(c)$.
+
+This says three things
+
+- The limit exists at $c$.
+
+- The function is defined at $c$ ($c$ is in the domain).
+
+- The value of the limit is the same as $f(c)$.
+
+
+This speaks to continuity at a point, we can extend this to continuity over an interval $(a,b)$ by saying:
+
+> A function $f(x)$ is continuous over $(a,b)$ if at each point $c$ with $a < c < b$, $f(x)$ is continuous at $c$.
+
+Finally, as with limits, it can be convenient to speak of *right*
+continuity and *left* continuity at a point, where the limit in the
+defintion is replaced by a right or left limit, as appropriate.
+
+##### Examples
+
+Most familiar functions are continuous everywhere.
+
+- For example, a monomial function $f(x) = ax^n$ for non-negative,
+integer $n$ will be continuous. This is because the limit exists every
+where, the domain of $f$ is all $x$ and there are no jumps.
+
+- Similarly, the basic trigonometric functions $\sin(x)$, $\cos(x)$
+are continuous everywhere.
+
+- So are the exponential funtions $f(x) = a^x, a > 0$.
+
+
+Some familiar functions are continuous but not everywhere.
+
+- For example, $f(x) = \sqrt{x}$ is continuous on $(0,\infty)$ and
+right continuous at $0$. But it is not defined for negative $x$, so
+can't possibly be continuous there.
+
+- Similarly, $f(x) = \log(x)$ is continuous on $(0,\infty)$, but it is
+not defined at $x=0$, so is not right continuous at $0$.
+
+```
+alert("""
+The limit in the definition of continuity is the basic limit and not an extended sense where 
+infinities are accounted for.
+""")
+```
+
+##### Examples of discontinuity
+
+There are various reasons why a function may not be discontinous.
+
+- The function $f(x) = \sin(x)/x$ has a limit at $0$ but is not defined at $0$, so is not continuous at $0$. The function can be redefined to make it continuous.
+
+- The function
+
+$$
+f(x) = \begin{cases}
+         -1 & x < 0 \\
+          0 & x = 0 \\
+          1 & x > 0
+\end{cases}
+$$
+
+is implemented by `Julia`'s `sign` function. It has a value at $0$,
+but no limit at $0$, so is not continuous at $0$. Furthermore, the
+left and right limits exist at $0$ but are not equal to $f(0)$ so the
+function is not left or right continuous at $0$.
+
+- Similarly, the function defined by this graph
+
+```
+p = plot(layer(x=[-1,-.01], y=[-1,-.01], Geom.line),
+         layer(x=[.01, 1], y=[.01, 1], Geom.line),
+	 layer(x=[0], y=[1/2], Geom.point))
+Outputonly(p)
+```
+
+is not continuous at $x=0$. It has a limit of $0$ at $0$, a function
+value $f(0) =1$, but the limit and the function value are not equal.
+
+- The `floor` function, which rounds down to the nearest integer, is
+also not continuous at the integers, but is right continuous at the
+integers, as, for example, $\lim_{x \rightarrow 0+} f(x) = f(0)$. This graph emphasizes the right continuity by placing a point for the value of the function when there is a jump:
+
+```
+x = [0,1]; y=[0,0]
+p = plot(layer(x=x-2, y=y-2, Geom.line),
+         layer(x=x-1, y=y-1, Geom.line),
+         layer(x=x-0, y=y-0, Geom.line),	
+         layer(x=x+1, y=y+1, Geom.line),
+         layer(x=x+2, y=y+2, Geom.line),
+	 layer(x=[-2,-1,0,1,2], y=[-2,-1,0,1,2], Geom.point))
+Outputonly(p)
+```
+
+
+- The function $f(x) = 1/x^2$ is not continuous at $x=0$: $f(x)$ is not
+defined at $x=0$ and $f(x)$ has no limit at $x=0$ (in the usual
+sense).
+
+
+
+## Rules for continuity
+
+As we've seen, functions can be combined in several ways. How do these relate with continuity?
+
+Suppose $f(x)$ and $g(x)$ are both continuous on $(a,b)$. Then
+
+- $h(x) = \alpha f(x) + \beta g(x)$ is continuous on $(a,b)$ for any real numbers $\alpha$ and $\beta$;
+
+- $h(x) = f(x) \cdot g(x)$ is continuous on $(a,b)$; and
+
+- $h(x) = f(x) / g(x)$ is continuous at all points $c$ in $(a,b)$ where $g(c) \neq 0$.
+
+Finally, if $g(x)$ is continuous at $c$ *and* $f(x)$ is continous at $g(c)$, then $f \circ g$ is continuous at $c$.
+
+So, continuity is preserved for all of the basic operations except when dividing by $0$.
+
+##### Examples
+
+- Since a monomial $f(x) = ax^n$ ($n$ a non-negative integer) is continuous, by the first rule, any polynomial will be continuous.
+
+- Since both $f(x) = e^x$ and $g(x)=\sin(x)$ are continuous everywhere, so will be $h(x) = e^x \cdot \sin(x)$.
+
+- Since $f(x) = e^x$ is continuous everywhere and $g(x) = -x$ is
+continuous everywhere, the composition $h(x) = e^{-x}$ will be
+continuous everywhere.
+
+- Since $f(x) = x$ is continuous everywhere, the function $h(x) = 1/x$ --
+a ratio of continuous functions -- will be continuous everywhere *except*
+at $x=0$.
+
+- The function $h(x) = e^{x\log(x)}$ will be continuous on $(0,\infty)$,
+the same domain that $g(x) = x\log(x)$ is continuous. This function
+(also written as $x^x$) has a right limit at $0$ (of $1$), but is not
+right continuous, as $h(0)$ is not defined.
+
+## Questions
+
+###### Question
+
+Let $f(x) = \sin(x)$ and $g(x) = \cos(x)$. Which of these is not continuous everywhere?
+
+$$
+f+g,~ f-g,~ f\cdot g,~ f\circ g,~ f/g
+$$
+
+```
+choices = [L"f+g", L"f-g", L"f\cdot g", L"f\circ g", L"f/g"]
+ans = length(choices)
+radioq(choices, ans)
+```
+
+###### Question
+
+Let $f(x) = \sin(x)$, $g(x) = \sqrt{x}$.
+
+When will $f\circ g$ be continuous?
+
+```
+choices = [L"For all $x$", L"For all $x > 0$", L"For all $x$ where $\sin(x) > 0$"]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+When will $g \circ f$ be continuous?
+
+```
+choices = [L"For all $x$", L"For all $x > 0$", L"For all $x$ where $\sin(x) > 0$"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+The composition $f\circ g$ will be continuous everywhere provided:
+
+```
+choices = [
+L"The function $g$ is continuous everywhere",
+L"The function $f$ is continuous everywhere",
+L"The function $g$ is continuous everywhere and $f$ is continuous on the range of $g$",
+L"The function $f$ is continuous everywhere and $g$ is continuous on the range of $f$"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+######  Question
+
+At which values is $f(x) = 1/\sqrt{x-2}$ not continuous?
+
+```
+choices=[
+L"When $x > 2$",
+L"When $x \geq 2$",
+L"When $x \leq 2$",
+L"For $x \geq 0$"]
+ans = 3
+radioq(choices, ans)
+```
+
+
+###### Question
+
+A value $x=c$ is a *removable singularity* for $f(x)$ if $f(x)$ is not
+continuous at $c$ but will be if $f(c)$ is redefined to be $\lim_{x
+\rightarrow c} f(x)$.
+
+
+The function $f(x) = (x^2 - 4)/(x-2)$ has a removable singularity at
+$x=2$. What value would we redefine $f(2)$ to be, to make $f$ a
+continuous function?
+
+
+
+```
+f(x) = (x^2 -4)/(x-2);
+numericq(f(2.00001), .001)
+```
+
+
+
+
+
+###### Question
+
+The highly oscillatory function 
+
+$$
+f(x) = x^2 (\cos(1/x) - 1)
+$$
+
+has a removable singularity at $x=0$. What value would we redefine
+$f(0)$ to be, to make $f$ a continuous function?
+
+
+
+```
+numericq(0, .001)
+```

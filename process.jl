@@ -8,6 +8,7 @@ mdhtml(fname) = markdownToHTML(fname, BRAND_HREF="toc.html", BRAND_NAME="Calculu
 ## process top-level files
 markdownToHTML("toc.md")
 run(`cp toc.md README.md`)
+run(`cp toc.html index.html`)
 
 mdhtml("getting-started-with-julia.md")
 mdhtml("bibliography.md")

@@ -168,7 +168,7 @@ r(theta) = b + 2a*cos(theta)
 polar_plot(r)
 ```
 
-##### Examples
+##### Example
 
 Some curves require a longer parameterization, such as this where we
 plot over $[0, 8\pi]$ so that the cosine term can range over an entire
@@ -290,7 +290,6 @@ The answer is the difference:
 outer - inner
 ```
 
-
 ## Arc length
 
 The length of the arc traced by a polar graph can also be expressed
@@ -371,6 +370,55 @@ a, b= 1, PI/4
 r(theta) = a * exp(theta * cot(b))
 integrate(sqrt(diff(r(theta), theta)^2 + r(theta)^2), (theta, 0, 1))
 ```
+
+
+##### Example
+
+An Archimedean [spiral](http://en.wikipedia.org/wiki/Archimedean_spiral) is defined in polar form by
+
+$$
+r(\theta) = a + b \theta
+$$
+
+That is, the radius increases linearly. The crossings of the positive $x$ axis occur at $a + b n 2\pi$, so are evenly spaced out by $2\pi b$. These could be a model for such things as coils of materials of uniform thickness.
+
+For example, a roll of toilet paper promises 1000 sheets with the
+[smaller](http://www.phlmetropolis.com/2011/03/the-incredible-shrinking-toilet-paper.php)
+$4.1 \times 3.7$ inch size. This $3700$ inch long connected sheet of
+paper is wrapped around a paper tube in an Archimedean spiral with
+$r(\theta) = d_{\text{inner}}/2 + b\theta$. The entire roll must fit in a standard
+dimension, so the outer diameter will be $d_{\text{outer}} = 5~1/4$ inches. Can we figure out
+$b$?
+
+Let $n$ be the number of windings and assume the starting and ending point is on the positive $x$ axis,
+$r(2\pi n) = d_{\text{outer}}/2 = d_{\text{inner}}/2 + b (2\pi n)$. Solving for $n$ in terms of $b$ we get:
+$n = ( d_{\text{outer}} - d_{\text{inner}})/2 / (2\pi b)$. With this, the following must hold as the total arc length is $3700$ inches.
+
+
+$$
+\int_0^{n\cdot 2\pi} \sqrt{r(\theta)^2 + r'(\theta)^2} d\theta = 3700
+$$
+
+Numerically then we have:
+
+```
+using Roots
+dinner = 1.75
+douter = 5.25
+r(b,t) = dinner/2 + b*t
+rp(b,t) = b
+integrand(b,t) = sqrt((r(b,t))^2 + rp(b,t)^2)  # sqrt(r^2 + r'^2)
+n(b) = (douter - dinner)/2/(2*pi*b)
+b = fzero(b -> quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, 1/100000, 1/100)
+```
+
+This gives a value in inches, in millimeters this is about a $.02mm$ thickness per sheet:
+
+```
+b * 25.4
+```
+
+
 ## Questions
 
 ###### Question

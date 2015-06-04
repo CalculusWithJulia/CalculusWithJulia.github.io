@@ -111,500 +111,500 @@ $$\left(x^{10} - 10 x^{9} + 90 x^{8} - 720 x^{7} + 5040 x^{6} - 30240 x^{5} + 15
 <div class="well well-sm">
 $$\frac{63 x}{256} + \frac{1}{10} \sin{\left (x \right )} \cos^{9}{\left (x \right )} + \frac{9}{80} \sin{\left (x \right )} \cos^{7}{\left (x \right )} + \frac{21}{160} \sin{\left (x \right )} \cos^{5}{\left (x \right )} + \frac{21}{128} \sin{\left (x \right )} \cos^{3}{\left (x \right )} + \frac{63}{256} \sin{\left (x \right )} \cos{\left (x \right )}$$</div>
 
-<h5>Example</h5><p>The visual interpretation of integration by parts breaks area into two pieces, the one labeled "B" looks like it would be labeled "A" for an inverse function for $f$. Indeed, integration by parts gives a means to possibly find antiderivatives for inverse functions.</p><p>Let $uv = x f^{-1}(x)$. Then we have $[uv]' = u'v + uv' = f^{-1}(x) + x [f^{-1}(x)]'$. So,</p><p>$$ \begin{align} \int f^{-1}(x) dx &= xf^{-1}(x) - \int x [f^{-1}(x)]' dx\\ &= xf^{-1}(x) - \int f(u) du.\\ \end{align} $$</p><p>The last line follows from the $u$-substitution $u=f^{-1}(x)$ for then $du = [f^{-1}(x)]' dx$ and $x=f(u)$.</p><p>We use this to find an antiderivative for $\sin^{-1}(x)$:</p><p>$$ \int \sin^{-1}(x) = x \sin^{-1}(x) - \int \sin(u) du =  x \sin^{-1}(x) + \cos(u) = x \sin^{-1}(x) + \cos(\sin^{-1}(x)). $$</p><p>Using right triangles to simplify, the last value $\cos(\sin^{-1}(x))$ can otherwise be written as $\sqrt{1 - x^2}$.</p><h5>Example</h5><p>The <a href="http://en.wikipedia.org/wiki/Trapezoidal_rule">trapezoid</a> rule is an approximation to the definite integral like a Riemann sum, only instead of approximating the area above $[x_i, x_i + h]$ by a rectangle with height $f(c_i)$ (for some $c_i$), it uses a trapezoid formed by the left and right endpoints. That is this area is used in the estimation: $(1/2)\cdot (f(x_i) + f(x_i+h)) \cdot h$.</p><p>Even though we suggest just using <code>quadgk</code> for numeric integration, estimating the error in this approximation is still of some theoretical interest. Recall, just using <em>either</em> $x_i$ or $x_{i-1}$ for $c_i$ gives an error that is "like" $1/n$, as $n$ gets large, though the exact rate depends on the function and the length of the interval.</p><p>This <a href="http://www.math.ucsd.edu/~ebender/20B/77_Trap.pdf">proof</a> for the error estimate is involved, but is reproduced here, as it nicely integrates many of the theoretical concepts of integration discussed so far.</p><p>First, for convenience, we consider the interval $x_i$ to $x_i+h$. The actual answer over this is just $\int_{x_i}^{x_i+h}f(x) dx$. By a $u$-substitution with $u=x-x_i$ this becomes $\int_0^h f(t + x_i) dt$. For analyzing this we integrate once by parts using $u=f(t+x_i)$ and $dv=dt$. But instead of letting $v=t$, we choose to add – as is our perogative – a constant of integration $A$, so $v=t+A$:</p><p>$$ \int_0^h f(t + x_i) dt = (t+A)f(t+x_i)\big|_0^h - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>We choose $A$ to be $-h/2$, for then the term $(t+A)f(t+x_i)\big|_0^h$ becomes $(1/2)(f(x_i+h) + f(x_i)) \cdot h$, or the trapezoid approximation. This means, the error over this interval – actual minus estimate – satisfies:</p><p>$$ \text{error}_i = \int_{x_i}^{x_i+h}f(x) dx - \frac{f(x_i+h) -f(x_i)}{2} \cdot h  = - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>For this, we <em>again</em> integrate by parts with $u=f'(t+x_i)$ and $dv=(t+A)dt$. Again we add a constant of integration to get $v=(t+A)^2/2 + B$, and our error becomes:</p><p>$$ \text{error}_i = -(\frac{(t+A)^2}{2} + B)f'(t+x_i)\big|_0^h + \int_0^h (\frac{(t+A)^2}{2} + B) \cdot f''(t+x_i) dt. $$</p><p>With $A=-h/2$, $B$ is chosen to be $-h^2/8$ which causes the first term to vanish and the absolute error to simplify to:</p><p>$$ \lvert \text{error}_i  \rvert = \lvert \int_0^h \left(\frac{(t-h/2)^2}{2} - \frac{h^2}{8}\right) \cdot f''(t + x_i) dt \rvert. $$</p><p>Now, we assume the $\lvert f''(t)\rvert$ is bounded by $K$ for any $a \leq t \leq b$. This will be true, for example, if the second derivative is assumed to exist and be continous.  Using this fact about definite integrals $\lvert \int_a^b g dx\rvert \leq \int_a^b \lvert g \rvert dx$ we have:</p><p>$$ \lvert \text{error}_i  \rvert \leq K \int_0^h \lvert (\frac{(t-h/2)^2}{2} - \frac{h^2}{8}) \rvert dt. $$</p><p>But what is the function in the integrand? Clearly it is a quadratic in $t$. Expanding gives $1/2 \cdot (t^2 - ht)$.  This is negative over $[0,h]$ (and $0$ at these endpoints, so the integral above is just:</p><p>$$ \frac{1}{2}\int_0^h (ht - t^2)dt = \frac{1}{2} (\frac{ht^2}{2} - \frac{t^3}{3})\big|_0^h = \frac{h^3}{12} $$</p><p>This gives the bound: $\vert \text{error}_i \rvert \leq K h^3/12$. The <em>total</em> error may be less, but is not more than the value found by adding up the error over each of the $n$ intervals. As our bound does not depend on the $i$, we have this sum satisfies:</p><p>$$ \lvert \text{error}\rvert \leq n \cdot \frac{Kh^3}{12} = \frac{K(b-a)^3}{12}\frac{1}{n^2}. $$</p><p>So the error is like $1/n^2$, in contrast to the $1/n$ error of the Riemann sums. One way to see this, for the Riemann sum it takes twice as many terms to half an error estimate, but for the trapezoid rule only $\sqrt{2}$ as many, and for Simpson's rule, only $2^{1/4}$ as many.</p><h2>Questions</h2><h6>Question</h6><p>In the integral of $\int \log(x) dx$ we let $u=\log(x)$ and $dv=dx$. What are $du$ and $v$?</p>
-<form name="WeaveQuestion" data-id="RzfOyfH1" data-controltype="radio">
+<h5>Example</h5><p>The visual interpretation of integration by parts breaks area into two pieces, the one labeled "B" looks like it would be labeled "A" for an inverse function for $f$. Indeed, integration by parts gives a means to possibly find antiderivatives for inverse functions.</p><p>Let $uv = x f^{-1}(x)$. Then we have $[uv]' = u'v + uv' = f^{-1}(x) + x [f^{-1}(x)]'$. So,</p><p>$$ \begin{align} \int f^{-1}(x) dx &= xf^{-1}(x) - \int x [f^{-1}(x)]' dx\\ &= xf^{-1}(x) - \int f(u) du.\\ \end{align} $$</p><p>The last line follows from the $u$-substitution $u=f^{-1}(x)$ for then $du = [f^{-1}(x)]' dx$ and $x=f(u)$.</p><p>We use this to find an antiderivative for $\sin^{-1}(x)$:</p><p>$$ \int \sin^{-1}(x) = x \sin^{-1}(x) - \int \sin(u) du =  x \sin^{-1}(x) + \cos(u) = x \sin^{-1}(x) + \cos(\sin^{-1}(x)). $$</p><p>Using right triangles to simplify, the last value $\cos(\sin^{-1}(x))$ can otherwise be written as $\sqrt{1 - x^2}$.</p><h5>Example</h5><p>The <a href="http://en.wikipedia.org/wiki/Trapezoidal_rule">trapezoid</a> rule is an approximation to the definite integral like a Riemann sum, only instead of approximating the area above $[x_i, x_i + h]$ by a rectangle with height $f(c_i)$ (for some $c_i$), it uses a trapezoid formed by the left and right endpoints. That is this area is used in the estimation: $(1/2)\cdot (f(x_i) + f(x_i+h)) \cdot h$.</p><p>Even though we suggest just using <code>quadgk</code> for numeric integration, estimating the error in this approximation is still of some theoretical interest. Recall, just using <em>either</em> $x_i$ or $x_{i-1}$ for $c_i$ gives an error that is "like" $1/n$, as $n$ gets large, though the exact rate depends on the function and the length of the interval.</p><p>This <a href="http://www.math.ucsd.edu/~ebender/20B/77_Trap.pdf">proof</a> for the error estimate is involved, but is reproduced here, as it nicely integrates many of the theoretical concepts of integration discussed so far.</p><p>First, for convenience, we consider the interval $x_i$ to $x_i+h$. The actual answer over this is just $\int_{x_i}^{x_i+h}f(x) dx$. By a $u$-substitution with $u=x-x_i$ this becomes $\int_0^h f(t + x_i) dt$. For analyzing this we integrate once by parts using $u=f(t+x_i)$ and $dv=dt$. But instead of letting $v=t$, we choose to add – as is our prerogative – a constant of integration $A$, so $v=t+A$:</p><p>$$ \int_0^h f(t + x_i) dt = (t+A)f(t+x_i)\big|_0^h - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>We choose $A$ to be $-h/2$, for then the term $(t+A)f(t+x_i)\big|_0^h$ becomes $(1/2)(f(x_i+h) + f(x_i)) \cdot h$, or the trapezoid approximation. This means, the error over this interval – actual minus estimate – satisfies:</p><p>$$ \text{error}_i = \int_{x_i}^{x_i+h}f(x) dx - \frac{f(x_i+h) -f(x_i)}{2} \cdot h  = - \int_0^h (t + A) f'(t + x_i) dt. $$</p><p>For this, we <em>again</em> integrate by parts with $u=f'(t+x_i)$ and $dv=(t+A)dt$. Again we add a constant of integration to get $v=(t+A)^2/2 + B$, and our error becomes:</p><p>$$ \text{error}_i = -(\frac{(t+A)^2}{2} + B)f'(t+x_i)\big|_0^h + \int_0^h (\frac{(t+A)^2}{2} + B) \cdot f''(t+x_i) dt. $$</p><p>With $A=-h/2$, $B$ is chosen to be $-h^2/8$ which causes the first term to vanish and the absolute error to simplify to:</p><p>$$ \lvert \text{error}_i  \rvert = \lvert \int_0^h \left(\frac{(t-h/2)^2}{2} - \frac{h^2}{8}\right) \cdot f''(t + x_i) dt \rvert. $$</p><p>Now, we assume the $\lvert f''(t)\rvert$ is bounded by $K$ for any $a \leq t \leq b$. This will be true, for example, if the second derivative is assumed to exist and be continous.  Using this fact about definite integrals $\lvert \int_a^b g dx\rvert \leq \int_a^b \lvert g \rvert dx$ we have:</p><p>$$ \lvert \text{error}_i  \rvert \leq K \int_0^h \lvert (\frac{(t-h/2)^2}{2} - \frac{h^2}{8}) \rvert dt. $$</p><p>But what is the function in the integrand? Clearly it is a quadratic in $t$. Expanding gives $1/2 \cdot (t^2 - ht)$.  This is negative over $[0,h]$ (and $0$ at these endpoints, so the integral above is just:</p><p>$$ \frac{1}{2}\int_0^h (ht - t^2)dt = \frac{1}{2} (\frac{ht^2}{2} - \frac{t^3}{3})\big|_0^h = \frac{h^3}{12} $$</p><p>This gives the bound: $\vert \text{error}_i \rvert \leq K h^3/12$. The <em>total</em> error may be less, but is not more than the value found by adding up the error over each of the $n$ intervals. As our bound does not depend on the $i$, we have this sum satisfies:</p><p>$$ \lvert \text{error}\rvert \leq n \cdot \frac{Kh^3}{12} = \frac{K(b-a)^3}{12}\frac{1}{n^2}. $$</p><p>So the error is like $1/n^2$, in contrast to the $1/n$ error of the Riemann sums. One way to see this, for the Riemann sum it takes twice as many terms to half an error estimate, but for the trapezoid rule only $\sqrt{2}$ as many, and for Simpson's rule, only $2^{1/4}$ as many.</p><h2>Questions</h2><h6>Question</h6><p>In the integral of $\int \log(x) dx$ we let $u=\log(x)$ and $dv=dx$. What are $du$ and $v$?</p>
+<form name="WeaveQuestion" data-id="7rFPusPW" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RzfOyfH1" value="1">$du=x\log(x) dx\quad v = 1$
+      <input type="radio" name="radio_7rFPusPW" value="1">$du=1/x dx \quad v = x$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RzfOyfH1" value="2">$du=1/x dx\quad v = x^2/2$
+      <input type="radio" name="radio_7rFPusPW" value="2">$du=1/x dx\quad v = x^2/2$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RzfOyfH1" value="3">$du=1/x dx \quad v = x$
+      <input type="radio" name="radio_7rFPusPW" value="3">$du=x\log(x) dx\quad v = 1$
     </label>
     </div>
     
 
 
-<div id="RzfOyfH1_message"></div>
+<div id="7rFPusPW_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_RzfOyfH1']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_7rFPusPW']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#RzfOyfH1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#7rFPusPW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#RzfOyfH1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#7rFPusPW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>In the integral $\int \sec(x)^3 dx$ we let $u=\sec(x)$ and $dv = \sec(x)^2 dx$. What are $du$ and $v$?</p>
-<form name="WeaveQuestion" data-id="aHHFFdOL" data-controltype="radio">
+<form name="WeaveQuestion" data-id="6ATyfiH2" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_aHHFFdOL" value="1">$du=\csc(x) dx \quad v=\sec(x)^3 / 3$
+      <input type="radio" name="radio_6ATyfiH2" value="1">$du=\tan(x)  dx \quad v=\sec(x)\tan(x)$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_aHHFFdOL" value="2">$du=\sec(x)\tan(x)dx \quad v=\tan(x)$
+      <input type="radio" name="radio_6ATyfiH2" value="2">$du=\sec(x)\tan(x)dx \quad v=\tan(x)$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_aHHFFdOL" value="3">$du=\tan(x)  dx \quad v=\sec(x)\tan(x)$
+      <input type="radio" name="radio_6ATyfiH2" value="3">$du=\csc(x) dx \quad v=\sec(x)^3 / 3$
     </label>
     </div>
     
 
 
-<div id="aHHFFdOL_message"></div>
+<div id="6ATyfiH2_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_aHHFFdOL']").on("change", function() {
+$("input:radio[name='radio_6ATyfiH2']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#aHHFFdOL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#6ATyfiH2_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#aHHFFdOL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#6ATyfiH2_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>In the integral $\int e^{-x} \cos(x)dx$ we let $u=e^{-x}$ and $dv=\cos(x) dx$.  What are $du$ and $v$?</p>
-<form name="WeaveQuestion" data-id="ojJ853v7" data-controltype="radio">
+<form name="WeaveQuestion" data-id="0Zi0jLJn" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_ojJ853v7" value="1">$du=\sin(x)dx \quad v=-e^{-x}$
+      <input type="radio" name="radio_0Zi0jLJn" value="1">$du=-e^{-x} dx \quad v=-\sin(x)$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_ojJ853v7" value="2">$du=-e^{-x} dx \quad v=\sin(x)$
+      <input type="radio" name="radio_0Zi0jLJn" value="2">$du=-e^{-x} dx \quad v=\sin(x)$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_ojJ853v7" value="3">$du=-e^{-x} dx \quad v=-\sin(x)$
+      <input type="radio" name="radio_0Zi0jLJn" value="3">$du=\sin(x)dx \quad v=-e^{-x}$
     </label>
     </div>
     
 
 
-<div id="ojJ853v7_message"></div>
+<div id="0Zi0jLJn_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_ojJ853v7']").on("change", function() {
+$("input:radio[name='radio_0Zi0jLJn']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#ojJ853v7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#0Zi0jLJn_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#ojJ853v7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#0Zi0jLJn_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>Find the value of $\int_1^4 x \log(x) dx$. You can integrate by parts.</p>
-<form name='WeaveQuestion' data-id='JbqTBgLS' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='DxaU08b6' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="JbqTBgLS" type="number" class="form-control">
+<input id="DxaU08b6" type="number" class="form-control">
 
 </div>
   
-<div id='JbqTBgLS_message'></div>
+<div id='DxaU08b6_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#JbqTBgLS').on('change', function() {
+$('#DxaU08b6').on('change', function() {
   correct = Math.abs(this.value - 7.340354888959128) <= 0.001;
 
   if(correct) {
-     $('#JbqTBgLS_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#DxaU08b6_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#JbqTBgLS_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#DxaU08b6_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Find the value of $\int_0^{\pi/2} x\cos(2x) dx$. You can integrate by parts.</p>
-<form name='WeaveQuestion' data-id='ukvIkW7F' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='dc4129wh' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="ukvIkW7F" type="number" class="form-control">
+<input id="dc4129wh" type="number" class="form-control">
 
 </div>
   
-<div id='ukvIkW7F_message'></div>
+<div id='dc4129wh_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#ukvIkW7F').on('change', function() {
+$('#dc4129wh').on('change', function() {
   correct = Math.abs(this.value - -0.49999999999999983) <= 0.001;
 
   if(correct) {
-     $('#ukvIkW7F_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#dc4129wh_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#ukvIkW7F_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#dc4129wh_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Find the value of $\int_1^e (\log(x))^2 dx$. You can integrate by parts.</p>
-<form name='WeaveQuestion' data-id='KWwUdwdT' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='VPg0b2Jl' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="KWwUdwdT" type="number" class="form-control">
+<input id="VPg0b2Jl" type="number" class="form-control">
 
 </div>
   
-<div id='KWwUdwdT_message'></div>
+<div id='VPg0b2Jl_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#KWwUdwdT').on('change', function() {
+$('#VPg0b2Jl').on('change', function() {
   correct = Math.abs(this.value - 0.7182818284590451) <= 0.001;
 
   if(correct) {
-     $('#KWwUdwdT_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#VPg0b2Jl_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#KWwUdwdT_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#VPg0b2Jl_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Integration by parts can be used to provide "reduction" formulas, where an antiderivative is written in terms of another antiderivative with a lower power. Which is the proper reduction formula for $\int (\log(x))^n dx$?</p>
-<form name="WeaveQuestion" data-id="5RynBkAB" data-controltype="radio">
+<form name="WeaveQuestion" data-id="BxitLDGy" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_5RynBkAB" value="1">$\int (\log(x))^{n+1}/(n+1) dx$
+      <input type="radio" name="radio_BxitLDGy" value="1">$\int (\log(x))^{n+1}/(n+1) dx$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_5RynBkAB" value="2">$x(\log(x))^n - \int (\log(x))^{n-1} dx$
+      <input type="radio" name="radio_BxitLDGy" value="2">$x(\log(x))^n - n \int (\log(x))^{n-1} dx$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_5RynBkAB" value="3">$x(\log(x))^n - n \int (\log(x))^{n-1} dx$
+      <input type="radio" name="radio_BxitLDGy" value="3">$x(\log(x))^n - \int (\log(x))^{n-1} dx$
     </label>
     </div>
     
 
 
-<div id="5RynBkAB_message"></div>
+<div id="BxitLDGy_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_5RynBkAB']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_BxitLDGy']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#5RynBkAB_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#BxitLDGy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#5RynBkAB_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#BxitLDGy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>The <a href="http://en.wikipedia.org/wiki/Integration_by_parts">Wikipedia</a> page has a rule of thumb with an acronym LIATE to indicate what is a good candidate to be "$u$": <strong>L</strong>og function, <strong>I</strong>nverse functions, <strong>A</strong>lgebraic functions ($x^n$), <strong>T</strong>rigonmetric functions, and <strong>E</strong>xponential functions.</p><p>Consider the integral $\int x \cos(x) dx$. Which letter should be tried first?</p>
-<form name="WeaveQuestion" data-id="RE4Sc5yS" data-controltype="radio">
+<form name="WeaveQuestion" data-id="VBq5iGEa" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RE4Sc5yS" value="1">L
+      <input type="radio" name="radio_VBq5iGEa" value="1">L
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RE4Sc5yS" value="2">I
+      <input type="radio" name="radio_VBq5iGEa" value="2">I
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RE4Sc5yS" value="3">A
+      <input type="radio" name="radio_VBq5iGEa" value="3">A
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RE4Sc5yS" value="4">T
+      <input type="radio" name="radio_VBq5iGEa" value="4">T
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_RE4Sc5yS" value="5">E
+      <input type="radio" name="radio_VBq5iGEa" value="5">E
     </label>
     </div>
     
 
 
-<div id="RE4Sc5yS_message"></div>
+<div id="VBq5iGEa_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_RE4Sc5yS']").on("change", function() {
+$("input:radio[name='radio_VBq5iGEa']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#RE4Sc5yS_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#VBq5iGEa_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#RE4Sc5yS_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#VBq5iGEa_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <p>––</p><p>Consider the integral $\int x^2\log(x) dx$. Which letter should be tried first?</p>
-<form name="WeaveQuestion" data-id="QPiHQbue" data-controltype="radio">
+<form name="WeaveQuestion" data-id="LREIy4I4" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_QPiHQbue" value="1">L
+      <input type="radio" name="radio_LREIy4I4" value="1">L
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_QPiHQbue" value="2">I
+      <input type="radio" name="radio_LREIy4I4" value="2">I
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_QPiHQbue" value="3">A
+      <input type="radio" name="radio_LREIy4I4" value="3">A
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_QPiHQbue" value="4">T
+      <input type="radio" name="radio_LREIy4I4" value="4">T
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_QPiHQbue" value="5">E
+      <input type="radio" name="radio_LREIy4I4" value="5">E
     </label>
     </div>
     
 
 
-<div id="QPiHQbue_message"></div>
+<div id="LREIy4I4_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_QPiHQbue']").on("change", function() {
+$("input:radio[name='radio_LREIy4I4']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#QPiHQbue_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#LREIy4I4_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#QPiHQbue_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#LREIy4I4_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <p>––</p><p>Consider the integral $\int x^2 \sin^{-1}(x) dx$. Which letter should be tried first?</p>
-<form name="WeaveQuestion" data-id="jg76kA2p" data-controltype="radio">
+<form name="WeaveQuestion" data-id="70ydkTa3" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_jg76kA2p" value="1">L
+      <input type="radio" name="radio_70ydkTa3" value="1">L
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_jg76kA2p" value="2">I
+      <input type="radio" name="radio_70ydkTa3" value="2">I
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_jg76kA2p" value="3">A
+      <input type="radio" name="radio_70ydkTa3" value="3">A
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_jg76kA2p" value="4">T
+      <input type="radio" name="radio_70ydkTa3" value="4">T
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_jg76kA2p" value="5">E
+      <input type="radio" name="radio_70ydkTa3" value="5">E
     </label>
     </div>
     
 
 
-<div id="jg76kA2p_message"></div>
+<div id="70ydkTa3_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_jg76kA2p']").on("change", function() {
+$("input:radio[name='radio_70ydkTa3']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#jg76kA2p_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#70ydkTa3_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#jg76kA2p_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#70ydkTa3_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <p>––</p><p>Consider the integral $\int e^x \sin(x) dx$. Which letter should be tried first?</p>
-<form name="WeaveQuestion" data-id="AJ4BY0zL" data-controltype="radio">
+<form name="WeaveQuestion" data-id="GolH6EXf" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_AJ4BY0zL" value="1">L
+      <input type="radio" name="radio_GolH6EXf" value="1">L
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_AJ4BY0zL" value="2">I
+      <input type="radio" name="radio_GolH6EXf" value="2">I
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_AJ4BY0zL" value="3">A
+      <input type="radio" name="radio_GolH6EXf" value="3">A
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_AJ4BY0zL" value="4">T
+      <input type="radio" name="radio_GolH6EXf" value="4">T
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_AJ4BY0zL" value="5">E
+      <input type="radio" name="radio_GolH6EXf" value="5">E
     </label>
     </div>
     
 
 
-<div id="AJ4BY0zL_message"></div>
+<div id="GolH6EXf_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_AJ4BY0zL']").on("change", function() {
+$("input:radio[name='radio_GolH6EXf']").on("change", function() {
   correct = this.value == 4;
 
   if(correct) {
-     $("#AJ4BY0zL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#GolH6EXf_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#AJ4BY0zL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#GolH6EXf_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>Find an antiderivative for $\cos^{-1}(x)$ using the integration by parts formula.</p>
-<form name="WeaveQuestion" data-id="xnMBJr29" data-controltype="radio">
+<form name="WeaveQuestion" data-id="n21lYRoy" data-controltype="radio">
 <div class="form-group ">
 
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_xnMBJr29" value="1">$x^2/2 \cos^{-1}(x) - x\sqrt{1-x^2}/4 - \cos^{-1}(x)/4$
+      <input type="radio" name="radio_n21lYRoy" value="1">$x^2/2 \cos^{-1}(x) - x\sqrt{1-x^2}/4 - \cos^{-1}(x)/4$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_xnMBJr29" value="2">$-\sin^{-1}(x)$
+      <input type="radio" name="radio_n21lYRoy" value="2">$x\cos^{-1}(x)-\sqrt{1 - x^2}$
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_xnMBJr29" value="3">$x\cos^{-1}(x)-\sqrt{1 - x^2}$
+      <input type="radio" name="radio_n21lYRoy" value="3">$-\sin^{-1}(x)$
     </label>
     </div>
     
 
 
-<div id="xnMBJr29_message"></div>
+<div id="n21lYRoy_message"></div>
 </div>
 </form>
 <script text="text/javascript">
 
-$("input:radio[name='radio_xnMBJr29']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_n21lYRoy']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#xnMBJr29_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#n21lYRoy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#xnMBJr29_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#n21lYRoy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

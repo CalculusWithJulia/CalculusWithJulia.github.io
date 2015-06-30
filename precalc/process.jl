@@ -15,6 +15,7 @@ mmd("transformations.mmd")
 mmd("polynomial.mmd")
 mmd("polynomial_roots.mmd")
 mmd("rational_functions.mmd")
+mmd("trig_functions.mmd")
 
 
 

@@ -80,6 +80,12 @@ A rational expression is the ratio of two polynomial expressions. This section c
 
 - [Rational Functions](precalc/rational_functions.html)
 
+#### Trigonometric functions
+
+Trigonometric functions are used to describe triangles, circles and oscillatory behaviours. This section provide a brief review.
+
+- [Trigonometric Functions](precalc/trig_functions.html)
+
 ## Limits and Continuity
 
 The notion of a limit is at the heart of the two main operations of calculus, differentiation and integration.

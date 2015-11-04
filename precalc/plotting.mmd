@@ -23,8 +23,7 @@ be imputed.
 
 For example, a typical approach to plot $f(x) = 1 - x^2/2$ would be to choose some values for $x$ and find the corresponding values of $y$. This might be organized in a "T"-table:
 
-```
-Verbatim("""
+```verbatim
  x | y
 -- | --
 -2 | -1
@@ -33,7 +32,6 @@ Verbatim("""
  1 | 1/2
  2 | -1
  3 | -7/2
-""")
 ```
 
 These pairs would be plotted in a Cartesian plane and then connected with curved lines. A good sketch is aided by knowing ahead of time that this function describes a parabola which is curving downwards.
@@ -42,13 +40,16 @@ It is important to note that this sketch would not include *all* the pairs $(x,f
 
 ## Graphing a function with Julia
 
-`Julia` has several different options for rendering graphs, all in external packages. Such packages include `Gadfly`, `Winston`, `PyPlot`, `Bokeh`, and `Plotly`. We will focus in these notes on the `Gadfly` package for most graphics and the `PyPlot` package for 3-dimensional graphics. As such, we begin by loading the `Gadfly` package (which must have been installed on the system at some point with a command such as `Pkg.add("Gadfly")`.)
+`Julia` has several different options for rendering graphs, all in external packages. Such packages include `Gadfly`, `Winston`, `PyPlot`, `Bokeh`, and `Plotly`. We will focus in these notes on the `Plots` package for most graphics and the `PyPlot` package for 3-dimensional graphics. The `Plots` package provides an common interface to several different plotting backends.
+
+As such, we begin by loading the `Plots` package (which must have been installed on the system at some point with a command such as `Pkg.add("Plots")`) and setting the `Gadfly` backend:
 
 ```
-using Gadfly
+using Plots
+backend(:gadfly)
 ```
 
-The `Gadfly` package makes pretty plots very easy to generate, but has
+The `Gadfly` backend makes pretty plots very easy to generate, but has
 a drawback in that it is slow to load and the first plot made can take
 a long time to render, though subsequent ones are speedy. Focusing on
 the easyness, we can see that it is very easy to graph a function.
@@ -189,22 +190,23 @@ Either way, it isn't too much work to create the $y$ values from the $x$ values.
 
 ### Plotting points and connecting them
 
-Finally, to plot the set of points and connect with lines. This last
-step varies with the different plotting packages. For some, the
-command is just `plot(xs, ys)`. However, `Gadfly` requires a
-specification of what the values are and how they are to be
-represented:
+Finally, to plot the set of points and connect with lines. If the collection of points are specified in place of a function, the graph is produced:
 
 ```
-plot(x=xs, y=ys, Geom.line)
+plot(xs, ys)
 ```
 
 
 #### NaN values
 
-The funny `Geom.line` specification instructs `Gadfly` to connect the points with a line. A specification `Geom.points` would plot the values as points without lines connecting them. Both could be used to emphasize the points and connect with lines.
 
-At times it is not desirable to draw lines. For example, if there is a discontinuity in the function or if there were a vertical asymptote, such as what happens at $0$ with $1/x$. There is a convention that if the $y$ value for a point is `NaN` that no lines will connect. This is convenient in many cases, though not with $1/x$ as `1/0` is `Inf` and not `NaN`. (Unlike `0/0` which is NaN.
+At times it is not desirable to draw lines between each succesive
+point. For example, if there is a discontinuity in the function or if
+there were a vertical asymptote, such as what happens at $0$ with
+$1/x$. There is a convention that if the $y$ value for a point is
+`NaN` that no lines will connect. This is convenient in many cases,
+though not with $1/x$ as `1/0` is `Inf` and not `NaN`. (Unlike `0/0`
+which is NaN.
 
 Here is one way to plot $f(x) = 1/x$ over $[-1,1]$:
 
@@ -213,7 +215,7 @@ f(x) = 1/x
 xs = linspace(-1, 1, 251)
 ys = map(f, xs)
 ys[xs .== 0.0] = NaN
-plot(x=xs, y=ys, Geom.line)
+plot(xs, y=ys)
 ```
 
 By using an odd number of points, we ensure that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`.
@@ -225,8 +227,6 @@ g(x) = abs(x) < .01 ? NaN : f(x)
 plot(g, -1, 1)
 ```
 
-(Just replacing the value when `x == 0.0` won't work, as `Gadfly` chooses an even number of points by default to plot, so $0$ won't be in the values used between $-1$ and $1$.)
-
 ##### Example: Reflections
 
 The graph of a function may be reflected through a line, as those seen with a mirror. For example, a reflection through the $y$ axis takes a point $(x,y)$ to the point $(-x, y)$. We can easily see this graphically, when we have sets of $x$ and $y$ values through a judiciously placed minus sign.
@@ -236,13 +236,13 @@ For example, to plot $\sin(x)$ over $(-\pi,\pi)$ we might do:
 ```
 xs = linspace(-pi, pi)
 ys = [sin(x) for x in xs]
-plot(x = xs, y = ys, Geom.line)
+plot(xs, ys)
 ```
 
 To reflect this graph through the $y$ axis, we only need to plot `-xs` and not `xs`:
 
 ```
-plot(x = -xs, y = ys, Geom.line)
+plot(-xs, ys)
 ```
 
 Looking carefully we see there is a difference. (How?)
@@ -261,13 +261,13 @@ For the $\sin(x)$ graph, we see that reflecting through the $x$ axis
 produces the same graph as reflecting through the $y$ axis:
 
 ```
-plot(x = xs, y = -ys, Geom.line)
+plot(xs, -ys)
 ```
 
 However, reflecting through the origin leaves this graph unchanged:
 
 ```
-plot(x = -xs, y = -ys, Geom.line)
+plot(-xs,  -ys)
 ```
 
 > An *even function* is one where reflection through the $y$ axis
@@ -279,12 +279,11 @@ plot(x = -xs, y = -ys, Geom.line)
 If we try reflecting the graph of $\sin(x)$ through the line $y=x$, we have:
 
 ```
-plot(x = ys, y = xs, Geom.line(preserve_order=true))
+plot(ys, xs)
 ```
 
 This is the graph of the equation $x = \sin(y)$, but is not the graph of a function as the same $x$ can map to more than one $y$ value. (The new graph does not pass the "vertical line" test.)
 
-(The extra argument `preserve_order=true` passed to `Geom.line` is necessary to prevent `Gadfly` from sorting the `x` values before plotting.)
 
 
 However, for the sine function we can get a function from this reflection if we choose a narrower viewing window:
@@ -292,7 +291,7 @@ However, for the sine function we can get a function from this reflection if we 
 ```
 xs = linspace(-pi/2, pi/2)
 ys = [sin(x) for x in xs]
-plot(x = ys, y = xs, Geom.line(preserve_order=true))
+plot(ys, xs)
 ```
 
 The graph is that of the "inverse function" for $\sin(x), x \text{ in } [-\pi/2, \pi/2]$. 
@@ -333,14 +332,14 @@ of the layer.
 
 ### Adding layers explicitly
 
-It can be useful at times to create these layers manually. For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$ over the interval $[-1,2]$ and emphasize with points the fact that $0$ and $1$ are zeros. We can do this with two layers: the first to graph the function, the second to graph the points. Here is how:
+It can be useful at times to create these layers manually. For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$ over the interval $[-1,2]$ and emphasize with points the fact that $0$ and $1$ are zeros. We can do this with two layers: the first to graph the function, the second to graph the points. Adding a layer is achieved by using `plot!`:
 
 ```
 f(x) = x*(x-1)
 xs = linspace(-1, 2)
 ys = map(f, xs)
-plot(layer(x=xs, y=ys, Geom.line),
-     layer(x=[0,1], y=[0,0], Geom.point))
+plot(xs, ys)
+scatter!([0], y=[0])
 ```
 
 Additional layers are added through additional `layer` calls. Basically, the arguments to `layer` mirror those to `plot`.
@@ -369,7 +368,7 @@ The most "famous" parametric graph is one we are already familiar with, as it fo
 ```
 f(x) = cos(x); g(x) = sin(x)
 xs = linspace(0, 2pi)
-plot(x = map(f, xs), y = map(g, xs), Geom.line(preserve_order=true))
+plot(map(f, xs), map(g, xs))
 ```
 
 Any point $(a,b)$ on this graph is represented by $(\cos(x), \sin(x))$
@@ -381,9 +380,13 @@ level commands. There is a function to generate a sequence of value to
 approximate the $x$ values used (`xs`), a set of commands to create
 the corresponding function values (e.g., `map(f,xs)`), and some
 instruction on how to represent the values, in this case with lines
-connecting the points. The argument `preserve_order=true` is required
-to get the points to be connected in the correct manner (otherwise the
-$x$ points are sorted before connecting the points with lines).
+connecting the points.
+
+There is a convenience interface for these plots -- just pass the two functions in:
+
+```
+plot(f, g, 0, 2pi)
+```
 
 ##### Example
 
@@ -401,7 +404,7 @@ larger. However, the parametric graph is quite different:
 
 ```
 xs = linspace(0, 5)
-plot(x=map(g, xs), y=map(f, xs), Geom.line(preserve_order=true))
+plot(map(g, xs), map(f, xs))
 ```
 
 In this graph, as $f(x)/g(x) = x$, as $x$ gets large, the ratio stays reasonable.
@@ -416,9 +419,9 @@ point. In the above example, we see how this is helpful for large
 Plot $g(x) = x - \sin(x)$ and $g(x) = x^3$ around $x=0$:
 
 ```
-xs = linspace(-pi/2, pi/2)
-g(x) = x - sin(x); f(x) = x^3
-plot(x=map(g,xs), y=map(f, xs),  Geom.line(preserve_order=true))
+g(x) = x - sin(x)
+f(x) = x^3
+plot(g, f, -pi/2, pi/2)
 ```
 
 This graph is *nearly* a straight line. At the point $(0,0)=(g(0),
@@ -489,7 +492,7 @@ g(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 f(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
 xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
-plot(x = map(g, xs), y = map(f, xs), Geom.line(preserve_order=true))
+plot(g, f, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 In the above, one can fix $R=1$. Then different values for `r` and
@@ -649,11 +652,9 @@ trim(f; c=10) =  x -> abs(f(x)) > c ? NaN : f(x)
 
 The latter might be used as follows:
 
-```
-Verbatim("""
+```verbatim
 f(x) = 1/x
 plot(trim(f), -1,1)
-""")
 ```
 
 Compare the graph of the above with the graph without `trim`. What would you say:
@@ -671,15 +672,13 @@ radioq(choices, ans)
 
 Make this parametric plot for the specific values of the parameters `k` and `l`. What shape best describes it?
 
-```
-Verbatim("""
+```verbatim
 R, r, rho = 1, 3/4, 1/4
 f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
 xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
-plot(x = map(f, xs), y = map(g, xs), Geom.line(preserve_order=true))
-""")
+plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 ```
@@ -699,15 +698,12 @@ radioq(choices, ans)
 
 Make this plot for the specific values of the parameters `r` and `rho`. What shape best describes it?
 
-```
-Verbatim("""
+```verbatim
 R, r, rho = 1, 1/2, 1/4
 f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
-xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
-plot(x = map(f, xs), y = map(g, xs), Geom.line(preserve_order=true))
-""")
+plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 ```
@@ -727,15 +723,12 @@ radioq(choices, ans)
 
 Make this plot for the specific values of the parameters `r` and `rho`. What shape best describes it?
 
-```
-Verbatim("""
+```verbatim
 R, r, rho = 1, 1/4, 1
 f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
-xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
-plot(x = map(f, xs), y = map(g, xs), Geom.line(preserve_order=true))
-""")
+plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 ```

@@ -1,5 +1,9 @@
 # Rational functions
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
 
 The rational numbers are simply ratios of integers, of the form $p/q$
 for non-zero $q$. A rational function is a ratio of *polynomial*
@@ -42,13 +46,13 @@ the graph.
 For example, consider this graph generated from a simple rational
 function:
 
-$$
+$$~
 f(x) = \frac{(x-1)^2 \cdot (x-2)}{(x+3) \cdot (x-3)}.
-$$
+~$$
 
 
 ```
-using Gadfly
+using Plots
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -10, 10)
 ```
@@ -142,9 +146,9 @@ cancel(r)
 
 We can see that numerator is of degree 3 and the denominator of degree 2. The leading terms are $x^3$ and $x^2$ respectively. If we were to pull those out we would get:
 
-$$
+$$~
 \frac{x^3 \cdot (1 - 4/x + 5/x^2 - 2/x^3)}{x^2 \cdot (1 - 9/x^2)}.
-$$
+~$$
 
 The terms $(1 - 4/x + 5/x^2 - 2/x^3)$ and $ (1 - 9/x^2)$ go towards
 $1$ as $x \rightarrow \pm \infty$, as each term with $x$ goes towards $0$. So the dominant terms comes from
@@ -174,9 +178,9 @@ the form
 
 Consider the rational expression
 
-$$
+$$~
 \frac{17x^5 - 300x^4 - 1/2}{x^5 - 2x^4 + 3x^3 - 4x^2 + 5}.
-$$
+~$$
 
 The leading term of the numerator is $17x^5$ and the leading term of the denominator is $x^5$. The ratio is $17$ (or $17x^0 = 17x^{5-5}$). As such, we would have a horizontal asymptote $y=17$.
 
@@ -184,9 +188,9 @@ The leading term of the numerator is $17x^5$ and the leading term of the denomin
 
 If we consider instead this rational expression:
 
-$$
+$$~
 \frac{x^5 - 2x^4 + 3x^3 - 4x^2 + 5}{5x^4 + 4x^3 + 3x^2 + 2x + 1}
-$$
+~$$
 
 Then we can see that the ratio of the leading terms is $x^5 / (5x^4) = (1/5)x$. We expect a slant asymptote with slope $1/5$, though we would need to divide to see the exact intercept.
 
@@ -194,9 +198,9 @@ Then we can see that the ratio of the leading terms is $x^5 / (5x^4) = (1/5)x$. 
 
 Finally, consider this rational expression in factored form:
 
-$$
+$$~
 \frac{(x-2)^3\cdot(x-4)\cdot(x-3)}{(x-5)^4 \cdot (x-6)^2}.
-$$
+~$$
 
 By looking at the powers we can see that the leading term of the
 numerator will the $x^5$ and the leading term of the denominator
@@ -231,9 +235,9 @@ not be asymptotes. For a root $c$ if $p(c)$ is not zero then the line
 $x=c$ will be a vertical asymptote. If $c$ is a root of both $p(x)$
 and $q(x)$, then we can rewrite the expression as:
 
-$$
+$$~
 \frac{p(x)}{q(x)} = \frac{(x-c)^m r(x)}{(x-c)^n s(x)},
-$$
+~$$
 
 where both $r(c)$ and $s(c)$ are non zero. Knowing $m$ and $n$ (the multiplicities of the root $c$) allows the following to be said:
 
@@ -345,12 +349,15 @@ The usual recipe for construction follows these steps:
 
 With the computer, where it is convenient to draw a graph, it might be better to emphasize
 the sign on the graph of the function. This helper function will do
-so, plotting the function and then coloring the line $y=0$ depending
-on the sign of $f(x)$:
+so, plotting the function and then coloring it different colors based on the sign of $f(x)$:
 
 ```
-signchart(f, a, b) = plot([f, x ->f(x)<0 ? NaN : 0.0, x->f(x)>0 ? NaN : 0.0], a, b)
-
+function signchart(f, a, b)
+   nonneg(x) = f(x) < 0 ? NaN : f(x)
+   nonpos(x) = f(x) > 0 ? NaN : f(x)
+   plot([nonneg, nonpos], a, b)
+   plot!(zero, a, b)
+end
 f(x) = x^3 - x
 signchart(f, -3/2, 3/2)
 ```
@@ -375,7 +382,7 @@ radioq(choices, ans)
 ###### Question
 
 
-The rational expression $(x^2 - x + 1)/ (x^3 - 2x + 3) $ would have
+The rational expression $(x^2 - x + 1)/ (x^3 - 2x + 3)$ would have
 
 ```
 choices = [L"A horizontal asymptote $y=0$",
@@ -390,7 +397,7 @@ radioq(choices, ans)
 ###### Question
 
 
-The rational expression $(x^2 - x + 1)/ (x^2 - 3x + 3) $ would have
+The rational expression $(x^2 - x + 1)/ (x^2 - 3x + 3)$ would have
 
 ```
 choices = [L"A horizontal asymptote $y=0$",
@@ -406,9 +413,9 @@ radioq(choices, ans)
 
 The rational expression
 
-$$
+$$~
 \frac{(x-1)\cdot(x-2)\cdot(x-3)}{(x-4)\cdot(x-5)\cdot(x-6)}
-$$
+~$$
 
 would have
 
@@ -431,9 +438,9 @@ radioq(choices, ans)
 
 The rational expression
 
-$$
+$$~
 \frac{(x-1)\cdot(x-2)\cdot(x-3)}{(x-4)\cdot(x-5)\cdot(x-6)}
-$$
+~$$
 
 would have
 
@@ -453,9 +460,9 @@ radioq(choices, ans)
 
 The rational expression
 
-$$
+$$~
 \frac{x^3 - 3x^2 + 2x}{3x^2 - 6x + 2}
-$$
+~$$
 
 has a slant asymptote. What is the equation of that line?
 
@@ -473,11 +480,11 @@ radioq(choices, ans)
 
 Look at the graph of the function $f(x) = ((x-1)\cdot(x-2)) / ((x-3)\cdot(x-4))$
 
-```
+```nocode
 f(x) = ((x-1) * (x-2)) / ((x-3) *(x-4))
 trim(f,c=20) = x->abs(f(x)) > c ? NaN : f(x)
 p = plot([trim(f, 20), x->1], -5, 10 )
-Outputonly(p)
+p
 ```
 
 
@@ -501,13 +508,13 @@ intersect the given curve. It can sometimes take a while to change perception.)
 
 Consider the two graphs of $f(x) = 1/x$ over $[10,20]$ and $[100, 200]$:
 
-```
-Outputonly(plot(x -> 1/x, 10, 20))
+```nocode
+plot(x -> 1/x, 10, 20)
 ```
 
 
-```
-Outputonly(plot(x -> 1/x, 100, 200))
+```nocode
+plot(x -> 1/x, 100, 200)
 ```
 
 The two shapes are basically identical and do not look like straight lines. How does this reconcile with the fact that $f(x)=1/x$ has a horizontal asymptote $y=0$?
@@ -526,9 +533,9 @@ radioq(choices, ans)
 
 The amount of drug in a bloodstream after $t$ hours is modeled by the rational function
 
-$$
+$$~
 r(t) = \frac{50t^2}{t^3 + 20}, \quad t \geq  0.
-$$
+~$$
 
 What is the amount of the drug after $1$ hour?
 

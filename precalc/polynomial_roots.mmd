@@ -1,5 +1,10 @@
 # Roots of a polynomial
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 The
 [roots](http://en.wikipedia.org/wiki/Properties_of_polynomial_roots)
 of a polynomial are the values of $x$ for which when substituted into
@@ -7,7 +12,7 @@ the expression yield $0$. For example, the polynomial $x^2 - x$ has
 two roots, $0$ and $1$. A simple graph verifies this:
 
 ```
-using Gadfly
+using Plots
 f(x) = x^2 - x
 plot(f, -2, 2)
 ```
@@ -15,7 +20,8 @@ plot(f, -2, 2)
 The graph crosses the $x$-axis at both $0$ and $1$. If highlighting of these points is of interest, these intersections can be made more explicit  by adding the line $f(x)=0$ to the graph, as follows.)
 
 ```
-plot([f, x -> 0], -2, 2)
+plot(f, -2, 2)
+plot!(zero, -2, 2)    # or plot!(x -> 0, -2, 2)
 ```
 
 What is known about polynomial roots? Some simple questions might be:
@@ -49,9 +55,9 @@ $0 \leq r < |b|$. The quotient is $q$ and the remainder $r$. There is
 an analogy for polynomial division, where for two polynomial functions $f(x)$
 and $g(x)$ it is possible to write
 
-$$
+$$~
 f(x) = g(x) \cdot q(x) + r(x)
-$$
+~$$
 
 where the degree of $r$ is less than the degree of $g(x)$. The
 [long-division algorithm](http://en.wikipedia.org/wiki/Long_division)
@@ -60,9 +66,9 @@ can be used to find both $q(x)$ and $r(x)$.
 For the special case of a linear factor where $g(x) = x - c$,  the
 remainder must be of degree $0$, or a constant. The above simplifies to
 
-$$
+$$~
 f(x) = (x-c) \cdot q(x) + r
-$$
+~$$
 
 From this, we see that $f(c) = r$. Hence, when $c$ is a root of $f(x)$, then it
 must be that $r=0$ and so, $(x-c)$ is a factor.
@@ -75,13 +81,11 @@ Wikipedia page describes the algorithm well.
 
 The following is an example where $f(x) = x^4 + 2x^2 + 5$ and $g(x) = x-2$:
 
-```
-Verbatim("""
+```verbatim
 2 | 1 0 2  0  5
   |   2 4 12 24
   -------------
     1 2 6 12 29
-""")
 ```
 
 The polynomial $f(x)$ is coded in terms of its coefficients ($a_n$,
@@ -93,24 +97,24 @@ sequence produced above is `1 2 6 12 29`. The last value (`29`) is
 $r=f(c)$, the others encode the coefficients of `q(x)`, which for this problem 
 is $q(x)=x^3 + 2x + 6 + 12$.  That is, we have written:
 
-$$
+$$~
 x^4 + 2x^2 + 5 = (x-2) \cdot (x^3 + 2x + 6 + 12) + 29.
-$$
+~$$
 
 As $r$ is not $0$, we can say that $2$ is not a root of $f(x)$.
 
 
 If we were to track down the computation that produced $f(2) = 29$, we would have
 
-$$
+$$~
 5 + 2 \cdot (0 + 2 \cdot (2 + 2 \cdot (0 + (2 \cdot 1))))
-$$
+~$$
 
 In terms of $c$ and the coefficients $x_0, x_1, x_2, x_3$, and $x_4$ this is
 
-$$
+$$~
 x_0 + c\cdot(x_1 + c\cdot(x_2 + c\cdot(x_3 + c\cdot x_4))),
-$$
+~$$
 
 The above pattern provides a means to compute $f(c)$ and could easily be generalized for higher order
 polynomials.  This generalization is called [Horner's](http://en.wikipedia.org/wiki/Horner%27s_method) method. Horner's
@@ -169,9 +173,9 @@ when techniques of integration are looked at.
 ### The rational root test
 
 Factoring polynomials to find zeros is a task that most all readers
-here will recognize, and perhaps remember not so fondly. One helpful
+here will recognize, and, perhaps, remember not so fondly. One helpful
 trick to find possible zeros is the [rational root theorem](http://en.wikipedia.org/wiki/Rational_root_theorem): if a
-polynomial has integer coefficients with $a_0 \neq 0$, than any rational root, $p/q$
+polynomial has integer coefficients with $a_0 \neq 0$, than any rational root, $p/q$,
 must have $p$ dividing the constant $a_0$ and $q$ dividing the
 leading term $a_n$.
 
@@ -236,20 +240,21 @@ For the quadratic case, there is the famous
 [quadratic formula](http://en.wikipedia.org/wiki/Quadratic_formula) (known since
 2000 BC) to find the two roots guaranteed by the formula:
 
-$$
+$$~
 \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
-$$
+~$$
 
 The discriminant is $b^2 - 4ac$. When this is negative, the square
-root requires a consideration of complex numbers to be defined, and
+root requires the concept of  complex numbers to be defined, and
 the formula shows the two complex roots are conjugates. When the
 discriminant is $0$, then the root has multiplicity two, e.g., the
 polynomial will factor as $a_2(x-r)^2$. Finally, when the discriminant
 is positive, there will be two distinct, real roots. This figure shows
-the 3 cases, that are illustrated by $x^2 -1$, $x^2$ and $x^2 + 1$ (the `0` term highlights the $x$ axis):
+the 3 cases, that are illustrated by $x^2 -1$, $x^2$ and $x^2 + 1$:
 
 ```
-plot([x^2 - 1, x^2, x^2 + 1, 0], -2,2)
+plot([x^2 - 1, x^2, x^2 + 1], -2,2)
+plot!(zero, -2, 2)
 ```
 
 There are similar formulas for the
@@ -563,22 +568,22 @@ To see precisely
 this bound works, suppose $x$ is a root with $|x| > 1$ and let $h$ be
 the bound. Then since $x$ is a root, we can solve for $x^n$ as:
 
-$$
+$$~
 x_n = -(a_0 + a_1 x + \cdots a_{n-1}x^{n-1})
-$$
+~$$
 
 Which after taking absolute values of both sides, yields:
 
-$$
+$$~
 |x_n| \leq |a_0| + |a_1||x| + |a_2||x^2| + \cdots |a_{n-1}| |x^{n-1}| \leq (h-1) (1 + |x| + |x^2| + \cdots |x^{n-1}|).
-$$
+~$$
 
 The last sum can be computed using a formula for geometric sums,
 $(|x^n| - 1)/(|x|-1)$. Rearranging, gives the inequality:
 
-$$
+$$~
 |x| - 1 \leq (h-1) \cdot (1 - \frac{1}{|x^n|} ) \leq (h-1)
-$$
+~$$
 
 from which it follows that $|x| \leq h$, as desired.
 
@@ -636,13 +641,11 @@ radioq(choices, ans)
 
 Consider this output from synthetic division
 
-```
-Verbatim("""
+```verbatim
 2 | 1 0 0 0 -1  1
   |   2 4 8 16 30
   ---------------
     1 2 4 8 15 31
-""")
 ```
 
 representing $p(x) = q(x)\cdot(x-c) + r$.

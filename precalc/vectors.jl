@@ -194,8 +194,8 @@ close(io)
 data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
 caption = L"""
 
-The vector $\langle 4,3 \rangle$ is written as $2/3 \cdot \langle 1,2
-\rangle + 5/3 \cdot \langle 2,1 \rangle$. Any vector $\vec{c}$ can be
+The vector $\langle 4,3 \rangle$ is written as
+$2$/$3$ $\cdot\langle 1,2 \rangle$ $+$ $5$/$3$ $\cdot\langle 2,1 \rangle$. Any vector $\vec{c}$ can be
 written uniquely as $\alpha\cdot\vec{a} + \beta \cdot \vec{b}$ provided
 $\vec{a}$ and $\vec{b}$ are not parallel.
 

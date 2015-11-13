@@ -39,20 +39,18 @@ output is displayed.
 
 A command is typed following the *prompt*. An example might be `2 + 2`. To send the command to the `Julia` interpreter the "return" key is pressed. A complete expression or expressions will then be parsed and evaluated (executed). If the expression is not complete, `julia`'s prompt will still accept input to complete the expression. Type `2 +` to see. (The expression `2 +` is not complete, as the infix operator `+` expects two arguments, one on its left and one on its right.)
 
-```
-Verbatim("""
+```verbatim
                _
    _       _ _(_)_     |  A fresh approach to technical computing
   (_)     | (_) (_)    |  Documentation: http://docs.julialang.org
-   _ _   _| |_  __ _   |  Type "help()" for help.
+   _ _   _| |_  __ _   |  Type "?help" for help.
   | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 0.3.6-pre+4 (2015-01-09 16:59 UTC)
- _/ |\__'_|_|_|\__'_|  |  Commit 74acbbf (108 days old release-0.3)
-|__/                   |  x86_64-apple-darwin14.0.0
+  | | |_| | | | (_| |  |  Version 0.4.1 (2015-11-08 10:33 UTC)
+ _/ |\__'_|_|_|\__'_|  |  Official http://julialang.org/ release
+|__/                   |  x86_64-apple-darwin13.4.0
 
 julia> 2 + 2
 4
-""")
 ```
 
 
@@ -114,6 +112,7 @@ Pkg.add("SymPy")
 Pkg.add("Roots")
 Pkg.add("ImplicitEquations")
 Pkg.add("PyPlot")
+Pkg.add("Plots")
 """)
 ```
 
@@ -146,12 +145,20 @@ Comments can be made in a cell. Anything after a `#` will be ignored.
 ```
 
 Graphics are provided by external packages. There is no built-in
-graphing. We primarily use the `Gadfly` package for graphics, though
-the initial graphic can take a while to be produced. Here is a plot of
-the sine function:
+graphing. We primarily use the `Gadfly` package for graphics, but through the `Plots` package.
+
+The plots package is loaded via:
 
 ```
-using Gadfly    # load the external package, takes a bit of time
+using Plots
+backend(:gadfly)
+```
+
+The choice of `Gadfly` as a backend is optional, the `Plots` package does its best to be backend agnostic.
+
+Then to make a graph of a function over a range, we have this example:
+
+```
 plot(sin, 0, 2pi)
 ```
 

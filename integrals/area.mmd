@@ -1,5 +1,10 @@
 # Area under a curve
 
+```nocode,noout
+using Plots
+backend(:gadfly)
+```
+
 
 The question of area has long fascinated human culture. As children,
 we learn early on the formulas for the areas of some geometric
@@ -25,7 +30,7 @@ For some functions, this area can be computed by geometry, for
 example, here we see the area under $f(x)$ is just $1$, as it is a triangle with base $2$ and height $1$:
 
 ```
-using Gadfly
+using Plots
 f(x) = 1 - abs(x)
 plot([f, zero], -1, 1)
 ```
@@ -125,9 +130,9 @@ largest of all the differences $\lvert x_i - x_{i-1} \rvert$. For a partition, c
 arbitrary selection of points $c_i$ satisfying $x_{i-1} \leq c_i \leq
 x_{i}$, $1 \leq i \leq n$. Then the following is a **Riemann sum**:
 
-$$
+$$~
 S_n  = f(c_1) \cdot (x_1 - x_0) + f(c_2) \cdot (x_2 - x_1) + \cdots + f(c_n) \cdot (x_n - x_{n-1}).
-$$
+~$$
 
 Clearly for a given partition and choice of $c_i$, the above can be
 computed. Each term $f(c_i)\cdot(x_i-x_{i-1})$ can be visualized as
@@ -146,7 +151,7 @@ For Archimedes' problem -- finding the area under $f(x)=x^2$ between
 $0$ and $1$ --  if we take as a partition $x_i = i/n$ and $c_i = x_i$,
 then the above sum becomes:
 
-$$
+$$~
 \begin{align}
 S_n &= f(c_1) \cdot (x_1 - x_0) + f(c_2) \cdot (x_2 - x_1) + \cdots + f(c_n) \cdot (x_n - x_{n-1})\\
 &= (x_1)^2 \cdot \frac{1}{n} + (x_2)^2 \cdot \frac{1}{n} + \cdot + (x_n)^2 \cdot \frac{1}{n}\\
@@ -154,7 +159,7 @@ S_n &= f(c_1) \cdot (x_1 - x_0) + f(c_2) \cdot (x_2 - x_1) + \cdots + f(c_n) \cd
 &= \frac{1}{n^3} \cdot (1^2 + 2^2 + \cdots n^2) \\
 &= \frac{1}{n^3} \cdot \frac{n\cdot(n-1)\cdot(2n+1)}{6}.
 \end{align}
-$$
+~$$
 
 The latter uses a well-known formula for the sum of squares of the
 first $n$ natural numbers.
@@ -179,9 +184,9 @@ note(L"""
 
 There is a more compact notation to $x_1 + x_2 + \cdots + x_n$, this using the *summation notation* or capital sigma. We have:
 
-$$
+$$~
 \Sigma_{i = 1}^n = x_1 + x_2 + \cdots + x_n
-$$
+~$$
 
 The notation includes three pieces of information:
 
@@ -245,9 +250,9 @@ are integrable:
 > \rvert < \delta$ and for any choice of points $x_{i-1} \leq c_i \leq
 > x_{i}$ this is satisfied:
 >
-> $$
+> $$~
 > \lvert \sum f(c_i)(x_{i} - x_{i-1}) - V \rvert < \epsilon.
-> $$
+> ~$$
 > 
 > When the integral exists, it is written $V = \int_a^b f(x) dx$.
 
@@ -323,10 +328,10 @@ Any partition $a =x_0 < x_1 < \cdots < x_n=b$ is related to a
 partition of $[a-c, b-c]$ through $a-c < x_0-c < x_1-c < \cdots <
 x_n - c = b-c$. Let $d_i=c_i-c$ denote this partition, then we have:
 
-$$
+$$~
 f(c_1 -c) \cdot (x_1 - x_0) + f(c_2 -c) \cdot (x_2 - x_1)  + \cdots + f(c_n -c) \cdot (x_n - x_{n-1}) =
 f(d_1) \cdot(x_1-c - (x_0-c)) + f(d_2) \cdot(x_2-c - (x_1-c)) + \cdots + f(d_n) \cdot(x_n-c - (x_{n-1}-c)).
-$$
+~$$
 
 The left side will have a limit of $\int_a^b f(x-c) dx$ the right
 would have a "limit" of $\int_{a-c}^{b-c}f(x)dx$.
@@ -384,7 +389,7 @@ This is just the area of a trapezoid with heights $a$ and $b$ and side
   would be:
 
 
-$$
+$$~
 \begin{align}
 S &= x_1 \cdot (x_1 - x_0) + x_2 \cdot (x_2 - x_1) + \cdots x_n \cdot (x_n - x_{n-1}) \\
 &= (a + 1\frac{b-a}{n}) \cdot \frac{b-a}{n} + (a + 2\frac{b-a}{n}) \cdot \frac{b-a}{n} + \cdots  (a + n\frac{b-a}{n}) \cdot \frac{b-a}{n}\\
@@ -393,7 +398,7 @@ S &= x_1 \cdot (x_1 - x_0) + x_2 \cdot (x_2 - x_1) + \cdots x_n \cdot (x_n - x_{
 & \rightarrow a \cdot(b-a) + \frac{(b-a)^2}{2} \\
 &= \frac{b^2}{2} - \frac{a^2}{2}.
 \end{align}
-$$
+~$$
 
 
 * $\int_a^b x^2 dx = (b^3/3 - a^3/3)$. This is similar to the Archimedes case with $a=0$ and $b=1$ shown above.
@@ -403,7 +408,7 @@ $$
 Cauchy showed this using a *geometric series* for the partition, not the arithmetic series $x_i = a + i (b-a)/n$. The series defined by $1 + \alpha = (b/a)^{1/n}$, then $x_i = a \cdot (1 + \alpha)^i$. Here the bases $x_{i+1} - x_i$ simplify to $x_i \cdot \alpha$ and $f(x_i) = (a\cdot(1+\alpha)^i)^k = a^k (1+\alpha)^{ik}$, or $f(x_i)(x_{i+1}-x_i) = a^{k+1}\alpha[(1+\alpha)^{k+1}]^i$,
 so, using $u=(1+\alpha)^{k+1}=(b/a)^{(k+1)/n}$, $f(x_i) \cdot(x_{i+1} - x_i) = a^{k+1}\alpha u^i$. This gives
 
-$$
+$$~
 \begin{align}
 S &= a^{k+1}\alpha u^0 + a^{k+1}\alpha u^1 + \cdots + a^{k+1}\alpha u^{n-1}
 &= a^{k+1} \cdot \alpha \cdot (u^0 + u^1 + \cdot u^{n-1}) \\
@@ -411,7 +416,7 @@ S &= a^{k+1}\alpha u^0 + a^{k+1}\alpha u^1 + \cdots + a^{k+1}\alpha u^{n-1}
 &= (b^{k+1} - a^{k+1}) \cdot \frac{\alpha}{(1+\alpha)^{k+1} - 1} \\
 &\rightarrow \frac{b^{k+1} - a^{k+1}}{k+1}.
 \end{align}
-$$
+~$$
 
 
 * $\int_a^b x^{-1} dx = \log(b) - \log(a)$ ($0 < a < b$).
@@ -419,15 +424,15 @@ $$
 
 Again, Cauchy showed this using a geometric series. The expression $f(x_i) \cdot(x_{i+1} - x_i)$ becomes just $\alpha$. So the approximating sum becomes:
 
-$$
+$$~
 S = f(x_0)(x_1 - x_0) + f(x_1)(x_2 - x_1) + \cdots + f(x_{n-1}) (x_n - x_{n-1}) = \alpha + \alpha + \cdots \alpha = n\alpha.
-$$
+~$$
 
 But, letting $x = 1/n$, the limit above is just the limit of
 
-$$
+$$~
 \lim_{x \rightarrow 0+} \frac{(b/a)^x - 1}{x} = \log(b/a) = \log(b) - \log(a).
-$$
+~$$
 
 (Using L'Hopital's rule to compute the limit.)
 
@@ -591,9 +596,9 @@ So far, we have had the assumption that $f(x) \geq 0$, as that allows
 us to define the concept of area. We can define the signed area
 between $f(x)$ and the $x$ axis through the definite integral:
 
-$$
+$$~
 A = \int_a^b f(x) dx.
-$$
+~$$
 
 The right hand side is defined whenever the Riemann limit exists and
 in that case we call $f(x)$ Riemann integrable. (The definition does
@@ -602,9 +607,9 @@ not suppose $f$ is non-negative.)
 
 Suppose $f(a) = f(b) = 0$ for $a < b$ and for all $a < x < b$ we have $f(x) < 0$. Then we can see easily from the geometry (or from the Riemann sum approximation) that
 
-$$
+$$~
 \int_a^b f(x) dx = - \int_a^b \lvert f(x) \rvert dx.
-$$
+~$$
 
 If we think of the area below the $x$ axis as "signed" area carrying a minus sign, then the total area can be seen again as a sum, only this time some of the summands may be negative.
 
@@ -613,7 +618,7 @@ If we think of the area below the $x$ axis as "signed" area carrying a minus sig
 Consider a function $f(x)$ defined through its piecewise linear graph:
 
 ```
-f(x) = abs(x) > 2 ? 1 : abs(x) - 1
+f(x) = abs(x) > 2 ? 1.0 : abs(x) - 1.0
 Outputonly(plot([f, zero], -3,3))
 ```
 
@@ -701,24 +706,24 @@ Applying this recursively to a partition with
 $a < b$ gives:
 
 
-$$
+$$~
 \begin{align}
 \lvert f(c_1)(x_1-x_0) + f(c_2)(x_2-x_1) + \cdots + f(c_n) (x_n-x_1) \rvert
 & \leq
 \lvert f(c_1)(x_1-x_0) \rvert + \lvert f(c_2)(x_2-x_1)\rvert + \cdots +\lvert f(c_n) (x_n-x_1) \rvert \\
 &= \lvert f(c_1)\rvert (x_1-x_0) + \lvert f(c_2)\rvert (x_2-x_1)+ \cdots +\lvert f(c_n) \rvert(x_n-x_1).
 \end{align}
-$$
+~$$
 
 This suggests that the following inequality holds for integrals:
 
-> $$ \lvert \int_a^b f(x) dx \rvert \leq \int_a^b \lvert f(x) \rvert dx.$$
+> $$~ \lvert \int_a^b f(x) dx \rvert \leq \int_a^b \lvert f(x) \rvert dx.~$$
 
 This can be used to give bounds on the size of an integral. For example, suppose you know that $f(x)$ is continous on $[a,b]$ and takes its maximum value of $M$ and minimum value of $m$. Letting $K$ be the larger of $\lvert M\rvert$ and $\lvert m \rvert$, gives this bound when $a < b$:
 
-$$
+$$~
 \lvert\int_a^b f(x) dx \rvert \leq \int_a^b \lvert f(x) \rvert dx \leq \int_a^b K dx = K(b-a).
-$$
+~$$
 
 While such bounds are disappointing, often, when looking for specific
 values, they are very useful when establishing general truths, such as
@@ -733,7 +738,7 @@ function $f(x)$ is increasing, so that the right sum gives an upper
 estimate and the left sum a lower estimate, so the error in the
 estimate will be between these two values:
 
-$$
+$$~
 \begin{align}
 \text{error} &\leq
 \left[
@@ -742,7 +747,7 @@ f(x_1) \cdot (x_{1} - x_0)  + f(x_2) \cdot  (x_{2} - x_1) + \cdots + f(x_{n-1})(
 &= \frac{b-a}{n} \cdot (\left[f(x_1) + f(x_2) + \cdots f(x_n)\right] - \left[f(x_0) + \cdots f(x_{n-1})\right]) \\
 &= \frac{b-a}{n} \cdot (f(b) - f(a)).
 \end{align}
-$$
+~$$
 
 We see the error goes to $0$ at a rate of $1/n$ with the constant
 depending on $b-a$ and the function $f$. In general, a similar bound
@@ -756,15 +761,15 @@ approximated by the quadratic polynomial going through $x_{i-1}$,
 $(x_i + x_{i-1})/2$, and $x_i$ and the exact area under that
 polynomial is used in the approximation. The explicit formula is:
 
-$$
+$$~
 A \approx \frac{b-a}{3n} (f(x_0) + 4 f(x_1) + 2f(x_2) + 4f(x_3) + \cdots + 2f(x_{n-2}) + 4f(x_{n-1}) + f(x_n)).
-$$
+~$$
 
 The error in this approximation can be shown to be
 
-$$
+$$~
 \text{error} \leq \frac{(b-a)^5}{180n^4} \text{max}_{\xi \text{ in } [a,b]} \lvert f^{(4)}(\xi) \rvert.
-$$
+~$$
 
 That is, the error is like $1/n^4$ with constants depending on the
 length of the interval $(b-a)^5$ and the maximum value of the fourth
@@ -788,9 +793,9 @@ is Riemann integrable or not.
 
 The formulas for an approximation to the  integral $\int_{-1}^1 f(x) dx$ can be written as:
 
-$$
+$$~
 S = w_1 f(x_1) + w_2 f(x_2) + \cdots + w_n f(x_n).
-$$
+~$$
 
 The $w$s are "weights" and the $x$s are nodes. A
 [Gaussian](http://en.wikipedia.org/wiki/Gaussian_quadrature)
@@ -890,9 +895,9 @@ are the range of the distribution. The
 [Von Mises](http://en.wikipedia.org/wiki/Von_Mises_distribution)
 distribution, takes the form
 
-$$
+$$~
 f(x) = C \cdot \exp(\cos(x)), \quad -\pi \leq x \leq \pi
-$$
+~$$
 
 Compute $C$ (numerically).
 
@@ -949,9 +954,9 @@ $0.809767$ and equal to $0.25$.
 
 Using geometry, compute the definite integral:
 
-$$
+$$~
 \int_{-5}^5 \sqrt{5^2 - x^2} dx.
-$$
+~$$
 
 ```
 f(x) = sqrt(5^2 - x^2)
@@ -964,9 +969,9 @@ numericq(val)
 
 Using geometry, compute the definite integral:
 
-$$
+$$~
 \int_{-2}^2 (2 - \lvert x\rvert) dx
-$$
+~$$
 
 ```
 f(x) = 2- abs(x)
@@ -980,9 +985,9 @@ numericq(val)
 
 Using geometry, compute the definite integral:
 
-$$
+$$~
 \int_0^3 3 dx + \int_3^9 (3 + 3(x-3)) dx
-$$
+~$$
 
 ```
 f(x) = x <= 3 ? 3.0 : 3 + 3*(x-3)
@@ -996,9 +1001,9 @@ numericq(val)
 
 Using geometry, compute the definite integral:
 
-$$
+$$~
 \int_0^5 \lfloor x \rfloor dx
-$$
+~$$
 
 (The notation $\lfloor x \rfloor$ is the integer such that $\lfloor x \rfloor$ \leq x < $\lfloor x \rfloor$ + 1$.)
 
@@ -1057,9 +1062,9 @@ numericq(val)
 
 Without doing any *real* work, find this integral:
 
-$$
+$$~
 \int_{-\pi/4}^{\pi/4} \tan(x) dx.
-$$
+~$$
 
 
 ```
@@ -1071,9 +1076,9 @@ numericq(val)
 
 Without doing any *real* work, find this integral:
 
-$$
+$$~
 \int_3^5 (1 - \lvert x-4 \rvert) dx
-$$
+~$$
 
 
 ```
@@ -1117,9 +1122,9 @@ radioq(choices, ans)
 
 Solve for a value of $x$ for which:
 
-$$
+$$~
 \int_1^x \frac{1}{u}du = 1.
-$$
+~$$
 
 ```
 val = exp(1)
@@ -1130,9 +1135,9 @@ numericq(val)
 
 Solve for a value of $n$ for which
 
-$$
+$$~
 \int_0^1 x^n dx = \frac{1}{12}.
-$$
+~$$
 
 ```
 val = 11
@@ -1173,9 +1178,9 @@ radioq(choices, ans)
 
 Use `quadgk` to find the following definite integral:
 
-$$
+$$~
 \int_1^4 x^x dx   .
-$$
+~$$
 
 ```
 f(x) = x^x
@@ -1189,9 +1194,9 @@ numericq(val)
 
 Use `quadgk` to find the following definite integral:
 
-$$
+$$~
 \int_0^3 e^{-x^2} dx   .
-$$
+~$$
 
 ```
 f(x) = exp(-x^2)
@@ -1205,9 +1210,9 @@ numericq(val)
 
 Use `quadgk` to find the following definite integral:
 
-$$
+$$~
 \int_0^{9/10} \tan(u \frac{\pi}{2}) du.   .
-$$
+~$$
 
 ```
 f(x) = tan(x*pi/2)
@@ -1221,9 +1226,9 @@ numericq(val)
 
 Use `quadgk` to find the following definite integral:
 
-$$
+$$~
 \int_{-1/2}^{1/2} \frac{1}{\sqrt{1 - x^2}} dx
-$$
+~$$
 
 ```
 f(x) = 1/sqrt(1 - x^2)

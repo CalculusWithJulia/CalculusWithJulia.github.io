@@ -1,39 +1,49 @@
 # Area between two curves
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 The definite integral gives the "signed" area between the function $f(x)$ and the $x$-axis over $[a,b]$. Conceptually, this is the area between two curves, $f(x)$ and $g(x)=0$. More generally, this integral:
 
-$$
+$$~
 \int_a^b (f(x) - g(x)) dx
-$$
+~$$
 
 can be interpreted as the "signed" area between $f(x)$ and $g(x)$ over
 $[a,b]$. If on this interval $[a,b]$ it is true that $f(x) \geq g(x)$,
 then this would just be the area, as seen in this figure.
 
-```
-using Gadfly
+```nocode
+module SomePlot
+export make_plot
+using Gadfly  
+function make_plot()
 f1(x) = x^2
 g(x) = sqrt(x)
 xs = linspace(0,1,200)
 a,b = 1/4, 3/4
 rxs = linspace(a, b)
-rys = [map(g, rxs)..., map(f1, reverse(rxs))...]
-rxs = [rxs, reverse(rxs)...]
+rys = [map(g, rxs)...; map(f1, reverse(rxs))...]
+rxs = [rxs; reverse(rxs)...]
 
-p = plot(
+plot(
   layer(x=xs, y=map(f1, xs), Geom.line),
   layer(x=xs, y=map(g, xs), Geom.line),
   layer(x=[a,b], y=0.03 * [1,1], label=["a", "b"], Geom.label),
-  layer(x=rxs, y=rys, Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("orange")))
-)
-Outputonly(p)
+  layer(x=rxs, y=rys, Geom.polygon(preserve_order=true, fill=true), Theme(default_color=colorant"orange"))
+  )
+end
+end
+SomePlot.make_plot()  
 ```
 
 For the figure, we have $f(x) = \sqrt{x}$, $g(x)= x^2$ and $[a,b] = [1/4, 3/4]$. The shaded area is then found by:
 
-$$
+$$~
 \int_{1/4}^{3/4} (x^{1/2} - x^2) dx = (\frac{x^{3/2}}{3/2} - \frac{x^3}{3})\big|_{1/4}^{3/4} = \frac{\sqrt{3}}{4} -\frac{7}{32}.
-$$
+~$$
 
 ## Examples
 
@@ -42,7 +52,7 @@ Find the area bounded by the line $y=2x$ and the curve $y=2 - x^2$.
 We can plot to see the area in question:
 
 ```
-using Gadfly
+using Plots
 f(x) = 2 - x^2
 g(x) = 2x
 plot([f,g], -3,3)
@@ -149,7 +159,7 @@ Another symmetry of the $x-y$ plane is the reflection through the line $y=x$. Th
 f(x) = x^3
 xs = linspace(-1, 1)
 ys = map(f, xs)
-plot(x = ys, y = xs, Geom.line(preserve_order=true))
+plot(ys, xs)
 ```
 
 By switching the order of the `xs` and `ys` we "flip" the graph
@@ -161,7 +171,7 @@ We can use this symmetry to our advantage. Suppose instead of being given an equ
 ```
 ys = linspace(-1,1)
 xs = [y^3 for y in ys]
-plot(x = xs, y=ys, Geom.line(preserve_order=true))
+plot(xs, y)
 ```
 
 Suppose we wanted the area in the first quadrant between this graph,
@@ -199,9 +209,9 @@ together(ex)
 
 Based on this answer, what is the value of this 
 
-$$
+$$~
 \frac{1}{2\cdot 3} + \frac{1}{3\cdot 4} + \frac{1}{4\cdot 5} + \cdots?
-$$
+~$$
 
 This should should be no surprise, given how the areas computed carve up the area under the line $y=x^1$ over $[0,1]$:
 
@@ -214,7 +224,12 @@ summation(1/(n+1)/(n+2), (n, 1, oo))
 Verify [Archimedes](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola) finding that the area of the parabolic segment is $4/3$rds that of the triangle joining $a$, $(a+b)/2$ and $b$.
 
 
-```
+```nocode
+module SomePlot1
+export make_plot
+using Gadfly  
+function make_plot()
+
 f(x) = 2 - x^2
 a,b = -1, 1/2
 c = (a+b)/2
@@ -222,11 +237,13 @@ xs = linspace(-sqrt(2), sqrt(2))
 rxs = linspace(a, b)
 rys = map(f, rxs)
 p=plot(layer(x=xs, y=map(f, xs), Geom.line),
-    layer(x=rxs, y=rys, Geom.line, Theme(default_color=color("red"),line_width=3px)),
-	layer(x=[a,b], y=[f(a), f(b)], Geom.line, Theme(default_color=color("red"),line_width=3px)),
-	layer(x=[a,c,b], y=[f(a),f(c),f(b)], Geom.polygon(fill=true), Theme(default_color=color("orange")))
+    layer(x=rxs, y=rys, Geom.line, Theme(default_color=colorant"red",line_width=3px)),
+	layer(x=[a,b], y=[f(a), f(b)], Geom.line, Theme(default_color=colorant"red",line_width=3px)),
+	layer(x=[a,c,b], y=[f(a),f(c),f(b)], Geom.polygon(fill=true), Theme(default_color=colorant"orange"))
 	)
-Outputonly(p)	
+end
+end
+SomePlot1.make_plot()	
 ```
 
 For concreteness, let $f(x) = 2-x^2$ and $[a,b] = [-1, 1/2]$, as in
@@ -438,9 +455,9 @@ kg/$m^3$ which we convert into pounds/in$^3$ via:
 
 The two parabolas, after rotating, might look like the following (with $x$ in inches):
 
-$$
+$$~
 f(x) = x^2/70, \quad g(x) = 35 + x^2/140
-$$
+~$$
 
 
 
@@ -468,10 +485,10 @@ radioq(choices, ans, keep_order=true)
 
 Formulas from the business world say that revenue is the integral of *marginal revenue* or the additional money from  selling 1 more unit. (This is basically the derivative of profit). Cost is the integral of *marginal cost*, or the cost to produce 1 more. Suppose we have
 
-$$
+$$~
 \text{mr}(x) = 2 - \frac{e^{-x/10}}{1 + e^{-x/10}}, \quad
 \text{mc}(x) = 1 - \frac{1}{2} \cdot \frac{e^{-x/5}}{1 + e^{-x/5}}.
-$$
+~$$
 
 Find the profit to produce 100 units: $P = \int_0^{100} (\text{mr}(x) - \text{mc}(x)) dx$.
 

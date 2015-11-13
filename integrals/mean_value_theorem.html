@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -77,7 +76,7 @@ $( document ).ready(function() {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+         
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -101,413 +100,429 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Average of a function and the Mean Value Theorem for integrals</h1><p>Let $f(x)$ be a continuous function over the interval $[a,b]$ with $a < b$.</p><p>The average value of $f$ over $[a,b]$ is defined by:</p><p>$$ \frac{1}{b-a} \int_a^b f(x) dx. $$</p><p>If $f$ is a constant, this is just the contant value, as would be expected. If $f$ is <em>piecewise</em> linear, then this is the weighted average of these constants.</p><h2>Examples</h2><h5>Average velocity</h5><p>The average velocity between times $a < b$, is simply the change in position during the time interval divided by the change in time. In notation, this would be $(x(b) - x(a)) / (b-a)$. If $v(t) = x'(t)$ is the velocity, then by the second part of the fundamental theorem of calculus, we have, in agreement with the definition above, that:</p><p>$$ \text{average velocity} = \frac{x(b) - x(a)}{b-a} = \frac{1}{b-a} \int_a^b v(t) dt. $$</p><p>The average speed is the change in <em>total</em> distance over time, which is given by</p><p>$$ \text{average speed} =  \frac{1}{b-a} \int_a^b \lvert v(t)\rvert dt. $$</p><p>Let $\bar{v}$ be the average velocity. Then we have $\bar{v} \cdot(b-a) = x(b) - x(a)$, or the change in position can be written as a constant ($\bar{v}$) times the time, as though we had a constant velocity.  This is an old intuition. <a href="http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/">Bressoud</a> comments on the special case known to scholars at Merton College around 1350 that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p><h5>Example</h5><p>What is the average value of $f(x)=\sin(x)$ over $[0, \pi]$?</p><p>$$ \text{average} = \frac{1}{\pi-0} \int_0^\pi \sin(x) dx = \frac{1}{\pi} (-\cos(x))\big|_0^\pi = \frac{2}{\pi} $$</p><h5>Example</h5><p>What is the average value of the function $f$ which is $1$ between $[0,3]$, $2$ between $(3,5]$ and $1$ between $(5,6]$?</p><p>Though not continuous, $f(x)$ is integrable as it contains only jumps. The integral from $[0,6]$ can be computed with geometry: $3\cdot 3 + 2 \cdot 2 + 1 \cdot 1 = 14$. The average then is $14/(6-0) = 7/3$.</p><h5>Example</h5><p>What is the average value of the function $e^{-x}$ between $0$ and $\log(2)$?</p><p>$$ \text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx = \frac{1}{\log(2)} (-e^{-x})\big|_0^{\log(2)} = \frac{1}{\log(2)} (2 - 1) = \frac{1}{\log(2)}. $$</p><h2>The Mean Value Theorem for Integrals</h2><p>If $f(x)$ is assumed integrable, the average value of $f(x)$ is defined, as above. Re-expressing gives that there exists a $K$ with</p><p>$$ K \cdot (b-a) = \int_a^b f(x) dx. $$</p><p>When we assume that $f(x)$ is continuous, we can describe $K$ as a value in the range of $f$:</p><blockquote><p><strong>The Mean Value Theorem For Integrals</strong>: Let $f(x)$ be a continuous function on $[a,b]$ with $a < b$. Then there exists $c$ with $a \leq c \leq b$ with $$ f(c) \cdot (b-a) = \int_a^b f(x) dx.$$ </p></blockquote><p>The proof comes from the intermediate value theorem and the extreme value theorem. Since $f$ is continuous on a closed interval, there exists values $m$ and $M$ with $f(c_m) = m \leq f(x) \leq M=f(c_M)$, for some $c_m$ and $c_M$ in the interval $[a,b]$. Since $m \leq f(x) \leq M$, we must have:</p><p>$$ m \cdot (b-a) \leq K\cdot(b-a) \leq M\cdot(b-a). $$</p><p>So in particular $K$ is in $[m, M]$. But $m$ and $M$ correspond to values of $f(x)$, so by the intermediate value theorem, $K=f(c)$ for some $c$ that must lie in between $c_m$ and $c_M$, which means as well that it must be in $[a,b]$.</p><h5>Proof of second part of Fundamental Theorem of Calculus</h5><p>The mean value theorem is exactly what is needed to prove formally the second part of the Fundamental Theorem of Calculus. Again, suppose $f(x)$ is continous on $[a,b]$ with $a < b$. For any $a < x < b$, we define $F(x) = \int_a^x f(u) du$. Then the derivative of $F$ is $f$.</p><p>Let $h>0$. Then consider the forward difference $(F(x+h) - F(x))/h$. Rewriting gives:</p><p>$$ \frac{\int_a^{x+h} f(u) du - \int_a^x f(u) du}{h}  =\frac{\int_x^{x+h} f(u) du}{h} = f(\xi(h)). $$</p><p>The value $\xi(h)$ is just the $c$ corresponding to a given value in $[x, x+h]$ guaranteed by the mean value theorem.  We only know that $x \leq \xi(h) \leq x+h$. But this is plenty – it says that $\lim_{h \rightarrow 0+} \xi(h) = x$. Using the fact that $f$ is continuous and the known properties of limits of compositions of functions this gives $\lim_{h \rightarrow 0+} f(\xi(h)) = f(x)$. But this means that the (right) limit of the secant line expression exists and is equal to $f(x)$, which is what we want to prove. Repeating a similar argument when $h < 0$, finishes the proof.</p><p>The basic notion used is simply that for small $h$, this expression is well approximated by the left Riemann sum taken over $[x, x+h]$:</p><p>$$ f(\xi(h)) \cdot h = \int_x^{x+h} f(u) du. $$</p><h2>Questions</h2><h6>Question</h6><p>Between $0$ and $1$ a function is constantly $1$. Between $1$ and $2$ the function is constantly $2$. What is the average value of the function over the interval $[0,2]$?</p>
-<form name='WeaveQuestion' data-id='QBCIrAUy' data-controltype='numeric'>
+<h1>Average of a function and the Mean Value Theorem for integrals</h1><p>Let &#36;f&#40;x&#41;&#36; be a continuous function over the interval &#36;&#91;a,b&#93;&#36; with &#36;a &lt; b&#36;.</p><p>The average value of &#36;f&#36; over &#36;&#91;a,b&#93;&#36; is defined by:</p>$$~
+\frac{1}{b-a} \int_a^b f(x) dx.
+~$$<p>If &#36;f&#36; is a constant, this is just the contant value, as would be expected. If &#36;f&#36; is <em>piecewise</em> linear, then this is the weighted average of these constants.</p><h2>Examples</h2><h5>Average velocity</h5><p>The average velocity between times &#36;a &lt; b&#36;, is simply the change in position during the time interval divided by the change in time. In notation, this would be &#36;&#40;x&#40;b&#41; - x&#40;a&#41;&#41; / &#40;b-a&#41;&#36;. If &#36;v&#40;t&#41; &#61; x&#39;&#40;t&#41;&#36; is the velocity, then by the second part of the fundamental theorem of calculus, we have, in agreement with the definition above, that:</p>$$~
+\text{average velocity} = \frac{x(b) - x(a)}{b-a} = \frac{1}{b-a} \int_a^b v(t) dt.
+~$$<p>The average speed is the change in <em>total</em> distance over time, which is given by</p>$$~
+\text{average speed} =  \frac{1}{b-a} \int_a^b \lvert v(t)\rvert dt.
+~$$<p>Let &#36;\bar&#123;v&#125;&#36; be the average velocity. Then we have &#36;\bar&#123;v&#125; \cdot&#40;b-a&#41; &#61; x&#40;b&#41; - x&#40;a&#41;&#36;, or the change in position can be written as a constant (&#36;\bar&#123;v&#125;&#36;) times the time, as though we had a constant velocity.  This is an old intuition. <a href="http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/">Bressoud</a> comments on the special case known to scholars at Merton College around 1350 that the distance traveled by an object under uniformly increasing velocity starting at &#36;v_0&#36; and ending at &#36;v_t&#36; is equal to the distance traveled by an object with constant velocity of &#36;&#40;v_0 &#43; v_t&#41;/2&#36;.</p><h5>Example</h5><p>What is the average value of &#36;f&#40;x&#41;&#61;\sin&#40;x&#41;&#36; over &#36;&#91;0, \pi&#93;&#36;?</p>$$~
+\text{average} = \frac{1}{\pi-0} \int_0^\pi \sin(x) dx = \frac{1}{\pi} (-\cos(x))\big|_0^\pi = \frac{2}{\pi}
+~$$<h5>Example</h5><p>What is the average value of the function &#36;f&#36; which is &#36;1&#36; between &#36;&#91;0,3&#93;&#36;, &#36;2&#36; between &#36;&#40;3,5&#93;&#36; and &#36;1&#36; between &#36;&#40;5,6&#93;&#36;?</p><p>Though not continuous, &#36;f&#40;x&#41;&#36; is integrable as it contains only jumps. The integral from &#36;&#91;0,6&#93;&#36; can be computed with geometry: &#36;3\cdot 3 &#43; 2 \cdot 2 &#43; 1 \cdot 1 &#61; 14&#36;. The average then is &#36;14/&#40;6-0&#41; &#61; 7/3&#36;.</p><h5>Example</h5><p>What is the average value of the function &#36;e^&#123;-x&#125;&#36; between &#36;0&#36; and &#36;\log&#40;2&#41;&#36;?</p>$$~
+\text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx = \frac{1}{\log(2)} (-e^{-x})\big|_0^{\log(2)} =
+\frac{1}{\log(2)} (2 - 1) = \frac{1}{\log(2)}.
+~$$<h2>The Mean Value Theorem for Integrals</h2><p>If &#36;f&#40;x&#41;&#36; is assumed integrable, the average value of &#36;f&#40;x&#41;&#36; is defined, as above. Re-expressing gives that there exists a &#36;K&#36; with</p>$$~
+K \cdot (b-a) = \int_a^b f(x) dx.
+~$$<p>When we assume that &#36;f&#40;x&#41;&#36; is continuous, we can describe &#36;K&#36; as a value in the range of &#36;f&#36;:</p><blockquote>
+<p><strong>The Mean Value Theorem For Integrals</strong>: Let &#36;f&#40;x&#41;&#36; be a continuous function on &#36;&#91;a,b&#93;&#36; with &#36;a &lt; b&#36;. Then there exists &#36;c&#36; with &#36;a \leq c \leq b&#36; with &#36;~ f&#40;c&#41; \cdot &#40;b-a&#41; &#61; \int_a^b f&#40;x&#41; dx.~&#36;</p>
+</blockquote><p>The proof comes from the intermediate value theorem and the extreme value theorem. Since &#36;f&#36; is continuous on a closed interval, there exists values &#36;m&#36; and &#36;M&#36; with &#36;f&#40;c_m&#41; &#61; m \leq f&#40;x&#41; \leq M&#61;f&#40;c_M&#41;&#36;, for some &#36;c_m&#36; and &#36;c_M&#36; in the interval &#36;&#91;a,b&#93;&#36;. Since &#36;m \leq f&#40;x&#41; \leq M&#36;, we must have:</p>$$~
+m \cdot (b-a) \leq K\cdot(b-a) \leq M\cdot(b-a).
+~$$<p>So in particular &#36;K&#36; is in &#36;&#91;m, M&#93;&#36;. But &#36;m&#36; and &#36;M&#36; correspond to values of &#36;f&#40;x&#41;&#36;, so by the intermediate value theorem, &#36;K&#61;f&#40;c&#41;&#36; for some &#36;c&#36; that must lie in between &#36;c_m&#36; and &#36;c_M&#36;, which means as well that it must be in &#36;&#91;a,b&#93;&#36;.</p><h5>Proof of second part of Fundamental Theorem of Calculus</h5><p>The mean value theorem is exactly what is needed to prove formally the second part of the Fundamental Theorem of Calculus. Again, suppose &#36;f&#40;x&#41;&#36; is continous on &#36;&#91;a,b&#93;&#36; with &#36;a &lt; b&#36;. For any &#36;a &lt; x &lt; b&#36;, we define &#36;F&#40;x&#41; &#61; \int_a^x f&#40;u&#41; du&#36;. Then the derivative of &#36;F&#36; is &#36;f&#36;.</p><p>Let &#36;h&gt;0&#36;. Then consider the forward difference &#36;&#40;F&#40;x&#43;h&#41; - F&#40;x&#41;&#41;/h&#36;. Rewriting gives:</p>$$~
+\frac{\int_a^{x+h} f(u) du - \int_a^x f(u) du}{h}  =\frac{\int_x^{x+h} f(u) du}{h} = f(\xi(h)).
+~$$<p>The value &#36;\xi&#40;h&#41;&#36; is just the &#36;c&#36; corresponding to a given value in &#36;&#91;x, x&#43;h&#93;&#36; guaranteed by the mean value theorem.  We only know that &#36;x \leq \xi&#40;h&#41; \leq x&#43;h&#36;. But this is plenty – it says that &#36;\lim_&#123;h \rightarrow 0&#43;&#125; \xi&#40;h&#41; &#61; x&#36;. Using the fact that &#36;f&#36; is continuous and the known properties of limits of compositions of functions this gives &#36;\lim_&#123;h \rightarrow 0&#43;&#125; f&#40;\xi&#40;h&#41;&#41; &#61; f&#40;x&#41;&#36;. But this means that the (right) limit of the secant line expression exists and is equal to &#36;f&#40;x&#41;&#36;, which is what we want to prove. Repeating a similar argument when &#36;h &lt; 0&#36;, finishes the proof.</p><p>The basic notion used is simply that for small &#36;h&#36;, this expression is well approximated by the left Riemann sum taken over &#36;&#91;x, x&#43;h&#93;&#36;:</p>$$~
+f(\xi(h)) \cdot h = \int_x^{x+h} f(u) du.
+~$$<h2>Questions</h2><h6>Question</h6><p>Between &#36;0&#36; and &#36;1&#36; a function is constantly &#36;1&#36;. Between &#36;1&#36; and &#36;2&#36; the function is constantly &#36;2&#36;. What is the average value of the function over the interval &#36;&#91;0,2&#93;&#36;?</p><form name='WeaveQuestion' data-id='usB38ZrF' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="QBCIrAUy" type="number" class="form-control">
+<input id="usB38ZrF" type="number" class="form-control">
 
 </div>
   
-<div id='QBCIrAUy_message'></div>
+<div id='usB38ZrF_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#QBCIrAUy').on('change', function() {
+$('#usB38ZrF').on('change', function() {
   correct = Math.abs(this.value - 1.5) <= 0.001;
 
   if(correct) {
-     $('#QBCIrAUy_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#usB38ZrF_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#QBCIrAUy_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#usB38ZrF_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Between $0$ and $2$ a function is constantly $1$. Between $2$ and $3$ the function is constantly $2$. What is the average value of the function over the interval $[0,3]$?</p>
-<form name='WeaveQuestion' data-id='nu8XxqLY' data-controltype='numeric'>
+<h6>Question</h6><p>Between &#36;0&#36; and &#36;2&#36; a function is constantly &#36;1&#36;. Between &#36;2&#36; and &#36;3&#36; the function is constantly &#36;2&#36;. What is the average value of the function over the interval &#36;&#91;0,3&#93;&#36;?</p><form name='WeaveQuestion' data-id='cO0vO5Zp' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="nu8XxqLY" type="number" class="form-control">
+<input id="cO0vO5Zp" type="number" class="form-control">
 
 </div>
   
-<div id='nu8XxqLY_message'></div>
+<div id='cO0vO5Zp_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#nu8XxqLY').on('change', function() {
+$('#cO0vO5Zp').on('change', function() {
   correct = Math.abs(this.value - 1.0) <= 0.001;
 
   if(correct) {
-     $('#nu8XxqLY_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#cO0vO5Zp_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#nu8XxqLY_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#cO0vO5Zp_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>What integral will show the intuition of the Merton College scholars that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p>
-<form name="WeaveQuestion" data-id="gjJGTBam" data-controltype="radio">
+<h6>Question</h6><p>What integral will show the intuition of the Merton College scholars that the distance traveled by an object under uniformly increasing velocity starting at &#36;v_0&#36; and ending at &#36;v_t&#36; is equal to the distance traveled by an object with constant velocity of &#36;&#40;v_0 &#43; v_t&#41;/2&#36;.</p><form name="WeaveQuestion" data-id="c2J9gjnJ" data-controltype="radio">
 <div class="form-group ">
-
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_gjJGTBam" value="1">$(v(0) + v(t))/2 \cdot \int_0^t du = (v(0) + v(t))/2 \cdot t$
+      <input type="radio" name="radio_c2J9gjnJ" value="1"><div class="markdown">&#36;\int_0^t &#40;v&#40;0&#41; &#43; v&#40;u&#41;&#41;/2 du &#61; v&#40;0&#41;/2\cdot t &#43; x&#40;u&#41;/2\ big|_0^t&#36;
+</div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_gjJGTBam" value="2">$\int_0^t v(u) du = u^2/2 \big|_0^t$
+      <input type="radio" name="radio_c2J9gjnJ" value="2"><div class="markdown">&#36;\int_0^t v&#40;u&#41; du &#61; u^2/2 \big|_0^t&#36;
+</div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_gjJGTBam" value="3">$\int_0^t (v(0) + v(u))/2 du = v(0)/2\cdot t + x(u)/2\ big|_0^t$
+      <input type="radio" name="radio_c2J9gjnJ" value="3"><div class="markdown">&#36;&#40;v&#40;0&#41; &#43; v&#40;t&#41;&#41;/2 \cdot \int_0^t du &#61; &#40;v&#40;0&#41; &#43; v&#40;t&#41;&#41;/2 \cdot t&#36;
+</div>
     </label>
     </div>
     
 
 
-<div id="gjJGTBam_message"></div>
+<div id="c2J9gjnJ_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-
-$("input:radio[name='radio_gjJGTBam']").on("change", function() {
+$("input:radio[name='radio_c2J9gjnJ']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#gjJGTBam_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#c2J9gjnJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#gjJGTBam_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#c2J9gjnJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[-\pi/2, \pi/2]$.</p>
-<form name='WeaveQuestion' data-id='wufVTlNX' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of &#36;\cos&#40;x&#41;&#36; over the interval &#36;&#91;-\pi/2, \pi/2&#93;&#36;.</p><form name='WeaveQuestion' data-id='DdYTOXEV' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="wufVTlNX" type="number" class="form-control">
+<input id="DdYTOXEV" type="number" class="form-control">
 
 </div>
   
-<div id='wufVTlNX_message'></div>
+<div id='DdYTOXEV_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#wufVTlNX').on('change', function() {
-  correct = Math.abs(this.value - 0.6366197723675815) <= 0.001;
+$('#DdYTOXEV').on('change', function() {
+  correct = Math.abs(this.value - 0.6366197723675814) <= 0.001;
 
   if(correct) {
-     $('#wufVTlNX_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#DdYTOXEV_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#wufVTlNX_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#DdYTOXEV_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[0, \pi]$.</p>
-<form name='WeaveQuestion' data-id='eXllfKx3' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of &#36;\cos&#40;x&#41;&#36; over the interval &#36;&#91;0, \pi&#93;&#36;.</p><form name='WeaveQuestion' data-id='eXjRAcn0' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="eXllfKx3" type="number" class="form-control">
+<input id="eXjRAcn0" type="number" class="form-control">
 
 </div>
   
-<div id='eXllfKx3_message'></div>
+<div id='eXjRAcn0_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#eXllfKx3').on('change', function() {
-  correct = Math.abs(this.value - 3.975693351829396e-17) <= 0.001;
+$('#eXjRAcn0').on('change', function() {
+  correct = Math.abs(this.value - 8.779656151956583e-17) <= 0.001;
 
   if(correct) {
-     $('#eXllfKx3_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#eXjRAcn0_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#eXllfKx3_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#eXjRAcn0_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $f(x) = e^{-2x}$ between $0$ and $2$.</p>
-<form name='WeaveQuestion' data-id='XXnYodDb' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of &#36;f&#40;x&#41; &#61; e^&#123;-2x&#125;&#36; between &#36;0&#36; and &#36;2&#36;.</p><form name='WeaveQuestion' data-id='mVGuKQFO' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="XXnYodDb" type="number" class="form-control">
+<input id="mVGuKQFO" type="number" class="form-control">
 
 </div>
   
-<div id='XXnYodDb_message'></div>
+<div id='mVGuKQFO_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#XXnYodDb').on('change', function() {
-  correct = Math.abs(this.value - 0.24542109027781644) <= 0.001;
+$('#mVGuKQFO').on('change', function() {
+  correct = Math.abs(this.value - 0.24542109027781647) <= 0.001;
 
   if(correct) {
-     $('#XXnYodDb_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#mVGuKQFO_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#XXnYodDb_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#mVGuKQFO_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $f(x) = \sin(x)^2$ over the $0$, $\pi$.</p>
-<form name='WeaveQuestion' data-id='IVjl87R2' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of &#36;f&#40;x&#41; &#61; \sin&#40;x&#41;^2&#36; over the &#36;0&#36;, &#36;\pi&#36;.</p><form name='WeaveQuestion' data-id='ors7l2ir' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="IVjl87R2" type="number" class="form-control">
+<input id="ors7l2ir" type="number" class="form-control">
 
 </div>
   
-<div id='IVjl87R2_message'></div>
+<div id='ors7l2ir_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#IVjl87R2').on('change', function() {
-  correct = Math.abs(this.value - 0.5000000000000001) <= 0.001;
+$('#ors7l2ir').on('change', function() {
+  correct = Math.abs(this.value - 0.5) <= 0.001;
 
   if(correct) {
-     $('#IVjl87R2_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#ors7l2ir_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#IVjl87R2_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#ors7l2ir_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Which is bigger? The average value of $f(x) = x^{10}$ or the average value of $g(x) = \lvert x \rvert$ over the interval $[0,1]$?</p>
-<form name="WeaveQuestion" data-id="N93WYfuy" data-controltype="radio">
+<h6>Question</h6><p>Which is bigger? The average value of &#36;f&#40;x&#41; &#61; x^&#123;10&#125;&#36; or the average value of &#36;g&#40;x&#41; &#61; \lvert x \rvert&#36; over the interval &#36;&#91;0,1&#93;&#36;?</p><form name="WeaveQuestion" data-id="Q8pM3wVl" data-controltype="radio">
 <div class="form-group ">
-
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_N93WYfuy" value="1">That of $f(x) = x^{10}$.
+      <input type="radio" name="radio_Q8pM3wVl" value="1"><div class="markdown"><p>That of &#36;f&#40;x&#41; &#61; x^&#123;10&#125;&#36;.</p>
+</div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_N93WYfuy" value="2">That of $g(x) = \lvert x \rvert$.
+      <input type="radio" name="radio_Q8pM3wVl" value="2"><div class="markdown"><p>That of &#36;g&#40;x&#41; &#61; \lvert x \rvert&#36;.</p>
+</div>
     </label>
     </div>
     
 
 
-<div id="N93WYfuy_message"></div>
+<div id="Q8pM3wVl_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-
-$("input:radio[name='radio_N93WYfuy']").on("change", function() {
+$("input:radio[name='radio_Q8pM3wVl']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#N93WYfuy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Q8pM3wVl_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#N93WYfuy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Q8pM3wVl_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Define a family of functions over the interval $[0,1]$ by $f(x; a,b) = x^a \cdot (1-x)^b$. Which has a greater average, $f(x; 2,3)$ or $f(x; 3,4)$?</p>
-<form name="WeaveQuestion" data-id="WQednfUp" data-controltype="radio">
+<h6>Question</h6><p>Define a family of functions over the interval &#36;&#91;0,1&#93;&#36; by &#36;f&#40;x; a,b&#41; &#61; x^a \cdot &#40;1-x&#41;^b&#36;. Which has a greater average, &#36;f&#40;x; 2,3&#41;&#36; or &#36;f&#40;x; 3,4&#41;&#36;?</p><form name="WeaveQuestion" data-id="ibSK7ZP8" data-controltype="radio">
 <div class="form-group ">
-
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_WQednfUp" value="1">$f(x; 3,4)$
+      <input type="radio" name="radio_ibSK7ZP8" value="1"><div class="markdown">&#36;f&#40;x; 3,4&#41;&#36;
+</div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_WQednfUp" value="2">$f(x; 2,3)$
+      <input type="radio" name="radio_ibSK7ZP8" value="2"><div class="markdown">&#36;f&#40;x; 2,3&#41;&#36;
+</div>
     </label>
     </div>
     
 
 
-<div id="WQednfUp_message"></div>
+<div id="ibSK7ZP8_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-
-$("input:radio[name='radio_WQednfUp']").on("change", function() {
+$("input:radio[name='radio_ibSK7ZP8']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#WQednfUp_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#ibSK7ZP8_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#WQednfUp_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#ibSK7ZP8_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Suppose the average value of $f(x)$ over $[a,b]$ is $100$. What is the average value of $100 f(x)$ over $[a,b]$?</p>
-<form name='WeaveQuestion' data-id='vESy2fHn' data-controltype='numeric'>
+<h6>Question</h6><p>Suppose the average value of &#36;f&#40;x&#41;&#36; over &#36;&#91;a,b&#93;&#36; is &#36;100&#36;. What is the average value of &#36;100 f&#40;x&#41;&#36; over &#36;&#91;a,b&#93;&#36;?</p><form name='WeaveQuestion' data-id='GTPMSVmb' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="vESy2fHn" type="number" class="form-control">
+<input id="GTPMSVmb" type="number" class="form-control">
 
 </div>
   
-<div id='vESy2fHn_message'></div>
+<div id='GTPMSVmb_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#vESy2fHn').on('change', function() {
+$('#GTPMSVmb').on('change', function() {
   correct = Math.abs(this.value - 10000) <= 0;
 
   if(correct) {
-     $('#vESy2fHn_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#GTPMSVmb_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#vESy2fHn_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#GTPMSVmb_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Suppose $f(x)$ is continuous and positive on $[a,b]$.</p><ul><li>Explain why for any $x > a$ it must be that:</li></ul><p>$$ F(x) = \int_a^x f(x) dx > 0 $$</p>
-<form name="WeaveQuestion" data-id="rKBBZ0Fc" data-controltype="radio">
+<h6>Question</h6><p>Suppose &#36;f&#40;x&#41;&#36; is continuous and positive on &#36;&#91;a,b&#93;&#36;.</p><ul>
+<li>Explain why for any &#36;x &gt; a&#36; it must be that:</li>
+</ul>$$~
+F(x) = \int_a^x f(x) dx > 0
+~$$<form name="WeaveQuestion" data-id="5aBZ1AiB" data-controltype="radio">
 <div class="form-group ">
-
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_rKBBZ0Fc" value="1">Because the definite integral is only defined for positive area, so it is always positive
+      <input type="radio" name="radio_5aBZ1AiB" value="1"><div class="markdown"><p>Because the mean value theorem says this is &#36;f&#40;c&#41; &#40;x-a&#41;&#36; and both terms are positive by the assumptions</p>
+</div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_rKBBZ0Fc" value="2">Because the mean value theorem says this is $f(c) (x-a)$ and both terms are positive by the assumptions
+      <input type="radio" name="radio_5aBZ1AiB" value="2"><div class="markdown"><p>Because the definite integral is only defined for positive area, so it is always positive</p>
+</div>
     </label>
     </div>
     
 
 
-<div id="rKBBZ0Fc_message"></div>
+<div id="5aBZ1AiB_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-
-$("input:radio[name='radio_rKBBZ0Fc']").on("change", function() {
-  correct = this.value == 2;
-
-  if(correct) {
-     $("#rKBBZ0Fc_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#rKBBZ0Fc_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<ul><li>Explain why $F(x)$ is increasing.</li></ul>
-<form name="WeaveQuestion" data-id="y4Ebdbz4" data-controltype="radio">
-<div class="form-group ">
-
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_y4Ebdbz4" value="1">By the intermediate value theorem, as $F(x) > 0$, it must be true that $F(x)$ is increasing
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_y4Ebdbz4" value="2">By the extreme value theorem, $F(x)$ must reach its maximum, hence it must increase.
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_y4Ebdbz4" value="3">By the fundamental theorem of calculus, part I, $F'(x) = f(x) > 0$, hence $F(x)$ is increasing
-    </label>
-    </div>
-    
-
-
-<div id="y4Ebdbz4_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-
-$("input:radio[name='radio_y4Ebdbz4']").on("change", function() {
-  correct = this.value == 3;
-
-  if(correct) {
-     $("#y4Ebdbz4_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#y4Ebdbz4_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>For $f(x) = x^2$, which is bigger: the average of the function $f(x)$ over $[0,1]$ or the geometric mean which is the exponential of the average of the logarithm of $f$ over the same interval?</p>
-<form name="WeaveQuestion" data-id="sPFonLj9" data-controltype="radio">
-<div class="form-group ">
-
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_sPFonLj9" value="1">The average of $f$
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_sPFonLj9" value="2">The exponential of the average of $\log(f)$
-    </label>
-    </div>
-    
-
-
-<div id="sPFonLj9_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-
-$("input:radio[name='radio_sPFonLj9']").on("change", function() {
+$("input:radio[name='radio_5aBZ1AiB']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#sPFonLj9_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#5aBZ1AiB_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#sPFonLj9_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#5aBZ1AiB_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<ul>
+<li>Explain why &#36;F&#40;x&#41;&#36; is increasing.</li>
+</ul><form name="WeaveQuestion" data-id="9L3ZiQHn" data-controltype="radio">
+<div class="form-group ">
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_9L3ZiQHn" value="1"><div class="markdown"><p>By the intermediate value theorem, as &#36;F&#40;x&#41; &gt; 0&#36;, it must be true that &#36;F&#40;x&#41;&#36; is increasing</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_9L3ZiQHn" value="2"><div class="markdown"><p>By the fundamental theorem of calculus, part I, &#36;F&#39;&#40;x&#41; &#61; f&#40;x&#41; &gt; 0&#36;, hence &#36;F&#40;x&#41;&#36; is increasing</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_9L3ZiQHn" value="3"><div class="markdown"><p>By the extreme value theorem, &#36;F&#40;x&#41;&#36; must reach its maximum, hence it must increase.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="9L3ZiQHn_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_9L3ZiQHn']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#9L3ZiQHn_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#9L3ZiQHn_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>For &#36;f&#40;x&#41; &#61; x^2&#36;, which is bigger: the average of the function &#36;f&#40;x&#41;&#36; over &#36;&#91;0,1&#93;&#36; or the geometric mean which is the exponential of the average of the logarithm of &#36;f&#36; over the same interval?</p><form name="WeaveQuestion" data-id="rnhJiGk9" data-controltype="radio">
+<div class="form-group ">
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_rnhJiGk9" value="1"><div class="markdown"><p>The average of &#36;f&#36;</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_rnhJiGk9" value="2"><div class="markdown"><p>The exponential of the average of &#36;\log&#40;f&#41;&#36;</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="rnhJiGk9_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_rnhJiGk9']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#rnhJiGk9_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#rnhJiGk9_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

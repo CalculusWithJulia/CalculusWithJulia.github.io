@@ -1,14 +1,19 @@
 # Linearization
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 The derivative of $f(x)$ has the interpretation as the slope of the
 tangent line. The tangent line is the line that best approximates the
 function at the point.
 
 Using the point-slope form of a line, we see that the tangent line to the graph of $f(x)$ at $(c,f(c))$ is given by:
 
-$$
+$$~
 y = f(c) + f'(c) \cdot (x - c).
-$$
+~$$
 
 This is written as an equation, though we prefer to work with
 functions within `Julia`. Here we write such a function as an
@@ -26,7 +31,7 @@ tl(f, c) = x -> f(c) + D(f)(c) * (x - c)
 To illustrate the tangent line, we can make some graphs:
 
 ```
-using Gadfly
+using Plots
 f(x) = x^2
 plot([f, tl(f, -1), tl(f, 2)], -3, 3)
 ```
@@ -34,9 +39,9 @@ plot([f, tl(f, -1), tl(f, 2)], -3, 3)
 The graph shows that near the point, the line and function are close,
 but this need not be the case away from the point. We can express this informally as
 
-$$
+$$~
 f(x) \approx f(c) + f'(c) \cdot (x-c)
-$$
+~$$
 
 with the understanding this applies for $x$ "close" to $c$.
 
@@ -77,11 +82,12 @@ function.
 ```
 f(x) = sin(x)
 xs =linspace(-1/4, pi/2)
-p = plot(layer(x=xs, y=map(f, xs), Geom.line),
-      layer(x=xs, y=xs, Geom.line),
-      layer(x=[0,1,1], y = [0, 0, 1], Geom.line, Theme(default_color=color("brown"))),
-      layer(x=[0,1,1], y = [0, 0, sin(1)], Geom.line, Theme(default_color=color("gray"))),
-      layer(x=[1/2,1, 1/2-1/8],  y=[0, sin(1)/2, 1], label=["Δx", "Δy", "m=dy/dx"], Geom.label)
+p = Gadfly.plot(
+      Gadfly.layer(x=xs, y=map(f, xs), Gadfly.Geom.line),
+      Gadfly.layer(x=xs, y=xs, Gadfly.Geom.line),
+      Gadfly.layer(x=[0,1,1], y = [0, 0, 1], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("brown"))),
+      Gadfly.layer(x=[0,1,1], y = [0, 0, sin(1)], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("gray"))),
+      Gadfly.layer(x=[1/2,1, 1/2-1/8],  y=[0, sin(1)/2, 1], label=["Δx", "Δy", "m=dy/dx"], Gadfly.Geom.label)
       )
 Outputonly(p)	  
 ```
@@ -129,9 +135,9 @@ We are traveling 60 miles. At 60 miles an hour, we will take 60 minutes (or one 
 Well the answer is $60/70$ hours or $60/70 \cdot 60$ minutes. But we
 can't divide, so we turn this into a multiplication problem via some algebra:
 
-$$
+$$~
 \frac{60}{70} = \frac{60}{60 + 10} = \frac{1}{1 + 10/60} = \frac{1}{1 + 1/6}.
-$$
+~$$
 
 Okay, so far no calculator was needed. We wrote $70 = 60 + 10$, as we
 know that $60/60$ is just $1$. This almost gets us there. If we really
@@ -161,9 +167,9 @@ According to [Wikipedia](http://tinyurl.com/yz5sz7e) -- and many
 introductory physics book -- while swinging the angle $\theta$ varies
 with time following this equation:
 
-$$
+$$~
 \theta''(t) + \frac{g}{l} \sin(\theta(t)) = 0.
-$$
+~$$
 
 That is, the second derivative of $\theta$ is proportional to the sine
 of $\theta$ where the proportionality constant involves $g$ from
@@ -201,7 +207,7 @@ more general Taylor remainder theorem):
 
 > Let $f(x)$ be twice differentiable on $I=(a,b)$, and $a < c <
 > b$. Then for any $x$ in $I$, there exists some value $\xi$ between $c$  and $x$ such that
-> $$f(x) = f(c) + f'(c)(x-c) + f''(\xi)\cdot(x-c)^2/2.$$
+> $$~f(x) = f(c) + f'(c)(x-c) + f''(\xi)\cdot(x-c)^2/2.~$$
 
 That is, the error is basically a constant times a quadratic function
 centered at $c$. 
@@ -222,27 +228,27 @@ plot([h,g], -2, 2)
 
 Similarly, for $f(x) = \log(1 + x)$ we have the following at $c=0$:
 
-$$
+$$~
 f'(x) = 1/(1+x), \quad f''(x) = -1/(1+x)^2.
-$$
+~$$
  
 So, as $f(c)=0$ and $f'(c) = 1$, we have
 
-$$
+$$~
 \lvert f(x) - x\rvert \leq \lvert f''(\xi)\rvert \cdot \frac{x^2}{2}
-$$
+~$$
 
 We see that $\lvert f''(x)\rvert$ is decreasing for $x > -1$. So if $-1 < x < c$ we have
 
-$$
+$$~
 \lvert f(x) - x\rvert \leq \lvert f''(x)\rvert \cdot \frac{x^2}{2} = \frac{x^2}{2(1+x)^2}.
-$$
+~$$
 
 And for  $c=0 < x$, we have
 
-$$
+$$~
 \lvert f(x) - x\rvert \leq \lvert f''(0)\rvert \cdot \frac{x^2}{2} = x^2/2.
-$$
+~$$
 
 
 Plotting we verify:
@@ -260,10 +266,10 @@ theorem in the extended form of Cauchy. Suppose $c=0$ and let $h(x) = f(x) - (f(
 f'(0) x)$ and $g(x) = x^2$. Then we have that there exists a $e$ with
 $0 < e < x$ such that
 
-$$
+$$~
 \text{error} = h(x) - h(0) = (g(x) - g(0)) \frac{h'(x)}{g'(x)} = x^2 \cdot \frac{1}{2} \cdot \frac{f'(e) - f'(0)}{e} =
 x^2 \cdot \frac{1}{2} \cdot f''(\xi).
-$$
+~$$
 
 The value of $\xi$, from the mean value theorem applied to $f'(x)$,
 satisfies $0 < \xi < e < x$, so is in $[0,x]$.
@@ -295,9 +301,9 @@ secondary. Applying this to our case, we have this rough form of the
 tangent line approximation valid for functions having a second
 derivative:
 
-$$
+$$~
 f(x) = f(c) + f'(c)(x-x) + \mathcal{O}(x^2).
-$$
+~$$
 
 ##### Example
 
@@ -335,12 +341,12 @@ This can be seen as some constant times $\mathcal{O}(x^2)$ will still be
 $\mathcal{O}(x^2)$, as will any term containing a power of $x$. This
 greatly simplifies the expression:
 
-$$
+$$~
 (x + \mathcal{O}(x^2)) \cdot (1 + x + \mathcal{O}(x^2)) =
 x\cdot(1+x) + x \cdot  \mathcal{O}(x^2) + (1+x) \cdot \mathcal{O}(x^2) =
 x + x^2 +  x \cdot  \mathcal{O}(x^2) + (1+x) \cdot \mathcal{O}(x^2) =
 x + \mathcal{O}(x^2).
-$$
+~$$
 
 The last equals sign might be surprising, but follows from properties
 of limits: $x^2$ is clearly big "oh" of $x^2$, and a constant of
@@ -351,9 +357,9 @@ $\mathcal{O}(x^2)$. This "algebra" makes things easy: multiply the linear terms,
 
 To see another one, lets predict what the series would be for $\sin(x)^2$, using our "simplified" algebra rules:
 
-$$
+$$~
 (x + \mathcal{O}(x^2)) \cdot (x + \mathcal{O}(x^2)) = (x \cdot x) + \mathcal{O}(x^2) = \mathcal{O}(x^2).
-$$
+~$$
 
 That is, the linear approximation is the flat line $y=0$ near $0$ for $\sin(x)^2$.
 
@@ -368,11 +374,11 @@ series(sin(x)^2, x, 0, 2)
 
 In general, we have the tangent line expansion about $c=0$ for the product of functions uses the following formula involving the tangent line approximation (at $c=0$) of each individual function:
 
-$$
+$$~
 (a + bx + \mathcal{O}(x^2)) \cdot (c + dx + \mathcal{O}(x^2)) = (a + bx)\cdot(c + dx) + \mathcal{O}(x^2) =
 ac + (ad + bc)x + bdx^2 + \mathcal{O}(x^2) =
 ac + (ad + bc)x + \mathcal{O}(x^2).
-$$
+~$$
 
 
 What about composition? The expression $\exp(\sin(x))$ around $0$
@@ -400,10 +406,10 @@ series(sin(exp(x)),x, 0, 2)
 Finally, what about quotients? We can use the fact that $1/(c+d\cdot x) = 1/c
 -d/c^2 x + \mathcal{O}(x^2)$ to see that if $c \neq 0$ we have in general:
 
-$$
+$$~
 \frac{a + bx +  \mathcal{O}(x^2)}{c + dx +  \mathcal{O}(x^2)} = (a + bx) \cdot 1/c^2(c - d \cdot x) + \mathcal{O}(x^2)
 = a/c + (bc - ad)/c^2 \cdot x + \mathcal{O}(x^2).
-$$
+~$$
 
 In our specific case, lets verify for $\sin(x)/\exp(x)$:
 

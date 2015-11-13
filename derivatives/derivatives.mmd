@@ -1,5 +1,10 @@
 # Derivatives
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 Before defining the derivative, let's begin with two motivating examples, that are familiar to any reader of a calculus text.
 
 ##### Example: Driving
@@ -13,9 +18,9 @@ The speedometer reads 60 miles per hour, what is the odometer doing?
 Besides recording total distance traveled, it is incrementing
 dutifully every hour by 60 miles. Why? Well, the well-known formula relating distance, time and rate of travel is
 
-$$
+$$~
 \text{distance} = \text{ rate } \times \text{ time.}
-$$
+~$$
 
 If the rate is a constant $60$ miles/hour, then in one hour the distance traveled is 60 miles.
 
@@ -26,7 +31,7 @@ $x$ is position at time $t$, $v$ is the velocity and $t$ the time
 traveled in hours. A simple graph of the first three hours would show:
 
 ```
-using Gadfly
+using Plots
 position(t) = 60 * t
 plot(position, 0, 3)
 ```
@@ -163,7 +168,7 @@ A graph of distance versus time could be found by interpolating between the meas
 ```
 ts = [0,1,2,3,4, 5]
 xs = [0,1,4,9,16,25]
-plot(x=ts, y=xs, Geom.line)
+plot(ts, xs)
 ```
 
 The graph looks almost quadratic. What would the following questions have yielded?
@@ -218,9 +223,9 @@ a line intersecting two specified points on a curve.
 
 Rather than parameterize this problem using $a$ and $b$, we let $c$ and $c+h$ represent the two values for $x$, then the secant-line-slope formula becomes
 
-$$
+$$~
 m = \frac{f(c+h) - f(c)}{h}.
-$$
+~$$
 
 ## The slope of the tangent line
 
@@ -236,9 +241,9 @@ The graphic suggests that the slopes of the secant line converge to
 the slope of a "tangent" line. That is this, for a given $c$, this
 limit exists:
 
-$$
+$$~
 \lim_{h \rightarrow 0} \frac{f(c+h) - f(c)}{h}.
-$$
+~$$
 
 We'll define the tangent line at $(c, f(c))$ to be the line through
 the point with the slope from the limit above -- provided that limit
@@ -284,9 +289,9 @@ line) or it does not exist. That is, there is derived function from
 $f$. Call this function the *derivative* of $f$. There are many
 notations for this, here we use the "prime" notation:
 
-$$
+$$~
 f'(x) = \lim_{h \rightarrow 0} \frac{f(x+h) - f(x)}{h}.
-$$
+~$$
 
 The limit above is identical, only it uses $x$ instead of $c$ to
 emphasize that we are thinking of function now, and not just a value
@@ -338,9 +343,9 @@ That used the formula $\sin(x+h) = \sin(x)\cos(h) + \sin(h)\cos(x)$.
 
 We could rearrange this as
 
-$$
+$$~
 \cos(x) \cdot \frac{\sin(h)}{h} + \sin(x) \cdot \frac{\cos(h) - 1}{h}
-$$
+~$$
 
 and take a limit (can you see what it will be?) or just let `SymPy` do this work:
 
@@ -351,9 +356,9 @@ limit((sin(x+h) - sin(x))/ h, h, 0)
 
 - Let's see what the derivative of $\log(x)$ is. We have
 
-$$
+$$~
 \frac{\log(x+h) - \log(x)}{h} = \frac{1}{h}\log(\frac{x+h}{x}) = \log((1+h/x)^{1/h}).
-$$
+~$$
 
 Earlier we saw that the limit as $u$ goes to $0$ of $f(u) = (1 +
 u)^{1/u}$ is $e$. Re-expressing the above we can get $1/x \cdot
@@ -387,9 +392,9 @@ $\Delta y/\Delta x$. This notation is very common, and especially
 useful when more than one variable is involved.  `SymPy` uses Leibniz
 notation in some of its output, expressing somethings such as:
 
-$$
+$$~
 f'(x) = \frac{d}{d\xi}(f(\xi)) \big|_{\xi=x}.
-$$
+~$$
 
 The notation -- $\big|$ -- on the right-hand side separates the tasks of finding the
 derivative and evaluating the derivative at a specific value.
@@ -425,16 +430,16 @@ Let's consider $k(x) = a\cdot f(x) + b\cdot g(x)$, what is its derivative?
 
 We can rearrange $(k(x+h) - k(x))$ as follows:
 
-$$
+$$~
 (a\cdot f(x+h) + b\cdot g(x+h)) - (a\cdot f(x) + b \cdot g(x)) =
 a\cdot (f(x+h) - f(x)) + b \cdot (g(x+h) - g(x)).
-$$
+~$$
 
 Dividing by $h$, we see that this becomes
 
-$$
+$$~
 a\cdot \frac{f(x+h) - f(x)}{h} + b \cdot \frac{g(x+h) - g(x)}{h} \rightarrow a\cdot f'(x) + b\cdot g'(x).
-$$
+~$$
 
 
 
@@ -492,9 +497,9 @@ In general, we want to express $\Delta f / \Delta x$ in a form so that we can ta
 
 But what do we know? We know $\Delta g / \Delta x$ and $\Delta f/\Delta y$. Using $y=g(x)$, this suggests that we might have luck with the right side of this equation:
 
-$$
+$$~
 \frac{\Delta f}{\Delta x} = \frac{\Delta f}{\Delta y} \cdot \frac{\Delta y}{\Delta x}.
-$$
+~$$
 
 
 Interpreting this, we get the *average* rate of change in the
@@ -507,9 +512,9 @@ $y$, $\Delta f/ \Delta y$.
 Re-expressing using derivative notation with $h$ would be:
 
 
-$$
+$$~
 \frac{f(g(x+h)) - f(g(x))}{h} = \frac{f(g(x+h)) - f(g(x))}{g(x+h) - g(x)} \cdot \frac{g(x+h) - g(x)}{h}.
-$$
+~$$
 
 The left hand side will converge to the derivative of $u(x)$ or $[f(g(x))]'$.
 
@@ -544,9 +549,9 @@ To see that this works in our specific case, we assume the general
 power rule that $[x^n]' = n x^{n-1}$ to get: $g'(x) = (1/2)x^{-1/2}$,
 $f'(x)=2x$, and $f'(g(x)) = 2(\sqrt{x})$. Together, the product is:
 
-$$
+$$~
 2\sqrt{x} \cdot (1/2) 1/\sqrt{x} = 1
-$$
+~$$
 
 Which is the same as the derivative of $x$ found by first evaluating the composition.
 
@@ -556,34 +561,34 @@ Which is the same as the derivative of $x$ found by first evaluating the composi
 
 This is a product of functions, using $[u\cdot v]' = u'v + uv'$ we get:
 
-$$
+$$~
 5x^4 \cdot \sin(x) + x^5 \cdot \cos(x)
-$$
+~$$
 
 - Find the derivative of $x^5 / \sin(x)$.
 
 This is a quotient of functions. Using $[u/v]' = (u'v - uv')/v^2$ we get
 
-$$
+$$~
 (5x^4 \cdot \sin(x) - x^5 \cdot \cos(x)) / (\sin(x))^2.
-$$
+~$$
 
 - Find the derivative of $\sin(x^5)$. This is a composition of
   functions $u(v(x))$ with $v(x) = x^5$. The chain rule says find the
   derivative of $u$ ($\cos(x)$) and evaluate at $v(x)$ ($\cos(x^5)$)
   then multiply by the derivative of $v$:
 
-$$
+$$~
 \cos(x^5) \cdot 5x^4.
-$$
+~$$
 
 - Similarly, but differently, find the derivative of $\sin(x)^5$. Now
   $v(x) = \sin(x)$, so the derivative of $u(x)$ ($5x^4$) evaluated at
   $v(x)$ is $5(\sin(x))^4$ so multiplying by $v'$ gives:
 
-$$
+$$~
 5(\sin(x))^4 \cdot \cos(x)
-$$
+~$$
 
 
 We can verify these with `SymPy`. Rather than take a limit, we will
@@ -616,9 +621,9 @@ expression, or `diff(f)`, where `f` is the name of a univariate function.
 
 - Let's see that the derivative of $e^x$ is just itself.
 
-$$
+$$~
 \frac{e^{x+h} - e^x}{h} = \frac{e^x \cdot(e^h -1)}{h}.
-$$
+~$$
 
 If we know that $\lim_{h \rightarrow 0}(e^h - 1)/h = 1$, we get
 $[e^x]' = e^x$, that is it is a function satisfying $f'=f$.
@@ -629,9 +634,9 @@ $[e^x]' = e^x$, that is it is a function satisfying $f'=f$.
 know the derivative of $e^x$. From their inverse relation, we have: $x
 = \log(e^x)$, so taking derivatives of both sides would yield:
 
-$$
+$$~
 1 = (\frac{1}{e^x}) \cdot [e^x]'.
-$$
+~$$
 
 Or solving, $[e^x]' = e^x$. This is a general strategy to find the
 derivative of an *inverse* function.
@@ -641,9 +646,9 @@ derivative of an *inverse* function.
 - The general product rule: When $n$ is not a positive integer we can re-express the power using $e$:
 $x^n = e^{n \log(x)}$. Now the chain rule can be applied:
 
-$$
+$$~
 [x^n]' = [e^{n\log(x)}]' = e^{n\log(x)} \cdot (n \frac{1}{x}) = n x^n \cdot \frac{1}{x} = n x^{n-1}.
-$$
+~$$
 
 #### Rules of derivatives and some samples
 
@@ -697,10 +702,10 @@ Find the second derivative of $e^{-x^2}$.
 
 We need the chain rule *and* the product rule:
 
-$$
+$$~
 [e^{-x^2}]'' = [e^{-x^2} \cdot (-2x)]' = (e^{-x^2} \cdot (-2x) \cdot(-2x) + e^{-x^2} \cdot (-2)) =
 e^{-x^2}(4x^2 - 2).
-$$
+~$$
 
 This can be verified:
 
@@ -718,15 +723,15 @@ Having to iterate the use of `diff` is cumbersome. An alternate notation is eith
 
 An approximate derivative can be used. By approximating the limit of the secant line with a value for a small, but positive, $h$, we get an approximation. That is
 
-$$
+$$~
 f'(x) \approx \frac{f(x+h) - f(x)}{h}.
-$$
+~$$
 
 This is the forward-difference approximation. The central difference approximation looks both ways:
 
-$$
+$$~
 f'(x) \approx \frac{f(x+h) - f(x-h)}{(2h)}.
-$$
+~$$
 
 Though in general they are different, they are both
 approximations. The central difference is a bit more accurate for the
@@ -776,10 +781,11 @@ some cases -- than symbolic derivatives and more accuracy than
 approximate derivatives. In fact the accuracy is on the order of
 machine precision.
 
-The `Roots` package has an operator `D` which implements a form of
-automatic differentiation. The notation used is `D(f)` to find the
-first derivative, and `D(f,k)` to return the $k$th. These return
-anonymous functions which can be passed directly to another function, or assigned a name.
+The `Roots` package has an operator `D` which uses an implementation
+of automatic differentiation provided by the `ForwardDiff`
+package. The notation used is `D(f)` to find the first derivative, and
+`D(f,k)` to return the $k$th. These return anonymous functions which
+can be passed directly to another function, or assigned a name.
 
 
 Here we see the error in estimating $f'(1)$ for the $f(x) = e^{-x^2/2}$.
@@ -794,10 +800,7 @@ In this case, it is exact.
 
 
 The `D` operator is only defined for most functions, not all. (The
-`diff` operator of `SymPy` is somewhat similar in that respect.) In
-particular, `D` can *not* be used to differentiate functions returned
-by `D`. This might be desirable for computing second derivatives, but
-won't work for technical reasons. Use `D(f,2)` instead.
+`diff` operator of `SymPy` is somewhat similar in that respect.) 
 
 ##### Example
 
@@ -874,9 +877,9 @@ radioq(choices, ans)
 
 In the derivation of the derivative of $\sin(x)$, the following limit is needed:
 
-$$
+$$~
 L = \lim_{h \rightarrow 0} \frac{\cos(h) - 1}{h}.
-$$
+~$$
 
 This is
 
@@ -1044,9 +1047,9 @@ numericq(val)
 
 ###### Question
 
-The `D` operator from the `Roots` package works only for the basic
-algebraic functions. In particular, it will not work with `Julia`'s
-`airy` function. To find numeric derivatives there, we can use the
+The `D` operator from the `Roots` package works for many, but not all function.
+In that case, numeric derivatives may be necessary. For `Julia`'s
+`airy` function find a numeric derivative using the
 forward difference. For $c=3$ and $h=10^{-8}$ find the forward
 difference approximation to $f'(3)$ for the `airy` function.
 

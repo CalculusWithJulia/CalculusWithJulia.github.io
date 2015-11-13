@@ -1,5 +1,10 @@
 # Polar Coordinates and Curves
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 The description of the $x$-$y$ plane via Cartesian coordinates is not
 the only possible way, though one that is most familiar. Here we discuss
 a different means. Instead of talking about over and up from an
@@ -9,9 +14,9 @@ origin, we focus on a direction and a distance from the origin.
 
 Polar coordinates parameterize the plane though an angle $\theta$ made from the positive ray of the $x$ axis and a radius $r$. To recover the Cartesian coordinates from the pair $(r,\theta)$, we have these formulas from [right](http://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates) triangle geometry:
 
-$$
+$$~
 x = r \cos(\theta),~ y = r \sin(\theta).
-$$
+~$$
 
 Each point $(x,y)$ corresponds to several possible values of $(r,
 \theta)$, as any integer multiple of $2\pi$ added to $\theta$ will
@@ -21,9 +26,9 @@ when we restrict to $r > 0$ and $0 \leq \theta < 2\pi$.
 For values in the first and fourth quadrants (the range of
 $\tan^{-1}(x)$), we have:
 
-$$
+$$~
 r = \sqrt{x^2 + y^2},~ \theta=\tan^{-1}(y/x).
-$$
+~$$
 
 For the other two quadrants, the signs of $y$ and $x$ must be
 considered. This is done with the function `atan2`.
@@ -45,13 +50,13 @@ rad*cos(theta), rad*sin(theta)
 This figure illustrates:
 
 ```
-using Gadfly
-p = plot(
-layer(x=[-5,5], y=[0,0],  Geom.line, Theme(default_color=color("gray"))),
-layer(x=[0,0],  y=[-5,5], Geom.line, Theme(default_color=color("gray"))),
-layer(x=[-3,0], y=[4,0],  Geom.line),
-layer(x=[-3],   y=[4],    Geom.point),
-layer(x=[-3+0.25],   y=[4],    Geom.label, label=["(-3,4) Cartesian or (5, 2.21...) polar"])
+using Plots
+p = Gadfly.plot(
+Gadfly.layer(x=[-5,5], y=[0,0],  Gadfly.Geom.line,   Gadfly.Theme(default_color=Gadfly.color("gray"))),
+Gadfly.layer(x=[0,0],  y=[-5,5], Gadfly.Geom.line,   Gadfly.Theme(default_color=Gadfly.color("gray"))),
+Gadfly.layer(x=[-3,0], y=[4,0],  Gadfly.Geom.line),
+Gadfly.layer(x=[-3],   y=[4],      Gadfly.Geom.point),
+Gadfly.layer(x=[-3+0.25],   y=[4],    Gadfly.Geom.label, label=["(-3,4) Cartesian or (5, 2.21...) polar"])
 )
 Outputonly(p)
 ```
@@ -74,19 +79,19 @@ constant function.
 The circle centered at $(r_0, \gamma)$ (in polar coordinates) with
 radius $R$ has a more involved description in polar coordinates:
 
-$$
+$$~
 r(\theta) = r_0 \cos(\theta - \gamma)  + \sqrt{R^2 - r_0^2\sin(\theta - \gamma)}.
-$$
+~$$
 
 ## Examples
 
 To help visualize some polar curves, we  first define a helper function for plotting:
 
 ```
-using Gadfly
+using Plots
 function polar_plot(r, a=0, b=2pi)
   ts = linspace(a, b, 500)
-  plot(x=[r(t)*cos(t) for t in ts], y = [r(t)*sin(t) for t in ts], Geom.line(preserve_order=true))
+  plot(Float64[r(t)*cos(t) for t in ts],  Float64[r(t)*sin(t) for t in ts])
 end
 ```
 
@@ -94,9 +99,9 @@ end
 
 The [rhodenea](http://www-history.mcs.st-and.ac.uk/Curves/Rhodonea.html) curve has
 
-$$
+$$~
 r(\theta) = a \sin(k\theta)
-$$
+~$$
 
 ```
 a, k = 4, 5
@@ -117,9 +122,9 @@ related to values within $0$ to $\pi$ via the relation $(r,\pi
 The [folium](http://www-history.mcs.st-and.ac.uk/Curves/Folium.html)
 is a somewhat similar looking curve, but has this description:
 
-$$
+$$~
 r(\theta) = -b \cos(\theta) + 4a \cos(\theta) \sin(2\theta)
-$$
+~$$
 
 
 ```
@@ -158,9 +163,9 @@ The plot repeats from there, so the initial plot could have been made over $[0, 
 
 The [Limacon of Pascal](http://www-history.mcs.st-and.ac.uk/Curves/Limacon.html) has
 
-$$
+$$~
 r(\theta) = b + 2a\cos(\theta)
-$$
+~$$
 
 ```
 a,b = 4, 2
@@ -211,7 +216,7 @@ r(\theta)^2 d\theta$.
 
 > Area of polar regions. Let $R$ denote the region bounded by the curve $r(\theta)$ and bounded by the rays
 > $\theta=a$ and $\theta=b$ with $b-a \leq 2\pi$, then the area of $R$ is given by
-> $$A = \frac{1}{2}\int_a^b r(\theta)^2 d\theta.$$
+> $$~A = \frac{1}{2}\int_a^b r(\theta)^2 d\theta.~$$
 
 So the area of the cardiod, which is parameterized over $[0, 2\pi]$ is found by
 
@@ -257,8 +262,9 @@ have this graph.
 ts = vcat(linspace(0, pi/2+pi/6), linspace(3pi/2 - pi/6, pi/2 + pi/6), linspace(3pi/2 - pi/6, 2pi))
 a,b = 1,1
 r(theta) = b + 2a*cos(theta)
-p = plot(x=[r(t)*cos(t) for t in ts], y=[r(t)*sin(t) for t in ts], Geom.polygon(fill=true, preserve_order=true),
-Theme(default_color=color("orange")))
+p = Gadfly.plot(x=[r(t)*cos(t) for t in ts], y=[r(t)*sin(t) for t in ts],
+         Gadfly.Geom.polygon(fill=true, preserve_order=true),
+         Gadfly.Theme(default_color=Gadfly.color("orange")))
 Outputonly(p)
 ```
 
@@ -300,20 +306,20 @@ approximated by the line segment connecting the points. Expressing the
 points in Cartesian coordinates and simplifying gives the distance
 squared as:
 
-$$
+$$~
 \begin{align}
 d_i^2 &= (r(t_i) \cos(t_i) - r(t_{i-1})\cos(t_{i-1}))^2 + (r(t_i) \sin(t_i) - r(t_{i-1})\sin(t_{i-1}))^2\\
 &= r(t_i)^2 - 2r(t_i)r(t_{i-1}) \cos(t_i - t_{i-1}) +  r(t_{i-1})^2 \\
 &\approx r(t_i)^2 - 2r(t_i)r(t_{i-1}) (1 - \frac{(t_i - t_{i-1})^2}{2} +  r(t_{i-1})^2 \quad(\text{as} \cos(x) \approx 1 - x^2/2)\\
 &= (r(t_i) - r(t_{i-1}))^2 + r(t_i)r(t_{i-1}) (t_i - t_{i-1})^2.
 \end{align}
-$$
+~$$
 
 As was done with arc length we multiply $d_i$ by $ (t_i - t_{i-1}) /
 (t_i - t_{i-1})$ and move the bottom factor under the square root:
 
 
-$$
+$$~
 \begin{align}
 d_i
 &= d_i \frac{t_i - t_{i-1}}{t_i - t_{i-1}} \\
@@ -321,7 +327,7 @@ d_i
 \frac{r(t_i)r(t_{i-1}) (t_i - t_{i-1})^2}{(t_i - t_{i-1})^2}} \cdot (t_i - t_{i-1})\\
 &= \sqrt{(r'(\xi_i))^2 + r(t_i)r(t_{i-1})} \cdot (t_i - t_{i-1}).\quad(\text{the mean value theorem})
 \end{align}
-$$
+~$$
 
 Adding the approximations to the $d_i$ looks like a Riemann sum approximation to the
 integral $\int_a^b \sqrt{(r'(\theta)^2) + r(\theta)^2} d\theta$ (with
@@ -329,7 +335,7 @@ the extension to the Riemann sum formula needed to derivate the arc
 length for a parameterized curve). That is:
 
 > Arc length of a polar curve. The arc length of the curve described in polar coordinates by $r(\theta)$ for $a \leq \theta \leq b$ is given by
-> $$\int_a^b \sqrt{(r'(\theta)^2) + r(\theta)^2} d\theta.$$
+> $$~\int_a^b \sqrt{(r'(\theta)^2) + r(\theta)^2} d\theta.~$$
 
 We test this out on a circle with $r(\theta) = R$, a constant. The
 integrand simplifies to just $\sqrt{R^2}$ and the integral is from $0$
@@ -359,9 +365,9 @@ quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), 0, 2pi)[1]
 
 The [equiangular](http://www-history.mcs.st-and.ac.uk/Curves/Equiangular.html) spiral has polar representation
 
-$$
+$$~
 r(\theta) = a e^{\theta \cot(b)}
-$$
+~$$
 
 With $a=1$ and $b=\pi/4$, find the arc length traced out from $\theta=0$ to $\theta=1$.
 
@@ -376,9 +382,9 @@ integrate(sqrt(diff(r(theta), theta)^2 + r(theta)^2), (theta, 0, 1))
 
 An Archimedean [spiral](http://en.wikipedia.org/wiki/Archimedean_spiral) is defined in polar form by
 
-$$
+$$~
 r(\theta) = a + b \theta
-$$
+~$$
 
 That is, the radius increases linearly. The crossings of the positive $x$ axis occur at $a + b n 2\pi$, so are evenly spaced out by $2\pi b$. These could be a model for such things as coils of materials of uniform thickness.
 
@@ -395,9 +401,9 @@ $r(2\pi n) = d_{\text{outer}}/2 = d_{\text{inner}}/2 + b (2\pi n)$. Solving for 
 $n = ( d_{\text{outer}} - d_{\text{inner}})/2 / (2\pi b)$. With this, the following must hold as the total arc length is $3700$ inches.
 
 
-$$
+$$~
 \int_0^{n\cdot 2\pi} \sqrt{r(\theta)^2 + r'(\theta)^2} d\theta = 3700
-$$
+~$$
 
 Numerically then we have:
 
@@ -485,17 +491,17 @@ yesnoq("yes")
 
 The polar curve $r(\theta) = 2\cos(\theta)$ has tangent lines at most points. This differential representation of the chain rule
 
-$$
+$$~
 \frac{dy}{dx} = \frac{dy}{d\theta} / \frac{dx}{d\theta},
-$$
+~$$
 
 allows the slope to be computed when $y$ and $x$ are the Cartesian
 form of the polar curve. For this curve, we have
 
-$$
+$$~
 \frac{dy}{d\theta} = \frac{d}{d\theta}(2\cos(\theta) \cdot \cos(\theta)),~ \text{ and }
 \frac{dx}{d\theta} = \frac{d}{d\theta}(2\sin(\theta) \cdot \cos(\theta)).
-$$
+~$$
 
 Numerically, what is the slope of the tangent line when $\theta = \pi/4$?
 
@@ -513,9 +519,9 @@ numericq(val)
 
 For different values $k > 0$ and $e > 0$ the polar equation
 
-$$
+$$~
 r(\theta) = \frac{ke}{1 + e\cos(\theta)}
-$$
+~$$
 
 has a familiar form. The value of $k$ is just a scale factor, but different values of $e$ yield different shapes.
 
@@ -585,7 +591,7 @@ radioq(choices, ans)
 Find the area of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curves/Eight.html) curve traced out by $r(\theta) = \cos(2\theta)\sec(\theta)^4$ from $-\pi/4$ to $\pi/4$. Do this numerically.
 
 ```
-r(theta) = sqrt{cos(2theta) * sec(theta)^4}
+r(theta) = sqrt(cos(2theta) * sec(theta)^4)
 val, _ = quadgk(t -> r(t)^2/2, -pi/4, pi/4)
 numericq(val)
 ```

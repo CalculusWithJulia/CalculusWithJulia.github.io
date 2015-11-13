@@ -1,22 +1,26 @@
 # Substitution
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
 
 The fundamental theorem relates the derivative and an antiderivative via:
 
-$$
+$$~
 \int_a^b f(x) dx = F(b) - F(a).
-$$
+~$$
 
 
 If $F(x) = G(u(x))$, then the chain rule tells us that $f(x) = g(u(x)) u'(x)$, so we get:
 
-$$
+$$~
 \int_{u(a)}^{u(b)} g(x) dx = \int_a^b g(u(x)) u'(x) dx= G(u(x)) \big|_a^b = G(x) \big|_{u(a)}^{u(b)}.
-$$
+~$$
 
 That is, this substitution formula applies:
 
-> $$ \int_a^b g(u(x)) u'(x) dx = \int_{u(a)}^{u(b)} g(x) dx. $$
+> $$~ \int_a^b g(u(x)) u'(x) dx = \int_{u(a)}^{u(b)} g(x) dx. ~$$
 
 We've seen a special case of this where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
 
@@ -28,15 +32,15 @@ Some examples are in order.
 
 Consider:
 
-$$
+$$~
 \int_0^{\pi/2} \cos(x) e^{\sin(x)} dx.
-$$
+~$$
 
 Clearly the $\sin(x)$ inside the exponential is an issue. If we let $u(x) = \sin(x)$, then $u'(x) = \cos(x)$, and this becomes
 
-$$
+$$~
 \int_{u(0)}^{u(\pi/2)} e^x dx = e^x \big|_{\sin(0)}^{\sin(\pi/2)} = e^1 - e^0.
-$$
+~$$
 
 This all worked as the problem was such that it was more or less obvious what to choose for $u$ and $G$.
 
@@ -55,9 +59,9 @@ know in this case that $du/dx = \cos(x)$. In terms of differentials,
 this gives $du = \cos(x) dx$. But this allows us to substitute in with
 $u$ and $du$ as is possible:
 
-$$
+$$~
 \int_0^{\pi/2} \cos(x) e^{\sin(x)} dx = \int_0^{\pi/2}  e^{\sin(x)} \cdot \cos(x) dx = \int_{u(0)}^{u(\pi)} e^u du.
-$$
+~$$
 
 ----
 
@@ -66,28 +70,28 @@ Let's illustrate with a new problem: $\int_0^2 4x e^{x^2} dx$.
 Again, we see that the $x^2$ inside the exponential is a complication. Letting $u = x^2$ we have $du = 2x dx$. We  have $4xdx$ in the
 original problem, so we will end up with $2du$:
 
-$$
+$$~
 \int_0^2 4x e^{x^2} dx = 2\int_0^2 e^{x^2} \cdot 2x dx = 2\int_{u(0)}^{u(2)} e^u du = 2 \int_0^4 e^u du =
 2 e^u\big|_{u=0}^4 = 2(e^4 - 1).
-$$
+~$$
 
 ----
 
 Consider now $\int_0^1 2x^2 \sqrt{1 + x^3} dx$. Here we see that the $1 + x^3$ makes the square root term complicated. If we call this $u$, the what is $du$? Clearly, $du = 3x^2 dx$, or $(1/3)du = x^2 dx$, so we can rewrite this as:
 
-$$
+$$~
 \int_0^1 2x^2 \sqrt{1 + x^3} dx = \int_{u(0)}^{u(1)} 2 \sqrt{u} (1/3) du = 2/3 \cdot \frac{u^{3/2}}{3/2} \big|_1^2 =
 \frac{4}{9} \cdot(2^{3/2} - 1).
-$$
+~$$
 
 
 ----
 
 Consider $\int_0^{\pi} \cos(x)^3 \sin(x) dx$. The $\cos(x)$ function inside the $x^3$ function is complicated. We let $u(x) = \cos(x)$ and see what that implies: $du = \sin(x) dx$, which we see is part of the question. So the above becomes:
 
-$$
+$$~
 \int_0^{\pi} \cos(x)^3 \sin(x) dx = \int_{u(0)}^{u(\pi)} u^3 du= \frac{u^4}{4}\big|_0^0 = 0.
-$$
+~$$
 
 Changing limits leaves the two endpoints the same, which means the
 total area after substitution is $0$. A graph of this function shows
@@ -95,7 +99,7 @@ that around $\pi/2$ we can see the function has symmetry about $\pi/2$, so the a
 
 
 ```
-using Gadfly
+using Plots
 f(x) = cos(x)^3 * sin(x)
 plot(f, 0, 1pi)
 ```
@@ -106,9 +110,9 @@ plot(f, 0, 1pi)
 
 Consider $\int_1^e \log(x)/x dx$. There isn't really an "inside" function here, but instead just a tricky $\log(x)$. If we let $u=\log(x)$, what happens? We get $du = 1/x dx$, which we see present in the original. So with this, we have:
 
-$$
+$$~
 \int_1^e \frac{\log(x)}{x} dx = \int_{u(1)}^{u(e)} u du = \frac{u^2}{2}\big|_0^1 = \frac{1}{2}.
-$$
+~$$
 
 ##### Example: Transformations
 
@@ -120,9 +124,9 @@ the integral over $a$ to $b$ in terms of the function $f(x)$?
 
 If $A = \int_a^b (1/h) \cdot f((x-c)/h) dx$ then we let $u = (x-c)/h$. With this, $du = 1/h \cdot dx$. This allows a straight substitution:
 
-$$
+$$~
 A = \int_a^b \frac{1}{h} f(\frac{x-c}{h}) dx = \int_{(a-c)/h}^{(b-c)/h} f(u) du.
-$$
+~$$
 
 So the answer is: the area under the transformed function over $a$ to $b$
 is the area of the function over the transformed region.
@@ -136,7 +140,7 @@ area under the curve of the transformed function?
 
 Let $u(x) = (x-c)/h$ and $g(x) = h f(u(x))$. Then, as $du = 1/h dx$
 
-$$
+$$~
 \begin{align}
 \int_{c-h}^{c+h} g(x) dx
 &= \int_{c-h}^{c+h} h f(u(x)) dx\\
@@ -144,7 +148,7 @@ $$
 &= \int_{-1}^1 f(u) du\\
 &= 1.
 \end{align}
-$$
+~$$
 
 So the area of this transformed function is still $1$. The shifting by
 $c$ we know doesn't effect the area, the scaling by $h$ inside of $f$
@@ -156,9 +160,9 @@ The "velocity" of an object includes a sense of direction in addition to the sen
 
 As mentioned previously, position is the integral of velocity, as expressed precisely through this equation:
 
-$$
+$$~
 x(t) = \int_0^t v(u) du - x(0).
-$$
+~$$
 
 What is the integral of speed?
 
@@ -166,9 +170,9 @@ If $v(t)$ is the velocity, the $s(t) = \lvert v(t) \rvert$ is the speed. If inte
 
 This integral
 
-$$
+$$~
 td(t) = \int_0^t s(u) du = \int_0^t \lvert v(u) \rvert du,
-$$
+~$$
 
 Gives the *total distance* traveled.
 
@@ -188,26 +192,26 @@ Find the position after 3 time units and the total distance traveled.
 
 We let $u(t) = t - 2$ so $du=dt$. The position is given by
 
-$$
+$$~
 \int_0^3  ((t-2)^3/3 - 4(t-2)/3) dt = \int_{u(0)}^{u(3)} (u^3/3 - 4/3 u) du =
 (\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{-2}^1 = \frac{3}{4}.
-$$
+~$$
 
 The speed is similar, but we have to work harder:
 
 
-$$
+$$~
 \int_0^3 \lvert v(t) \rvert dt = \int_0^3  \lvert ((t-2)^3/3 - 4(t-2)/3) \rvert dt  =
 \int_{-2}^1 \lvert u^3/3 - 4u/3 \rvert du.
-$$
+~$$
 
 But $u^3/3 - 4u/3 = (1/3) \cdot u(u-1)(u+2)$, so between $-2$ and $0$
 it is positive and between $0$ and $1$ negative, so this integral is:
 
-$$
+$$~
 \int_{-2}^0 (u^3/3 - 4u/3 ) du + \int_{0}^1 -(u^3/3 - 4u/3) du =
 (\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{-2}^0 - (\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{0}^1 = \frac{4}{3} - -\frac{7}{12} = \frac{23}{12}.
-$$
+~$$
 
 ## SymPy and substitution
 
@@ -268,9 +272,9 @@ For such problems, we know how to help `SymPy` out-- we can break the integral i
 
 For substitution problems, we can also help out. For example, find an antiderivative for
 
-$$
+$$~
 \int(1 + \log(x)) \sqrt{1 + (x\log(x))^2} dx
-$$
+~$$
 
 A quick attempt with `SymPy` turns up nothing:
 
@@ -324,9 +328,9 @@ $\sqrt{1 + x^2}$ to $\sqrt{1 + \tan(u)^2} = \sqrt{\sec(u)^2}$ which is
 $\lvert \sec(u) \rvert$. What of $du$? The chain rule gives
 $\sec(u)^2du = dx$. In short we get:
 
-$$
+$$~
 \int \sqrt{1 + x^2} dx = \int \sec(u)^2 \lvert \sec(u) \rvert du = \int \sec(u)^3 du
-$$
+~$$
 
 
 This leaves still the question of integrating $\sec(u)^3$, which we aren't (yet) prepared to discuss, but we see that this type of substitution can re-express an integral in a new way that may pay off.
@@ -339,9 +343,9 @@ Consider $\int 1/(1+x^2) dx$. This is an antiderivative of some function, but if
 
 Letting $u = 1+x^2$ we get $du = 2xdx$ which gives $\int 1/u (2x) du$. We aren't able to address the "$2x$" part successfully, so this attempt is for naught. Now we try the trigonometric substitution taking advantage of $1+\tan(x)^2 = \sec(x)^2$. Letting $\tan(u) = x$ yields $\sec(u)^2 du = dx$ and we get:
 
-$$
+$$~
 \int \frac{1}{1+x^2} dx = \int \frac{1}{1 + \tan(u)^2} \sec(u)^2 du = \int 1 du = u.
-$$
+~$$
 
 But $\tan(u) = x$, so in terms of $x$, an antiderivative is just $\tan^{-1}(x)$, or the arctangent. Here we verify with `SymPy`:
 
@@ -353,28 +357,28 @@ integrate(1/(1+x^2), x)
 
 The expression $1-x^2$ can be attacked by the substitution $\sin(u) =x$ as then $1-x^2 = 1-\cos(u)^2 = \sin(u)^2$. Here we see this substitution being used successfully:
 
-$$
+$$~
 \int \frac{1}{\sqrt{9 - x^2}} dx = \int \frac{1}{\sqrt{9 - (3\sin(u))^2}} \cdot 3\cos(u) du =
 \int \frac{1}{3\sqrt{1 - \sin(u)^2}}\cdot3\cos(u) du = \int du = u = \sin^{-1}(x/3).
-$$
+~$$
 
 
 ----
 
 The expression $x^2 - 1$ is a bit different, this lends itself to $\sec(u) = x$ for a substitution, for $\sec(u)^2 - 1 = \tan(u)^2$. For example, we try $\sec(u) = x$ to integrate:
 
-$$
+$$~
 \int \frac{1}{\sqrt{x^2 - 1}} dx = \int \frac{1}{\sqrt{\sec(u)^2 - 1}} \cdot \sec(u)\tan(u) du =
 \int \frac{1}{\tan{u}}\sec(u)\tan(u) du = \int \sec(u) du.
-$$
+~$$
 
 
 This doesn't seem that helpful, but the antiderivative to $\sec(u)$ is
 $\log\lvert (\sec(u) + \tan(u))\rvert$, so we can proceed to get:
 
-$$
+$$~
 \int \frac{1}{\sqrt{x^2 - 1}} dx = \int \sec(u) du = \log\lvert (\sec(u) + \tan(u))\rvert = \log\lvert x + \sqrt{x^2-1} \rvert.
-$$
+~$$
 
 ----
 
@@ -385,26 +389,26 @@ the ellipse.
 
 We need to compute:
 
-$$
+$$~
 2\int_{-a}^a b \sqrt{1 - x^2/a^2} dx =
 4 b \int_0^a\sqrt{1 - x^2/a^2} dx.
-$$
+~$$
 
 Letting $\sin(u) = x/a$ gives $a\cos(u)du = dx$ and an antiderivative is found with:
 
-$$
+$$~
 4 b \int_0^a \sqrt{1 - x^2/a^2} dx = 4b \int_0^{\pi/2} \sqrt{1-u^2} a \cos(u) du
 = 4ab \int_0^{\pi/2} \cos(u)^2 du
-$$
+~$$
 
 The identify $\cos(u)^2 = (1 +  \cos(2u))/2$ makes this tractable:
 
-$$
+$$~
 4ab \int \cos(u)^2 du
 = 4ab\int_0^{\pi/2}(\frac{1}{2} + \frac{\cos(2u)}{2}) du
 = 4ab(\frac{1}{2}u + \frac{\sin(2u)}{4})\big|_0^{\pi/2} =
 4ab (\pi/4 + 0) = \pi ab.
-$$
+~$$
 
 Keeping in mind that that a circle with radius $a$ is an ellipse with
 $b=a$, we see that this gives the correct answer for a circle.
@@ -499,9 +503,9 @@ radioq(choices, ans)
 
 Integrating $\int_0^1 x \sqrt{1 - x^2} dx$ can be done by using the $u$-substitution $u=1-x^2$. This yields an integral
 
-$$
+$$~
 \int_a^b \frac{-\sqrt{u}}{2} du.
-$$
+~$$
 
 What are $a$ and $b$?
 
@@ -596,9 +600,9 @@ radioq(choices, ans)
 
 The integral $\int_{1/2}^1 \sqrt{1 - x^2}dx$ can be approached with the substitution $\sin(u) = x$ giving:
 
-$$
+$$~
 \int_a^b \cos(u)^2 du.
-$$
+~$$
 
 What are $a$ and $b$?
 

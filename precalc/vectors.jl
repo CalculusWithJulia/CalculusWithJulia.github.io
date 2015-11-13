@@ -70,7 +70,7 @@ film = roll(make_plot, fps=1, duration=11)
 film.fps=1
 imgfile = tempname() * ".gif"
 write(imgfile, film)
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = """
 
 Position, velocity, and acceleration vectors (scaled) for projectile
@@ -103,7 +103,7 @@ io = open(imgfile, "w")
 writemime(io, "image/png", vector_addition_image)
 close(io)
 
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = """
 
 The sum of two vectors can be visualized by placing the tail of one at the tip of the other
@@ -131,7 +131,7 @@ io = open(imgfile, "w")
 writemime(io, "image/png", vector_subtraction_image)
 close(io)
 
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = """
 
 The sum of two vectors can be visualized by placing the tail of one at the tip of the other
@@ -159,7 +159,7 @@ io = open(imgfile, "w")
 writemime(io, "image/png", generic_vector)
 close(io)
 
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = """
 
 A vector and its unit vector. They share the same direction, but the unit vector has a standardized magnitude.
@@ -191,7 +191,7 @@ io = open(imgfile, "w")
 writemime(io, "image/png", vector_decomp)
 close(io)
 
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = L"""
 
 The vector $\langle 4,3 \rangle$ is written as
@@ -218,7 +218,7 @@ io = open(imgfile, "w")
 writemime(io, "image/png", vector_rtheta)
 close(io)
 
-data = readall(`julia4 -e "base64encode(readall(\"$imgfile\")) |> print"`);
+data = base64encode(readall(imgfile))
 caption = L"""
 
 A vector $\langle x, y \rangle$ can be written as $\langle r\cdot

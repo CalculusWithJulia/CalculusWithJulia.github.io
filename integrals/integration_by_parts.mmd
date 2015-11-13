@@ -1,28 +1,36 @@
 # Integration By Parts
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
+
 So far we have seen that the *derivative* rules lead to *integration rules*. In particular:
 
 * $[au(x) + bv(x)]' = au'(x) + bv'(x)$ gives rise to an integration
 rule: $\int (au(x) + bv(x))dx = a\int u(x)dx + b\int v(x))dx$. (That is
 the linearity of the derivative means the integral has linearity.)
 
-* $[f(g(x))]' = f'(g(x)) g'(x)$ gives $\int_a^b f(g(x)) g'(x) dx = \int_{g(a)}^{g(b)} f(x) dx$.
+* $[f(g(x))]' = f'(g(x)) g'(x)$ gives $\int_a^b f(g(x)) g'(x) dx =
+  \int_{g(a)}^{g(b)} f(x) dx$. That is, substitution reverses the
+  chain rule.
 
 Now we turn our attention to the implications of the *product rule*: $[uv]' = u'v + uv'$. The resulting technique is called integration by parts.
 
 First, we have:
 
-$$
+$$~
 u(x)\cdot v(x)\big|_a^b = \int_a^b [u(x) v(x)]' dx = \int_a^b u'(x) \cdot v(x) dx + \int_a^b u(x) \cdot v'(x) dx.
-$$
+~$$
 
 This is re-expressed as
 
-$$
+$$~
 \int_a^b u(x) \cdot v'(x) dx = u(x) \cdot v(x)\big|_a^b -  \int_a^b v(x) \cdot u'(x) dx,
-$$
+~$$
 
-Or more informally as $\int udv = uv - \int v du$.
+Or, more informally, as $\int udv = uv - \int v du$.
 
 
 {{{parts_picture}}}
@@ -31,19 +39,19 @@ Or more informally as $\int udv = uv - \int v du$.
 
 This can sometimes be confusingly written as:
 
-$$
+$$~
 \int f(x) g'(x) dx = f(x)g(x) - \int f'(x) g(x) dx.
-$$
+~$$
 
 (The confusion coming from the fact that the indefinite integrals are only defined up to a constant.)
 
 How does this help? It allows us to differentiate parts of an integral in hopes it makes the result easier to integrate.
 
-An illustration can help.
+An illustration can clarify.
 
 Consider the integral $\int_0^\pi x\sin(x) dx$. If we let $u=x$ and $dv=\sin(x) dx$, the $du = 1dx$ and $v=-\cos(x)$. The above then says:
 
-$$
+$$~
 \begin{align}
 \int_0^\pi x\sin(x) dx &= \int_0^\pi u dv\\
 &= uv\big|_0^\pi - \int_0^\pi v du\\
@@ -52,7 +60,7 @@ $$
 &= \pi + \sin(x)\big|_0^\pi\\
 &= \pi.
 \end{align}
-$$
+~$$
 
 The technique means one part is differentiated and one part
 integrated. The art is to break the integrand up into a piece that gets
@@ -63,7 +71,7 @@ harder through integration.
 
 Consider $\int_1^2 x \log(x) dx$. We might try differentiating the $\log(x)$ term, so we set $u=\log(x)$ and $dv=xdx$. Then we get $du = 1/x dx$ and $v = x^2/2$. Putting together gives:
 
-$$
+$$~
 \begin{align}
 \int_1^2 x \log(x) dx
 &= (\log(x) \cdot \frac{x^2}{2}) \big|_1^2 - \int_1^2 \frac{x^2}{2} \frac{1}{x} dx\\
@@ -71,13 +79,13 @@ $$
 &= 2\log(2) - (1 - \frac{1}{4}) \\
 &= 2\log(2) - \frac{3}{4}.
 \end{align}
-$$
+~$$
 
 ##### Example
 
 This related problem uses the same idea, though perhaps harder to see at first glance, as $dv=dx$ seems too trivial.
 
-$$
+$$~
 \begin{align}
 \int \log(x) dx
 &= \int u dv\\
@@ -86,37 +94,37 @@ $$
 &= x \log(x) - \int dx\\
 &= x \log(x) - x
 \end{align}
-$$
+~$$
 
-We're this a definite integral problem, we would have written:
+Were this a definite integral problem, we would have written:
 
-$$
+$$~
 \int_a^b \log(x) dx = (x\log(x))\big|_a^b - \int_a^b dx = (x\log(x) - x)\big|_a^b.
-$$
+~$$
 
 ##### Example
 
 Sometimes integration by parts is used two or more times. Here we let $u=x^2$ and $dv = e^x dx$:
 
 
-$$
+$$~
 \int_a^b x^2 e^x dx = (x^2 \cdot e^x)\big|_a^b - \int_a^b 2x e^x dx.
-$$
+~$$
 
 
 But we can do $\int_a^b x e^xdx$ the same way:
 
-$$
+$$~
 \int_a^b x e^x = (x\cdot e^x)\big|_a^b - \int_a^b 1 \cdot e^xdx = (xe^x - e^x)\big|_a^b.
-$$
+~$$
 
 Combining gives the answer:
 
-$$
+$$~
 \int_a^b x^2 e^x dx
 = (x^2 \cdot e^x)\big|_a^b - 2( (xe^x - e^x)\big|_a^b ) =
 e^x(x^2  - 2x - 1) \big|_a^b.
-$$
+~$$
 
 
 In fact, it isn't hard to see that an integral of $x^m e^x$, $m$ a positive integer, can be handled in this manner. For example, when $m=10$, `SymPy` gives:
@@ -135,48 +143,48 @@ polynomial of degree $n$.
 
 The same technique is attempted for  this integral, but ends differently. First in the following we let $u=\sin(x)$ and $dv=e^x dx$:
 
-$$
+$$~
 \int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx.
-$$
+~$$
 
 Now we let $u = \cos(x)$ and again $dv=e^x dx$:
 
-$$
+$$~
 \int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx = \sin(x)e^x - \cos(x)e^x - \int (-\sin(x))e^x dx.
-$$
+~$$
 
 But simplifying this gives:
 
-$$
+$$~
 \int e^x \sin(x)dx = - \int e^x \sin(x)dx +  e^x(\sin(x) - \cos(x)).
-$$
+~$$
 
 Solving for the "unknown" $\int e^x \sin(x) dx$ gives:
 
-$$
+$$~
 \int e^x \sin(x) dx = \frac{1}{2} e^x (\sin(x) - \cos(x)).
-$$
+~$$
 
 ##### Example
 
 Positive integer powers of trigonometric functions can be addressed by this technique. Consider 
 $\int \cos(x)^n dx$. We let $u=\cos(x)^{n-1}$ and $dv=\cos(x) dx$. Then $du = (n-1)\cos(x)^{n-2}(-\sin(x))dx$ and $v=\sin(x)$. So,
 
-$$
+$$~
 \begin{align}
 \int \cos(x)^n dx &= \cos(x)^{n-1} \cdot (\sin(x)) - \int (\sin(x)) ((n-1)\sin(x) \cos(x)^{n-2}) dx \\
 &= \sin(x) \cos(x)^{n-1} + (n-1)\int \sin^2(x) \cos(x)^{n-1} dx\\
 &= \sin(x) \cos(x)^{n-1} + (n-1)\int (1 - \cos(x)^2) \cos(x)^{n-2} dx\\
 &= \sin(x) \cos(x)^{n-1} + (n-1)\int \cos(x)^{n-2}dx - (n-1)\int \cos(x)^n dx.
 \end{align}
-$$
+~$$
 
 We can then solve for the unknown ($\int \cos(x)^{n}dx$) to get this *reduction formula*:
 
 
-$$
+$$~
 \int \cos(x)^n dx = \frac{1}{n}\sin(x) \cos(x)^{n-1} + \frac{n-1}{n}\int \cos(x)^{n-2}dx.
-$$
+~$$
 
 This is called a reduction formula as it reduces the problem from an
 integral with a power of $n$ to one with a power of $n - 2$, so could
@@ -196,21 +204,21 @@ The visual interpretation of integration by parts breaks area into two pieces, t
 
 Let $uv = x f^{-1}(x)$. Then we have $[uv]' = u'v + uv' = f^{-1}(x) + x [f^{-1}(x)]'$. So,
 
-$$
+$$~
 \begin{align}
 \int f^{-1}(x) dx
 &= xf^{-1}(x) - \int x [f^{-1}(x)]' dx\\
 &= xf^{-1}(x) - \int f(u) du.\\
 \end{align}
-$$
+~$$
 
 The last line follows from the $u$-substitution $u=f^{-1}(x)$ for then $du = [f^{-1}(x)]' dx$ and $x=f(u)$.
 
 We use this to find an antiderivative for $\sin^{-1}(x)$:
 
-$$
+$$~
 \int \sin^{-1}(x) = x \sin^{-1}(x) - \int \sin(u) du =  x \sin^{-1}(x) + \cos(u) = x \sin^{-1}(x) + \cos(\sin^{-1}(x)).
-$$
+~$$
 
 Using right triangles to simplify, the last value
 $\cos(\sin^{-1}(x))$ can otherwise be written as $\sqrt{1 - x^2}$.
@@ -240,58 +248,58 @@ dt$. For analyzing this we integrate once by parts using $u=f(t+x_i)$ and
 $dv=dt$. But instead of letting $v=t$, we choose to add -- as is our prerogative -- a constant of integration
 $A$, so $v=t+A$:
 
-$$
+$$~
 \int_0^h f(t + x_i) dt = (t+A)f(t+x_i)\big|_0^h - \int_0^h (t + A) f'(t + x_i) dt.
-$$
+~$$
 
 We choose $A$ to be $-h/2$, for then the term $(t+A)f(t+x_i)\big|_0^h$
 becomes $(1/2)(f(x_i+h) + f(x_i)) \cdot h$, or the trapezoid
 approximation. This means, the error over this interval -- actual minus estimate -- satisfies:
 
-$$
+$$~
 \text{error}_i = \int_{x_i}^{x_i+h}f(x) dx - \frac{f(x_i+h) -f(x_i)}{2} \cdot h  = - \int_0^h (t + A) f'(t + x_i) dt.
-$$
+~$$
 
 For this, we *again* integrate by parts with $u=f'(t+x_i)$ and
 $dv=(t+A)dt$. Again we add a constant of integration to get $v=(t+A)^2/2 + B$, and
 our error becomes:
 
-$$
+$$~
 \text{error}_i = -(\frac{(t+A)^2}{2} + B)f'(t+x_i)\big|_0^h + \int_0^h (\frac{(t+A)^2}{2} + B) \cdot f''(t+x_i) dt.
-$$
+~$$
 
 With $A=-h/2$, $B$ is chosen to be $-h^2/8$ which causes the first
 term to vanish and the absolute error to simplify to:
 
-$$
+$$~
 \lvert \text{error}_i  \rvert = \lvert \int_0^h \left(\frac{(t-h/2)^2}{2} - \frac{h^2}{8}\right) \cdot f''(t + x_i) dt \rvert.
-$$
+~$$
 
 Now, we assume the $\lvert f''(t)\rvert$ is bounded by $K$ for any $a \leq t \leq b$. This
 will be true, for example, if the second derivative is assumed to exist and be continous.  Using this fact about definite integrals
 $\lvert \int_a^b g dx\rvert \leq \int_a^b \lvert g \rvert dx$ we have:
 
 
-$$
+$$~
 \lvert \text{error}_i  \rvert \leq K \int_0^h \lvert (\frac{(t-h/2)^2}{2} - \frac{h^2}{8}) \rvert dt.
-$$
+~$$
 
 But what is the function in the integrand? Clearly it is a quadratic in $t$. Expanding gives $1/2 \cdot
 (t^2 - ht)$.  This is negative over $[0,h]$ (and $0$ at these
 endpoints, so the integral above is just:
 
-$$
+$$~
 \frac{1}{2}\int_0^h (ht - t^2)dt = \frac{1}{2} (\frac{ht^2}{2} - \frac{t^3}{3})\big|_0^h = \frac{h^3}{12}
-$$
+~$$
 
 This gives the bound: $\vert \text{error}_i \rvert \leq K h^3/12$. The
 *total* error may be less, but is not more than the value found by
 adding up the error over each of the $n$ intervals. As our bound does not
 depend on the $i$, we have this sum satisfies:
 
-$$
+$$~
 \lvert \text{error}\rvert \leq n \cdot \frac{Kh^3}{12} = \frac{K(b-a)^3}{12}\frac{1}{n^2}.
-$$
+~$$
 
 So the error is like $1/n^2$, in contrast to the $1/n$ error of the
 Riemann sums. One way to see this, for the Riemann sum it takes twice

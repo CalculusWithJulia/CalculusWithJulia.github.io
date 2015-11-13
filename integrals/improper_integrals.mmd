@@ -1,5 +1,11 @@
 # Improper Integrals
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
+
 A function $f(x)$ is Riemann integrable over an interval $[a,b]$ if
 some limit involving Riemann sums is defined. This limit will fail if
 $f(x) = \infty$ in $[a,b]$. As well, the Riemann sum idea is undefined if either $a$
@@ -34,39 +40,39 @@ domain.
 
 The right question involves a limit. Fix a finite $a$. We define the definite integral over $[a,\infty)$ to be
 
-$$
+$$~
 \int_a^\infty f(x) dx = \lim_{M \rightarrow \infty} \int_a^M f(x) dx,
-$$
+~$$
 
 when the limit exists. Similarly, we define the definite integral over $(-\infty, a]$ through
 
-$$
+$$~
 \int_{-\infty}^a f(x) dx  = \lim_{M \rightarrow -\infty} \int_M^a f(x) dx.
-$$
+~$$
 
 For the interval $(-\infty, \infty)$ we have need both these limits to exist:
 
 
-$$
+$$~
 \int_{-\infty}^\infty f(x) dx  = \lim_{M \rightarrow -\infty} \int_M^a f(x) dx + \lim_{M \rightarrow \infty} \int_a^M f(x) dx.
-$$
+~$$
 
 ##### Examples
 
 
 * The function $f(x) = 1/x^2$ is integrable over $[1, \infty)$, as this limit exists:
 
-$$
+$$~
 \lim_{M \rightarrow \infty} \int_1^M \frac{1}{x^2}dx = \lim_{M \rightarrow \infty} -\frac{1}{x}\big|_1^M
 = \lim_{M \rightarrow \infty} 1 - \frac{1}{M} = 1.
-$$
+~$$
 
 * The function $f(x) = 1/x^{1/2}$ is not integrable over $[1, \infty)$, as this limit fails to exist:
 
-$$
+$$~
 \lim_{M \rightarrow \infty} \int_1^M \frac{1}{x^{1/2}}dx = \lim_{M \rightarrow \infty} \frac{x^{1/2}}{1/2}\big|_1^M
 = \lim_{M \rightarrow \infty} 2\sqrt{M} - 2 = \infty.
-$$
+~$$
 
 The limit is infinite, so does not exist except in an extended sense.
 
@@ -91,13 +97,13 @@ $[a, \infty)$ for any finite $a$. This is because, $F(M) = e^x$ and this has a l
 
 We first find an antiderivative using the $u$-substitution $u(x) = \log(x)$:
 
-$$
+$$~
 \int_e^M \frac{e}{x \log(x)^{2}} dx
 = \int_{\log(e)}^{\log(M)} \frac{1}{u^{2}} du
 = \frac{-1}{u} \big|_{1}^{\log(M)}
 = \frac{-1}{\log(M)} - \frac{-1}{1}
 = 1 - \frac{1}{M}.
-$$
+~$$
 
 As $M$ goes to $\infty$, this will converge to $1$.
 
@@ -139,11 +145,11 @@ Suppose $a < c$, we define $\int_a^c f(x) dx = \lim_{M \rightarrow c-} \int_a^c 
 
 * Consider $f(x) = 1/\sqrt{x}$ at $0$. Here $f(0)= \infty$, so the usual notion of a limit won't apply to $\int_0^1 f(x) dx$. However,
 
-$$
+$$~
 \lim_{M \rightarrow 0+} \int_M^1 \frac{1}{\sqrt{x}} dx 
 = \lim_{M \rightarrow 0+} \frac{\sqrt{x}}{1/2} \big|_M^1
 = \lim_{M \rightarrow 0+} 2(1) - 2\sqrt{M} = 2.
-$$
+~$$
 
 ```
 note(L"""
@@ -155,11 +161,11 @@ The cases $f(x) = x^{-n}$ for $n > 0$ are tricky. For $n > 1$, the functions can
 
 * Now consider $f(x) = 1/x$. Is this integral defined $\int_0^1 1/x dx$? It will be *if* this limit exists:
 
-$$
+$$~
 \lim_{M \rightarrow 0+} \int_M^1 \frac{1}{x} dx
 = \lim_{M \rightarrow 0+} \log(x) \big|_M^1
 = \lim_{M \rightarrow 0+} \log(1) - \log(M) = \infty.
-$$
+~$$
 
 So the function is not integrable around $0$.
 
@@ -173,9 +179,9 @@ integrate(1/x, (x, -1, 1))
 
 We need to consider the limit of $\int_M^1 f(1/x) dx$. We try the $u$-substitution $u(x) = 1/x$. This gives $du = -(1/x^2)dx = -u^2 dx$. So, the substitution becomes:
 
-$$
+$$~
 \int_M^1 f(1/x) dx = \int_{1/M}^{1/1} f(u) (-u^2) du = \int_1^{1/M} u^2 f(u) du.
-$$
+~$$
 
 But the limit as $M \rightarrow 0$ of $1/M$ is the same going t0 $\infty$, so the right side will converge by the assumption. Thus we get $f(1/x)$ is integrable over $(0,1]$.
 
@@ -221,17 +227,17 @@ F(-\infty) = 1/2 - (-1/2) = 1$.
 
 The integral for $-\infty$ to $a$ of $f(x)$ is just an integral of the constant $0$, so will be $0$. (This is the only constant with finite area over an infinite domain.) Similarly, the integral from $b$ to $\infty$ will be $0$. This means:
 
-$$
+$$~
 \int_{-\infty}^\infty f(x) dx = \int_a^b \frac{1}{b-a} dx = 1.
-$$
+~$$
 
 * Show that if $f(x)$ is a probability density then so is $f(x-c)$ for any $c$.
 
 We have by the $u$-substitution
 
-$$
+$$~
 \int_{-\infty}^\infty f(x-c)dx = \int_{u(-\infty)}^{u(\infty)} f(u) du = \int_{-\infty}^\infty f(u) du = 1.
-$$
+~$$
 
 The key is that we can use the regular $u$-substitution formula
 provided $\lim_{M \rightarrow \infty} u(M) = u(\infty)$ is
@@ -243,9 +249,9 @@ limit.)
 Again, by a $u$ substitution with, now, $u(x) = (x-c)/h$, we have $du = 1/h dx$ and the result follows just as before:
 
 
-$$
+$$~
 \int_{-\infty}^\infty \frac{1}{h}f(\frac{x-c}{h})dx = \int_{u(-\infty)}^{u(\infty)} f(u) du = \int_{-\infty}^\infty f(u) du = 1.
-$$
+~$$
 
 
 * If $F(x) = 1 - e^{-x}$, for $x \geq 0$, and $0$ otherwise,  find $f(x)$.

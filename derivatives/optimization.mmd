@@ -1,5 +1,10 @@
 # Optimization
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 This section discusses a basic application of calculus to answer
 questions which relate to the largest or smallest a function can be given
 some constraints.
@@ -45,15 +50,15 @@ The basic mathematical approach is to find a function of a single
 variable to maximize or minimize. In this case we have two variables
 describing a rectangle: a base $b$ and height $h$. Our formulas are the area of a rectangle:
 
-$$
+$$~
 A = bh,
-$$
+~$$
 
 and the formula for the perimeter of a rectangle:
 
-$$
+$$~
 P = 2b + 2h = 20.
-$$
+~$$
 
 From this last one, we see that $b$ can be no bigger than 10 and no
 smaller than 0 from the restriction put in place through the
@@ -68,7 +73,7 @@ interval). Rather than solve analytically by taking a derivative, we
 simply graph to find the value:
 
 ```
-using Gadfly
+using Plots
 A(b) = b * (10 - b)
 plot(A, 0, 10)
 ```
@@ -143,12 +148,12 @@ ts = linspace(0, pi)
 x1,y1 = 4, 4.85840
 x2,y2 = 3, 6.1438
 delta = 4
-p = plot(
-layer(x=delta+x1*[0, 1,1,0], y=y1*[0,0,1,1], Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("blue"))),
-layer(x=delta+x1/2+x1/2*cos(ts), y=y1+x1/2*sin(ts), Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("red"))),
+p = Gadfly.plot(
+ Gadfly.layer(x=delta+x1*[0, 1,1,0], y=y1*[0,0,1,1],  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("blue"))),
+ Gadfly.layer(x=delta+x1/2+x1/2*cos(ts), y=y1+x1/2*sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("red"))),
 
-layer(x=x2*[0, 1,1,0], y=y2*[0,0,1,1], Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("blue"))),
-layer(x=x2/2+x2/2*cos(ts), y=y2+x2/2*sin(ts), Geom.polygon(preserve_order=true, fill=true), Theme(default_color=color("red")))
+ Gadfly.layer(x=x2*[0, 1,1,0], y=y2*[0,0,1,1],  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("blue"))),
+ Gadfly.layer(x=x2/2+x2/2*cos(ts), y=y2+x2/2*sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("red")))
 )
 Outputonly(p)
 ```
@@ -157,9 +162,9 @@ For this problem, we have two equations.
 
 The area is the area of the rectangle plus the area of the half circle ($\pi r^2/2$).
 
-$$
+$$~
 A = xy + \pi(x/2)^2/2
-$$
+~$$
 
 In `Julia` this is
 
@@ -171,9 +176,9 @@ A(x, y) = x*y + pi*(x/2)^2 / 2
 The perimeter consists of 3 sides of the rectangle and the perimeter
 of half a circle ($\pi r$, with $r=x/2$):
 
-$$
+$$~
 P = 2y + x + \pi(x/2) = 20
-$$
+~$$
 
 We solve for $y$ in the first with $y = (20 - x - \pi(x/2))/2$ so that in `julia` we have:
 
@@ -393,9 +398,9 @@ given by the hypotenuse of a triangle with lengths $5$ and $10-x$. His
 time driving would be $x/30$ and his time running would be $\sqrt{5^2
 + (10-x)^2}/10$ for a total of:
 
-$$
+$$~
 T(x) = x/30 + \sqrt{5^2 + (10-x)^2}/10, \quad 0 < x < 10
-$$
+~$$
 
 With the endpoints given by
 $T(0) = \sqrt{10^2 + 5^2}/10$ and $T(10) = (10 + 5)/30$.
@@ -494,15 +499,15 @@ this amount is produced in the shape of cylinder with radius $r$ and
 height $h$. The materials involved give the surface area, which would
 be:
 
-$$
+$$~
 SA = h \cdot 2\pi r + 2 \cdot \pi r^2
-$$
+~$$
 
 The volume satisfies:
 
-$$
+$$~
 V = 355 = h \cdot \pi r^2
-$$
+~$$
 
 Find the values of $r$ and $h$ which minimize the surface area.
 

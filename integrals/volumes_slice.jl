@@ -39,5 +39,4 @@ using WeavePynb, LaTeXStrings
 # rotate_graph = gif_to_data(imgfile, caption)
 
 
-
 end

@@ -1,15 +1,19 @@
 # Parametrized curves in two dimensions
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 For two functions $x(t)$ and $y(t)$, their parametric plot over the interval $[a,b]$ is the graph of $(x(t), y(t))$ for $t$ in $[a,b]$.
 
 For example,
 
 ```
-using Gadfly
+using Plots
 x(t) = t - sin(t)
 y(t) = 1 - cos(t)
-ts = linspace(0, 4pi)
-plot(x=map(x,ts), y=map(y,ts), Geom.line(preserve_order=true))
+plot(x, y, 0, 4pi)
 ```
 
 We have seen a number of cases where such a graph gives insight into a relationship:
@@ -55,11 +59,8 @@ ts = linspace(0, 2pi)
 r(t) = A*[cos(t), sin(t)]
 s(t) = a*[cos(b*t + c), sin(b*t + c)]
 p(t) = r(t) + s(t)
-
-ts = linspace(0, 2pi, 1000)
-xs = [p(t)[1] for t in ts]
-ys = [p(t)[2] for t in ts]
-plot(x=xs, y=ys, Geom.line(preserve_order=true))
+## one way to do this
+plot(t->p(t)[1], t->p(t)[2], 0, 2pi)
 ```
 
 Some useful parameterizations include:
@@ -76,9 +77,9 @@ The concepts of a limit and continuity carry over from those defined for scalar 
 
 For many functions, limits are consequence of the limits of the individual components. This is because the triangle inequality implies:
 
-$$
+$$~
 \| \vec{r}(t) - \vec{L} \| = \sqrt{(x(t) - L_x)^2 + (y(t) - L_y)^2} \leq \lvert x(t) - L_x \rvert + \lvert y(t) - L_y \rvert.
-$$
+~$$
 
 A different bound will show that if the limit exists, then the individual ones will too.
 
@@ -92,9 +93,9 @@ Continuous vector-valued functions will have graphs without "jumps." Each compon
 
 The parametric graph of a vector-valued function has tangent lines. Indeed, these were used in applications to the general mean value theorem of Cauchy and L'Hopital's rule. As with scalar functions, the formal definition involves the limit of the slope of a secant line:
 
-$$
+$$~
 \vec{r}'(t) = \lim_{h \rightarrow 0} \frac{\vec{r}(t+h) - \vec{r}(t)}{h}.
-$$
+~$$
 
 This limit is of vector-valued functions and the derivative is a vector, not a number. When both $x$ and $y$ have derivatives at $t$, then $\vec{r}'(t) = \langle x'(t), y'(t) \rangle$.
 
@@ -108,15 +109,15 @@ Recall a vector encodes a direction and a magnitude, whereas the corresponding u
 
 Let $\vec{r}(t) = \langle t\cos(t),~t^2 \rangle$, We have the derivative is:
 
-$$
+$$~
 \vec{r}'(t) = \langle [t\cos(t)]',~ [t^2]' \rangle = \langle \cos(t) - t\sin(t),~ 2t\rangle
-$$
+~$$
 
 The unit vector is then:
 
-$$
+$$~
 \frac{\vec{r}'(t)}{\| \vec{r}'(t) \|} = \frac{\langle \cos(t) - t\sin(t),~ 2t\rangle}{\sqrt{(\cos(t) -t\sin(t))^2 + 4t^2}}.
-$$
+~$$
 
 ### The second derivative
 
@@ -124,14 +125,14 @@ The second derivative, $\vec{r}''(t)$, can be defined in an analogous manner tho
 
 But we have by the chain rule that $dy/dx = (dy/dt) / (dx/dt)$ (that is the slope of the tangent line is just $y'(t)/x'(t)$). This gives
 
-$$
+$$~
 \frac{d^2y}{dx^2}
 = \frac{d}{dx}\frac{dy}{dx}
 = \frac{d}{dt}(\frac{dy}{dx}) / \frac{dx}{dt}
 = \frac{d}{dt}(\frac{dy}{dt} / \frac{dx}{dt}) / \frac{dx}{dt}
 = \frac{y'' x' - y' x''}{(x'')^2} / (x''(t))
 = \frac{y'' x' - y' x''}{(x'')^3}.
-$$
+~$$
 
 (The expression $y'' x' - y' x''$ can be written as the [determinant](http://en.wikipedia.org/wiki/Determinant) of the matrix $[\vec{r}'(t) \vec{r}''(t)]$.)
 
@@ -154,9 +155,18 @@ In the quadrants I and II the cosine is positive and in quadrants III and IV it 
 
 
 
-When discussing the general case, the concept of [curvature](http://en.wikipedia.org/wiki/Curvature) is important. The curvature is a quantity that reflects the radius of the circle that best approximates the curve. (Similar to how the tangent line best approximates the curve.) With this, the curvature should be infinite for straight lines, and for circular curves have a curvature that reflects the size of the radius.
+When discussing the general case, the concept of
+[curvature](http://en.wikipedia.org/wiki/Curvature) is important. The
+curvature is a quantity that reflects the radius of the circle that
+best approximates the curve. (Similar to how the tangent line best
+approximates the curve.) With this, the curvature should be infinite
+for straight lines, and for circular curves have a curvature that
+reflects the size of the radius.
 
-Three points determine a circle, so the curvature could be worked out by looking at $\vec{r}(t)$, $\vec{r}(t+h)$, and $\vec{r}(t-h)$ and taking a limit as $h$ goes to $0$. Here is how, but this code is really slow so we do the hardest work once:
+Three points determine a circle, so the curvature could be worked out
+by looking at $\vec{r}(t)$, $\vec{r}(t+h)$, and $\vec{r}(t-h)$ and
+taking a limit as $h$ goes to $0$. Here is how, but this code is
+really slow so we do the hardest work once:
 
 ```
 using SymPy
@@ -168,7 +178,7 @@ ts = [t-h, t, t+h]
 
 eqs = Sym[(xs[i] - a)^2 + (ys[i]-b)^2- R^2 for i in 1:3]
 abR = solve(eqs, [a,b,R])
-R = abR[1]["R"]    ## fish out of abR
+R1 = abR[1][R]    ## fish out of abR
 ```
 
 With this, we can check our work. First for a circle with radius $3$:
@@ -177,14 +187,13 @@ With this, we can check our work. First for a circle with radius $3$:
 
 u(x) = 3sin(x)
 v(x) = 3cos(x)
-
-R = abR[1]["R"]    ## fish out of abR
+R2 = R1
 for i in 1:3
-    R = subs(R, (xs[i], u(ts[i])), (ys[i], v(ts[i])))
+    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
 end
-R = trigsimp(R)
+R2 = trigsimp(R2)
 
-κ = 1 / abs(limit(R, h, 0))
+κ = 1 / abs(limit(R2, h, 0))
 ```
 
 The value is a constant $1/3$. In general the curvature of a circle of radius $R$ is $1/R$.
@@ -197,12 +206,12 @@ To see an answer for a more complicated equation we take the cycloid:
 u(x) = x - sin(x)
 v(x) = 1 - cos(x)
 
-R = abR[1]["R"]
+R2 = R1
 for i in 1:3
-    R = subs(R, (xs[i], u(ts[i])), (ys[i], v(ts[i])))
+    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
 end
-R = trigsimp(R)
-κ = 1 / abs(limit(R, h, 0))
+R2 = trigsimp(R2)
+κ = 1 / abs(limit(R2, h, 0))
 ```
 
 This isn't exactly pretty. Here we find values at a few points:
@@ -217,9 +226,9 @@ the answer is known.
 
 If $\vec{r}(t) = \langle x(t), y(t) \rangle$, the curvature at $\vec{r}(t)$ is defined (in two dimensions) by:
 
-$$
+$$~
 \kappa = \frac{\lvert x'(t)y''(t) - x''(t)y'(t) \rvert}{\| \vec{r}' \|^3} = \frac{\text{det}(\vec{r}', \vec{r}'')}{\| \vec{r}' \|^3}.
-$$
+~$$
 
 This uses $\text{det}$ to indicate the determinant, in this case a $2 \times 2$ determinant.
 
@@ -295,7 +304,7 @@ We have both $f(x,y)$ and $f(\vec{r}(t))$ using the same rule for evaluation. Ma
 If $\vec{r}(t) = \langle x(t), y(t) \rangle$ is a parameterization for the curve, then we can approximate the amount of dots eaten if the density is a function of $(x,y)$ by taking a partition of the interval $[a,b]$: $a = t_0 < t_1 < \cdots < t_n=b$. On each subinterval, we get the approximate accumulation by treating the density as a constant. The values to accumulate would be  this constant approximation times the length traveled, which is also approximated using the distance between the two endpoints. Adding all of these up would give a sum like the following, which we manipulate in the same manner that the arc-length formula was derived:
 
 
-$$
+$$~
 \begin{align}
 \text{total} &= 
 \rho(\vec{r}(t_1)) \cdot \| \vec{r}(t_1) - \vec{r}(t_0) \| + \rho(\vec{r}(t_2)) \cdot \| \vec{r}(t_2) - \vec{r}(t_1) \| + \cdots + \rho(\vec{r}(t_n)) \cdot \| \vec{r}(t_n) - \vec{r}(t_{n-1}) \| \\
@@ -304,7 +313,7 @@ $$
 \rho(\vec{r}(t_2)) \cdot  \sqrt{x'(\xi_2)^2 + y'(\psi_2)^2} \cdot (t_2 - t_1) + \cdots +
 \rho(\vec{r}(t_n)) \cdot  \sqrt{x'(\xi_n)^2 + y'(\psi_n)^2} \cdot (t_n - t_{n-1}).
 \end{align}
-$$
+~$$
 
 
 If the functions are integrable -- and they will be if the parameterization uses continuous functions and the functions defining $\rho$ are continuous without dividing by $0$ -- then this is a Riemann sum approximation to the integral $\int_a^b \rho(\vec{r}(t)) \sqrt{x'(t)^2 + y'(t)^2} dt$. With the new notation for $\vec{r}'(t)$, this can also be written more succinctly as $\int_a^b \rho(\vec{r}(t)) \| \vec{r}'(t) \| dt$.  In general, this becomes:
@@ -312,7 +321,7 @@ If the functions are integrable -- and they will be if the parameterization uses
 
 > ** The line integral**. If $f(x,y)$, a function of two variables returning a real number,
 > is sufficiently nice (the composition $f(\vec{r}(t))$ is integrable), then the line integral between $t=a$ and $t=b$ is defined by
-> $$ \int_a^b f(\vec{r}(t)) \| \vec{r}'(t) \| dt.$$
+> $$~ \int_a^b f(\vec{r}(t)) \| \vec{r}'(t) \| dt.~$$
 
 
 
@@ -322,7 +331,7 @@ Before giving some examples, we give a few comments.
 
 * Just as dots gathered by pac man should matter if eaten quickly or slowly, neither does the line integral depend on how fast the curve is traversed. Suppose $\gamma(t)$ is a *reparameterization* of the curve which is monotonically increasing. (The monotonic part means the new tracing of the curve still won't backtrack.) Suppose $\gamma(c)=a$ and $\gamma(d)=b$, then the line integral for $\vec{r}(\gamma(t))$ would be:
 
-$$
+$$~
 \begin{align}
 \int_c^d f(\vec{r}(\gamma(t))) \| [\vec{r}(\gamma(t))]' \| dt
 &= \int_c^d f(\vec{r}(\gamma(t))) \| \vec{r}'(\gamma(t)) \gamma'(t) \| dt \\
@@ -331,7 +340,7 @@ $$
 &= \int_{\gamma(c)}^{\gamma(d)} f(u) \| \vec{r}'(u) \| du  \quad \text{($u$-substitution with $u=\gamma(t)$)}\\
 &= \int_{a}^{b} f(u) \| \vec{r}'(u) \| du.
 \end{align}
-$$
+~$$
 
 ### Examples
 
@@ -341,9 +350,9 @@ Let an ellipse be parameterized by $\vec{r}(t) = \langle a \cos(t), b\sin(t) \ra
 
 The integral to compute would be:
 
-$$
+$$~
 \int_0^{2\pi} (a\cos(t) \cdot b \sin(t)) \sqrt{a^2(-\sin(t))^2 + b^2\cos(t)^2} dt.
-$$
+~$$
 
 An antiderivative can be found by `SymPy`, so we integrate exactly:
 
@@ -362,9 +371,9 @@ Integrate the function $f(x,y) = xy$ along the spiral parameterized by $\vec{r}(
 The integral to compute is:
 
 
-$$
+$$~
 \int_0^{2\pi} (e^t\cos(t) \cdot e^t \sin(t)) \sqrt{e^t(\cos(t) - \sin(t)) + e^t(\sin(t) + \cos(t))} dt.
-$$
+~$$
 
 We use `SymPy` to simplify the integrand:
 
@@ -391,9 +400,9 @@ This value is decidedly non-zero. Though the function is the same as the last ex
 
 A cycloid is formed by pushing a wheel on a surface without slipping. The position of a fixed point on the outer rim of the wheel traces out the cycloid. Suppose the wheel has radius $R$ and the initial position of the point is at the bottom, $(0,0)$. Let $t$ measure angle measurement, in radians. Then the point of contact of the wheel will be at $Rt$, as that is the distance the wheel will have rotated. That is, the hub of the wheel will move according to $\langle Rt,~ R\rangle$. Relative to the hub, the point on the rim will have coordinates $\langle -R\sin(t), -R\cos(t) \rangle$, so the superposition gives:
 
-$$
+$$~
 \vec{r}(t) = \langle Rt - R\sin(t), R - R\cos(t) \rangle.
-$$
+~$$
 
 What is the position at $t=\pi/4$?
 

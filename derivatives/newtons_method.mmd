@@ -1,5 +1,10 @@
 # Newton's method
 
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
 The Babylonian method, was an algorithm to find a value for $\sqrt{k}$. 
 It was described by the first-century Greek mathematician Hero of
 [Alexandria](http://en.wikipedia.org/wiki/Babylonian_method).
@@ -12,9 +17,9 @@ fails to work.
 For the Babylonian method, the next guess, $x_{i+1}$ derived from the current guess, $x_i$, is:
 
 
-$$
+$$~
 x_{i+1} = \frac{1}{2}(x_i + \frac{k}{x_i})
-$$
+~$$
 
 
 We use this algorithm to approximate the square root of $2$, a value known to
@@ -88,7 +93,7 @@ We know that the tangent line is a good approximation to the function
 at the point. Looking at this graph gives a hint as to an algorithm:
 
 ```
-using Gadfly
+using Plots
 f(x) = x^3 - 2x - 5
 fp(x) = 3x^2 - 2
 c = 2
@@ -108,15 +113,15 @@ Let $x_0$ be $2$, and $x_1$ the intersection point of the tangent line
 at $(x_0, f(x_0))$ with the $x_axis$. Then by the definition of the
 tangent line:
 
-$$
+$$~
 f'(x_0) = \frac{\Delta y }{\Delta x} = \frac{f(x_0)}{x_0 - x_1}.
-$$
+~$$
 
 This can be solved for $x_1$ to give $x_1 = x_0 - f(x_0)/f'(x_0)$. In general, if we had $x_i$ and used the intersection point of the tangent line to produce $x_{i+1}$ we would have Newton's method:
 
-$$
+$$~
 x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}.
-$$
+~$$
 
 
 That is starting from $2$, we get:
@@ -249,9 +254,9 @@ Well suppose we have $q$, we could try to use Newton's method to find
 $1/q$, as it is a solution to $f(x) = x - 1/q$. The Newton update step
 simplifies to:
 
-$$
+$$~
 x - f(x) / f'(x) \quad\text{or}\quad x - (x - 1/q)/ 1 = 1/q
-$$ 
+~$$ 
 
 That doesn't really help, as Newton's method is just $x_{i+1} = 1/q$
 -- that is it just jumps to the answer, the one we want to compute by
@@ -261,9 +266,9 @@ some other means!
 Trying again, we simplify the update step for a related function:
 $f(x) = 1/x - q$ and then one step of the process is:
 
-$$
+$$~
 x_{i+1} = -qx^2_i + 2x_i.
-$$
+~$$
 
 Now for $q$ in the interval $[1/2, 1]$ we want to get a *good* initial
 guess. Here is a claim. We can use $x_0=48/17 - 32/17 \cdot q$. Let's check
@@ -281,9 +286,9 @@ It can be shown that we have for any $q$ in $[1/2, 1]$ with initial guess $x_0 =
 48/17 - 32/17\cdot q$ that Newton's method will converge to 16 digits in no more
 than this many steps:
 
-$$
+$$~
 \log_2(\frac{53 + 1}{\log_2(17)}).
-$$
+~$$
 
 
 
@@ -407,9 +412,9 @@ Newton's method is famously known to be quadratically converging. What
 does this mean? Let the error in the $i$th step be called $e_i = x_i -
 \alpha$. Then Newton's method satisfies a bound of the type:
 
-$$
+$$~
 \lvert e_{i+1} \rvert \leq M_i \cdot e_i^2.
-$$
+~$$
 
 If $M$ were just a constant and we suppose $e_0 = 10^{-1}$ then $e_1$
 would be less than $M 10^{-2}$ and $e_2$ less than $M^2 10^{-4}$,
@@ -421,25 +426,25 @@ to converge.
 The actual value of $M$ depends on $i$ and $f$, so the answer isn't always so easy. To see what $M$ is,
 the basic assumption of $f$ is such that this fact of linearization holds at each $x_i$:
 
-$$
+$$~
 f(x) = f(x_i) + f'(x_i) \cdot (x - x_i) + \frac{1}{2} f''(\xi) \cdot (x-x_i)^2.
-$$
+~$$
 
 The value $\xi$ is from the mean value theorem and is between $x$ and $x_i$.
 
 Let $x=\alpha$, the zero of $f(x)$ that is being sought. Then $f(\alpha)=0$. For this value, we have
 
-$$
+$$~
 x_{i+1} - \alpha = x_i - \alpha - \frac{f(x_i)}{f'(x_i)}
 = (x_i - \alpha) + (\alpha - x_i) + \frac{1}{2}\frac{f''(\xi) \cdot(\alpha - x_i)^2}{f'(x_i)}
 =  \frac{1}{2}\frac{f''(\xi)}{f'(x_i)} \cdot(x_i - \alpha)^2.
-$$
+~$$
 
 That is
 
-$$
+$$~
 \lvert e_{i+1}\rvert \leq \frac{1}{2}\frac{\lvert f''(\xi)\rvert}{\lvert f'(x_i)\rvert} e_i^2.
-$$
+~$$
 
 
 This convergence will be quadratic *if*:
@@ -490,10 +495,10 @@ becomes $(1/k) f'(x)/f(x)$, so an extra factor is introduced.
 
 The calculation that produces the quadratic convergence now becomes:
 
-$$
+$$~
 x_{i+1} - \alpha = (x_i - \alpha) - \frac{1}{k}(x_i-\alpha + \frac{f''(\xi)}{2f'(x_i)}(x_i-\alpha)^2) =
 \frac{k-1}{k} (x_i-\alpha) + \frac{f''(\xi)}{2kf'(x_i)}(x_i-\alpha)^2.
-$$
+~$$
 
 As $k > 1$, the $(x_i - \alpha)$ term dominates, and we see the
 convergence is linear with $\lvert e_{i+1}\rvert \approx (k-1)/k

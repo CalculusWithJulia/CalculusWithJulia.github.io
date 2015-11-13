@@ -1,5 +1,10 @@
 # Limits, issues, extensions of the concept
 
+```nocode,noout
+using Plots
+backend(:gadfly)
+```
+
 The limit of a function at $c$ need not exist for one of many
 different reasons. Some of these reasons can be handled with
 extensions to the concept of the limit, others are just problematic in
@@ -9,9 +14,9 @@ terms of limits. This section covers examples of each.
 
 Let's begin with a function that is just problematic. Consider
 
-$$
+$$~
 f(x) = \sin(1/x)
-$$
+~$$
 
 As this is a composition of nice functions it will have a limit
 everywhere except possibly when $x=0$, as then $1/x$ may not have a
@@ -22,7 +27,7 @@ question of whether a limit exists at $c=0$.
 A graph shows the issue:
 
 ```
-using Gadfly
+using Plots
 f(x) = sin(1/x)
 plot(f, -1, 1)
 ```
@@ -48,9 +53,9 @@ $f(x) = x \cdot \sin(1/x)$. This function again has a limit everywhere
 save possibly $0$. But in this case, there is a limit at $0$ of
 $0$. This is because, the following is true:
 
-$$
+$$~
 -|x| \leq x \sin(1/x) \leq |x|.
-$$
+~$$
 
 The following figure illustrates:
 
@@ -174,15 +179,14 @@ have a limit of $1$.
 
 Consider this funny graph:
 
-```
+```nocode
 xs = linspace(0,1)
 
-p = plot(layer(x=xs-2, y=map(x -> x^2, xs-2), Geom.line),
-     layer(x=xs-1, y=map(x -> exp(x), xs-1), Geom.line),
-     layer(x=xs-0, y=map(x -> 1 - 2x, xs-0), Geom.line),
-     layer(x=xs+1, y=map(x->sqrt(x), xs+1), Geom.line),
-     layer(x=xs+2, y=map(x->1-x, xs+2), Geom.line))
-Outputonly(p)
+plot(x->x^2, -2, -1)
+plot!(exp, -1,0)
+plot!(x -> 1-2x, 0, 1)
+plot!(sqrt, 1, 2)
+plot!(x -> 1-x, 2,3)
 ```
 
 Describe the limits at $-1$, $0$, and $1$.
@@ -282,30 +286,27 @@ the extended sense above. For $M>0$, we can take any $0 < \delta <
 1/\sqrt{M}$. The following graph shows $M=25$ where the function
 values are outside of the box, as $f(x) > M$ for those $x$ values.
 
-```
+```nocode
 f(x) = 1/x^2
 M = 25
 delta = 1/sqrt(M)
 
-xs = linspace(-1, 1)
-ys = [1/x^2 > 50 ? NaN : 1/x^2 for x in xs]
-p = plot(layer(x=xs, y=ys, Geom.line),
-     layer(x=[-delta, delta], y=[M,M], Geom.line, Theme(default_color=color("orange"))),
-     layer(x=[-delta, -delta], y=[0,M], Geom.line, Theme(default_color=color("red"))),
-     layer(x=[delta, delta], y=[0,M], Geom.line, Theme(default_color=color("red"))))
-Outputonly(p)
+f(x) = 1/x^2 > 50 ? NaN : 1/x^2
+plot(f, -1, 1)
+plot!(x=[-delta, delta], y=[M,M], color=color("orange"))
+plot!([-delta, -delta], [0,M], color=color("red"))
+plot!([delta, delta], [0,M], color=color("red"))
 ```
 
 ----
 
 The function $f(x)=1/x$ requires us to talk about left and right limits of infinity, with the natural generalization. We can see that the left limit at $0$ is $-\infty$ and the right limit $\infty$:
 
-```
+```nocode
 f(x) = 1/x
 xs = linspace(1/50, 1)
-p = plot(layer(x=xs, y=map(f, xs), Geom.line),
-         layer(x=-xs, y=map(f, -xs), Geom.line))
-Outputonly(p)
+plot(f, 1/50, 1, color=color("black"))
+plot!(f, -1, -1/50, color=color("black"))
 ```
 
 `SymPy` agrees:
@@ -516,9 +517,9 @@ Is the form $0^0$ really indeterminate? As mentioned `0^0` evaluates to `1`.
 
 Consider this limit:
 
-$$
+$$~
 \lim_{x \rightarrow 0+} x^{k\cdot x} = L.
-$$
+~$$
 
 Consider different values of $k$ to see if this limit depends on $k$ or not. What is $L$?
 
@@ -532,9 +533,9 @@ radioq(choices, ans)
 
 Now, consider this limit:
 
-$$
+$$~
 \lim_{x \rightarrow 0+} x^{1/\log_k(x)} = L.
-$$
+~$$
 
 In `julia`, $\log_k(x)$ is found with `log(k,x)`. The default, `log(x)` takes $k=e$ so gives the natural log. So, we would define `f`, for a given `k`, with
 
@@ -560,9 +561,9 @@ Limits *of* infinity *at* infinity. We could define this concept quite
 easily mashing together the two definitions. Suppose we did. Which of
 these ratios would have a limit of infinity at infinity:
 
-$$
+$$~
 x^4/x^3,\quad x^{100+1}/x^{100}, \quad x/\log(x), \quad 3^x / 2^x, \quad e^x/x^{100}
-$$
+~$$
 
 ```
 choices=[

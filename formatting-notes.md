@@ -13,14 +13,12 @@ Examples are headed with #####
 
 Each example gets and h5 so that an icon appears
 
-# Verbatime
+# Verbatim
 
 Use this
 
-```
-Verbatim("""
+```verbatim
 asdfasdfasdf
-""")
 ```
 
 # pyplot

@@ -102,7 +102,7 @@ end
 film = roll(leadingtermgraph, fps=1, duration=5)
 film.fps=1/2
 
-caption = "Ulitmately the leading term (x^4 here) dominates the graph"
+caption = "Ulitmately the leading term (\$x^4\$ here) dominates the graph"
 imgfile = tempname() * ".gif"
 write(imgfile, film)
 leading_term_graph = gif_to_data(imgfile, caption)

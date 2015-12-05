@@ -133,7 +133,7 @@ note("""
 `SymPy` is a `Julia` package, so is installed with the usual ease
  (`Pkg.add("SymPy")`). However, the package relies on both Python
  being installed and SymPy being added to the installed Python. This
- is not done automatically, but is facilitated by using the
+ is not done automatically, save for a few special arrangements, but is facilitated by using the
  [Anaconda](https://store.continuum.io/cshop/anaconda/) distribution
  of Python which is a one-click set up for Python, SymPy, and wide
  range of other Python libraries with usefulness to scientific
@@ -161,13 +161,13 @@ possibly complex. There are many other
 [assumptions](http://docs.sympy.org/dev/modules/core.html#module-sympy.core.assumptions)
 that can be made.
 
-The *macro* `@vars` is like the second usage, only it does not need
+The *macro* `@syms` is like the second usage, only it does not need
 assignment, as the variable are created in the global scope. This may
 be the easiest way to create symbolic values (no commas are
 necessary):
 
 ```verbatim
-@vars h t
+@syms h t
 ```
 
 
@@ -265,14 +265,28 @@ bit more clear to read:
 In this alternative call, the expression is passed through `|>` and is
 not explicitly written.
 
-The name `subs` comes from SymPy, as a clear abbreviation for
-"substitution." The action is related to `Julia`'s `replace`
-functionality, so there is an alias for `replace`, which is a bit more
-to type, but perhaps more familiar to `Julia` users:
+For users of `Julia` version 0.4 or greater, there are two alternatives to `subs` that may be more familiar:
+
+* First, one can pass in a "pair," instead of three arguments:
 
 ```
--16x^2 + 100 |> replace(x, (x-1)^2)
+ex = -16x^2 + 100
+subs(ex, x=>2)   # same as subs(ex, x, 2)
 ```
+
+* Even more compactly, we can "call' an expression like a function:
+
+```
+ex(2)
+```
+
+This works well when there is only one free symbol in the expression. Otherwise, we can pass in a pair, as above:
+
+```
+quad = a*x^2 + b*x + c    # as before
+quad(x => 2)
+```
+
 
 ##### Example
 
@@ -422,7 +436,7 @@ discussed later.
 There are values to each representation. One value of the expanded
 form is that doing arithmetic with polynomials is much easier in
 expanded form. For example, adding polynomials just requires matching
-up the similar powers. As for the factored format, the one value is that it is
+up the monomials of similar powers. As for the factored format, the one value is that it is
 easy to read off *zeros* of the polynomial, as a product is $0$ only
 if a term is $0$, so any zero must be a zero of a factor. However,
 factored form has other advantages. For example, the polynomial
@@ -473,7 +487,7 @@ x^2 - 2
 The factoring $(x-\sqrt{2})\cdot(x + \sqrt{2})$ is not found, as
 $\sqrt{2}$ is not rational.
 
-(For those, it may be possible to use `solve` to get the roots, which
+(For those, it may be possible to solve to get the roots, which
 can then be used to produce the factored form.)
 
 ### Polynomial functions and polynomials.

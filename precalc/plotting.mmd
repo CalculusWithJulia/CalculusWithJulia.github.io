@@ -113,7 +113,7 @@ through composition.
 """)
 ```
 
-Making a graph with `Gadfly` is easy, but producing a graph that is
+Making a graph with `Plots` is easy, but producing a graph that is
 informative can be a challenge, as the choice of a viewing window can
 make a big difference in what is seen. For example, trying to make a
 graph of $f(x) = \tan(x)$ will result in a bit of a mess below, as the
@@ -215,10 +215,10 @@ f(x) = 1/x
 xs = linspace(-1, 1, 251)
 ys = map(f, xs)
 ys[xs .== 0.0] = NaN
-plot(xs, y=ys)
+plot(xs, ys)
 ```
 
-By using an odd number of points, we ensure that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`.
+By using an odd number of points, we ensure that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`. 
 
 Alternatively, you might modify the function itself to return `NaN` for values close to $0$:
 
@@ -235,7 +235,7 @@ For example, to plot $\sin(x)$ over $(-\pi,\pi)$ we might do:
 
 ```
 xs = linspace(-pi, pi)
-ys = [sin(x) for x in xs]
+ys = map(sin, xs)
 plot(xs, ys)
 ```
 
@@ -332,17 +332,26 @@ of the layer.
 
 ### Adding layers explicitly
 
-It can be useful at times to create these layers manually. For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$ over the interval $[-1,2]$ and emphasize with points the fact that $0$ and $1$ are zeros. We can do this with two layers: the first to graph the function, the second to graph the points. Adding a layer is achieved by using `plot!`:
+It can be useful at times to create these layers manually. For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$ over the interval $[-1,2]$ and emphasize with points the fact that $0$ and $1$ are zeros. We can do this with two layers: the first to graph the function, the second to graph the points. Adding a layer is achieved by using `plot!`, or in this case `scatter!` (to add points, not lines):
 
 ```
 f(x) = x*(x-1)
 xs = linspace(-1, 2)
 ys = map(f, xs)
 plot(xs, ys)
-scatter!([0], y=[0])
+scatter!([0,1], [0,0])
 ```
 
-Additional layers are added through additional `layer` calls. Basically, the arguments to `layer` mirror those to `plot`.
+```
+alert("""
+
+Julia has a convention to use functions named with a `!` suffix to
+indicate that they mutate some object. In this case, the object is the
+current graph. Both `plot!` and `scatter!` (and others) do this by
+adding a layer.
+
+""")
+```
 
 ## Parametric graphs
 

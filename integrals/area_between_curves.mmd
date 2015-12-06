@@ -62,7 +62,7 @@ For this problem we need to identify $a$ and $b$. These are found numerically th
 
 ```
 using Roots
-a,b = sort(fzeros(x -> f(x) - g(x)))
+a,b = fzeros(x -> f(x) - g(x))
 ```
 
 The answer then can be found numerically through:
@@ -87,7 +87,7 @@ There is a single interval when $f \geq g$ and this can be found
 algebraically using basic trigonometry, or numerically:
 
 ```
-a,b = sort(fzeros(x -> f(x) - g(x), 0, 2pi))  # pi/4, 5pi/4
+a,b = fzeros(x -> f(x) - g(x), 0, 2pi)  # pi/4, 5pi/4
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
@@ -163,15 +163,14 @@ plot(ys, xs)
 ```
 
 By switching the order of the `xs` and `ys` we "flip" the graph
-through the line $x=y$. The extra `preserve_order` isn't necessary
-when $f(x)$ is monotonic, but is if not.
+through the line $x=y$. 
 
 We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
 
 ```
 ys = linspace(-1,1)
 xs = [y^3 for y in ys]
-plot(xs, y)
+plot(xs, ys)
 ```
 
 Suppose we wanted the area in the first quadrant between this graph,
@@ -293,7 +292,7 @@ the exponential dominates the power. We find these numerically
 ```
 f(x) = x^4
 g(x) = exp(x)
-a,b = sort(fzeros(x -> f(x) - g(x), 0, 10))
+a,b = fzeros(x -> f(x) - g(x), 0, 10)
 
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
@@ -335,7 +334,7 @@ Find the area enclosed by the curves $y=2-x^2$ and $y=x^2 - 3$.
 using Roots
 f(x) = 2 - x^2
 g(x) = x^2 - 3
-a,b = sort(fzeros(x -> f(x) - g(x)))
+a,b = fzeros(x -> f(x) - g(x))
 val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
@@ -360,7 +359,7 @@ Find the area between the line $y=1/2(x+1)$ and half circle $y=\sqrt{1 - x^2}$.
 ```
 f(x) = sqrt(1 - x^2)
 g(x) = 1/2 * (x + 1)
-a,b = sort(fzeros(x -> f(x) - g(x), -1, 1))
+a,b = fzeros(x -> f(x) - g(x), -1, 1)
 val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
@@ -398,7 +397,7 @@ Let `f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + t^2)^(-1)` and `g(x) = 1/sqrt(2*pi) *
 ```
 f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + x^2)^(-1)
 g(x) = 1/sqrt(2*pi) * exp(-x^2/2)
-a,b = sort( fzeros(x -> f(x) - g(x), -3, 3))
+a,b =  fzeros(x -> f(x) - g(x), -3, 3)
 val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
@@ -466,7 +465,7 @@ Put this altogether to give an estimated weight in pounds.
 ```
 f(x) = x^2/70
 g(x) = 35 + x^2/140
-a,b = sort(fzeros(x -> f(x) - g(x)))
+a,b = fzeros(x -> f(x) - g(x))
 area, _ = quadgk(x -> abs(f(x) - g(x)), a, b)
 val = 5 * area * 7850 * 2.2 * (1/39.3)^3
 numericq(val)

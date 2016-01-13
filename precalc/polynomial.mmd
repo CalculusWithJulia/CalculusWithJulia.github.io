@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 Polynomials are a particular class of expressions that are simple
@@ -42,16 +42,20 @@ The numbers $a_0, a_1, \dots, a_n$ are the **coefficients** of the
 polynomial. With the convention that $x=x^1$ and $1 = x^0$, the
 monomials above have their power match their coefficient's index,
 e.g., $a_ix^i$.  Outside of the coefficient $a_n$, the other
-coefficients may be negative, positive or $0$. The largest power $n$ is called
-the **degree**. The term $a_n$ is called the **leading coefficient**. When
-the leading coefficient is $1$, the polynomial is called a **monic polynomial**.
-The monomial $a_n x^n$ is the **leading term**. For
-example, the polynomial $-16x^2 - 32x + 100$ has degree $2$, leading
-coefficient $-16$ and leading term $-16x^2$. It is not monic, as the
-leading coefficient is not 1.
+coefficients may be negative, positive or $0$. Except for the zero
+polynomial, the largest power $n$ is called the
+[degree](https://en.wikipedia.org/wiki/Degree_of_a_polynomial). The
+degree of the [zero](http://tinyurl.com/he6eg6s) polynomial is typically not
+defined, so as to make certain statements easier to say. The term
+$a_n$ is called the **leading coefficient**. When the leading
+coefficient is $1$, the polynomial is called a **monic polynomial**.
+The monomial $a_n x^n$ is the **leading term**. For example, the
+polynomial $-16x^2 - 32x + 100$ has degree $2$, leading coefficient
+$-16$ and leading term $-16x^2$. It is not monic, as the leading
+coefficient is not 1.
 
 Lower degree polynomials have special names: a degree $0$ polynomial
-($a_0$) is a constant, a degree 1 polynomial ($a_0+a_1x$) is called
+($a_0$) is a non-zero constant, a degree 1 polynomial ($a_0+a_1x$) is called
 linear, a degree $2$ polynomial is quadratic, and degree $3$ cubic.
 
 ## Linear polynomials
@@ -77,7 +81,7 @@ The intercept, $b$, comes from the fact that when $x=0$ the expression
 is $b$. That is the graph of the function $f(x) = mx + b$ will have
 $(0,b)$ as a point on it.
 
-More generally, we have the **point-slope** form of a line, written as
+More generally, we have the **point-slope** form of a line, written as a polynomial through
 
 $$~
 y_0 + m \cdot (x - x_0).
@@ -120,7 +124,7 @@ Mathematica and Maple. Mathematica powers the popular
 language into the specifics of a programming language. The open-source
 Sage project is an alternative to these two commercial giants. It
 includes a wide-range of open-source math projects available within
-its umbrella framework. (`Julia` can even be run from within the free service [sagenb.org](http://sagenb.org/).) A more focused project for symbolic math, is the
+its umbrella framework. (`Julia` can even be run from within the free service [cloud.sagemath.com](https://cloud.sagemath.com/projects).) A more focused project for symbolic math, is the
 [SymPy](www.sympy.org) Python library. SymPy provides a self-contained
 library that can be used within a Python session. That is great for `Julia` users, as
 the `PyCall` package  glues `Julia` to Python in a 
@@ -133,12 +137,9 @@ note("""
 `SymPy` is a `Julia` package, so is installed with the usual ease
  (`Pkg.add("SymPy")`). However, the package relies on both Python
  being installed and SymPy being added to the installed Python. This
- is not done automatically, save for a few special arrangements, but is facilitated by using the
- [Anaconda](https://store.continuum.io/cshop/anaconda/) distribution
- of Python which is a one-click set up for Python, SymPy, and wide
- range of other Python libraries with usefulness to scientific
- programming.
-
+ is now done automatically, if needed, when the `PyCall` package is
+ installed. As such, this should be installed prior to `SymPy`.
+ 
 """)
 ```
 
@@ -161,13 +162,13 @@ possibly complex. There are many other
 [assumptions](http://docs.sympy.org/dev/modules/core.html#module-sympy.core.assumptions)
 that can be made.
 
-The *macro* `@syms` is like the second usage, only it does not need
+The *macro* `@vars` is like the second usage, only it does not need
 assignment, as the variable are created in the global scope. This may
 be the easiest way to create symbolic values (no commas are
 necessary):
 
 ```verbatim
-@syms h t
+@vars h t
 ```
 
 
@@ -178,7 +179,7 @@ The `SymPy` package does two basic things:
 - It overloads many `Julia` functions to work seamlessly with symbolic
 expressions. This makes working with polynomials quite natural.
 
-For example, here is how we create the polynomial $-16x^2 + 100$:
+To illustrate, using the just defined `x`, here is how we can create the polynomial $-16x^2 + 100$:
 
 ```
 p = -16x^2 + 100
@@ -199,7 +200,7 @@ typeof(p)
 (`Sym` is a type, but also an alternative constructor used for
 defining a single symbolic variable, as with `Sym("theta")`.)
 
-We can mix and match symbolic objects. For example, this creates an
+We can mix and match symbolic objects. This command creates an
 arbitrary quadratic polynomial:
 
 ```
@@ -212,7 +213,7 @@ explicitly place the multiplication operator, as the symbols are not
 numeric literals.
 
 
-We can apply many of `Julia`'s mathematical functions and the result will still be symbolic. For example,
+We can apply many of `Julia`'s mathematical functions and the result will still be symbolic:
 
 ```
 sin(a*(x - b*pi) + c)
@@ -232,8 +233,8 @@ different symbolic task is substitution. For example, replacing each
 instance of `x` in a polynomial, with, say, `(x-1)^2`. Substitution
 requires three things to be specified: an expression to work on, a
 variable to substitute, and a value to substitute in. The `subs`
-function is called as `subs(ex, variable, value)`. For example, to do
-the task above for the polynomial $-16x^2 + 100$ we have:
+function is called as `subs(ex, variable, value)`. To do
+the task above for the polynomial $-16x^2 + 100$ we could have:
 
 ```
 p = -16x^2 + 100
@@ -274,13 +275,16 @@ ex = -16x^2 + 100
 subs(ex, x=>2)   # same as subs(ex, x, 2)
 ```
 
-* Even more compactly, we can "call' an expression like a function:
+* Even more compactly, when there is only one free variable, we can
+  "call" an expression like a function:
 
 ```
 ex(2)
 ```
 
-This works well when there is only one free symbol in the expression. Otherwise, we can pass in a pair, as above:
+If there is more than one free symbol in the expression, it is best to
+pass values as a pair indicating which variable is to be substituted
+for:
 
 ```
 quad = a*x^2 + b*x + c    # as before
@@ -296,7 +300,7 @@ like if we shifted right by $E$ units and up by $F$ units?
 ```
 a,b,c,E,F = symbols("a,b,c,E,F")
 p = a*x^2 + b*x + c
-subs(p, x, x-E) + F
+p(x => x-E) + F
 ```
 
 ### Conversion of symbolic numbers
@@ -305,7 +309,7 @@ In the above, we substituted `2` in for `x` to get `y`:
 
 ```
 p = -16x^2 + 100
-y = subs(p, x, 2)
+y = p(2)
 ```
 
 The value, $36$ is still symbolic, but clearly an integer. If we
@@ -326,9 +330,9 @@ N(y)
 Outputonly(36)
 ```
 
-Conversion by `N` also works for other types of data, for example
+Conversion by `N` also works for other types of data, such as
 `Rational` and `Float64`. For getting more digits of accuracy, a
-precision can be passed to `N`. For example, this command will take
+precision can be passed to `N`. The following command will take
 the symbolic value for $\pi$, `PI`, and produce about 60 digits worth
 as a `BigFloat` value:
 
@@ -436,12 +440,15 @@ discussed later.
 There are values to each representation. One value of the expanded
 form is that doing arithmetic with polynomials is much easier in
 expanded form. For example, adding polynomials just requires matching
-up the monomials of similar powers. As for the factored format, the one value is that it is
-easy to read off *zeros* of the polynomial, as a product is $0$ only
-if a term is $0$, so any zero must be a zero of a factor. However,
-factored form has other advantages. For example, the polynomial
-$(x-1)^{1000}$ can be compactly represented as a factor, but would
-require 1001 coefficients to store in expand form.
+up the monomials of similar powers. As for the factored format, the
+one value is that it is easy to read off *zeros* of the polynomial, as
+a product is $0$ only if a term is $0$, so any zero must be a zero of
+a factor. However, factored form has other advantages. For example,
+the polynomial $(x-1)^{1000}$ can be compactly represented as a
+factor, but would require 1001 coefficients to store in expand
+form. (As well, due to floating point differences, the two would
+evaluate quite differently as one would require over a 1000operations
+to compute, the other just two.)
 
 Translating from factored form to expanded form can be done by
 carefully following the distributive law of multiplication. For
@@ -639,7 +646,7 @@ p = -16x^2 + 64
 What command will return the value of the polynomial when $x=2$?
 
 ```
-choices = [q"p(2)", q"p[2]", q"p_2", q"subs(p, x,  2)"]
+choices = [q"p*2", q"p[2]", q"p_2", q"subs(p, x,  2)"]
 ans = 4
 radioq(choices, ans)
 ```

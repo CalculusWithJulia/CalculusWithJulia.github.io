@@ -65,8 +65,8 @@ Values can be assigned variable names, with `=`. There are some variants
 ```
 x = 2
 a_really_long_name = 3
-a, b = 1, 2
-a1 = a2 = 0
+a, b = 1, 2    # multiple assignment
+a1 = a2 = 0    # chained assignment
 ```
 
 The names can be short, as above, or more verbose. They can't start with a number, but can include numbers. It can also be a fancy unicode or even an emoji.
@@ -75,7 +75,7 @@ Names may be repurposed, even with values of different types (a dynamic language
 
 ## Functions
 
-Function in `Julia` are just regular objects. In these notes, we often pass them as arguments to other functions. There are many built-in functions and it is easy to define new functions.
+Functions in `Julia` are just regular objects. In these notes, we often pass them as arguments to other functions. There are many built-in functions and it is easy to define new functions.
 
 We call a function by passing arguments to it, grouped by parentheses:
 
@@ -148,7 +148,7 @@ User defined functions can have 1 or more arguments:
 area(w, h) = w*h
 ```
 
-Julia makes different *methods* for *generic* function names, so functions whose argument specification is different are different functions, even if the name is the same. This is *polymorphism* and means users need only remember a much smaller set of function names.
+Julia makes different *methods* for *generic* function names, so functions whose argument specification is different are different functions, even if the name is the same. This is *polymorphism*. The practical use is that it means users need only remember a much smaller set of function names.
 
 Longer functions can be defined using the `function` keyword, the last command executed is returned:
 
@@ -160,13 +160,14 @@ function f(x)
 end
 ```
 
-Functions without names, *anonymous functions* are made with the `->` operator as in:
+Functions without names, *anonymous functions*, are made with the `->` operator as in:
 
 ```
 x -> cos(x)^2 - cos(2x)
 ```
 
-These are useful when passing a function to another function.
+These are useful when passing a function to another function or when
+writing a function that *returns* a function.
 
 ## Conditional statements
 
@@ -198,7 +199,7 @@ Plotting a function by passing the function object by name.
 
 ```
 using Plots     ## needed just ones
-backend(:gadfly)
+gadfly()
 plot(sin, 0, 2pi)
 ```
 
@@ -213,3 +214,12 @@ Plotting more than one function over $[a,b]$:
 ```
 plot([sin, cos, zero], 0, 2pi)
 ```
+
+Or alternatively, using `plot!` to add to an existing plot:
+
+```
+plot(cos, -pi, pi)
+plot!(x -> 1 - x^2/2, -pi, pi)
+```
+
+The `Plots` function has other types of plots. Of note is `scatter` which is used to make a scatter plot of two data sets. 

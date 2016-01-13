@@ -6,13 +6,10 @@ As it is open source, indeed with a liberal MIT license, it can be
 installed for free on many types of computers (though not phones or
 tablets). There are some web sites that provide access to `Julia`:
 
-[JuliaBox](www.juliabox.org) provides a web-based interface to `Julia`
+[JuliaBox](http://www.juliabox.org) provides a web-based interface to `Julia`
 built around `IJulia`. An account is needed and can be requested.
 
-[tmpnb](tmpnb.org) This website allows one to use `IJulia` without an account. This makes it super-convenient, though there is no permanent storage of files.
-
-[Sagemath](www.Sagemath.org) provides another web-based solution.
-Though different from the more common `IJulia` frontend, the resource is freely available.
+[Sagemath](http://cloud.sagemath.org) provides another web-based solution and an `Jupyter` front end, as well. This is free for most use.
 
 
 
@@ -69,54 +66,46 @@ A more forgiving interface for learning is provided through the
 `IJulia` interface. This is the interface for `JuliaBox`. The `IJulia`
 interface can be installed relatively easily by following these steps:
 
-1) download and install
-  [Anaconda Python](https://store.continuum.io/cshop/anaconda/). (`Python`
-  is another open source language which is very popular. The `IPython`
-  notebook interface to `Python` is the basis for `IJulia`. `Julia`
-  provides a simple interface `Python` that allows many features of
-  the `Python` ecosystem to be leveraged. We will use `IJulia` for
-  interacting with `julia`; `SymPy` for symbolic mathematics, and
-  `PyPlot` for plotting of three-dimensional objects.)
+* Run these commands to install two packages:
 
-2) Within Julia install the IJulia package:
+```verbatim
+Pkg.update()
+Pkg.add("PyCall")
+Pkg.add("IJulia")
+```
 
-- open `Julia` by clicking on the icon or typing `julia` at the
-  command line
+* Once this is done, you can start the notebook with these commands:
 
-- If this is a new installation, initialize `Julia`'s package
-  directory by exceuting the command `Pkg.init()`. (Type that command
-  then the "return" key.)
+```
+using IJulia
+notebook()
+```
 
-- update the list of available external packages by exceuting the
-  command `Pkg.update()`.
-
-- Execute the command: `Pkg.add("IJulia")` by typing that in as
-  written and pressing the "return" key.
-
-
-3) Once installed, `IJulia` can be used by opening `Julia` and
-  executing the commands `using IJulia; notebook()`. A shortcut on
-  the desktop can also be created.
 
 ## Add-on packages
 
 `Julia` has 100s of external, add-on packages that enhance the
-offerings of base `Julia`. In these notes, we will rely on a
-few of these. These will need to be installed (though most already are
-installed for `JuliaBox`.) The following commands will download and install the needed packages:
+offerings of base `Julia`. The above showed how to add two packages to
+a system. In these notes, we will rely on a few packages. These will
+need to be installed. The following commands will download and install the
+needed packages:
 
-```
-Verbatim("""
+```verbatim
+Pkg.update()
+Pkg.add("Plots")
 Pkg.add("Gadfly")
+Pkg.add("PyCall")
 Pkg.add("SymPy")
 Pkg.add("Roots")
 Pkg.add("ImplicitEquations")
 Pkg.add("PyPlot")
-Pkg.add("Plots")
 """)
 ```
 
-The `SymPy` package and the `PyPlot` package require some add-ons for the `Python` environment. These are installed with the Anaconda distribution, though may be added on if another Python environment is used.
+The `SymPy` package and the `PyPlot` package require some add-ons for
+the `Python` environment. These should be installed as well, a
+`Python` environment, if not already existing, should be installed
+withe `PyCall` package.
 
 ## The basics of working with IJulia
 
@@ -132,7 +121,7 @@ When a cell is executed (by the triangle icon or under the Cell menu) the conten
 ```
 
 
-If the last commands are separated by commas, then a "tuple" will be formed and each output will be displayed separated by commas.
+If the last commands are separated by commas, then a "tuple" will be formed and each output will be displayed, separated by commas.
 
 ```
 2 + 2, 3 + 3
@@ -147,16 +136,16 @@ Comments can be made in a cell. Anything after a `#` will be ignored.
 Graphics are provided by external packages. There is no built-in
 graphing. We primarily use the `Gadfly` package for graphics, but through the `Plots` package.
 
-The plots package is loaded via:
+The plots package is loaded and the `Gadfly` backend is chosen via
 
 ```
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 The choice of `Gadfly` as a backend is optional, the `Plots` package does its best to be backend agnostic.
 
-Then to make a graph of a function over a range, we have this example:
+With that in hand, to make a graph of a function over a range, we follow this pattern:
 
 ```
 plot(sin, 0, 2pi)
@@ -168,7 +157,8 @@ A few things:
 
 * This order need not be from top to bottom of the notebook.
 
-* The evaluation of a cell happens within the state of the workspace, which depends on what was evaluated earlier.
+* The evaluation of a cell happens within the state of the workspace,
+  which depends on what was evaluated earlier.
 
 * The workspace can be cleared by the "Restart" menu item under
   "Kernel". After restarting the "Run All" menu item under "Cell" can

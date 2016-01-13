@@ -156,9 +156,9 @@ exactly on the computer with a floating point value. Floating point
 then is *necessarily* an approximation for all but a subset of the
 real numbers. Floating point values can be viewed in normalized
 [scientific notation](http://en.wikipedia.org/wiki/Scientific_notation)
-as $a\cdot 10^b$ where $a$ is the *significand* and $b$ is the
+as $a\cdot 2^b$ where $a$ is the *significand* and $b$ is the
 *exponent*. The significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert <
-10$, the exponent can be taken to be an integer, possibly negative.
+2$, the exponent can be taken to be an integer, possibly negative.
 
 As per IEEE Standard 754, the `Float64` type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but rather are much more concentrated closer to $0$.
 
@@ -356,7 +356,7 @@ Despite all of these types floating around, for the most part the distinction is
 1 + 1.25 + 3//2
 ```
 
-The sum of an integer, a floating point number and rational number returns a floating point number without a complaint. This is because of the promotion mechanism for the binary operations. The basic definition of `x + y` in `julia` does the following: first promote `x` and `y` to a common type, then add the two numbers of the same type. When the above computation, `1 + 1.25 + 3//2` is parsed, first `1 + 1.25` are added. This is done by promoting `1` to a floating point (as one can't easily promote a floating point value to an integer without a loss of information). The result, `2.25` is then added to `3//2`. Again, the rational number is promoted to a floating point and the two are added (though technically, a floating point could be promoted to a rational, in general floating point numbers model the real numbers and there is no way to take an arbitrary real number and create a rational). A similar thing happens when complex numbers are used, though there each component is promoted. So, except for some special cases (like integer bases raised to integer powers) where the output is best suited to be a type different from a floating point value, the details are just handled in the background.
+The sum of an integer, a floating point number and rational number returns a floating point number without a complaint. This is because of the promotion mechanism for the binary operations. The basic definition of `x + y` in `julia` does the following: first promote `x` and `y` to a common type, then add the two numbers of the same type. When the above computation, `1 + 1.25 + 3//2` is parsed, first `1` and `1.25` are added. This is done by promoting `1` to a floating point (as one can't easily promote a floating point value to an integer without a loss of information). The result, `2.25` is then added to `3//2`. Again, the rational number is promoted to a floating point and the two are added (though technically, a floating point could be promoted to a rational, in general floating point numbers model the real numbers and there is no way to take an arbitrary real number and create a rational). A similar thing happens when complex numbers are used, though there each component is promoted. So, except for some special cases (like integer bases raised to integer powers) where the output is best suited to be a type different from a floating point value, the details are just handled in the background.
 
 ## Questions
 

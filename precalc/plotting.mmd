@@ -46,11 +46,11 @@ As such, we begin by loading the `Plots` package (which must have been installed
 
 ```
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 The `Gadfly` backend makes pretty plots very easy to generate, but has
-a drawback in that it is slow to load and the first plot made can take
+a drawback in that it is a bit slow to load and the first plot made can take
 a long time to render, though subsequent ones are speedy. Focusing on
 the easyness, we can see that it is very easy to graph a function.
 
@@ -69,7 +69,7 @@ The `plot` command does the hard work behind the scenes. It needs 2 pieces of in
 
 Plotting a function is then this simple: `plot(f, a, b)`.
 
-> A basic template. Many operations we meet will take the form
+> *A basic template:* Many operations we meet will take the form
 > `action(function, args...)`, as the call to `plot` does. The
 > template shifts the focus to the action to be performed. This is a
 > [declarative](http://en.wikipedia.org/wiki/Declarative_programming)
@@ -106,7 +106,7 @@ plot(x -> cos(x) - x, 0, pi/2)
 note("""
 
 The function object in the general pattern `action(function, args...)`
-is commonly specified in three ways: by a name, as with `f`; as an
+is commonly specified in one of three ways: by a name, as with `f`; as an
 anonymous function; or as the return value of some other action
 through composition.
 
@@ -121,7 +121,7 @@ viewing window crosses several places where the function blows up:
 
 ```
 f(x) = tan(x)
-plot(f, -2pi, 2pi)
+plot(f, -10, 10)
 ```
 
 ## The details of graph making
@@ -218,7 +218,7 @@ ys[xs .== 0.0] = NaN
 plot(xs, ys)
 ```
 
-By using an odd number of points, we ensure that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`. 
+By using an odd number of points, we hsould have that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`. 
 
 Alternatively, you might modify the function itself to return `NaN` for values close to $0$:
 
@@ -299,7 +299,7 @@ The graph is that of the "inverse function" for $\sin(x), x \text{ in } [-\pi/2,
 ## Layers
 
 Graphing more than one function over the same viewing window is often
-desirable. This is easily done in `Gadfly` by specifying a vector of
+desirable. This is easily done in `Plots` by specifying a vector of
 functions as the first argument to `plot` instead of a single function
 object. The notation is `[f1, f2, ..., fn]`. For example, to see that
 the polynomial and the cosine function are "close" near $0$, we can
@@ -324,15 +324,18 @@ f(x) = x^5 - x + 1
 plot([f, zero], -1.5, 1.4)
 ```
 
-
-`Gadfly` renders these graphs with $layers$. It also provides a legend
-to indicate which function is which, with `f1` being the first,
-etc. In some cases, one can click on the legend to toggle the display
-of the layer.
-
 ### Adding layers explicitly
 
-It can be useful at times to create these layers manually. For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$ over the interval $[-1,2]$ and emphasize with points the fact that $0$ and $1$ are zeros. We can do this with two layers: the first to graph the function, the second to graph the points. Adding a layer is achieved by using `plot!`, or in this case `scatter!` (to add points, not lines):
+It can be useful at times to create these layers one by one. This
+might better match the workflow. As well, it affords the possibility
+of different kinds of layers.
+
+For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$
+over the interval $[-1,2]$ and emphasize with points the fact that $0$
+and $1$ are zeros. We can do this with two layers: the first to graph
+the function, the second to graph the points. Adding a layer is
+achieved by using `plot!`, or in this case `scatter!` (to add points,
+not lines):
 
 ```
 f(x) = x*(x-1)
@@ -484,7 +487,7 @@ curve in it.
 Parametric plots can describe a richer set of curves than can plots of
 functions. Plots of functions must pass the "vertical-line test", as
 there can be at most one $y$ value for a given $x$ value. This is not
-so, as the circle example above shows. Plotting sines and cosines this
+so for parametric plots, as the circle example above shows. Plotting sines and cosines this
 way is the basis for the popular
 [Spirograph](http://en.wikipedia.org/wiki/Spirograph) toy. The curves
 drawn there are parametric plots where the functions come from rolling
@@ -500,7 +503,6 @@ R, r, rho = 1, 1/4, 1/4
 g(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 f(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
-xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
 plot(g, f, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 

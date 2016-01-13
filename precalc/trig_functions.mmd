@@ -17,12 +17,12 @@ $$~
 \begin{align}
 \sin(\theta) &= \frac{\text{opposite}}{\text{hypotenuse}} &\quad(\text{the sine function})\\
 \cos(\theta) &= \frac{\text{adjacent}}{\text{hypotenuse}} &\quad(\text{the cosine function})\\
-\tan(\theta) &= \frac{\text{opposite}}{\text{adjacent}}.&\quad(\text{the tangent function})
+\tan(\theta) &= \frac{\text{opposite}}{\text{adjacent}}.  &\quad(\text{the tangent function})
 \end{align}
 ~$$
 
 ```
-note("""Many students remember these through [SOACAHTOA](http://mathworld.wolfram.com/SOHCAHTOA.html).""")
+note("""Many students remember these through [SOH-CAH-TOA](http://mathworld.wolfram.com/SOHCAHTOA.html).""")
 ```
 
 Some algebra shows that $\tan(\theta) = \sin(\theta)/\cos(\theta)$. There are also 3 reciprocal functions, the cosecant, secant and cotangent.
@@ -105,13 +105,15 @@ Trigonometric function are functions of angles which have two common description
 The two are related, as a circle of $2\pi$ radians and 360 degrees. So to convert from degrees into radians it takes multiplying by $2\pi/360$ and to convert from radians to degrees it takes multiplying by $360/(2\pi)$. The `deg2rad` and `rad2deg` functions will happily do this.
 
 
-In `Julia`, the functions `sind`, ``cosd`, `tand`, `cscd`, `secd`, and `cotd` are available to simplify the task of composing the two operations (that is `\sin(deg2rad(x))` is the same as `sind(x)`).
+In `Julia`, the functions `sind`, `cosd`, `tand`, `cscd`, `secd`, and `cotd` are available to simplify the task of composing the two operations (that is `sin(deg2rad(x))` is the same as `sind(x)`).
 
 ## The sum-and-difference formulas
 
 Consider the point on the unit circle $(x,y) = (\cos(\theta), \sin(\theta))$. In terms of $(x,y)$ (or $\theta$) is there a way to represent the angle found by rotating an additional $\theta$, that is what is $(\cos(2\theta), \sin(2\theta))$?
 
-More generally, suppose we have two angles $\theta$ and $\beta$, can we represent the values of $(\cos(\theta + \beta), \sin(\theta + \beta))$ using the values just involving $\beta$ and $\theta$ separately?
+More generally, suppose we have two angles $\alpha and $\beta$, can we
+represent the values of $(\cos(\alpha + \beta), \sin(\alpha + \beta))$
+using the values just involving $\beta$ and $\alpha separately?
 
 According to [Wikipedia](https://en.wikipedia.org/wiki/Trigonometric_functions#Identities) the following figure (from [mathalino.com](http://www.mathalino.com/reviewer/derivation-of-formulas/derivation-of-sum-and-difference-of-two-angles)) has ideas that date to Ptolemy:
 
@@ -121,26 +123,26 @@ This shows that
 
 $$~
 \begin{align}
-\sin(\theta + \beta) &= \sin(\theta)\cos(\beta) + \sin(\beta)\cos(\theta)\\
-\cos(\theta + \beta) &= \cos(\theta)\cos(\beta) - \sin(\theta)\sin(\beta).
+\sin(\alpha + \beta) &= \sin(\alpha)\cos(\beta) + \sin(\beta)\cos(\alpha)\\
+\cos(\alpha + \beta) &= \cos(\alpha)\cos(\beta) - \sin(\alpha)\sin(\beta).
 \end{align}
 ~$$
 
-Using the fact that $\sin$ is an odd function and $\cos$ an even function, related formulas for $\theta - \beta$ can be derived.
+Using the fact that $\sin$ is an odd function and $\cos$ an even function, related formulas for $\alpha - \beta$ can be derived.
 
-Taking $\theta = \beta$ we immediately get the "double-angle" formulas:
+Taking $\alpha = \beta$ we immediately get the "double-angle" formulas:
 
 $$~
 \begin{align}
-\sin(2\theta) &= 2\sin(\theta)\cos(\theta)\\
-\cos(2\theta) &= \cos(\theta)^2 - \sin(\theta)^2.
+\sin(2\alpha) &= 2\sin(\alpha)\cos(\alpha)\\
+\cos(2\alpha) &= \cos(\alpha)^2 - \sin(\alpha)^2.
 \end{align}
 ~$$
 
-The latter looks like the Pythagorean identify, but has a minus sign. In fact, the Pythagorean identify is often used to rewrite this, for example $\cos(2\theta) = 2\cos(\theta)^2 - 1$ of $1 - 2\sin(\theta)^2$.
+The latter looks like the Pythagorean identify, but has a minus sign. In fact, the Pythagorean identify is often used to rewrite this, for example $\cos(2\alpha) = 2\cos(\alpha)^2 - 1$ of $1 - 2\sin(\alpha)^2$.
 
 
-Applying the above with $\theta = \beta/2$, we get that $\cos(\beta) = 2\cos(\beta/2)^2 -1$, which rearranged yields the "half-angle" formula: $\cos(\beta/2)^2 = (1 + \cos(\beta))/2$.
+Applying the above with $\alpha = \beta/2$, we get that $\cos(\beta) = 2\cos(\beta/2)^2 -1$, which rearranged yields the "half-angle" formula: $\cos(\beta/2)^2 = (1 + \cos(\beta))/2$.
 
 ##### Example
 
@@ -165,11 +167,11 @@ That is the angle for a multiple of $n+1$ can be expressed in terms of the angle
 
 The  trigonometric functions are all periodic. In particular they are not monotonic over their entire domain. This means there is no *inverse* function applicable. However, by restricting the domain to where the functions are monotonic, inverse functions can be defined:
 
-* For $\sin(x)$, the restricted domain of $-\pi/2, \pi/2$ allows for the arcsine function to be defined. In `Julia` this is implemented with `asin`.
+* For $\sin(x)$, the restricted domain of $[-\pi/2, \pi/2]$ allows for the arcsine function to be defined. In `Julia` this is implemented with `asin`.
 
-* For $\cos(x)$, the restricted domain of $0$ to $\pi$ allows for the arccosine function to be defined. In `Julia` this is implemented with `acos`.
+* For $\cos(x)$, the restricted domain of $[0,\pi]$ allows for the arccosine function to be defined. In `Julia` this is implemented with `acos`.
 
-* For $\tan(x)$, the restricted domain of $-\pi/2, \pi/2$ allows for the arctangent function to be defined. In `Julia` this is implemented with `atan`.
+* For $\tan(x)$, the restricted domain of $(-\pi/2, \pi/2)$ allows for the arctangent function to be defined. In `Julia` this is implemented with `atan`.
 
 
 For example, the arcsine function is defined for $-1 \leq x \leq 1$ and has a range of $-\pi/2$ to $\pi/2$:
@@ -191,7 +193,9 @@ The horizontal asymptotes are $y=\pi/2$ and $y=-\pi/2$.
 
 Notice that $\sin(\arcsin(x)) = x$ for any $x$ in $[-1,1]$, but, of course,  not for all $x$, as the output of the sine function can't be arbitrarily large.
 
-However, $\arcsin(\sin(x))$ is defined for all $x$, but only equals $x$ in $[-\pi/2, \pi/2]$. The output, or range, of the $\arcsin$ function is restricted to that interval.
+However, $\arcsin(\sin(x))$ is defined for all $x$, but only equals
+$x$ when $x$ is in $[-\pi/2, \pi/2]$. The output, or range, of the
+$\arcsin$ function is restricted to that interval.
 
 
 This can be limiting at times. A common case is to find the angle in $[0, 2\pi)$ corresponding to a point $(x,y)$. In the simplest case (the first and fourth quadrants) this is just given by $\arctan(y/x)$. But with some work, the correct angle can be found for any pair $(x,y)$. As this is a common desire, the `atan2` function is available. This function returns a value in $(-\pi, \pi]$.

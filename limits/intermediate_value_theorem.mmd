@@ -1,7 +1,7 @@
 # Intermediate Value Theorem
 
 ```nocode,noout
-using Plots
+using Plots, Roots
 backend(:gadfly)
 ```
 
@@ -37,7 +37,7 @@ $f(x)$ over an interval $I$ can be defined.
 
 The extreme value theorem discusses an assumption that ensures such a value exists.
 
-> The *extreme value theorem*. If $f(x)$ is continuous in a closed
+> The *extreme value theorem*: If $f(x)$ is continuous in a closed
 >  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
 >  minimum over $[a,b]$.
 
@@ -95,15 +95,15 @@ function bisection(f, a, b)
   if f(b) == 0 return(b) end
   if f(a) * f(b) > 0 error("[a,b] is not a bracket") end
 
-  c = (a+b)/2
-  while ((c !=a) & (c != b))
+  c = a + (b - a)/2
+  while a < c < b
     if f(c) == 0 return(c) end
     if f(a) * f(c) < 0
        a, b = a, c
     else
        a, b = c, b
     end
-    c = (a+b)/2
+    c = a + (b - a)/2
   end
   c
 end
@@ -132,16 +132,16 @@ sign change between $a$, $c$, and $b$.
 
 ### The fzero function.
 
-The `Roots` package has a function `fzero` that implements the bisection method when called as `fzero(f, a, b)` where $[a,b]$ is a bracket. Its use is identical to `bisection` above. We will use it in the following:
+The `Roots` package has a function `fzero` that implements the bisection method when called as `fzero(f, [a, b])` where $[a,b]$ is a bracket. Its use is identical to `bisection` above. We will use it in the following:
 
 ```
 using Roots
-fzero(sin, 3, 4)              # alternatively: fzero(f, [a, b])
+fzero(sin, [3, 4])              # alternatively: fzero(f, a, b)
 ```
 
 ```
 alert("""
-Notice, the call `fzero(sin, 3,4)` again fits the template `action(function, args...)` that we see repeatedly.
+Notice, the call `fzero(sin, [3,4])` again fits the template `action(function, args...)` that we see repeatedly.
 """)
 ```
 
@@ -151,7 +151,7 @@ The polynomial $f(x) = x^5 - x + 1$ has a zero between $-2$ and $-1$. Find it.
 
 ```
 f(x) = x^5 - x + 1
-c = fzero(f, -2 -1)
+c = fzero(f, [-2 -1])
 (c, f(c))
 ```
 
@@ -171,7 +171,7 @@ plot(f, 5, 10)
 Find the zero numerically. The plot shows $f(5) < 0 < f(10)$, so $[5,10]$ is a bracket. We thus have:
 
 ```
-fzero(f, 5, 10)
+fzero(f, [5, 10])
 ```
 
 
@@ -190,7 +190,7 @@ plot(f, -3, 3)
 It appears (and a plot over $[0,1]$ verifies) that there is one zero between $-2$ and $-1$. It is found with:
 
 ```
-fzero(f, -2, -1)
+fzero(f, [-2, -1])
 ```
 
 Of course, as discussed previously, for *polynomial* functions, the
@@ -219,7 +219,7 @@ We see from the graph that it is clearly between $0$ and $2$, so all we need is 
 
 ```
 h(x) = f(x) - g(x)
-fzero(h, 0, 2)
+fzero(h, [0, 2])
 ```
 
 
@@ -257,7 +257,7 @@ cheaper.
 Let's get a numeric value, using a simple bracket and an anonymous function:
 
 ```
-fzero(x -> plan1(x) - plan2(x), 10, 20)
+fzero(x -> plan1(x) - plan2(x), [10, 20])
 ```
 
 ##### Example, the flight of an arrow
@@ -356,7 +356,7 @@ plot(y, 0, b - 1)
 Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we solve:
 
 ```
-x1 = fzero(y, b/2, b-1/10)
+x1 = fzero(y, [b/2, b-1/10])
 ```
 
 The answer is approximately $140.7$

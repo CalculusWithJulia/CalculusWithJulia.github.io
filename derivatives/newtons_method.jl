@@ -31,8 +31,8 @@ function newtons_method_graph(n, dt)
             append!(ys, [f(x0), 0])
         end
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),
-             layer(x=[0,2], y=[0,0], Geom.line, Theme(default_color=color("gray"))),
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),
+             layer(x=[0,2], y=[0,0], Geom.line, Theme(default_color=colorant"gray")),
              layer(x=xstars, y=0*xstars, Geom.point)
              )
     end
@@ -79,7 +79,7 @@ function newtons_method_poor_x0_graph(n, dt)
             append!(ys, [f(x0), 0])
         end
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),
              layer(x=xstars, y=0*xstars, Geom.point)
              )
     end
@@ -88,7 +88,7 @@ caption = """
 
 Illustration of Newton's Method converging to a zero of a function,
 but slowly as the initial guess, is very poor, and not close to the
-zero. The algorithm does converge, but not to the nearest root from
+zero. The algorithm does converge, but not quickly and not to the nearest root from
 the initial guess.
 
 """
@@ -125,7 +125,7 @@ function newtons_method_cycle_graph(n, dt)
     if n == 0
         plot(layer(x=tsl, y=map(f,tsl), Geom.line),
              layer(x=tsr, y=map(f,tsr), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),
              layer(x=xstars, y=0*xstars, Geom.point))
     else
         ts = linspace(a,b)
@@ -138,7 +138,7 @@ function newtons_method_cycle_graph(n, dt)
         end
         plot(layer(x=tsl, y=map(f,tsl), Geom.line),
              layer(x=tsr, y=map(f,tsr), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),             
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),             
              layer(x=xstars, y=0*xstars, Geom.point)
              )
     end
@@ -177,7 +177,7 @@ function newtons_method_flat_graph(n, dt)
     if n == 0
         ts = linspace(a,b)
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),
              layer(x=xstars, y=0*xstars, Geom.point))
     else
         ts = linspace(a,b)
@@ -189,7 +189,7 @@ function newtons_method_flat_graph(n, dt)
             append!(ys, [f(x0), 0])
         end
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),             
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),             
              layer(x=xstars, y=0*xstars, Geom.point)
              )
     end
@@ -232,7 +232,7 @@ function newtons_method_wilkinson_graph(n, dt)
     if n == 0
         ts = linspace(a,b)
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),
              layer(x=xstars, y=0*xstars, Geom.point))
     else
         ts = linspace(a,b)
@@ -244,7 +244,7 @@ function newtons_method_wilkinson_graph(n, dt)
             append!(ys, [f(x0), 0])
         end
         plot(layer(x=ts, y=map(f,ts), Geom.line),
-             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=color("gray"))),             
+             layer(x=xs, y=ys, Geom.line(preserve_order=true), Theme(default_color=colorant"gray")),             
              layer(x=xstars, y=0*xstars, Geom.point)
              )
     end

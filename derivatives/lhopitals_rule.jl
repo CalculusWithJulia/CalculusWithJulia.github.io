@@ -30,7 +30,7 @@ xs = [lx, rx]
 ys = map(tl, xs)
 
 plot(layer(x=map(g,ts), y = map(f, ts), Geom.line(preserve_order=true)),
-layer(x=xs, y=ys, Geom.line, Theme(default_color=color("orange"))),
+layer(x=xs, y=ys, Geom.line, Theme(default_color=colorant"orange")),
   layer(x=[g(a),g(b)],y=[f(a),f(b)], Geom.point),
   Guide.xticks(ticks=collect(-0.6:.2:.2)),
   Guide.yticks(ticks=collect(-.05:.05:.25))

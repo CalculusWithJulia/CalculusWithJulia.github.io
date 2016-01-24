@@ -17,7 +17,7 @@ function IVT_graph(n,_)
     y = f(x)
     
     plot(layer(x=xs, y=map(f,xs), Geom.line),
-         layer(x=[0,x,x], y=[f(x),f(x),0], Geom.line, Theme(default_color=color("orange"), line_width=3px))
+         layer(x=[0,x,x], y=[f(x),f(x),0], Geom.line, Theme(default_color=colorant"orange", line_width=3px))
          )
 
 end
@@ -58,8 +58,8 @@ function bisecting_graph(n,_)
         end
     end
     plot(l,
-         layer(x=[a,b],y=[0,0], Geom.line, Theme(default_color=color("orange"), line_width=3px)),
-         layer(x=[a,b],y=[f(a), f(b)], Geom.point, Theme(default_color=color("orange")))
+         layer(x=[a,b],y=[0,0], Geom.line, Theme(default_color=colorant"orange", line_width=3px)),
+         layer(x=[a,b],y=[f(a), f(b)], Geom.point, Theme(default_color=colorant"orange"))
          )
 
 end

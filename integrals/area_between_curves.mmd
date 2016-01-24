@@ -71,7 +71,7 @@ The answer then can be found numerically through:
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
-----
+##### Example
 
 Find the integral between $f(x) = \sin(x)$ and $g(x)=\cos(x)$ over $[0,2\pi]$ where $f(x) \geq g(x)$.
 
@@ -91,109 +91,7 @@ a,b = fzeros(x -> f(x) - g(x), 0, 2pi)  # pi/4, 5pi/4
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
-----
-
-Find the area bounded by the $x$ axis, the line $x-1$ and the function $\log(x+1)$.
-
-A plot shows us the basic area:
-
-```
-f(x) = log(x+1)
-g(x) = x - 1
-plot([f,g,zero],0, 3)
-```
-
-The value for "$b$" is found from the intersection point of  $\log(x+1)$ and $x-1$, which is near $2$:
-
-```
-a = 0
-b = fzero(x -> f(x) - g(x), 2)
-```
-
-We see that the lower part of the area has a condition: if $x < 1$ then use $0$, otherwise use $g(x)$. We can handle this many different ways:
-
-* break the integral into two pieces and add:
-
-```
-quadgk(x -> f(x) - zero(x), a, 1)[1] + quadgk(x -> f(x) - g(x), 1, b)[1]
-```
-
-* make a new function for the bottom bound:
-
-```
-h(x) = x < 1 ? 0.0 : g(x)
-quadgk(x -> f(x) - h(x), a, b)[1]
-```
-
-* Turn the picture on its side and integrate in the $y$ variable. To
-  do this, we need to solve for inverse functions:
-
-```
-a1=f(a)
-b1=f(b)
-f1(y)=y+1                # y=x-1, so x=y+1
-g1(y)=exp(y)-1           # y=log(x+1) so e^y = x + 1, x = e^y - 1
-quadgk(y -> f1(y) - g1(y), a1, b1)[1]
-```
-
-```
-note("""
-
-When doing problems by hand this latter style can often reduce the complications, but when approaching the task numerically, the first two styles are generally easier.
-
-""")
-```
-
-----
-
-The last problem suggested integrating in the $y$ variable. This could have more explanation.
-
-It has been noted that different symmetries can aid in computing
-integrals through their interpretation as areas. For example, if
-$f(x)$ is odd, then $\int_{-b}^b f(x)dx=0$ and if $f(x)$ is even,
-$\int_{-b}^b f(x) dx = 2\int_0^b f(x) dx$.
-
-Another symmetry of the $x-y$ plane is the reflection through the line $y=x$. This has the effect of taking the graph of $f(x)$ to the graph of $f^{-1}(x)$ and vice versa. Here is an example with $f(x) = x^3$ over $[-1,1]$.
-
-```
-f(x) = x^3
-xs = linspace(-1, 1)
-ys = map(f, xs)
-plot(ys, xs)
-```
-
-By switching the order of the `xs` and `ys` we "flip" the graph
-through the line $x=y$. 
-
-We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
-
-```
-ys = linspace(-1,1)
-xs = [y^3 for y in ys]
-plot(xs, ys)
-```
-
-Suppose we wanted the area in the first quadrant between this graph,
-the $y$ axis and the line $y=1$. What to do? Were the problem
-"flipped" through the $y=x$ line, this would just be $\int_0^1 x^3dx$.
-Rather than flipping, we mentally turn the picture and integrate in
-the $y$ variable. That is, the area is just $\int_0^1 y^3 dy$. The
-mental picture is the approximating rectangles are laying flat and as
-a function of $y$, are given a height of $y^3$.
-
-For a less trivial problem, consider the area between $x = y^2$ and $x = 2-y$ in the first quadrant.
-
-This area may be found as follows:
-
-```
-f(y) = 2-y
-g(y) = y^2
-b = fzeros(y -> f(y) - g(y))[1]
-a = 0
-quadgk(y -> f(y) - g(y), a, b)
-```
-
-----
+##### Example
 
 Find the area between $x^n$ and $x^{n+1}$ over $[0,1]$ for $n=1,2,\dots$.
 
@@ -218,7 +116,7 @@ This should should be no surprise, given how the areas computed carve up the are
 summation(1/(n+1)/(n+2), (n, 1, oo))
 ```
 
-----
+##### Example
 
 Verify [Archimedes](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola) finding that the area of the parabolic segment is $4/3$rds that of the triangle joining $a$, $(a+b)/2$ and $b$.
 
@@ -281,36 +179,57 @@ Finally, if Archimedes was right, this relationship should bring about $0$ (or s
 val1 * 4/3 - val2
 ```
 
-----
+##### Example
 
 Find the area bounded by $y=x^4$ and $y=e^x$ when $x^4 \geq e^x$ and
 $x > 0$.
 
-A graph will show the two intersection points in $[0,10]$. Afterwards
-the exponential dominates the power. We find these numerically
+A graph  over $[0,10]$ shows clearly the largest zero, for afterwards
+the exponential dominates the power. 
 
 ```
 f(x) = x^4
 g(x) = exp(x)
-a,b = fzeros(x -> f(x) - g(x), 0, 10)
+plot([f, g], 0, 10)
+```
 
+There must be another zero, though it is hard to see from the graph over $[0,10]$,
+as $0^4=0$ and $e^0=1$, so the polynomial must cross below the
+exponential to the left of $5$. (Otherwise, plotting over $[0,2]$ will
+clearly reveal the other zero.) We now find these intersection points
+numerically and then integrate:
+
+```
+a,b = fzeros(x -> f(x) - g(x), 0, 10)
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
-----
+##### Examples
 
 The area between $y=\sin(x)$ and $y=m\cdot x$ between $0$ and the
 first positive intersection depends on $m$ (where $0 \leq m \leq
-1$. The extremes are when $m=0$, the area is $2$ and when $m=1$, the
-area is $0$. What is it for other values of $m$?
+1$. The extremes are when $m=0$, the area is $2$ and when $m=1$ (the
+line is tangent at $x=0$), the area is $0$. What is it for other
+values of $m$? The picture for $m=1/2$ is:
 
-We have to find $b$ as a function of `m`. It will be the largest of the intersection points ($0$ is one, as well):
+```
+m = 1/2
+plot(sin, 0, pi)
+plot!(x -> m*x, 0, pi)
+```
+
+For a given $m$, the area is found after computing $b$, the
+intersection point. We express this as a function of $m$ for later reuse:
 
 ```
 B(m) = maximum(fzeros(x -> sin(x) - m*x, 0, pi))
+a = 0
+b = B(m)
+quadgk(x -> sin(x) - m*x, a, b)[1]
 ```
 
-The area then as a function of `m` is give through:
+
+In general, the area then as a function of `m` is found by substitution `B(m)` for `b`:
 
 ```
 area(m) = quadgk(x -> sin(x) - m*x, 0, B(m))[1]
@@ -322,6 +241,131 @@ A plot shows the relationship:
 plot(area, 0, 1)
 ```
 
+While here, let's also answer the question of which $m$ gives an area
+of $1$, or one-half the total? This can be done as follows:
+
+```
+fzero(m -> area(m) - 1, [0,1])
+```
+
+(Which is a nice combination of using `fzeros`, `quadgk` and `fzero` to answer a problem.)
+
+##### Example
+
+Find the area bounded by the $x$ axis, the line $x-1$ and the function $\log(x+1)$.
+
+A plot shows us the basic area:
+
+```
+f(x) = log(x+1)
+g(x) = x - 1
+plot([f,g,zero],0, 3)
+```
+
+The value for "$b$" is found from the intersection point of  $\log(x+1)$ and $x-1$, which is near $2$:
+
+```
+a = 0
+b = fzero(x -> f(x) - g(x), 2)
+```
+
+We see that the lower part of the area has a condition: if $x < 1$ then use $0$, otherwise use $g(x)$. We can handle this many different ways:
+
+* break the integral into two pieces and add:
+
+```
+quadgk(x -> f(x) - zero(x), a, 1)[1] + quadgk(x -> f(x) - g(x), 1, b)[1]
+```
+
+* make a new function for the bottom bound:
+
+```
+h(x) = x < 1 ? 0.0 : g(x)
+quadgk(x -> f(x) - h(x), a, b)[1]
+```
+
+* Turn the picture on its side and integrate in the $y$ variable. To
+  do this, we need to solve for inverse functions:
+
+```
+a1=f(a)
+b1=f(b)
+f1(y)=y+1                # y=x-1, so x=y+1
+g1(y)=exp(y)-1           # y=log(x+1) so e^y = x + 1, x = e^y - 1
+quadgk(y -> f1(y) - g1(y), a1, b1)[1]
+```
+
+```
+note("""
+
+When doing problems by hand this latter style can often reduce the complications, but when approaching the task numerically, the first two styles are generally easier, though compuatationally more expensive.
+
+""")
+```
+
+#### Integrating in different directions
+
+The last example suggested integrating in the $y$ variable. This could have more explanation.
+
+It has been noted that different symmetries can aid in computing
+integrals through their interpretation as areas. For example, if
+$f(x)$ is odd, then $\int_{-b}^b f(x)dx=0$ and if $f(x)$ is even,
+$\int_{-b}^b f(x) dx = 2\int_0^b f(x) dx$.
+
+Another symmetry of the $x-y$ plane is the reflection through the line
+$y=x$. This has the effect of taking the graph of $f(x)$ to the graph
+of $f^{-1}(x)$ and vice versa. Here is an example with $f(x) = x^3$
+over $[-1,1]$.
+
+```
+f(x) = x^3
+xs = linspace(-1, 1)
+ys = map(f, xs)
+plot(ys, xs)
+```
+
+By switching the order of the `xs` and `ys` we "flip" the graph
+through the line $x=y$. 
+
+We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
+
+```
+ys = linspace(-1,1)
+xs = [y^3 for y in ys]
+plot(xs, ys)
+```
+
+Suppose we wanted the area in the first quadrant between this graph,
+the $y$ axis and the line $y=1$. What to do? With the problem
+"flipped" through the $y=x$ line, this would just be $\int_0^1 x^3dx$.
+Rather than mentally flipping the picture to integrate, instead we can just integrate in
+the $y$ variable. That is, the area is  $\int_0^1 y^3 dy$. The
+mental picture for Riemann sums would be have the approximating rectangles laying flat and as
+a function of $y$, are given a length of $y^3$ and height of "$dy$".
+
+For a less trivial problem, consider the area between $x = y^2$ and $x
+= 2-y$ in the first quadrant.
+
+```
+ys = linspace(0, 2)
+xs = [y^2 for y in ys]
+plot(xs, ys)
+xs = [2-y for y in ys]
+plot!(xs, ys)
+plot!(zero, 0, 2)
+```
+
+We see the bounded area could be described in the "$x$" variable in
+terms of two integrals, but in the $y$ variable in terms of the
+difference of two functions with the limits of integration running
+from $y=0$ to $y=1$. So, this area may be found as follows:
+
+```
+f(y) = 2-y
+g(y) = y^2
+a, b = 0, 1
+quadgk(y -> f(y) - g(y), a, b)[1]
+```
 
 
 ## Questions

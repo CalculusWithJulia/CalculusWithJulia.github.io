@@ -1,0 +1,555 @@
+# Parametrized curves in two dimensions
+
+```nocode, noout
+using Plots
+backend(:gadfly)
+```
+
+For two functions $x(t)$ and $y(t)$, their parametric plot over the interval $[a,b]$ is the graph of $(x(t), y(t))$ for $t$ in $[a,b]$.
+
+For example,
+
+```
+using Plots
+x(t) = t - sin(t)
+y(t) = 1 - cos(t)
+plot(x, y, 0, 4pi)
+```
+
+We have seen a number of cases where such a graph gives insight into a relationship:
+
+* The mean value theorem for functions for parametric plots is nothing more than a statement that for differentiable functions the secant line connecting two points $(x(a), y(a))$ and $(x(b), y(b))$  is matched by a parallel *tangent* line at some $a \leq c \leq b$.
+
+* L'Hopital's rule for the indeterminate form $0/0$ is nothing more than a statement about the slope of the tangent line for the parametric plot at $(0,0)$.
+
+* Integration by parts can be viewed geometrically in terms of areas naturally defined by the parametric plot.
+
+In this section we begin to describe the generalizations of the concepts of calculus for parametrically defined functions. We restrict our attention to two-dimensions, though this is by no means necessary and is somewhat less general.
+
+## Vectors, vector-valued functions
+
+Recall our discussion on [vectors](../precalc/vectors.html). We have a few basic facts to remember:
+
+* a two-dimensional vector contains two components and is written $\vec{v} = \langle v_x,~ v_y \rangle$.
+
+* The norm or magnitude of a vector is $\| \vec{v} \| = \sqrt{v_x^2 + v_y^2}$. 
+
+* linear combinations of vectors are vectors: $a \vec{v} + b \vec{w} = \langle av_x + bw_x,~ av_y + bw_y\rangle$.
+
+* The vector $\hat{v} = \vec{v}/\|v\|$ is called the unit vector in the direction of $v$
+
+* the dot product of vectors is $\vec{v} \cdot \vec{w} = v_x w_x + v_y w_y$. This is related to the cosine of the angle between $\vec{v}$ and $\vec{w}$ through: $\vec{v} \cdot \vec{w} = \| \vec{v} \| \|\vec{w}\| \cos(\theta)$.
+
+### Vector-valued functions
+
+For the two-dimensional case where two functions $x(t)$ and $y(t)$ describe the position, we define a vector-valued function, $\vec{r}(t)$ by $\vec{r}(t) = \langle x(t),~ y(t) \rangle$. This is a function in the more general sense, in that it pairs off values $t$ with values $\langle x(t),~ y(t) \rangle$.
+
+Vector valued functions can be added and subtracted, as vectors can be. This makes certain scenarios easy to describe.
+
+For example, an amusement park ride, the Ferris wheel, can be thought of in terms of the position of a passenger. Imagine a ride where there is a large wheel. Around that wheel individual cars rotate in a circular manner around a fixed point (an axle) on the big wheel.
+
+Let $\vec{r}(t)$ be the position of the point the car rotates around, and $\vec{s}(t)$ be the position of the car relative to the point the car rotates around. Both are circular, so can be described by $\vec{r}(t) = A \langle \cos(t),~ \sin(t) \rangle$ and $\vec{s}(t) = a \langle(\cos(bt + c),~\sin(bt + c) \rangle$.
+
+The position of the car is then the superposition, or sum, of the two functions: $\vec{p}(t) = \vec{r}(t) + \vec{s}(t)$. A graph for some specific values would be:
+
+```
+A,a = 5, 2
+b, c = 6, 0
+ts = linspace(0, 2pi)
+r(t) = A*[cos(t), sin(t)]
+s(t) = a*[cos(b*t + c), sin(b*t + c)]
+p(t) = r(t) + s(t)
+## one way to do this
+plot(t->p(t)[1], t->p(t)[2], 0, 2pi)
+```
+
+Some useful parameterizations include:
+
+- The line through the point $(x_0,y_0)$ with direction $\vec{v}$ can be written as $\vec{r}(t) = \vec{p} + t \vec{v}$ where $\vec{p}=\langle x_0,~ y_0 \rangle$.
+
+- A circle, as just seen, is parameterized by $\vec{r}(t) = R \langle \cos(bt+c),~ \sin(bt+c) \rangle$. An ellipse would have a constant in front of each term, which need not be the same.
+
+- A spiral can be generated in a manner similar to a circle, only  we include a radius that varies in $t$, such as $\vec{r}(t) = e^{-t} \langle \cos(bt + c),~ \sin(bt+c) \rangle$.
+
+### Limits, continuity
+
+The concepts of a limit and continuity carry over from those defined for scalar functions with just a slight modification. The informal idea of a limit is that as $t$ gets close to some $c$, $\vec{r}(t)$ gets close to $\vec{L}$. In this case, $\vec{L}$ is a vector, so we define "close" in terms of the norm: $\| \vec{r}(t) - \vec{L} \| < \epsilon$. This is the only necessary modification.
+
+For many functions, limits are consequence of the limits of the individual components. This is because the triangle inequality implies:
+
+$$~
+\| \vec{r}(t) - \vec{L} \| = \sqrt{(x(t) - L_x)^2 + (y(t) - L_y)^2} \leq \lvert x(t) - L_x \rvert + \lvert y(t) - L_y \rvert.
+~$$
+
+A different bound will show that if the limit exists, then the individual ones will too.
+
+If $x(t)$ and $y(t)$ have limits $L_x$ and $L_y$ then the right-hand side will go to $0$ as $t$ goes to $c$.
+
+Continuity is also similarly defined: A vector-valued function $\vec{r}(t)$ is continuous at $c$ if $\lim_{t \rightarrow c} \vec{r}(t) = \vec{r}(c)$.
+
+Continuous vector-valued functions will have graphs without "jumps." Each component of a continuous vector-valued function will be continuous and if each component is continuous, so will be the vector-valued function.
+
+## Derivative
+
+The parametric graph of a vector-valued function has tangent lines. Indeed, these were used in applications to the general mean value theorem of Cauchy and L'Hopital's rule. As with scalar functions, the formal definition involves the limit of the slope of a secant line:
+
+$$~
+\vec{r}'(t) = \lim_{h \rightarrow 0} \frac{\vec{r}(t+h) - \vec{r}(t)}{h}.
+~$$
+
+This limit is of vector-valued functions and the derivative is a vector, not a number. When both $x$ and $y$ have derivatives at $t$, then $\vec{r}'(t) = \langle x'(t), y'(t) \rangle$.
+
+### The tangent line
+
+The derivative, $\vec{r}'(t)$, is related to the tangent line to the curve generated by $\vec{r}(t)$ at $t$. The slope of this line will be the ratio of the components of $\vec{r}'(t)$, $y'(t)/x'(t)$. The tangent line itself can be parameterized by $tl(t) = \vec{r}(t_0) + \vec{r}'(t_0)(t - t_0)$.
+
+Recall a vector encodes a direction and a magnitude, whereas the corresponding unit vector, $v / \|v\|$, encodes just the direction. In the equation of a tangent line, it wouldn't be unreasonable to use $\vec{r}'(t)/\|\vec{r}'(t)\|$ for the direction part. This has the added advantage of being parameterized by arc length.
+
+##### Example
+
+Let $\vec{r}(t) = \langle t\cos(t),~t^2 \rangle$, We have the derivative is:
+
+$$~
+\vec{r}'(t) = \langle [t\cos(t)]',~ [t^2]' \rangle = \langle \cos(t) - t\sin(t),~ 2t\rangle
+~$$
+
+The unit vector is then:
+
+$$~
+\frac{\vec{r}'(t)}{\| \vec{r}'(t) \|} = \frac{\langle \cos(t) - t\sin(t),~ 2t\rangle}{\sqrt{(\cos(t) -t\sin(t))^2 + 4t^2}}.
+~$$
+
+### The second derivative
+
+The second derivative, $\vec{r}''(t)$, can be defined in an analogous manner though this isn't as readily interpreted as the second derivative of a scalar function. Recall, $d^2y/dx^2$ was positive when a function was concave up and negative when concave down (when it exists). The values in $\vec{r}''(t)$ include $x''(t)$ and $y''(t)$ (writing $\vec{r}(t) = \langle x(t),~ y(t) \rangle$.)
+
+But we have by the chain rule that $dy/dx = (dy/dt) / (dx/dt)$ (that is the slope of the tangent line is just $y'(t)/x'(t)$). This gives
+
+$$~
+\frac{d^2y}{dx^2}
+= \frac{d}{dx}\frac{dy}{dx}
+= \frac{d}{dt}(\frac{dy}{dx}) / \frac{dx}{dt}
+= \frac{d}{dt}(\frac{dy}{dt} / \frac{dx}{dt}) / \frac{dx}{dt}
+= \frac{y'' x' - y' x''}{(x'')^2} / (x''(t))
+= \frac{y'' x' - y' x''}{(x'')^3}.
+~$$
+
+(The expression $y'' x' - y' x''$ can be written as the [determinant](http://en.wikipedia.org/wiki/Determinant) of the matrix $[\vec{r}'(t) \quad\vec{r}''(t)]$.)
+
+To see that his gives the correct answers for a circle (concave down in quadrants I and II; concave up in quadrants III and IV) we check with `SymPy`:
+
+```
+using SymPy
+t =  symbols("t", real=true)
+r(t) = [cos(t), sin(t)]
+bottom = r(t)[1]^3
+top = det([diff(r(t), t) diff(r(t),t, 2)]) 
+```
+
+```
+top/bottom |> simplify
+```
+
+
+In the quadrants I and II the cosine is positive and in quadrants III and IV it is negative, so this agrees with our expectation.
+
+
+
+When discussing the general case, the concept of
+[curvature](http://en.wikipedia.org/wiki/Curvature) is important. The
+curvature is a quantity that reflects the radius of the circle that
+best approximates the curve. (Similar to how the tangent line best
+approximates the curve.) With this, the curvature should be infinite
+for straight lines, and for circular curves have a curvature that
+reflects the size of the radius.
+
+Three points determine a circle, so the curvature could be worked out
+by looking at $\vec{r}(t)$, $\vec{r}(t+h)$, and $\vec{r}(t-h)$ and
+taking a limit as $h$ goes to $0$. Here is how, but this code is
+really slow so we do the hardest work once:
+
+```
+using SymPy
+
+a,b,R, t, h = symbols("a,b,R, t,h", real=true)
+xs = symbols("x1 x2 x3", real=true)
+ys = symbols("y1 y2 y3", real=true)
+ts = [t-h, t, t+h]
+
+eqs = Sym[(xs[i] - a)^2 + (ys[i]-b)^2- R^2 for i in 1:3]
+abR = solve(eqs, [a,b,R])
+R1 = abR[1][R]    ## fish out R from abR
+```
+
+With this, we can check our work. First for a circle with radius $3$:
+
+```
+
+u(x) = 3sin(x)
+v(x) = 3cos(x)
+R2 = R1
+for i in 1:3
+    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
+end
+R2 = trigsimp(R2)
+
+κ = 1 / abs(limit(R2, h, 0))
+```
+
+The value is a constant $1/3$. In general the curvature of a circle of radius $R$ is $1/R$.
+
+
+To see an answer for a more complicated equation we take the cycloid:
+
+```
+
+u(x) = x - sin(x)
+v(x) = 1 - cos(x)
+
+R2 = R1
+for i in 1:3
+    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
+end
+R2 = trigsimp(R2)
+κ = 1 / abs(limit(R2, h, 0))
+```
+
+This isn't exactly pretty. Here we find values at a few points:
+
+```
+[N(subs(κ, t, t0)) for t0 in [pi/6, pi/4, pi/3, pi/2]]
+```
+
+The above doesn't give a general solution. In theory, using symbolic functions for `u` and `v` above would lead to a solution for `kappa`, in practice `SymPy` can't evaluate the limit. However,
+the answer is known.
+
+
+If $\vec{r}(t) = \langle x(t), y(t) \rangle$, the curvature at $\vec{r}(t)$ is defined (in two dimensions) by:
+
+$$~
+\kappa = \frac{\lvert x'(t)y''(t) - x''(t)y'(t) \rvert}{\| \vec{r}' \|^3} = \frac{\text{det}[\vec{r}'\quad \vec{r}'']}{\| \vec{r}' \|^3}.
+~$$
+
+This uses $\text{det}$ to indicate the determinant, in this case a $2 \times 2$ determinant.
+
+###### Example
+
+We verify again that the curvature of a circle will depend inversely on its radius:
+
+```
+using SymPy
+R,t =  symbols("R, t", real=true, positive=true)
+r(t) = R * [cos(t), sin(t)]
+rp = diff(r(t), t, 1)
+rpp = diff(r(t), t, 2)
+```
+
+For circles, the curvature is the reciprocal of the radius, as this verifies:
+
+```
+abs(det([rp rpp])) / norm(rp)^3 |> simplify
+```
+
+##### Example
+
+
+For a less trivial example, we consider the ellipse, given by $(x/a) + (y/b) = t$ and parameterized by $\vec{r}(t) = \langle a \cos(t), b\sin(t) \rangle$. This will have curvature computed as follows:
+
+```
+a,b = symbols("a,b", real=true)
+r(t) = [a * cos(t), b * sin(t)]
+rp = diff(r(t), t, 1)
+rpp = diff(r(t), t, 2)
+abs(det([rp rpp])) / norm(rp)^3 |> simplify
+```
+
+
+
+```
+note(L"""
+
+Curvature can also be expressed in terms of the curve. Suppose $\gamma(s)$ parameterizes the curve in terms of its arc length. (So the length between $s=a$ and $s=b$ is just $b-a$.) Then the  tangent vector $T(s) = \gamma'(s)$ will have unit length -- its magnitude relates to the speed at which the curve is parameterized, and parameterizing by arc length will give a unit speed. Furthermore, as the magnitude of $T$ is constant, its derivative $dT/ds$ will be perpendicular to $T$. The curvature is the magnitude,  $\|dT/ds\|$.
+
+""")
+```
+
+
+## Line integrals
+
+```
+using WeavePynb
+out = gif_to_data("figures/pacman.png", """
+
+A Pacman racing around a track. As he or she moves, they accumulate
+points by chomping on the "dots." How would this accumulation be
+modeled? A simplified model can use the concept of the integral,
+though instead of integrating over an interval, the integral is over
+the path taken.
+
+""")
+WeavePynb.HTMLoutput(out)
+```
+
+The Pacman game has Mr. or Mrs. Pacman marching around a maze eating dots to gather points while avoiding Blinky, Pinky, Inky, and Clyde. Let's simplify the game a bit and take away those pesky enemies and make the maze a parameterized curve, sort of like the oval in the figure. Further, assume -- unlike the game -- the curve is traveled in only one direction. Our question here is how to model the accumulation of points arising from eating the dots?
+
+If the dots are uniformly spread out and have equal point values associated to them, then the answer would be approximately the length traveled along the curve times the density of dots per unit distance. In notation, something like this using the formula for arc length of a parameterized curve: $\rho \int_a^b \sqrt{x'(t)^2 + y'(t)^2} dt = \int_a^b \rho \sqrt{x'(t)^2 + y'(t)^2} dt$.
+
+How would this change if the dots were no longer of uniform value? Suppose during a stretch between $c$ and $d$ with $a < c < d < b$, the dots had a bonus value. Then the density would change, and the answer would look something along the lines of this complicated thing: $\int_a^c \rho_1 \sqrt{x'(t)^2 + y'(t)^2} dt + \int_c^d \rho_2 \sqrt{x'(t)^2 + y'(t)^2} dt + \int_d^b \rho_1 \sqrt{x'(t)^2 + y'(t)^2} dt$. (This is similar to how we would special case different velocities when trying to compute distance traveled, if the velocities were just piecewise constant (like 30 miles per hour for an hour, then 60 miles per hour for an hour, ...).
+
+
+If we make things even more complicated, we can actually get a simpler answer. So let's do that. The density could possibly change at each point along the curve. Let's allow for that mathematically by writing the density of dots as a function of position, $x$ and $y$, as $\rho(x,y)$. That is, we expect a scalar-valued function of two values, returning a single number. There is some precedent for this. For example, the norm of a vector takes a vector, $\vec{v}$ and computes a number. If we think of a two-dimensional vector as containing two values, then we have an example $\rho(x,y) = \sqrt{x^2 + y^2}$. Other examples might be given by explicit formula, such as $x^2 - y^2$, or $\sin(xy) - \cos(x)$.
+
+We  are interested in the values of $\rho(x,y)$ along the curve, so really we want the composition $\rho(\vec{r}(t))$. As a function of $t$, this composition is just a univariate function. It is only when we think of the two pieces separately that we need this extended concept of a vector-valued function, like $\vec{r}(t)$; and a scalar valued multivariate function like $\rho$.
+
+```
+note(L"""
+We have both $f(x,y)$ and $f(\vec{r}(t))$ using the same rule for evaluation. Mathematically this is easy to conceptualize, but on the computer a function `f(x,y)` would have two arguments, where as `f(r)` would take $1$. We have seen in `Julia` this is no problem -- we could just define `f(r) = f(r[1], r[2])` and have multiple dispatch iron out the details -- but more generally we would like a way to expand a vector, like `r`, into its components. The "splatting" notation does just this. Splatting is done by following a container by three dots, as in `r...`, That is `f(r...)` would expand `r` and call `f(r[1], f[2])` if `r` has two components.
+""")
+```
+
+If $\vec{r}(t) = \langle x(t), y(t) \rangle$ is a parameterization for the curve, then we can approximate the amount of dots eaten if the density is a function of $(x,y)$ by taking a partition of the interval $[a,b]$: $a = t_0 < t_1 < \cdots < t_n=b$. On each subinterval, we get the approximate accumulation by treating the density as a constant. The values to accumulate would be  this constant approximation times the length traveled, which is also approximated using the distance between the two endpoints. Adding all of these up would give a sum like the following, which we manipulate in the same manner that the arc-length formula was derived:
+
+
+$$~
+\begin{align}
+\text{total} &= 
+\rho(\vec{r}(t_1)) \cdot \| \vec{r}(t_1) - \vec{r}(t_0) \| + \rho(\vec{r}(t_2)) \cdot \| \vec{r}(t_2) - \vec{r}(t_1) \| + \cdots + \rho(\vec{r}(t_n)) \cdot \| \vec{r}(t_n) - \vec{r}(t_{n-1}) \| \\
+&=
+\rho(\vec{r}(t_1)) \cdot  \sqrt{x'(\xi_1)^2 + y'(\psi_1)^2} \cdot (t_1 - t_0)+
+\rho(\vec{r}(t_2)) \cdot  \sqrt{x'(\xi_2)^2 + y'(\psi_2)^2} \cdot (t_2 - t_1) + \cdots +
+\rho(\vec{r}(t_n)) \cdot  \sqrt{x'(\xi_n)^2 + y'(\psi_n)^2} \cdot (t_n - t_{n-1}).
+\end{align}
+~$$
+
+
+If the functions are integrable -- and they will be if the parameterization uses continuous functions and the functions defining $\rho$ are continuous without dividing by $0$ -- then this is a Riemann sum approximation to the integral $\int_a^b \rho(\vec{r}(t)) \sqrt{x'(t)^2 + y'(t)^2} dt$. With the new notation for $\vec{r}'(t)$, this can also be written more succinctly as $\int_a^b \rho(\vec{r}(t)) \| \vec{r}'(t) \| dt$.  In general, this becomes:
+
+
+> **The line integral**. If $f(x,y)$, a function of two variables returning a real number,
+> is sufficiently nice (the composition $f(\vec{r}(t))$ is integrable), then the line integral between $t=a$ and $t=b$ is defined by
+> $$~ \int_a^b f(\vec{r}(t)) \| \vec{r}'(t) \| dt.~$$
+
+
+
+Before giving some examples, we make a few comments:
+
+* If the function $f$ is a constant, say just $1$, then the formula is just the arc length formula which takes a more general flavor: arc length = $\int_a^b \| \vec{r}'(t) \| dt$. If the curve is parameterized by arc length, then $\| \vec{r}'(t) \|$ is just $\| T\|$, the unit tangent vector, and this becomes just $b-a$ which is the arc-length when the curve is parameterized by arc length.
+
+* Just as dots gathered by pac man should matter if eaten quickly or slowly, neither does the line integral depend on how fast the curve is traversed. Suppose $\gamma(t)$ is a *reparameterization* of the curve which is monotonically increasing. (The monotonic part means the new tracing of the curve still won't backtrack.) Suppose $\gamma(c)=a$ and $\gamma(d)=b$, then the line integral for $\vec{r}(\gamma(t))$ would be:
+
+$$~
+\begin{align}
+\int_c^d f(\vec{r}(\gamma(t))) \| [\vec{r}(\gamma(t))]' \| dt
+&= \int_c^d f(\vec{r}(\gamma(t))) \| \vec{r}'(\gamma(t)) \gamma'(t) \| dt \\
+&= \int_c^d f(\vec{r}(\gamma(t))) \| \vec{r}'(\gamma(t))\|  \gamma'(t) dt \quad \text{(as $\gamma'(t) \geq 0$)}\\
+&= \int_c^d f(\vec{r}(\gamma(t))) \| \vec{r}'(\gamma(t))\|  \gamma'(t) dt\\
+&= \int_{\gamma(c)}^{\gamma(d)} f(u) \| \vec{r}'(u) \| du  \quad \text{($u$-substitution with $u=\gamma(t)$)}\\
+&= \int_{a}^{b} f(u) \| \vec{r}'(u) \| du.
+\end{align}
+~$$
+
+### Examples
+
+##### Example
+
+Let an ellipse be parameterized by $\vec{r}(t) = \langle a \cos(t), b\sin(t) \rangle$, $0 \leq t \leq 2\pi$. Find the line integral of the function $f(x,y) = xy$ around the curve.
+
+The integral to compute would be:
+
+$$~
+\int_0^{2\pi} (a\cos(t) \cdot b \sin(t)) \sqrt{a^2(-\sin(t))^2 + b^2\cos(t)^2} dt.
+~$$
+
+An antiderivative can be found by `SymPy`, so we integrate exactly:
+
+```
+using SymPy
+a,b,t = symbols("a,b,t", real=true)
+integrate(a*b*cos(t)*sin(t) *sqrt(a^2*sin(t)^2 + b^2 *cos(t)^2), (t, 0, 2PI))
+```
+
+That this is $0$ reflects the symmetry involved. The values accumulated in quadrant I are canceled by those in quadrant II, similarly for quadrants III and IV.
+
+##### Example
+
+Integrate the function $f(x,y) = xy$ along the spiral parameterized by $\vec{r}(t) = \langle e^t \cos(t),~ e^t\sin(t) \rangle$ for $0 \leq t \leq 2\pi$.
+
+The integral to compute is:
+
+
+$$~
+\int_0^{2\pi} (e^t\cos(t) \cdot e^t \sin(t)) \sqrt{e^t(\cos(t) - \sin(t)) + e^t(\sin(t) + \cos(t))} dt.
+~$$
+
+We use `SymPy` to simplify the integrand:
+
+```
+X = exp(t)*cos(t)
+Y = exp(t)*sin(t)
+out = X*Y * sqrt(diff(X,t)^2 + diff(Y,t)^2) |> trigsimp
+```
+
+We integrate this from $0$ to $2\pi$ to find the answer:
+
+```
+a = integrate(out, (t, 0, 2PI))
+```
+
+Which takes value
+
+```
+N(a)
+```
+
+This value is decidedly non-zero. Though the function is the same as the last example, $f(x,y)=xy$, the spiraling path does not exploit the symmetry of the function to get cancellations.
+
+## Questions
+
+###### Question
+
+A cycloid is formed by pushing a wheel on a surface without slipping. The position of a fixed point on the outer rim of the wheel traces out the cycloid. Suppose the wheel has radius $R$ and the initial position of the point is at the bottom, $(0,0)$. Let $t$ measure angle measurement, in radians. Then the point of contact of the wheel will be at $Rt$, as that is the distance the wheel will have rotated. That is, the hub of the wheel will move according to $\langle Rt,~ R\rangle$. Relative to the hub, the point on the rim will have coordinates $\langle -R\sin(t), -R\cos(t) \rangle$, so the superposition gives:
+
+$$~
+\vec{r}(t) = \langle Rt - R\sin(t), R - R\cos(t) \rangle.
+~$$
+
+What is the position at $t=\pi/4$?
+
+```
+choices = [
+q"[0.0782914, 0.292893 ]",
+q"[0.181172, 0.5]",
+q"[0.570796, 1.0]"]
+ans = 1
+radioq(choices, ans)
+```
+
+And the position at $\pi/2$?
+
+
+```
+choices = [
+q"[0.0782914, 0.292893 ]",
+q"[0.181172, 0.5]",
+q"[0.570796, 1.0]"]
+ans = 3
+radioq(choices, ans)
+```
+
+###### Question
+
+Suppose instead of keeping track of a point on the outer rim of the wheel, a point a distance $r < R$ from the hub is chosen in the above description of a cycloid (a [Curtate](http://mathworld.wolfram.com/CurtateCycloid.html) cycloid). If we start at $\langle 0,~ R-r \rangle$, what will be the position at $t$?
+
+```
+choices = [
+L"\langle Rt - r\sin(t),~ R - r\cos(t) \rangle",
+L"\langle Rt - R\sin(t),~ R - R\cos(t) \rangle",
+L"\langle -r\sin(t),~ -r\cos(t) \rangle"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+The cycloid $\vec{r}(t) = \langle t - \sin(t),~ 1 - \cos(t) \rangle$ has a formula for the arc length from $0$ to $t$ given by: $l(t) = 4 - 4\cos(t/2)$.
+
+Plot the following two equations over $[0,8]$ which are a reparameterization of the cycloid by $l^{-1}(t)$.
+
+```
+gamma(s) = 2 * acos(1-s/4)
+x(s) = gamma(s) - sin(gamma(s))
+y(s) = 1 - cos(gamma(s))
+```
+
+How many arches of the cycloid are traced out?
+
+```
+radioq(1:3, 1, keep_order=true)
+```
+
+###### Question
+
+Consider the cycloid  $\vec{r}(t) = \langle t - \sin(t),~ 1 - \cos(t) \rangle$
+
+What is the derivative at $t=\pi/2$?
+
+```
+choices = [
+q"[1,1]",
+q"[2,0]",
+q"[0,0]"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+What is the derivative at $t=\pi$?
+
+
+```
+choices = [
+q"[1,1]",
+q"[2,0]",
+q"[0,0]"
+]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+Consider the circle $\vec{r}(t) = R \langle \cos(t),~ \sin(t) \rangle$, $R > 0$. Find the norm of $\vec{r}'(t)$:
+
+```
+choices = [
+L"1",
+L"R",
+L"R^2"
+]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+For the curve described by $\vec{r}(t) = \langle \sin(t)^2,~ \sin(t^2) \rangle$ compute the line integral from $0$ to $1$ when $f(x,y) = x - y$. Do this numerically:
+
+```
+using Roots
+x(t) = sin(t)^2
+y(t) = sin(t^2)
+a,b = 0, 1
+f(x,y) = x - y
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+numericq(val)
+```
+
+
+###### Question
+
+The curve described by $\vec{r}(t) = \langle 10t,~ 10t - 16t^2\rangle$ models the flight of an arrow. Compute the length traveled from when it is launched to when it returns to the ground.
+
+```
+using Roots
+x(t) = 10t
+y(t) = 10t - 16t^2
+a,b = sort(fzeros(y))
+f(x,y) = 1
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+numericq(val)
+```
+
+###### Question
+
+Integrate the function $f(x,y) = 1/(y+1)$ over the path of the arrow described by  $\vec{r}(t) = \langle 10t,~ 10t - 16t^2\rangle$ from when it is launched to when it returns to the ground.
+
+```
+x(t) = 10t
+y(t) = 10t - 16t^2
+a,b = sort(fzeros(y))
+f(x,y) = 1/(y+1)
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+numericq(val)
+```
+

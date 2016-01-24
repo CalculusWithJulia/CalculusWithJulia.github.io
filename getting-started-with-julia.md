@@ -76,7 +76,7 @@ Pkg.add("IJulia")
 
 * Once this is done, you can start the notebook with these commands:
 
-```
+```verbatim
 using IJulia
 notebook()
 ```

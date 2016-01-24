@@ -2,6 +2,7 @@ module limits
 
 using Gadfly, Reel
 using WeavePynb, LaTeXStrings
+using Colors
 
 f(x) = x^2
 colors = ["black", "blue", "orange", "red", "green", "orange", "purple"]
@@ -24,13 +25,13 @@ function make_triangle_graph(n,_)
     if n == 0
         append!(layers, layer(x=[0,0,1],   y=[0,1,1], Geom.line))
     elseif n == 1
-        append!(layers, layer(x=[1,0,0,1, 0], y=[1,1,0,1,1], Geom.line(preserve_order=true), Theme(default_color=color(colors[1]))))
+        append!(layers, layer(x=[1,0,0,1, 0], y=[1,1,0,1,1], Geom.line(preserve_order=true), Theme(default_color=parse(Colors.Colorant,colors[1]))))
     else    
         for k in (n-1):n
         
             xs = linspace(0,1,1+2^(k-1))
             ys = map(f, xs)
-            append!(layers, layer(x=xs, y=ys, Geom.line, Theme(default_color=color(colors[k]))))
+            append!(layers, layer(x=xs, y=ys, Geom.line, Theme(default_color=parse(Colors.Colorant,colors[k]))))
         end
     end
     plot(layers...)
@@ -91,13 +92,13 @@ function make_limit_e_d(n, args...)
         layers = Layer[]
         append!(layers, layer(x=xs, y=ys, Geom.line))
         if isodd(n)
-            append!(layers, layer(x=xs, y=0*xs + epsilon, Geom.line, Theme(default_color=color("orange"))))
-            append!(layers, layer(x=xs, y=0*xs - epsilon, Geom.line, Theme(default_color=color("orange"))))
+            append!(layers, layer(x=xs, y=0*xs + epsilon, Geom.line, Theme(default_color=colorant"orange")))
+            append!(layers, layer(x=xs, y=0*xs - epsilon, Geom.line, Theme(default_color=colorant"orange")))
         else
-            append!(layers, layer(x=[-delta, delta],y=[epsilon, epsilon],  Geom.line, Theme(default_color=color("orange"))))
-            append!(layers, layer(x=[-delta, delta],y=-[epsilon, epsilon],  Geom.line, Theme(default_color=color("orange"))))
-            append!(layers, layer(x=[-delta, -delta],y=epsilon*[-1,1],   Geom.line, Theme(default_color=color("green"))))
-            append!(layers, layer(x=[ delta,  delta],y=epsilon*[-1,1],   Geom.line, Theme(default_color=color("green"))))
+            append!(layers, layer(x=[-delta, delta],y=[epsilon, epsilon],  Geom.line, Theme(default_color=colorant"orange")))
+            append!(layers, layer(x=[-delta, delta],y=-[epsilon, epsilon],  Geom.line, Theme(default_color=colorant"orange")))
+            append!(layers, layer(x=[-delta, -delta],y=epsilon*[-1,1],   Geom.line, Theme(default_color=colorant"green")))
+            append!(layers, layer(x=[ delta,  delta],y=epsilon*[-1,1],   Geom.line, Theme(default_color=colorant"green")))
         end
         plot(layers...)
     end
@@ -117,7 +118,7 @@ end
 #          layer(x = [-delta, -delta, delta, delta, -delta],
 #                y = [-epsilon, epsilon, epsilon, -epsilon, -epsilon],
 #                Geom.line(preserve_order=true),
-#                Theme(default_color=color("orange")))
+#                Theme(default_color=colorant"orange"))
 #          )
 
 

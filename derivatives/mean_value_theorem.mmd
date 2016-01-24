@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 A function is continuous at $c$ if $f(c+h) - f(c)$ goes to $0$ as $h$ goes to $0$,
@@ -153,7 +153,7 @@ This insight holds for other types of functions:
 > If $f(c)$ is a relative maximum then either $f'(c) = 0$ or the
 >  derivative at $c$ does not exist.
 
-When the derivative exists, this says the tangent line is flat. (It it
+When the derivative exists, this says the tangent line is flat. (If it
 had a slope, then the the function would increase by moving left or
 right, as appropriate, a point we pursue later.)
 
@@ -185,8 +185,9 @@ will be a zero of the derivative. We can check for these with:
 
 ```
 using Roots
+Base.ctranspose(f::Function) = D(f)    # for f' instead of D(f)
 f(x) = x^2 * exp(-x)
-xs = fzeros(D(f), 0, 5)
+xs = fzeros(f', 0, 5)
 ```
 
 We get $0$ and $2$ are critical points. The endpoints are $0$ and
@@ -215,7 +216,7 @@ We follow the same pattern. Since $f(x)$ is continuous on the closed interval an
 
 ```
 f(x) = exp(x) * (x^3 - x)
-cps = fzeros(D(f), 0, 2)
+cps = fzeros(f', 0, 2)
 ```
 
 And checking values gives:
@@ -247,7 +248,7 @@ Let $f(x)$ be differentiable on $(a,b)$ and continuous on
 $[a,b]$. Then the absolute maximum occurs at an endpoint or where the
 derivative is 0. This gives rise to:
 
-> [Rolle's](http://en.wikipedia.org/wiki/Rolle%27s_theorem) Theorem: If $f(a)=f(b)$, then there exists some $c$ in $(a,b)$ with $f'(c) = 0$.
+> [Rolle's](http://en.wikipedia.org/wiki/Rolle%27s_theorem) Theorem: For such $f$, if $f(a)=f(b)$, then there exists some $c$ in $(a,b)$ with $f'(c) = 0$.
 
 We assume that $f(a)=0$, otherwise consider $g(x)=f(x)-f(a)$. By the
 extreme value theorem, there must be an absolute maximum and
@@ -271,13 +272,13 @@ issues arise):
 
 ```
 f(x) = exp(x) * x * (x-1)
-fzeros(D(f), 0, 1)
+fzeros(f', 0, 1)
 ```
 
 This graph illustrates the lone value for $c$ for this problem
 
 ```
-x0 = fzero(D(f), 0, 1)
+x0 = fzero(f', 0, 1)
 p = plot([f, x->f(x0) + 0*(x-x0)], 0, 1)
 Outputonly(p)
 ```
@@ -301,24 +302,26 @@ The mean value theorem is related to Rolle's theorem, but sounds more general:
 > where $f'(c) = (f(b) - f(a)) / (b - a)$.
 
 
-This graph illustrates the theorem. The orange line is the secant line. A parallel line tangent to the graph is guaranteed by the mean value theorem. In this figure, there are two such lines, rendered using red.
+This graph illustrates the theorem. The orange line is the secant
+line. A parallel line tangent to the graph is guaranteed by the mean
+value theorem. In this figure, there are two such lines, rendered
+using red.
+
 
 ```
 f(x) = x^3 - x
-a, b = -2, 2
+a, b = -2, 1.75
 m = (f(b) - f(a)) / (b-a)
-cps = fzeros(x -> D(f)(x) -m, a, b)
-klamp(f,a,b) = x -> (f(x) < a) | (f(x)>b) ? NaN : f(x)
+cps = fzeros(x -> f'(x) - m, a, b)
 
+p = plot(f, a-1, b+1, linewidth=3, legend=false)
+plot!(x -> f(a) + m*(x-a), a-1, b+1, linewidth=3, color=:orange)
+scatter!([a,b], [f(a), f(b)])
 
-xs = linspace(a, b)
-
-p = plot(layer(x=xs, y=map(f, xs), Geom.line, Theme(line_width=3px)),
-  layer(x=[a,b], y=[f(a), f(b)], Geom.line, Theme(default_color=color("orange"))),
-  layer(x=xs, y=map(klamp(x->f(cps[1]) + m*(x-cps[1]), f(a), f(b)),xs), Geom.line, Theme(default_color=color("red"))),
-  layer(x=xs, y=map(klamp(x->f(cps[2]) + m*(x-cps[2]), f(a), f(b)),xs), Geom.line, Theme(default_color=color("red")))
-  )
-Outputonly(p)
+for cp in cps
+  plot!(x -> f(cp) + f'(cp)*(x-cp), a-1, b+1, color=:red)
+end
+Outputonly(p)  
 ```
 
 Like Rolle's theorem this is a guarantee that something exists, not a
@@ -368,7 +371,7 @@ Suppose $f(x)$ and $g(x)$ satisfy the Cauchy mean value theorem on
 $[0,x]$, $g'(x)$ is non-zero on $(0,x)$, and $f(0)=g(0)=0$. Then we have:
 
 $$~
-\frac{f(x) - f(0)}{g(x) - g(0)} = \frac{f'(c)}{g'(c)},
+\frac{f(x) - f(0)}{g(x) - g(0)} = \frac{f(x)}{g(x)} = \frac{f'(c)}{g'(c)},
 ~$$
 
 For some $c$ in $[0,x]$. If $\lim_{x \rightarrow 0} f'(x)/g'(x) = L$,
@@ -394,26 +397,26 @@ the construction of such a graph:
 
 
 With $g(x) = \sin(x)$ and $f(x) = x$, we can take $I=[a,b] =
-[0, \pi/2]$. In the figure below, the *secant line* is drawn which
-will connect $(g(a), f(a))$ with the point $(g(b), f(b))$, and hence
-have slope $\Delta f/\Delta g$. The parallel line drawn through the
-marked point shows a *tangent* line -- with slope $f'(c)/g'(c)$ --
-existing that satisfies the conditions of the Cauchy mean value
-theorem.
+[0, \pi/2]$. In the figure below, the *secant line* is drawn in red which
+connects $(g(a), f(a))$ with the point $(g(b), f(b))$, and hence
+has slope $\Delta f/\Delta g$. The parallel lines drawn show the *tangent* lines with slope $f'(c)/g'(c)$. Two exist for this problem, the mean value theorem guarantees at least one will.
+
 
 ```
-f(x) = sin(x)
-g(x) = x
+g(x) = sin(x)
+f(x) = x
 ts = linspace(-pi/2, pi/2)
 a,b = 0, pi/2
 m = (f(b) - f(a))/(g(b) - g(a))
-c = acos(m)  # solve f'(c)/g'(c) = m which is cos(c) = m
+cps = fzeros(x -> f'(x)/g'(x) - m, -pi/2, pi/2)
 Delta = (0 + m * (c - 0)) - (g(c))
 
-p = plot(layer(x = map(f,ts), y=map(g,ts), Geom.line(preserve_order=true)),
-layer(x = [f(a),f(b)], y=[g(a), g(b)], Geom.line(preserve_order=true),  Theme(default_color=color("gray"))),
-layer(x = [f(a),f(b)], y=[g(a),g(b)] + Delta, Geom.line(preserve_order=true),  Theme(default_color=color("red"))),
-layer(x=[f(c)],y=[g(c)], Geom.point))
+p = plot(g, f, -pi/2, pi/2, linewidth=3)
+plot!(x -> f(a) + m * (x - g(a)), -1, 1, linewidth=3, color=:red)
+scatter!([g(a),g(b)], [f(a), f(b)])
+for c in cps
+  plot!(x -> f(c) + m * (x - g(c)), -1, 1, color=:orange)
+end
 
 Outputonly(p)
 ```

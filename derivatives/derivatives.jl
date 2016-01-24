@@ -14,7 +14,7 @@ function secant_line_tangent_line_graph(n, dt)
     
     xs = linspace(0, pi)
     plot(layer(x=xs, y=map(f,xs), Geom.line),
-         layer(x=xs, y=f(c)+cos(c)*(xs - c), Geom.line, Theme(default_color=color("orange"))),
+         layer(x=xs, y=f(c)+cos(c)*(xs - c), Geom.line, Theme(default_color=colorant"orange")),
          layer(x=xs, y=f(c) + m*(xs - c), Geom.line),
          layer(x=[c,c+h],y=[f(c), f(c+h)], Geom.point)
          )

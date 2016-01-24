@@ -5,7 +5,7 @@ using Plots
 backend(:gadfly)
 ```
 
-Before defining the derivative, let's begin with two motivating examples, that are familiar to any reader of a calculus text.
+Before defining the derivative, let's begin with two motivating examples that are familiar to any reader of a calculus text.
 
 ##### Example: Driving
 
@@ -422,11 +422,11 @@ and $g(x) = \sin(x)$.
 
 As with limits and continuity, it proves very useful to consider rules
 that make the process of finding derivatives of combinations of
-functions matter of combining derivatives of the individual functions.
+functions a matter of combining derivatives of the individual functions in some manner.
 
 ### Sum rule
 
-Let's consider $k(x) = a\cdot f(x) + b\cdot g(x)$, what is its derivative?
+Let's consider $k(x) = a\cdot f(x) + b\cdot g(x)$, what is its derivative? That is, in terms of $f$, $g$ and their derivatives, can we express $k'(x)$?
 
 We can rearrange $(k(x+h) - k(x))$ as follows:
 
@@ -592,7 +592,7 @@ $$~
 
 
 We can verify these with `SymPy`. Rather than take a limit, we will
-use `SymPy`' `diff ` function to compute derivatives.
+use `SymPy`'s `diff` function to compute derivatives.
 
 ```
 diff(x^5 * sin(x))
@@ -672,7 +672,7 @@ table(d)
 This table gives some useful derivatives:
 
 ```
-fn = [L"$x^n$,  all $n$",
+fn = [L"x^n \text{ all } n",
 L"e^x",
 L"\log(x)",
 L"\sin(x)",
@@ -730,7 +730,7 @@ f'(x) \approx \frac{f(x+h) - f(x)}{h}.
 This is the forward-difference approximation. The central difference approximation looks both ways:
 
 $$~
-f'(x) \approx \frac{f(x+h) - f(x-h)}{(2h)}.
+f'(x) \approx \frac{f(x+h) - f(x-h)}{2h}.
 ~$$
 
 Though in general they are different, they are both
@@ -829,17 +829,33 @@ actual = diff(f(x), x) |> subs(x, PI/4) |> N
 actual - ds_value, actual - fwd
 ```
 
+#### Convenient notation
+
+`Julia` allows the possibility of extending functions to different types. Out of the box, the `'` notation is not employed for functions, but is used for matrices. It is used in postfix position, as with `A'`. We can define it to do the same thing as `D` for functions and then, we can evaluate derivatives with the familiar `f'(x)`. Ignoring the warning, here is how:
+
+```
+Base.ctranspose(f::Function) = D(f)
+```
+
+Then, we have, for example:
+
+```
+f(x) = sin(x)
+f'(pi), f''(pi)
+```
+
 ##### Example
 
-Suppose our task is to find a zero of the second derivative of $f(x) = e^{-x^2/2}$ in $[0, 10]$, a known bracket.
+Suppose our task is to find a zero of the second derivative of $f(x) =
+e^{-x^2/2}$ in $[0, 10]$, a known bracket. The `D` function takes a second argument to indicate the order of the derivative (e.g., `D(f,2)`), but we use the more familiar notation:
 
-For this, we can use the `fzero` function of the `Roots` package. For
-that we compose the output of `D(f,2)` with `fzero`:
 
 ```
 f(x) = exp(-x^2/2)
-fzero(D(f,2), 0, 10)
+fzero(f'', 0, 10)
 ```
+
+We pass in the function object, `f''`, and not the evaluated function.
 
 ## Questions
 

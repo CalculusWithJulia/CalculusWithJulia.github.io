@@ -2,11 +2,11 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 ```
-WeavePynb
+using WeavePynb
 out = gif_to_data("figures/gehry-hendrix.jpg", """
 
 The exterior of the Jimi Hendrix Museum in Seattle has the signature
@@ -35,6 +35,18 @@ WeavePynb.HTMLoutput(out)
 > \int_a^b 2\pi f(t) \cdot \sqrt{g'(t)^2 + f'(t)^2} dx.
 > ~$$
 > These formulas do not add in the surface area of either of the ends.
+
+
+```
+out = gif_to_data("figures/surface-revolution.png", L"""
+
+Vase-like figure formed by the rotation of the graph of $x = 2 + \cos(y)$ about the $y$ axis.
+
+Photo credit: [wikipedia](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Surface_of_revolution_illustration.png/188px-Surface_of_revolution_illustration.png).
+""")
+
+WeavePynb.HTMLoutput(out)
+```
 
 To see why this formula, we look at the parameterized case, the first
 one being a special instance with $g(t) =t$.
@@ -77,8 +89,8 @@ $$~
 As was done in the derivation of the formula for arc length, these
 pieces are multiplied both top and bottom by $\Delta t =
 t_{i} - t_{i-1}$. Carrying the bottom inside the square root and
-noting that by the mean value theorem $(\Delta g)/\Delta t) = g(\xi)$
-and $(\Delta f)/\Delta t) = f(\psi)$ for some $\xi$ and $\psi$ in
+noting that by the mean value theorem $\Delta g/\Delta t = g(\xi)$
+and $\Delta f/\Delta t = f(\psi)$ for some $\xi$ and $\psi$ in
 $[t_{i-1}, t_i]$, this becomes:
 
 $$~
@@ -109,7 +121,7 @@ A cone be be envisioned as rotating the function $f(x) = x\tan(\theta)$ between 
 $$~
 \int_0^h 2\pi f(x) \sqrt{1 + f'(x)^2}dx
 = \int_0^h 2\pi x \tan(\theta) \sqrt{1 + \tan(\theta)^2}dx
-= (2\pi\tan(\theta)\sqrt{1 + tan(\theta)^2} x^2/2 \big|_0^h
+= (2\pi\tan(\theta)\sqrt{1 + \tan(\theta)^2} x^2/2 \big|_0^h
 = \pi \tan(\theta) \sec(\theta) h^2
 = \pi r^2 / \sin(\theta).
 ~$$
@@ -136,11 +148,11 @@ x = symbols("x")
 F = integrate(2 * PI * x^2 * sqrt(1 + (2x)^2), x)
 ```
 
-We show `F`, only to demonstrate that the integral is a bit
-involved. The actual surface area follows from a *definite* integral:
+We show `F`, only to demonstrate that indeed the integral is a bit
+involved. The actual surface area follows from a *definite* integral, which we get through the fundamental theorem of calculus:
 
 ```
-integrate(2 * PI * x^2 * sqrt(1 + (2x)^2), (x, 0, 1))
+F(1) - F(0)
 ```
 
 ##### Example
@@ -201,7 +213,7 @@ So indeed it does. There is nothing to balance this out, so the integral will be
 limit(ex, M, oo)
 ```
 
-This figure would have infinite surface, were it possible to actually construct an infinitely long solid.
+This figure would have infinite surface, were it possible to actually construct an infinitely long solid. (But it has been shown to have *finite* volume.)
 
 ##### Example
 
@@ -246,7 +258,10 @@ centroid.
 
 ##### Example
 
-The surface area of of an open cone can be computed, as the arc length is $\sqrt{h^2 + r^2}$ and the centroid of the line is a distance $r/2$ from the axis. This gives SA$=2\pi (r/2) \sqrt{h^2 + r^2} = \pi r \sqrt{h^2 + r^2}$.
+The surface area of of an open cone can be computed, as the arc length
+is $\sqrt{h^2 + r^2}$ and the centroid of the line is a distance $r/2$
+from the axis. This gives SA$=2\pi (r/2) \sqrt{h^2 + r^2} = \pi r
+\sqrt{h^2 + r^2}$.
 
 ##### Example
 
@@ -258,7 +273,10 @@ surface area is $2\pi (b) (2\pi a) = 4\pi^2 a b$.
 
 ##### Example
 
-The surface area of sphere will be SA$=2\pi \rho (\pi r) = 2 \pi^2 r \cdot \rho$. What is $\rho$? The centroid of an arc formula can be derived in a manner similar to that of the centroid of a region. The formulas are:
+The surface area of sphere will be SA$=2\pi \rho (\pi r) = 2 \pi^2 r
+\cdot \rho$. What is $\rho$? The centroid of an arc formula can be
+derived in a manner similar to that of the centroid of a region. The
+formulas are:
 
 $$~
 \begin{align}
@@ -267,7 +285,7 @@ $$~
 \end{align}
 ~$$
 
-$L$ is the arc length of the curve.
+Here, $L$ is the arc length of the curve.
 
 For the sphere parameterized by $g(t) = r \cos(t)$, $f(t) = r\sin(t)$, we get that these become
 

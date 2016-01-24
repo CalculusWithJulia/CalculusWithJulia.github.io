@@ -138,9 +138,12 @@ Clearly for a given partition and choice of $c_i$, the above can be
 computed. Each term $f(c_i)\cdot(x_i-x_{i-1})$ can be visualized as
 the area of a rectangle with base spanning from $x_{i-1}$ to $x_i$ and
 height given by the function value at $c_i$. The following
-[image](http://en.wikipedia.org/wiki/Riemann_sum) visualizes Riemann sums for different values of $n$ in a way that makes it plausible that as the number of rectangles gets larger, the approximate sum will get closer to the actual area.
+[image](http://en.wikipedia.org/wiki/Riemann_sum) from Wikipedia
+visualizes Riemann sums for different values of $n$ in a way that
+makes it plausible that as the number of rectangles gets larger, the
+approximate sum will get closer to the actual area.
 
-![Illustration of Riemann sums](http://tinyurl.com/pztbwgb "Illustration of Riemann sums. Source Wikipedia")
+![Illustration of Riemann sums](http://tinyurl.com/pztbwgb)
 
 
 To successfully compute a good approximation for the area, we
@@ -207,13 +210,12 @@ The choice of the $c_i$ will give different answers for the
 approximation, though for an integrable function these differences
 will vanish in the limit. Some common choices are:
 
-* Using the right hand endpoint of the interval $[x_{i-1}, x_i]$, which gives
+* Using the right hand endpoint of the interval $[x_{i-1}, x_i]$ gives
 the right-Riemann sum.
 
 * The choice $c_i = x_{i-1}$ gives the left-Riemann sum.
 
-* The choice $c_i = (x_i + x_{i-1})/2$ is the midpoint rule, and is also
-common.
+* The choice $c_i = (x_i + x_{i-1})/2$ is the midpoint rule.
 
 * If the function is continuous on the closed subinterval
 $[x_{i-1}, x_i]$, then it will take on its minimum and maximum
@@ -238,7 +240,7 @@ Riemann sums weren't named after Riemann because he was the first to
 approximate areas using rectangles. Indeed, others had been using even
 more efficient ways to compute areas for  centuries prior to
 Riemann's work. Rather, Riemann put the definition of the area under
-the curve on a (mostly) firm theoretical footing with the following
+the curve on a firm theoretical footing with the following
 theorem which gives a concrete notion of what functions
 are integrable:
 
@@ -263,7 +265,7 @@ note(L"""
 
 The expression $V = \int_a^b f(x) dx$ is known as the *definite
 integral* of $f$ over $[a,b]$.  
-Cauchy defined the definite integral in terms of a sum of rectangular
+Earlier, Cauchy had defined the definite integral in terms of a sum of rectangular
 products beginning with $S=(x_1 - x_0) f(x_0) + (x_2 - x_1) f(x_1) +
 \cdots + (x_n - x_{n-1}) f(x_{n-1})$ (the left Riemann sum). He showed
 the limit was well defined for any continuous function. Riemann's
@@ -519,8 +521,12 @@ cs = xs[1:end-1]       # finds left-hand end points. xs[2:end] would be right-ha
 Now to multiply the values. We want the product `f(cs[i]) * deltas[i]`, here is one way to do so:
 
 ```
-using Compat # only for julia version 0.3
-terms = [f(cs[i]) * deltas[i] for i in eachindex(deltas)]
+terms = [f(cs[i]) * deltas[i] for i in 1:length(deltas)]
+```
+
+Finally, we use `sum` to add up all the values:
+
+```
 sum(terms)
 ```
 
@@ -546,7 +552,7 @@ n = 50_000
 xs = a:(b-a)/n:b
 deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
 cs = xs[1:end-1] 
-terms = [f(cs[i]) * deltas[i] for i in eachindex(deltas)]
+terms = [f(cs[i]) * deltas[i] for i in 1:length(deltas)]
 sum(terms)
 ```
 
@@ -569,14 +575,17 @@ function riemann(f, a, b, n=50_000; method="left")
   elseif method == "right"
     cs = xs[2:end]
   else
-    cs = [(xs[i] + xs[i+1])/2 for i in eachindex(deltas)]
+    cs = [(xs[i] + xs[i+1])/2 for i in 1:length(deltas)]
   end
-  terms = [f(cs[i]) * deltas[i] for i in eachindex(deltas)]
+  terms = [f(cs[i]) * deltas[i] for i in 1:length(deltas)]
   sum(terms)
 end
 ```
 
-With this, we can easily find an approximate answer. We wrote the function to use the familiar template `action(function, arguments...)`, so we pass in a function and arguments to describe the problem (`a`, `b`, and optionally `n` and the `method`):
+With this, we can easily find an approximate answer. We wrote the
+function to use the familiar template `action(function,
+arguments...)`, so we pass in a function and arguments to describe the
+problem (`a`, `b`, and optionally `n` and the `method`):
 
 ```
 f(x) = exp(x)
@@ -791,7 +800,21 @@ is Riemann integrable or not.
 
 ## Gauss quadrature
 
-The formulas for an approximation to the  integral $\int_{-1}^1 f(x) dx$ can be written as:
+The formula foro Simpson's rule was the *composite* formula. If just a single rectangle is approximated over $[a,b]$ by a parabola interpolating the points $x_1=a$, $x_2=(a+b)/2$, and $x_3b$, the formula is:
+
+$$~
+\frac{b-a}{6}(f(x_1) + 4f(x_2) + f(x_3)).
+~$$
+
+This formula will actually be exact for any 3rd degree polynomial. In
+fact an entire family of similar approximations using $n$ points can
+be made exact for any polynomial of degree $n-1$ or lower. But with
+non-evenly spaced points, even better results can be found.
+
+
+
+The formulas for an approximation to the integral $\int_{-1}^1 f(x)
+dx$ discussed so far can be written as:
 
 $$~
 S = w_1 f(x_1) + w_2 f(x_2) + \cdots + w_n f(x_n).
@@ -804,7 +827,7 @@ which the sum is *exact* for any $f$ which is a polynomial of degree
 $2n-1$ or less. Such choices then also approximate well the integrals of
 functions which are not polynomials of degree $2n-1$, provided $f$ can
 be well approximated by a polynomial over $[-1,1]$. (Which is the case
-for the "nice" functions we encounter.)
+for the "nice" functions we encounter.) Some examples are given in the questions.
 
 ### The quadgk function
 
@@ -814,8 +837,9 @@ integrals. The function also has the familiar interface
 `action(function, arguments...)`. Unlike our `riemann` function, there
 is no `n` specified, as the number of steps is *adaptively*
 determined. (There is more partitioning occurring where the function
-is changing rapidly.) Some problems require a specification of an
-error threshold.
+is changing rapidly.) Instead, the algorithm outputs an estimate on
+the possible error along with the answer. Instead of $n$, some
+trickier problems require a specification of an error threshold.
 
 
 To use the function, we have:
@@ -825,13 +849,17 @@ f(x) = x * log(x)
 quadgk(f, 0, 2)
 ```
 
-There are two values returned: an approximate answer, and an error
-estimate. In this example we see that the value of
+As mentioned, there are two values returned: an approximate answer,
+and an error estimate. In this example we see that the value of
 $0.3862943610307017$ is accurate to within $10^{-9}$.  (The actual
 answer is $-1 + 2\cdot \log(2)$ and the error is only $10^{-11}$. The
 reported error is an upper bound, and may be conservative, as with
 this problem.)  Our previous answer using $50,000$ right-Riemann sums
-was $0.38632208884775737$ and is only accurate to $10^{-5}$.
+was $0.38632208884775737$ and is only accurate to $10^{-5}$. By
+contrast, this method uses just $256$ function evaluations in the above
+problem.
+
+
 
 The method should be exact for polynomial functions:
 

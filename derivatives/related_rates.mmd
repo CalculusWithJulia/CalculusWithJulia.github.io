@@ -26,7 +26,9 @@ The following is a typical "book" problem:
 
 Here we know $A = w \cdot h$ and we know some things about how $w$ and
 $h$ are related *and* about the rate of how both $w$ and $h$ grow in
-time $t$. That means that we could expression this growth in terms of some functions $w(t)$ and $h(t)$, then we can figure out that the area -- as a function of $t$ -- will be expressed as:
+time $t$. That means that we could express this growth in terms of
+some functions $w(t)$ and $h(t)$, then we can figure out that the area
+-- as a function of $t$ -- will be expressed as:
 
 $$~
 A(t) = w(t) \cdot h(t).
@@ -96,6 +98,7 @@ Now to answer the question, when the width is 8, we must have that $t$ is:
 
 ```
 using Roots
+Base.ctranspose(f::Function) = D(F)         # so f' works in place of D(f)
 tstar = fzero(x -> w(x) - 8, [0, 4])		# or solve by hand to get 3/2
 ```
 
@@ -109,7 +112,7 @@ We (again) re-express $A$ as a function of $t$ by composition, then differentiat
 
 ```
 A(t) = A(w(t), h(t))
-da_dt = D(A)(tstar)
+da_dt = A'(tstar)
 ```
 
 So what? Why is 96 of any interest? It is if the value at a specific
@@ -353,7 +356,8 @@ $$~
 \frac{dV}{dt} =
 \frac{dV}{dh} \cdot \frac{dh}{dt} =
 \pi h^2 \tan^2(\theta) \cdot \frac{h_0^2}{h^2} \sqrt{2g(h-h_0)} =
-\pi \sqrt{2g} \cdot (r_0)^2 \cdot \sqrt{h-h_0}.
+\pi \sqrt{2g} \cdot (r_0)^2 \cdot \sqrt{h-h_0}
+\approx \pi \sqrt{2g} \cdot r_0^2 \cdot \sqrt{h}
 ~$$
 
 
@@ -414,9 +418,9 @@ radioq(choices, ans, keep_order=true)
 ###### Question
 
 A pebble is thrown into a lake causing ripples to form expanding
-circles. Suppose the circle expand as rate of 1 foot per second and
+circles. Suppose one of the circles expands at a rate of 1 foot per second and
 the radius of the circle is 10 feet, what is the rate of change of
-area enclosed by the circle?
+the area enclosed by the circle?
 
 ```
 # a = pi*r^2
@@ -471,7 +475,7 @@ wall. A six foot tall man is walking towards the wall at the rate of
 4 feet per second. How fast is the tip of his shadow moving down the
 wall when he is 50 feet from the wall?
 [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
-(The answer is positive, as the question is written.)
+(As the question is written the answer should be positive.)
 
 ```
 ## y/200 = 6/x
@@ -518,7 +522,7 @@ numericq(drdt, units="units per unit time")
 
 ###### Question
 
-Consider the curve $f(x) = x^2 - log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?
+Consider the curve $f(x) = x^2 - \log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?
 
 ```
 choices = [

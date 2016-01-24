@@ -45,10 +45,6 @@ mmd("volumes_slice.mmd")
 mmd("arc_length.mmd") 
 mmd("surface_area.mmd") 
 
-## other curves
-mmd("parameterized_curves.mmd")
-mmd("polar_coordinates.mmd") ## XXX start
-
 
 
 

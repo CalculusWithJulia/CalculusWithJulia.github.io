@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 We can easily make a graph of a function over a specified
@@ -35,26 +35,21 @@ helpful to get an idea of where the answer is using exploratory
 graphs.
 
 This helper function plots the function `f` twice: the second time
-only when the second function `g` is positive. By toggling the guides,
-we can see where just one of the drawn graphs.
+only when the second function `g` is positive. 
 
 ```
 using Plots
-plotif(f, g, a, b) = plot([f, x -> g(x) > 0 ? f(x) : NaN], a, b)
+plotif(f, g, a, b) = plot([f, x -> g(x) > 0 ? f(x) : NaN], a, b, linewidth=5)
 ```
 
-To see where a function is positive, we simply pass it in for both `f`
-and `g` above. For example, let's look at where $f(x) = \sin(x)$ is
-positive:
+To see where a function is positive, we simply pass the function
+object in for *both* `f` and `g` above. For example, let's look at
+where $f(x) = \sin(x)$ is positive:
 
 ```
 f(x) = sin(x)
 plotif(f, f, -2pi, 2pi)
 ```
-
-We see the parts of the graph that are positive appear in a different
-color. By clicking on one of the boxes in the legend on the right, the non-positive part
-is masked.
 
 
 Let's graph with `cos` in the masking spot and see what happens:
@@ -63,7 +58,7 @@ Let's graph with `cos` in the masking spot and see what happens:
 plotif(sin, cos, -2pi, 2pi)
 ```
 
-We see that the increasing parts of the sine curve are now
+Maybe surprisingly, we see that the increasing parts of the sine curve are now
 highlighted. Of course, the cosine is the derivative of the sine
 function, now we discuss that this is no coincidence.
 
@@ -107,9 +102,10 @@ the derivative as the masking function in our `plotif` function. For
 example,
 
 ```
-using Roots           # for D
+using Roots                           # for D
+Base.ctranspose(f::Function) = D(f)   # to use f' in place of D(f)
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
-plotif(f, D(f), -2, 2)
+plotif(f, f', -2, 2)
 ```
 
 ### First derivative test
@@ -124,13 +120,14 @@ strictly increasing function.
 When will a critical point correspond to a relative maximum? That
 answer can be answered by considering the first derivative.
 
-> The first derivative test. If $c$ is a critical point for $f(x)$ and
+> *The first derivative test*: If $c$ is a critical point for $f(x)$ and
 > *if* $f'(x)$ changes sign at $x=c$, then $f(c)$ will be either a
 > relative maximum or a relative minimum. It will be a maximum if the
 > derivative changes sign from $+$ to $-$ and a minimum if the
-> derivative changes sign from $-$ to $+$.
+> derivative changes sign from $-$ to $+$. If $f'(x)$ does not change sign
+> at $c$, then $(c,f(c))$ is *not* a relative maximum or minimum.
 
-The last part, should be clear: if the derivative is positive then
+The classification part, should be clear: if the derivative is positive then
 negative, the function $f$ will increase to $(c,f(c))$ then decrease
 from $(c,f(c))$ and vice versa.
 
@@ -148,7 +145,7 @@ Consider the function $f(x) = e^{-\lvert x\rvert} \cos(\pi x)$ over $[-3,3]$:
 
 ```
 f(x) = exp(-abs(x)) * cos(pi * x)
-plotif(f, D(f), -3, 3)
+plotif(f, f', -3, 3)
 ```
 
 We can see the first derivative test in action -- at the peaks and
@@ -168,17 +165,17 @@ only zeros of $f'(x)$ can be critical points. We find these with
 
 ```
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
-cps = fzeros(D(f), -2, 2)
+cps = fzeros(f', -2, 2)
 ```
 
-We should be careful though. This function may have issues with zeros
-that are not simple or too close together. The simple zero assumption
-means that none of the critical points can be "pauses." As this is
-exactly the case we are screening for, we double check that all the
-critical points are accounted for by graphing the derivative:
+We should be careful though, as `fzeros` may miss zeros that are not
+simple or too close together. A critical point will be a simple zero
+if the function crosses the axis, so these can not be "pauses." As
+this is exactly the case we are screening for, we double check that
+all the critical points are accounted for by graphing the derivative:
 
 ```
-plot([D(f), zero], -2, 2)
+plot([f', zero], -2, 2)
 ```
 
 We see the five zeros as stored in `cps` and note that at each the function clearly crosses the $x$ axis.
@@ -202,7 +199,7 @@ around $-1$ to $1$. So we look on the interval $[-2, 2]$:
 
 ```
 f(x) = sqrt(abs(x^2 - 1))
-cps = fzeros(D(f), -2, 2)
+cps = fzeros(f', -2, 2)
 ```
 
 We see the three values $-1$, $0$, $1$ that correspond to the two
@@ -217,7 +214,7 @@ values:
 
 ```
 test_pts = [-2, -1/2, 1/2, 2]
-[D(f)(x) for x in test_pts]
+[f'(x) for x in test_pts]
 ```
 
 Reading this we have:
@@ -231,13 +228,20 @@ Reading this we have:
 We did this all without graphs. But, let's look at the graph of the derivative:
 
 ```
-plot(D(f), -2, 2)
+plot(f', -2, 2)
 ```
 
 We see asymptotes at $x=-1$ and $x=1$! These aren't zeroes of $f'(x)$,
 but rather where $f'(x)$ does not exist. The conclusion is correct --
 each of $-1$, $0$ and $1$ are critical points -- but not for the same
-reason. Why does `fzeros` find these values that are not zeros of
+reason.
+
+```
+plot(f, -2, 2)
+```
+
+
+Finally, why does `fzeros` find these values that are not zeros of
 $f'(x)$? It uses the bisection algorithm on bracketing intervals to
 find zeros which are guaranteed by the intermediate value theorem. But
 we see from the graph that $f'(x)$ is not continuous. Still the
@@ -263,7 +267,7 @@ We get values of $0$ and $2\pi$. Let's look at the derivative at these points:
 At $x=0$ we have to the left and right signs found by
 
 ```
-[subs(diff(f), x=y) for y in [-1/10,  1/10]]
+[subs(diff(f), x=>y) for y in [-1/10,  1/10]]
 ```
 
 Both are negative. The derivative does not change sign at $0$, so the critical point is neither a relative minimum or maximum.
@@ -271,7 +275,7 @@ Both are negative. The derivative does not change sign at $0$, so the critical p
 What about at $2\pi$? We do something similar:
 
 ```
-[subs(diff(f), x=y) for y in 2*pi + [-1/10,  1/10]]
+[subs(diff(f), x=>y) for y in 2*pi + [-1/10,  1/10]]
 ```
 
 Again, both negative. The function $f(x)$ is just decreasing near
@@ -316,14 +320,16 @@ all those into one graph, we used a function to trim the large $y$ values:
 
 ```
 trim(f, M=10) = x -> abs(f(x)) > M ? NaN : f(x)
+plot(trim(f), -10, 10)
 ```
 
-In addition, we want to make sure we include the zeros of $f(x)$. These are the zeros of the numerator, or $1$ and $3$.
+In addition, we want to make sure we include the zeros of
+$f(x)$. These are the zeros of the numerator, or $1$ and $3$.
 
 As well, we want to make sure the relative minima are shown. These are the critical points of $f$, and are found with:
 
 ```
-cps = fzeros(D(f), -4, 4)
+cps = fzeros(f', -4, 4)
 ```
 
 
@@ -339,7 +345,7 @@ Its $0$. In general we don't want to trim these values off when plotting, so we 
 We check that $(0,f(0))$ is a relative minimum, by checking values of the derivative to the left and right:
 
 ```
-[sign(D(f)(x)) for x in [2.5, 3.5]]
+[sign(f'(x)) for x in [2.5, 3.5]]
 ```
 
 We see the pattern negative to positive that indicates a minimum.
@@ -347,11 +353,11 @@ We see the pattern negative to positive that indicates a minimum.
 Similarly, we can see that the other critical point is a relative maximum:
 
 ```
-[sign(D(f)(x)) for x in cps[1] + [-.1, .1]]
+[sign(f'(x)) for x in cps[1] + [-.1, .1]]
 ```
 
 
-At this point, we make a graph. We adjust the $x$-range to show some of the slant asymptote:
+At this point, we make our final graph, adjusting the $x$-range to show some of the slant asymptote:
 
 ```
 plot(trim(f, 20), -5, 7)
@@ -370,7 +376,12 @@ Consider the function $f(x) = x^2$. Over this function we draw some secant lines
 f(x) = x^2
 seca(f,a,b) = x -> f(a) + (f(b) - f(a)) / (b-a) * (x-a)
 sec1(f,a,b) = x -> (a < x <  b) ? seca(f,a,b)(x) : NaN
-p = plot([f, seca(f, -1,2), sec1(f, -1, 2), seca(f, 0, 3/2), sec1(f, 0, 3/2)], -2, 3)
+p = plot(f, -2, 3, legend=false, linewidth=5)
+plot!(seca(f, -1, 2), -2, 3)
+plot!(sec1(f, -1, 2), -2, 3, linewidth=5)
+plot!(seca(f, 0, 3/2), -2, 3)
+plot!(sec1(f, 0, 3/2), -2, 3, linewidth=5)
+
 Outputonly(p)
 ```
 
@@ -385,9 +396,14 @@ This is a special property not shared by all functions.
 
 A similar definition exists for *concave down* where the secant lines
 lie below the graph.  Notationally, concave up says $f(a) + (f(b) -
-f(a))/(b-a) \cdot (x-a) \geq f(x)$ for any $x$ in $[a,b]$, but we
-won't work with this definition. Rather we will characterize concavity
-for functions which have either a first or second derivative.
+f(a))/(b-a) \cdot (x-a) \geq f(x)$ for any $x$ in $[a,b]$.  Replacine
+$\geq$ with $leq$ defines *concave up*, and with either $>$ or $<$
+will add the prefix "strictly." These definitions are useful for a
+general definition of
+[convex functions](https://en.wikipedia.org/wiki/Convex_function).  We
+won't work with these definitions, rather we will characterize
+concavity for functions which have either a first or second
+derivative.
 
 > If $f'(x)$ exists and is *increasing* on $(a,b)$ then $f(x)$ is concave up on $(a,b)$.
 
@@ -425,19 +441,19 @@ the region plotted:
 
 ```
 f(x) = x^2 * exp(-x)
-plotif(f, D(f, 2), 0, 8)
+plotif(f, f'', 0, 8)
 ```
 
 From the graph, we would expect that the second derivative -- which is continuous -- would have two zeros on $[0,8]$:
 
 ```
-ips = fzeros(D(f,2), 0, 8)
+ips = fzeros(f'', 0, 8)
 ```
 
 As well, between the zeros we should have the sign pattern `+`, `-`, and `+`, as we verify:
 
 ```
-[sign(D(f,2)(x)) for x in [0,1,4]]
+[sign(f''(x)) for x in [0,1,4]]
 ```
 
 ### Second derivative test
@@ -468,13 +484,13 @@ Use the second derivative test to characterize the critical points of $f(x) = x^
 
 ```
 f(x) = x^5 - 2x^4 + x^3
-cps = fzeros(D(f), -3, 3)
+cps = fzeros(f', -3, 3)
 ```
 
 We can check the sign of the second derivative for each critical point:
 
 ```
-[D(f,2)(cp) for cp in cps]
+[f''(cp) for cp in cps]
 ```
 
 That $f''(0.6) < 0$ implies that at $0.6$, $f(x)$ will have a relative
@@ -488,13 +504,13 @@ this graph, where $-0.25$, and $1.25$ are chosen to capture the zero at
 $0$ and the two relative extrema:
 
 ```
-plotif(f, D(f,2), -0.25, 1.25)
+plotif(f, f'', -0.25, 1.25)
 ```
 
 For the graph we see that $0$ **is** not a relative maximum or minimum. We could have seen this numerically by checking the first derivative test, and noting there is no sign change:
 
 ```
-[sign(D(f)(x)) for x in [-0.1, 0.1]]
+[sign(f'(x)) for x in [-0.1, 0.1]]
 ```
 
 ### Inflection points
@@ -516,13 +532,13 @@ and two inflection points:
 
 ```
 f(x) = exp(-x^2/2)
-plotif(f, D(f,2), -3, 3)
+plotif(f, f'', -3, 3)
 ```
 
 The inflection points can be found directly, if desired, or numerically with:
 
 ```
-fzeros(D(f,2), -3, 3)
+fzeros(f'', -3, 3)
 ```
 
 ##### Example

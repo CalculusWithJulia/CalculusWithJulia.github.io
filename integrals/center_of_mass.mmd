@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+gadfly()
 ```
 
 ```
@@ -75,6 +75,7 @@ But what should the center of mass formula be?
 As with many formulas that will end up involving a derived integral, we start with a sum approximation. If the region is described as the area under the graph of $f(x)$ between $a$ and $b$, then we can form a Riemann sum approximation, that is a choice of $a = x_0 < x_1 < x_2 \cdots < x_n = b$ and points $c_1$, $\dots$, $c_n$. If all the rectangles are made up of a material of uniform density, say $\rho$, then the mass of each rectangle will be the area times $\rho$, or $\rho f(c_i) \cdot (x_i - x_{i-1})$, for $i = 1, \dots , n$.
 
 ```
+using Gadfly, Colors
 n = 21
 xs = linspace(-1, 1, n)
 cs = (xs[1:(end-1)] + xs[2:end]) / 2
@@ -82,7 +83,7 @@ layers = Gadfly.Layer[]
 for i in 1:(n-1)
    xi, xi1 = xs[i], xs[i+1]
    append!(layers, Gadfly.layer(x=[xi, xi1, xi1, xi], y=[0,0,1,1]*f(cs[i]), Gadfly.Geom.polygon(preserve_order=true),
-   Gadfly.Theme(default_color=Gadfly.color("orange"))))
+   Gadfly.Theme(default_color=colorant"orange")))
 end    
 
 for i in 1:(n-1)
@@ -234,7 +235,7 @@ for i in 0:floor(phi(k))
   x = u(i)
   l = Gadfly.layer(x = [x,x,x-1,x-1], y=[f(x),f(x)+1, f(x)+1, f(x)],
   Gadfly.Geom.polygon(preserve_order=true),
-  Gadfly.Theme(default_color=Gadfly.color("orange")))
+  Gadfly.Theme(default_color=colorant"orange"))
   append!(layers, l)
 end
 xs = linspace(0, e)
@@ -328,9 +329,9 @@ ts = linspace(0, 2pi)
 p = Gadfly.plot(
 Gadfly.layer(x = 2*cos(ts), y = 2*sin(ts), Gadfly.Geom.line(preserve_order=true)),
 Gadfly.layer(x = 1*cos(ts), y = 1 + sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true)),
-Gadfly.layer(x=[-sqrt(3), sqrt(3)], y=[-1,-1], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("red"))),
-Gadfly.layer(x=[-sqrt(3), -1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("red"))),
-Gadfly.layer(x=[sqrt(3), 1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("red")))
+Gadfly.layer(x=[-sqrt(3), sqrt(3)], y=[-1,-1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red")),
+Gadfly.layer(x=[-sqrt(3), -1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red")),
+Gadfly.layer(x=[sqrt(3), 1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red"))
 )
 Outputonly(p)
 ```

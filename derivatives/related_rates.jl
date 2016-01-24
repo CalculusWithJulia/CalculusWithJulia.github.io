@@ -62,7 +62,7 @@ function baseball_been_berry_good_graph(n, dt)
     degrees = degrees < 0 ? 180 + degrees : degrees
     
     plot(layer(x=xs, y=ys, Geom.line),
-         layer(x=[x(t), 100], y=[y(t), 0.0], Geom.line, Theme(default_color=color("orange"))),
+         layer(x=[x(t), 100], y=[y(t), 0.0], Geom.line, Theme(default_color=colorant"orange")),
          layer(x=[55], y=[4], label=["theta = $(round(Int, degrees)) degrees"], Geom.label),
          layer(x=[x(t)], y=[y(t)], label=["($(round(Int, x(t))), $(round(Int, y(t))))"], Geom.label),
          Guide.xticks(ticks=[0,50, 100, x(3)]),

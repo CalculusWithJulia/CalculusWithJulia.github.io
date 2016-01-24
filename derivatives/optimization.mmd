@@ -264,7 +264,7 @@ width, height = symbols("width, height", real=true)
 Area = width * height + pi * (width/2)^2 / 2
 Perim = 2height + width + pi*width/2
 h0 = solve(Perim - 20, height)[1]
-Area = subs(Area, (height, h0))
+Area = subs(Area, height=> h0)
 w0 = solve(diff(Area,width), width)[1]
 ```
 
@@ -272,7 +272,7 @@ w0 = solve(diff(Area,width), width)[1]
 We know that `w0` is the maximum in this example from our previous work. We shall see soon, that just knowing that the second derivative is negative at `w0` would suffice to know this. Here we check that condition:
 
 ```
-subs(diff(Area, width, 2), width=w0)
+subs(diff(Area, width, 2), width=>w0)
 ```
 
 As an aside, compare the steps involved above for a symbolic solution to those of previous work for a numeric solution:
@@ -305,14 +305,14 @@ was too long.
 
 
 ```
-p = plot(
-layer(x=[0, 0, 15], y=[15, 0, 0], Geom.line, Theme(default_color=color("gray"))),
-layer(x=[5, 5, 15], y=[15, 8, 8], Geom.line, Theme(default_color=color("gray"))),
-layer(x=[0,14.53402874075368], y=[12.1954981558864, 0], Geom.line, Theme(line_width=3px)),
-layer(x=[0,5], y=[8,8], Geom.line, Theme(default_color=color("orange"))),
-layer(x=[5,5], y=[0,8], Geom.line, Theme(default_color=color("orange"))),
-layer(x=[13,2.5, 10,2.5,5], y=[1,11,5,7.5,5], label=["θ", "l₁", "l₂", "l₂cos(θ)", "l₁sin(θ)" ], Geom.label)
-)
+
+p = plot([0, 0, 15], [15, 0, 0], color=:gray, legend=false)
+plot!([5, 5, 15], [15, 8, 8], color=:gray)
+plot!([0,14.53402874075368], [12.1954981558864, 0], linewidth=3)
+plot!([0,5], [8,8], color=:orange)
+plot!([5,5], [0,8], color=:orange)
+annotate!([(13, 1/2, "θ"), (2.5, 11, "l1"), (10, 5, "l2"), (2.5, 7.0, "l2cos(θ)"), (5.1, 5, "l2sin(θ)")])
+
 Outputonly(p)
 ```
 
@@ -463,9 +463,6 @@ So to approach this problem we first graph it over a wide interval.
 
 ```
 f(x) = x * exp(-x^2)
-```
-
-```
 plot(f, 0, 100) 
 ```
 
@@ -690,15 +687,16 @@ A movie screen projects on a wall 20 feet high beginning 10 feet above
 the floor.  This figure shows $\theta$ for $x=30$:
 
 ```
-p = plot(
-layer(x=[0, 30,30], y=[0,0,10], Geom.line, Theme(default_color=color("blue"))),
-layer(x=[0, 30,30,0], y=[0,10,30,0], Geom.line(preserve_order=true), Theme(default_color=color("orange"))),
-layer(x=[15, 5, 30, 30], y=[1.5, 3.5, 5, 20], label=["x=30", "θ", "10", "20"], Geom.label)
-)
+
+p = plot([0, 30,30], [0,0,10], xlim=(0, 32), color=:blue, legend=false)
+plot!([30, 30], [10, 30], color=:blue, linewidth=4)
+plot!([0, 30,30,0], [0,10,30,0], color=:orange)
+annotate!([(x,y,l) for (x,y,l) in zip([15, 5, 31, 31], [1.5, 3.5, 5, 20], ["x=30", "θ", "10", "20"])])
+
 Outputonly(p)
 ```
 
-What value of $x$ gives the largest angle $\theta? (In degrees.)
+What value of $x$ gives the largest angle $\theta$? (In degrees.)
 
 ```
 theta(x) = atan(30/x) - atan(10/x)
@@ -841,6 +839,18 @@ Find the value $x > 0$ which minimizes the distance from the graph of
 $f(x) = \log_e(x) - x$ to the origin $(0,0)$.
 
 ```
+f(x) = log(x) - x
+p = plot(f, 0.2, 2, ylim=(-2,0.25), legend=false, linewidth=3)
+plot!([0,0], [-2, 0.25], color=:gray)
+plot!([0,2],[0,0], color=:gray)
+xs = [0,1]; ys = [0, f(1)]
+scatter!(xs,ys, color=:orange)
+plot!(xs, ys, color=:orange, linewidth=3)
+annotate!([(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2),2))")])
+
+Outputonly(p)
+
+
 f(x) = log(x) - x
 xs = linspace(0.2, 2)
 p = plot(layer(x=xs, y=map(f, xs), Geom.line),

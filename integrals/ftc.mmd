@@ -41,7 +41,7 @@ A \approx
 \sum_{i=1}^n (f(a + ih) - f(a + (i-1)h)).
 ~$$
 
-If we let $g(i) = f(a + ih)$, then the summand above is just $g(i) - g(i-1) = D(g)(i)$ and the above then is just the um of the $D(g)(i)$s, or:
+If we let $g(i) = f(a + ih)$, then the summand above is just $g(i) - g(i-1) = D(g)(i)$ and the above then is just the sum of the $D(g)(i)$s, or:
 
 $$~
 A \approx S(D(g))(n) = g(n) - g(0)
@@ -138,14 +138,16 @@ is an alternative -- find a function $F$ with $F'(x) = f(x)$ and compute $F(b) -
 
 Some examples:
 
-Consider the problem of Archimedes, $\int_0^1 x^2 dx$. Clearly, we have with $f(x) = x^2$ that $F(x)=x^3/3$ will satisfy the assumptions of the FTC, so that:
+* Consider the problem of Archimedes, $\int_0^1 x^2 dx$. Clearly, we
+  have with $f(x) = x^2$ that $F(x)=x^3/3$ will satisfy the
+  assumptions of the FTC, so that:
 
 $$~
 \int_0^1 x^2 dx = F(1) - F(0) = \frac{1^3}{3} - \frac{0^3}{3} = \frac{1}{3}.
 ~$$
 
 
-More generally, we know if $n\neq-1$ that if $f(x) = x^{n}$, that
+* More generally, we know if $n\neq-1$ that if $f(x) = x^{n}$, that
 $F(x) = x^{n+1}/(n+1)$ will satisfy $F'(x)=f(x)$, so that
 
 $$~
@@ -169,7 +171,8 @@ $$~
 ~$$
 
 
-Let $f(x) = \cos(x)$. How much area is between $-\pi/2$ and $\pi/2$? We have that $F(x) = \sin(x)$ will have $F'(x) = f(x)$, so:
+* Let $f(x) = \cos(x)$. How much area is between $-\pi/2$ and $\pi/2$?
+  We have that $F(x) = \sin(x)$ will have $F'(x) = f(x)$, so:
 
 $$~
 \int_{-\pi/2}^{\pi/2} \cos(x) dx = F(\pi/2) - F(-\pi/2) = 1 - (-1) = 2.
@@ -187,7 +190,7 @@ $$~
 The vertical bar is used for the *evaluation* step, in this case the
 $a$ and $b$ mirror that of the definite integral. This notation lends
 itself to working inline, as we illustrate with this next problem
-where we "know" the antiderivative, so just express it inline:
+where we "know" the antiderivative, so just express it "inline":
 
 $$~
 \int_0^{\pi/4} \sec^2(x) dx = \tan(x) \big|_{x=0}^{\pi/4} = 1 - 0 = 1.
@@ -237,11 +240,11 @@ antiderivative.
 - `integrate(ex, var)` to find an indefinite integral. For a
   univariate function `f` this is shortened to `integrate(f)`,
 
-- `integrate(ex, var, a, b)` to find the definite integral. This
-  integrates the expression in the variable from `a` to `b`. For a
-  univariate function `f` this can also be shortened to
-  `integrate(f, a, b)`, which matches our usual template of
-  `action(function, args...)`.
+- `integrate(ex, var, a, b)` (or more generally `integrate(ex, (var,
+  a, b))`) to find the definite integral. This integrates the
+  expression in the variable `var` from `a` to `b`. For a univariate
+  function `f` this can also be shortened to `integrate(f, a, b)`,
+  which matches our usual template of `action(function, args...)`.
 
 To illustrate, we have, this call finds an antiderivative:
 
@@ -271,7 +274,7 @@ integrate(acos(1-x), x, 0, 2)
 
 ## Rules of integration
 
-The `integrate` function is an implementation of the
+The `integrate` function includes an implementation of the
 [Risch](http://en.wikipedia.org/wiki/Risch_algorithm) algorithm. This
 algorithm is implemented for elementary functions and operations
 involving these functions, such as addition, multiplication, division
@@ -315,12 +318,12 @@ $$~
 \int (a_n x^n + \cdots a_1 x + a_0) dx
 &= \int a_nx^n dx + \cdots \int a_1 x dx + \int a_0 dx                   \\
 &= a_n \int x^n dx + \cdots +  a_1 \int x dx + a_0 \int dx                   \\
-&= a_n\frac{x^{n1}}{n+1} + \cdot a_1 \frac{x^2}{2} +  a_0 \frac{x}{1}.
+&= a_n\frac{x^{n1}}{n+1} + \cdots +  a_1 \frac{x^2}{2} +  a_0 \frac{x}{1}.
 \end{align}
 ~$$
 
 
-- More generally, a Laurent polynomial allows for terms with negative numbers. These too can be handled by the above. For example
+- More generally, a [Laurent](https://en.wikipedia.org/wiki/Laurent_polynomial) polynomial allows for terms with negative powers. These too can be handled by the above. For example
 
 $$~
 \begin{align}
@@ -624,7 +627,7 @@ end
 Then the "area" represented by the dots stays fixed over this time frame.
 
 The engineer then thought a bit more, as the form of her answer seemed
-familiar. She decides to parameterize it in terms of $t$ and gets with
+familiar. She decides to parameterize it in terms of $t$ and found with
 $h=1/n$: `c(t) = (C(t) - C(t-h))/h`. Ahh -- the derivative
 approximation. But then what is the "area"? It is no longer just the
 sum of the dots, but in terms of the functions she finds that each

@@ -1,0 +1,400 @@
+# ODEs
+
+```noout, nocode
+using Plots
+gadfly()
+```
+
+Some relationships are easiest to describe in terms of derivatives. For example:
+
+* $F=ma$, One of Newton's famous laws, describes the force on an object of mass $m$ in terms of the acceleration. The acceleration is the derivative of velocity, which in turn is the derivative of position. So if we know the rates of change of $v(t)$ or $x(t)$, we can differentiate to find $F$.
+
+
+
+
+* Newton's law of [cooling](http://tinyurl.com/z4lmetp). This describes the temperature change in an object due to a difference in tempereature with the object's surroudings. The formula being, $T'(t) = -r (T(t) - T_a)$, where $T(t)$ is temperature at time $t$ and $T_a$ the ambient temperature.
+
+* [Hooke's law](http://tinyurl.com/kbz7r8l) relates force on an object to the position on the object, through $F = k x$. This is appropriate for many systems involving springs. Combined with Newton's law $F=ma$, this leads to an equation that $x$ must satisfy: $m x''(t) = k x(t)$.
+
+## Motion with constant acceleration
+
+Let's consider the case of constant acceleration. This describes how nearby objects fall to earth, as the force due to gravity is assumed to be a constant, so the acceleration is the constant force divided by the constant mass.
+
+With constant acceleration, what is the velocity?
+
+As mentioned, we have $dv/dt = a$ for any velocity function $v(t)$, but in this case, the right hand side is assumed to be constant. How does this restrict the possible functions, $v(t)$, that the velocity can be?
+
+Here we can integrate to find that any answer must look like the following for some constant of integration:
+
+$$~
+v(t) = \int \frac{dv}{dt} dt = \int a dt = at + C.
+~$$
+
+If we are given the velocity at a fixed time, say $v(t_0) = v_0$, then we can use the definite integral to get:
+
+$$~
+v(t) - v(t_0) = \int_{t_0}^t a dt = at - a t_0.
+~$$
+
+Solving, gives:
+
+$$~
+v(t) = v_0 + a (t - t_0).
+~$$
+
+This expresses the velocity at time $t$ in terms of the initial velocity, the constant acceleration and the time duration.
+
+A natural question might be, is this the *only* possible answer? There are a few useful ways to think about this.
+
+First, suppose there were another, say $u(t)$. Then define $w(t)$ to be the difference: $w(t) = v(t) - u(t)$. We would have that $w'(t) = v'(t) - u'(t) = a - a = 0$. But from the mean value theorem, a function whose derivative is *continuously* $0$, will necessarily be a constant. So at most, $v$ and $u$ will differ by a constant, but if both are equal at $t_0$, they will be equal for all $t$.
+
+Second, since the derivative of any solution is a continous function, it is true by the fundamental theorem of calculus that it *must* satisfy the form for the antiderivative. The initial condition makes the answer unique, as the indeterminate $C$ can take only one value.
+
+Summarizing, we have
+
+> If $v(t)$ satisfies the equation:
+> $$~ v'(t) = a, \quad v(t_0) = v_0,~$$
+> then the unique solution will be $v(t) = v_0 + a (t - t_0)$.
+
+
+Next, what about position? Here we know that the time derivative of position yields the velocity, so we should have that the unknown position function satisfies this equation and initial condition:
+
+$$~
+x'(t) = v(t) = v_0 + a (t - t_0), \quad x(t_0) = x_0.
+~$$
+
+Again, we can integrate to get an answer for any value $t$:
+
+$$~
+x(t) - x(t_0) = \int_{t_0}^t \frac{dv}{dt} dt = (v_0t + \frac{1}{2}a t^2 - at_0 t) |_{t_0}^t =
+(v_0 - at_0)(t - t_0) + \frac{1}{2} a (t^2 - t_0^2).
+~$$
+
+There are three constants: the initial value for the independent variable, $t_0$, and the two initial values for the velocity and position, $v_0, x_0$.  Assuming $t_0 = 0$, we can simplify the above to get a formula familiar from introductory physics:
+
+$$~
+x(t) = x_0 + v_0 t + \frac{1}{2} at^2.
+~$$
+
+Again, the mean value theorem can show that with the initial value specified this is the only possible solution.
+
+## First-order initial-value problems
+
+The two problems just looked at can be summarized by the following. We are looking for solutions to an equation of the form (taking $y$ and $x$ as the variables, in place of $x$ and $t$):
+
+$$~
+y'(x) = f(x), \quad y(x_0) = y_0.
+~$$
+
+This is called an *ordinary differential equation* (ODE), as it is an equation involving the ordinary derivative of an unknown function, $y$.
+
+This is called a first-order, ordinary differential equation, as there is only the first derivative involved.
+
+This is called an initial-value problem, as the value at the initial point $x_0$ is specified as part of the problem.
+
+### Examples
+
+Let's look at a few more examples, and then generalize.
+
+##### Newton's Law of Cooling
+
+Consider the ordinary differential equation given by Newton's law of cooling:
+
+$$~
+T'(t) = -r (T(t) - T_a), \quad T(0) = T_0
+~$$
+
+This equation is also first order, as it involves just the first derivative, but notice that on the right hand side is the function $T$, not the variable being differentiated against, $t$.
+
+As we have a diffrence on the right hand side, we rename the variable through $U(t) = T(t) - T_a$. Then, as $U'(t) = T'(t)$, we have the equation:
+
+$$~
+U'(t) = -r U(t), \quad U(0) = U_0.
+~$$
+
+
+This is different from the previous two equations, as the function $U$ appear on both sides. However, we can rearrange to get:
+
+$$~
+\frac{dU}{dt}\frac{1}{U(t)} = -r.
+~$$
+
+This suggests integrating both sides, as before. Here we do the "$u$"-substitution $u = U(t)$, so $du = U'(t) dt$:
+
+$$~
+-rt + C = \int \frac{dU}{dt}\frac{1}{U(t)} dt =
+\int \frac{1}{u}du = \log(u).
+~$$
+
+Solving gives: $u = U(t) = e^C e^{-rt}$. Using the initial condition forces $e^C = U(t_0) = T(0) - T_a$ and so our solution in terms of $T(t)$ is:
+
+
+$$~
+T(t) - T_a = (T_0 - T_a) e^{-rt}.
+~$$
+
+In words, the initial difference in temperature of the object and the environment exponentially decays to $0$.
+
+That is, as $t > 0$ goes to $\infty$, the right hand will go to $0$ for $r > 0$, so $T(t) \rightarrow T_a$ -- the temperature of the object will reach the ambient temperature. The rate of this is largest when the difference between $T(t)$ and $T_a$ is largest, so when objects are cooling the statement "hotter things cool faster" is appropriate.
+
+The above is implicitly assuming that there could be no other solution, than the one we found. Is that really the case? We will see that there is a theorem that can answer this, but in this case, the trick of taking the difference of two equations satisfying the equation leads to the equation $W'(t) = r W(t), \text{ and } W(0) = 0$. This equation has a general solution of $W(t) = Ce^{rt}$ and the initial condition forces $C=0$, so $W(t) = 0$, as before. Hence, the initial-value problem for Newton's law of cooling  has a unique solution.
+
+
+
+In general, the equation could be written as (again using $y$ and $x$ as the variables):
+
+$$~
+y'(x) = g(y), \quad y(x_0) = y_0
+~$$
+
+
+This is called an *autonomous*, first-order ODE, as the right-hand side does not depend on $x$.
+
+Let $F(y) = \int_{y_0}^y du/g(u)$, then a solution to the above is $F(y) = x - x_0$, assuming $1/g(u)$ is integrable.
+
+
+##### Example Toricelli's Law
+
+[Toricelli's Law](http://tinyurl.com/hxvf3qp) describes the speed a jet of water will leave a vessel through an opening below the surface of the water. The formula is $v=\sqrt{2gh}$, where $h$ is the height of the water above the hole and $g$ the graviational constant. This arises from equating the kinetic energy gained, $1/2 mv^2$ and potential energy lost, $mgh$, for the exiting water.
+
+An application of Torricelli's law is to describe the Volume of water in a tank over time, $V(t)$. Imagine a cylinder of cross sectional area $A$ with a hole of cross sectional diameter $a$ at the bottom, Then $V(t) = A h(t)$, with $h$ giving the height. The change in volume over $\Delta t$ units of time must be given by the value $a v(t) \Delta t$, or
+
+$$~
+V(t+\Delta t) - V(t) = -a v(t) \Delta t = -a\sqrt{2gh(t)}\Delta t
+~$$
+
+This suggests the following formula, written in terms of $h(t)$ should apply:
+
+$$~
+A\frac{dh}{dt} = -a \sqrt{2gh(t)}.
+~$$
+
+Rearranging, this gives an equation
+
+$$~
+\frac{dh}{dt} \frac{1}{\sqrt{h(t)}} = -\frac{a}{A}\sqrt{2g}.
+~$$
+
+Integrating boths sides yields:
+
+$$~
+2\sqrt{h(t)} = -\frac{a}{A}\sqrt{2g} t + C.
+~$$
+
+If $h(0) = h_0 = V(0)/A$, we can solve for $C = 2\sqrt{h_0}$, or
+
+$$~
+h(t) = \sqrt{h_0} -\frac{1}{2}\frac{a}{A}\sqrt{2g} t.
+~$$
+
+
+Setting $h(t)=0$ and solving for $t$ shows that the time to drain the tank would be $(2A)/(a\sqrt{2g})\sqrt{h_0}$.
+
+
+##### Example
+
+Consider now the equation
+
+$$~
+y'(x) = y^2, \quad y(x_0) = y_0.
+~$$
+
+This is called a *non-linear* ordinary differential equation, as the $y$ variable on the right hand side presents itself in a non-linear form (it is squared). These equations may have solutions that are not defined for all times.
+
+This particular problem can be solved as before by moving the $y^2$ to the left hand side and itegrating to yield:
+
+$$~
+y(x) = - \frac{1}{C + x},
+~$$
+
+and with the initial condition:
+
+$$~
+y(x) = \frac{y_0}{1 - y_0(x - x_0)}.
+~$$
+
+This answer can demonstrate *blow-up*. That is, in a finite range for $x$ values, the $y$ value can go to infinity. For example, if the initial conditions are $x_0=0$ and $y_0 = 1$, then $y(x) = 1/(1-x)$ is only defined for $x \geq x_0$ on $[0,1)$, as at $x=1$ there is a vertical asymptote.
+
+
+## Separable equations
+
+We've  seen equations of the form $y'(x) = g(y)$ and $y'(x) = f(x)$ both solved by integrating. The same tricks will work for equations of the form $y'(x) = f(x) \cdot g(y)$. Such equations are called *separable*.
+
+Basically, we equate up to constants
+
+$$~
+\int \frac{dy}{g(y)} = \int f(x) dx.
+~$$
+
+For example, suppose we have the equation
+
+$$~
+\frac{dy}{dx} = x \cdot y(x), \quad y(x_0) = y_0.
+~$$
+
+Then we can find a solution, $y(x)$ through:
+
+$$~
+\int \frac{dy}{y} = \int x dx,
+~$$
+
+or
+
+$$~
+\log(y) = \frac{x^2}{2} + C
+~$$
+
+Which yields:
+
+$$~
+y(x) = e^C e^{\frac{1}{2}x^2}.
+~$$
+
+Substituting in $x_0$ yields a value for $C$ in terms of the intial information $y_0$ and $x_0$.
+
+
+## Symbolic solutions
+
+Differential equations are classified according to their type. Different types have different methods for solution, when a solution exists.
+
+The first-order initial value equations we have seen can described generally by $y'(x) = F(y,x), \quad y(x_0)=x_0$. The equation is *linear* if the function $F$ is linear in $y$; it is *autonomous* if $F(y,x) = G(y)$ (a function of $y$ alone); it is *separable* if $F(y,x) = G(y)H(x)$.
+
+As seen, separable equations are approached by moving the "$y$" terms to one side, the "$x$" terms to the other and integrating. This also applies to autonomous equations then. There are other families of equation types that have exact solutions, and techniques for solution, summarized at this [Wikipedia page](http://tinyurl.com/zywzz4q).
+
+Rather than go over these various families, we demonstrate that `SymPy` can solve many of these equations symbolically.
+
+
+The `solve` function in `SymPy` solves equations for unknown *variables*. As a differential equation involves an unknown *function* there is a different function, `dsolve`. The basic idea is to describe the differential equation using a symbolic function and then call `dsolve` to solve the expression.
+
+Here is an example for the *logistic equation*
+
+$$~
+u'(x) = a u(1-u), \quad a > 0
+~$$
+
+Before beginning, we look at the form of the equation. When $u=0$ or $u=1$ the rate of change is $0$, so we expect the function to be bounded within that range. Let's see.
+
+We first load `SymPy` and then create a symbolic variable and function:
+
+```
+using SymPy
+x, y = symbols("x, y")
+a = symbols("a", positive=true)
+u = SymFunction("u")
+```
+
+Our equation can be specified by an expression equaling $0$:
+
+```
+eqn = diff(u(x),x) - a * u(x) * (1 - u(x))
+```
+
+Note that we evaluate the symbolic function at the variable `x` through the use of `u(x)` in the expression. Finally, we call `dsolve` to find a solution (if possible):
+
+```
+out = dsolve(eqn)
+```
+
+This answer -- to a first-order equation -- has one free constant, `C_1`, which can be solved for from an initial condition. We can see that when $a > 0$, as $x$ goes to positive infinity the solution goes to $1$, and when $x$ goes to $-$ infinity, the solution goes to $0$ and otherwise is trapped in between, as expected.
+
+Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
+
+```
+eqn = rhs(out)    # just the right hand side
+C1 = free_symbols(eqn)[1]  # there are three
+c1 = solve(eqn(x=>0) - 1//2, C1)
+```
+
+And we plug in with:
+
+```
+eqn(C1 => c1[1])
+```
+
+
+##### Example: Hooke's law
+
+In the first example, we solved for position, $x(t)$, from an assumption of constant acceleration in two steps. The equation relating the two is a second-order equation: $x''(t) = a$, so two constants are generated. That a second-order equation could be reduced to two first-order equations is not happy circumstance, as it can always be done. Rather than show the technique though, we demonstrate that `SymPy` can handle some second-order ODEs.
+
+Hooke's law relates the force on an object to its position via $F=ma = -kx$, or $x''(t) = -(k/a)x(t)$.
+
+Suppose $k > 0$ and we take $a=9.8$. Then we can solve, similar to the above, with:
+
+```
+k = symbols("k", positive=true)
+eqn = diff(u(x), x, 2) + k*u(x)
+dsolve(eqn)
+```
+
+Here we find two constants, as anticipated, for we would guess that two integrations are needed in the solution.
+
+If a spring's height is described by $u(x)$, then the value $k$ characterizes the spring. If the initial position is $u(0)=0$, then $C_2 = 0$ and we get that the motion will follow
+$u(x) = C_1 \sin(\sqrt{k}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $C_1$ and the period $2\pi/\sqrt{k}$. Larger $k$ values mean shorter periods.
+
+
+##### The pendulum
+
+The simple gravity [pendulum](http://tinyurl.com/h8ys6ts) is an idealization of a physical pendulum that models a "bob" with mass $m$ swinging on a massless rod of length $l$ in a frictionless world governed only by the gravitational constant $g$. The motion can be described by this differential equation for the angle, $\theta$, made from the vertical:
+
+$$~
+\theta''(t) + \frac{g}{l}\sin(\theta(t)) = 0
+~$$
+
+Can this second-order equation be solved by `SymPy`?
+
+```
+g, l = symbols("g, l", positive=true)
+eqn = diff(u(x),x,2) + g/l*sin(u(x))
+dsolve(eqn)
+```
+
+That long error message can be summarized: no easy answer is forthcoming for this equation. In general, for the first-order initial value problem characterized by $y'(x) = F(y,x)$, there are conditions ([Peano](http://tinyurl.com/h663wba) and [Picard-Lindelof](http://tinyurl.com/3rbde5e)) that can guarantee the existence (and uniqueness) of equation locally, but there may not be an accompanying method to actually find it. This particular problem has a solution, but it can not be written in terms of elementary functions.
+
+However, as [Huygens](https://en.wikipedia.org/wiki/Christiaan_Huygens) first noted, if the angles involved are small, then we approximate the solution through the linearization $\sin(\theta(t)) \approx \theta(t)$. The resulting equation for an approximate answer is just that of Hooke:
+	
+
+$$~
+\theta''(t) + \frac{g}{l}\theta(t) = 0
+~$$
+
+Here, the solution is in terms of sines and cosines, with period given by $T = 2\pi/\sqrt{k} =  2\pi\cdot\sqrt{l/g}$. The answer does not depend on the mass, $m$, of the bob nor the amplitude of the motion, provided the small-angle approximation is valid.
+
+
+### Visualizing a first-order initial value problem
+
+The solution, $y(x)$, is known through its derivative. A useful tool to visualize the solution to a first-order differential equation is the [slope field](http://tinyurl.com/jspzfok) (or direction field) plot, which at different values of $(x,y)$, plots a vector with slope given through $y'(x)$. These plots are made possible with the `vectorfieldplot` function of `SymPy`.
+
+For example, in a previous example we found a solution to  $y'(x) = x\cdot y(x)$. Suppose $x_0=1$ and $y_0=1$. Then a direction field plot is drawn through:
+
+```
+x, y = symbols("x, y")
+x0, y0 = 1, 1
+F(y, x) = y*x
+vectorfieldplot([1, F(y,x)], (x, x0, 2), (y, y0-5, y0+5))
+
+f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
+plot!(f, x0, 2, linewidth=5)
+```
+
+In general, if the first-order equation is written as $y'(x) = F(y,x)$, then the above pattern (`[1, F(y,x)]`) will work to make the direction field plot. 
+
+
+The plots are also useful for illlustrating solutions for different initial conditions:
+
+
+```
+p = vectorfieldplot([1, F(y,x)], (x, x0, 2), (y, y0-5, y0+5))
+for y0 in -4:4
+  f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
+  plot!(p, f, x0, 2, linewidth=5)
+end
+p
+```
+
+Such solutions are called [integral curves](https://en.wikipedia.org/wiki/Integral_curve). It is clear from the graph that the slope field is tangent to the graph of any integral curve.
+
+## Questions
+
+
+
+

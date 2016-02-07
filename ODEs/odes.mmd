@@ -12,7 +12,7 @@ Some relationships are easiest to describe in terms of derivatives. For example:
 
 
 
-* Newton's law of [cooling](http://tinyurl.com/z4lmetp). This describes the temperature change in an object due to a difference in tempereature with the object's surroudings. The formula being, $T'(t) = -r (T(t) - T_a)$, where $T(t)$ is temperature at time $t$ and $T_a$ the ambient temperature.
+* Newton's law of [cooling](http://tinyurl.com/z4lmetp). This describes the temperature change in an object due to a difference in temperature with the object's surroundings. The formula being, $T'(t) = -r (T(t) - T_a)$, where $T(t)$ is temperature at time $t$ and $T_a$ the ambient temperature.
 
 * [Hooke's law](http://tinyurl.com/kbz7r8l) relates force on an object to the position on the object, through $F = k x$. This is appropriate for many systems involving springs. Combined with Newton's law $F=ma$, this leads to an equation that $x$ must satisfy: $m x''(t) = k x(t)$.
 
@@ -106,18 +106,21 @@ T'(t) = -r (T(t) - T_a), \quad T(0) = T_0
 
 This equation is also first order, as it involves just the first derivative, but notice that on the right hand side is the function $T$, not the variable being differentiated against, $t$.
 
-As we have a diffrence on the right hand side, we rename the variable through $U(t) = T(t) - T_a$. Then, as $U'(t) = T'(t)$, we have the equation:
+As we have a difference on the right hand side, we rename the variable through $U(t) = T(t) - T_a$. Then, as $U'(t) = T'(t)$, we have the equation:
 
 $$~
 U'(t) = -r U(t), \quad U(0) = U_0.
 ~$$
 
 
-This is different from the previous two equations, as the function $U$ appear on both sides. However, we can rearrange to get:
+This shows that the rate of change of $U$ depends on $U$. Large postive values indicate a negative rate of change -- a push back towards the orgin, and large negative values of $U$ indicate a positive rate of change -- again, a push back towards the origin. We shouldn't be surprised to either see a steady decay towards the origin, or oscillations about the origin.
+
+What will we find? This equation is different from the previous two equations, as the function $U$ appear on both sides. However, we can rearrange to get:
 
 $$~
 \frac{dU}{dt}\frac{1}{U(t)} = -r.
 ~$$
+
 
 This suggests integrating both sides, as before. Here we do the "$u$"-substitution $u = U(t)$, so $du = U'(t) dt$:
 
@@ -155,7 +158,7 @@ Let $F(y) = \int_{y_0}^y du/g(u)$, then a solution to the above is $F(y) = x - x
 
 ##### Example Toricelli's Law
 
-[Toricelli's Law](http://tinyurl.com/hxvf3qp) describes the speed a jet of water will leave a vessel through an opening below the surface of the water. The formula is $v=\sqrt{2gh}$, where $h$ is the height of the water above the hole and $g$ the graviational constant. This arises from equating the kinetic energy gained, $1/2 mv^2$ and potential energy lost, $mgh$, for the exiting water.
+[Toricelli's Law](http://tinyurl.com/hxvf3qp) describes the speed a jet of water will leave a vessel through an opening below the surface of the water. The formula is $v=\sqrt{2gh}$, where $h$ is the height of the water above the hole and $g$ the gravitational constant. This arises from equating the kinetic energy gained, $1/2 mv^2$ and potential energy lost, $mgh$, for the exiting water.
 
 An application of Torricelli's law is to describe the Volume of water in a tank over time, $V(t)$. Imagine a cylinder of cross sectional area $A$ with a hole of cross sectional diameter $a$ at the bottom, Then $V(t) = A h(t)$, with $h$ giving the height. The change in volume over $\Delta t$ units of time must be given by the value $a v(t) \Delta t$, or
 
@@ -175,7 +178,7 @@ $$~
 \frac{dh}{dt} \frac{1}{\sqrt{h(t)}} = -\frac{a}{A}\sqrt{2g}.
 ~$$
 
-Integrating boths sides yields:
+Integrating both sides yields:
 
 $$~
 2\sqrt{h(t)} = -\frac{a}{A}\sqrt{2g} t + C.
@@ -201,7 +204,7 @@ y'(x) = y^2, \quad y(x_0) = y_0.
 
 This is called a *non-linear* ordinary differential equation, as the $y$ variable on the right hand side presents itself in a non-linear form (it is squared). These equations may have solutions that are not defined for all times.
 
-This particular problem can be solved as before by moving the $y^2$ to the left hand side and itegrating to yield:
+This particular problem can be solved as before by moving the $y^2$ to the left hand side and integrating to yield:
 
 $$~
 y(x) = - \frac{1}{C + x},
@@ -250,7 +253,7 @@ $$~
 y(x) = e^C e^{\frac{1}{2}x^2}.
 ~$$
 
-Substituting in $x_0$ yields a value for $C$ in terms of the intial information $y_0$ and $x_0$.
+Substituting in $x_0$ yields a value for $C$ in terms of the initial information $y_0$ and $x_0$.
 
 
 ## Symbolic solutions
@@ -283,10 +286,11 @@ a = symbols("a", positive=true)
 u = SymFunction("u")
 ```
 
+
 Our equation can be specified by an expression equaling $0$:
 
 ```
-eqn = diff(u(x),x) - a * u(x) * (1 - u(x))
+eqn = u'(x) - a * u(x) * (1 - u(x))
 ```
 
 Note that we evaluate the symbolic function at the variable `x` through the use of `u(x)` in the expression. Finally, we call `dsolve` to find a solution (if possible):
@@ -300,21 +304,28 @@ This answer -- to a first-order equation -- has one free constant, `C_1`, which 
 Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
 
 ```
-eqn = rhs(out)    # just the right hand side
-C1 = free_symbols(eqn)[1]  # there are three
-c1 = solve(eqn(x=>0) - 1//2, C1)
+eq = rhs(out)    # just the right hand side
+C1 = free_symbols(eq)[1]  # there are three
+c1 = solve(eq(x=>0) - 1//2, C1)
 ```
 
 And we plug in with:
 
 ```
-eqn(C1 => c1[1])
+eq(C1 => c1[1])
 ```
 
+That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are independent variable (`x`) and tuples of conditions of the form `(function, x0, y0)`:
+
+```
+x0, y0 = 0, 1//2
+dsolve(eqn, x, (u, x0, y0))
+```
 
 ##### Example: Hooke's law
 
-In the first example, we solved for position, $x(t)$, from an assumption of constant acceleration in two steps. The equation relating the two is a second-order equation: $x''(t) = a$, so two constants are generated. That a second-order equation could be reduced to two first-order equations is not happy circumstance, as it can always be done. Rather than show the technique though, we demonstrate that `SymPy` can handle some second-order ODEs.
+
+In the first example, we solved for position, $x(t)$, from an assumption of constant acceleration in two steps. The equation relating the two is a second-order equation: $x''(t) = a$, so two constants are generated. That a second-order equation could be reduced to two first-order equations is not happy circumstance, as it can always be done. Rather than show the technique though, we demonstrate that `SymPy` can also handle some second-order ODEs.
 
 Hooke's law relates the force on an object to its position via $F=ma = -kx$, or $x''(t) = -(k/a)x(t)$.
 
@@ -322,14 +333,22 @@ Suppose $k > 0$ and we take $a=9.8$. Then we can solve, similar to the above, wi
 
 ```
 k = symbols("k", positive=true)
-eqn = diff(u(x), x, 2) + k*u(x)
+eqn = u''(x) + k*u(x)
 dsolve(eqn)
 ```
 
 Here we find two constants, as anticipated, for we would guess that two integrations are needed in the solution.
 
-If a spring's height is described by $u(x)$, then the value $k$ characterizes the spring. If the initial position is $u(0)=0$, then $C_2 = 0$ and we get that the motion will follow
-$u(x) = C_1 \sin(\sqrt{k}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $C_1$ and the period $2\pi/\sqrt{k}$. Larger $k$ values mean shorter periods.
+Suppose the spring were started by pulling it down to a bottom and releasing. The initial position at time $0$ would be $a$, say, and initial velocity $0$. Here we get the solution:
+
+```
+a = symbols("a", positive=true)
+dsolve(eqn, x, (u, 0, -a), (u', 0, 0))
+```
+
+
+We get that the motion will follow
+$u(x) = -a \cos(\sqrt{k}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $a$ and the period $2\pi/\sqrt{k}$. Larger $k$ values mean shorter periods.
 
 
 ##### The pendulum
@@ -344,7 +363,7 @@ Can this second-order equation be solved by `SymPy`?
 
 ```
 g, l = symbols("g, l", positive=true)
-eqn = diff(u(x),x,2) + g/l*sin(u(x))
+eqn = u''(x) + g/l*sin(u(x))
 dsolve(eqn)
 ```
 
@@ -358,6 +377,13 @@ $$~
 ~$$
 
 Here, the solution is in terms of sines and cosines, with period given by $T = 2\pi/\sqrt{k} =  2\pi\cdot\sqrt{l/g}$. The answer does not depend on the mass, $m$, of the bob nor the amplitude of the motion, provided the small-angle approximation is valid.
+
+If we pull the bob back an angle $a$ and release it then the initial conditions are $\theta(0) = a$ and $\theta'(a) = 0$. This gives the solution:
+
+```
+eqn = u''(x) + g/l * u(x)
+dsolve(eqn, x, (u, 0, a), (u', 0, 0))
+```
 
 
 ### Visualizing a first-order initial value problem
@@ -379,7 +405,7 @@ plot!(f, x0, 2, linewidth=5)
 In general, if the first-order equation is written as $y'(x) = F(y,x)$, then the above pattern (`[1, F(y,x)]`) will work to make the direction field plot. 
 
 
-The plots are also useful for illlustrating solutions for different initial conditions:
+The plots are also useful for illustrating solutions for different initial conditions:
 
 
 ```
@@ -398,3 +424,173 @@ Such solutions are called [integral curves](https://en.wikipedia.org/wiki/Integr
 
 
 
+##### Question
+
+Using `SymPy` to solve the differential equation
+
+$$~
+u' = \frac{1-x}{u}
+~$$
+
+gives
+
+```
+u = SymFunction("u")
+x = symbols("x")
+dsolve(u'(x) - (1-x)/u(x))
+```
+
+The two answers track positive and negative solutions. For the initial condition, $u(-1)=1$, we have the second one is approriate: $u(x) = \sqrt{C_1 - x^2 + 2x}$. At $-1$ this gives: $1 = \sqrt{C_1-3}$, so $C_1 = 4$.
+
+This value is good for what values of $x$?
+
+```
+choices = [
+L"[-1, \infty)",
+L"[-1, 4]",
+L"[-1, 0]",
+L"[1-\sqrt{5}, 1 + \sqrt{5}]"]
+ans = 4
+radioq(choices, ans)
+```
+
+
+##### Question
+
+Suppose $y(x)$ satisfies
+
+$$~
+y'(x) = y(x)^2, \quad y(1) = 1.
+~$$
+
+What is $y(3/2)$?
+
+```
+u = SymFunction("u")
+x = symbols("x")
+out = dsolve(u'(x) - u(x)^2, x, (u, 1, 1))
+val = N(rhs(out(3/2)))
+numericq(val)
+```
+
+##### Question
+
+Solve the initial value problem
+
+$$~
+y' = 1 + x^2 + y(x)^2 + x^2 y(x)^2, \quad y(0) = 1.
+
+~$$
+
+Use your answer to find $y(1)$.
+
+```
+eqn = u'(x) - (1 + x^2 + u(x)^2 + x^2 * u(x)^2)
+out = dsolve(eqn, x, (u, 0, 1))
+val = N(rhs(out)(1))
+numericq(val)
+```
+
+##### Question
+
+A population is modeled by $y(x)$. The rate of population growth is generally proportional to the population ($k y(x)$), but as the population gets large, the rate is curtailed $(1 - y(x)/M)$. 
+
+Solve the initial value problem
+
+$$~
+y'(x) = k\cdot y(x) \cdot (1 - y(x)/M),
+~$$
+
+when $k=1$, $M=100$, and $y(0) = 20$. Find the value of $y(5)$.
+
+```
+k, M = 1, 100
+eqn = u'(x) - k * u(x) * (1 - u(x)/M)
+out = dsolve(eqn, x, (u, 0, 20))
+val = N(rhs(out)(5))
+numericq(val)
+```
+
+
+##### Question
+
+Solve the initial value problem
+
+$$~
+y'(t) = \sin(t) - \frac{y(t)}{t}, \quad y(\pi) = 1
+~$$
+
+Find the value of the solution at $t=2\pi$.
+
+```
+eqn = u'(x) - (sin(x) - u(x)/x)
+out = dsolve(eqn, x, (u, PI, 1))
+val = N(rhs(out(2PI)))
+numericq(val)
+```
+
+
+##### Question
+
+At time $0$ a tank contains 10 gallons of water containing $1/2$ pound of salt in a solution. Water containing a salt concentration is added at 1 gallon/minute. The concentration is time dependent and satisfies $q(t) = (1 + \sin(t))/100$. Water leaves the tank at 2 gallons/minute.
+
+The volume of the tank at time $t$ is $v(t)=10-t$, as $dv/dt = -1$. So it takes 10 minute to empty the tank. During these 10 minutes, the amount of salt in the tank, $c(t)$, satisfies:
+
+$$~
+\Delta c = q(t) \cdot 1 \cdot \Delta t - \frac{c(t)}{v(t)} \cdot 2 \Delta t.
+~$$
+
+This suggests that the following differential equation should hold:
+
+$$~
+\frac{dc}{dt} = q(t) - 2\frac{c(t)}{v(t)}, \quad c(0) = 1/2
+~$$
+
+What is the amount of salt at time $t=5$?
+
+```
+q(t) = (1 + sin(t))//100
+v(t) = 10 - t
+eqn = u(x) - (q(x) - 2*u(x)/v(x))
+out = dsolve(eqn, x, (u, 0, 1//2))
+val = N(rhs(out)(5))
+numericq(val)
+```
+
+##### Question
+
+Suppose $u(x)$ satisfies:
+
+$$~
+\frac{du}{dx} = e^{-x} \cdot u(x), \quad u(0) = 1.
+~$$
+
+Find $u(5)$ using `SymPy`.
+
+```
+eqn = u'(x) - exp(-x)*u(x)
+out = dsolve(eqn, x, (u, 0, 1))
+val = N(rhs(out)(5))
+numericq(val)
+```
+
+##### Question
+
+The differential equation with boundary values
+
+$$~
+\frac{r^2 \frac{dc}{dr}}{dr} = 0, \quad c(1)=2, c(10)=1,
+~$$
+
+can be solved with `SymPy`. What is the value of $c(5)$?
+
+```
+u = SymFunction("u")
+x = symbols("x")
+eqn = diff(x^2*u'(x), x)
+out = dsolve(eqn, x, (u, 1, 2), (u, 10, 1)) |> rhs
+out(5)  # 10/9
+choices = ["10/9", "3/2", "9/10", "8/9"]
+ans = 1
+radioq(choices, ans)
+```

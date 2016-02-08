@@ -140,7 +140,32 @@ In words, the initial difference in temperature of the object and the environmen
 
 That is, as $t > 0$ goes to $\infty$, the right hand will go to $0$ for $r > 0$, so $T(t) \rightarrow T_a$ -- the temperature of the object will reach the ambient temperature. The rate of this is largest when the difference between $T(t)$ and $T_a$ is largest, so when objects are cooling the statement "hotter things cool faster" is appropriate.
 
-The above is implicitly assuming that there could be no other solution, than the one we found. Is that really the case? We will see that there is a theorem that can answer this, but in this case, the trick of taking the difference of two equations satisfying the equation leads to the equation $W'(t) = r W(t), \text{ and } W(0) = 0$. This equation has a general solution of $W(t) = Ce^{rt}$ and the initial condition forces $C=0$, so $W(t) = 0$, as before. Hence, the initial-value problem for Newton's law of cooling  has a unique solution.
+
+A graph of the solution for $T_0=200$ and $T_a=72$ and $r=1/2$ is made
+as follows. We've added a few line segments from the defining formula,
+and see that they are indeed tangent to the solution found for the differential equation.
+
+```nocode
+T0, Ta, r = 200, 72, 1/2
+f(u, t) = -r*(u - Ta)
+v(t) = Ta + (T0 - Ta) * exp(-r*t)
+p = plot(v, 0, 6, linewidth=4)
+[plot!(p, x -> v(a) + f(v(a), a) * (x-a), 0, 6) for a in 1:2:5]
+p
+```
+
+
+
+
+The above is implicitly assuming that there could be no other
+solution, than the one we found. Is that really the case? We will see
+that there is a theorem that can answer this, but in this case, the
+trick of taking the difference of two equations satisfying the
+equation leads to the equation $W'(t) = r W(t), \text{ and } W(0) =
+0$. This equation has a general solution of $W(t) = Ce^{rt}$ and the
+initial condition forces $C=0$, so $W(t) = 0$, as before. Hence, the
+initial-value problem for Newton's law of cooling has a unique
+solution.
 
 
 
@@ -199,7 +224,7 @@ Setting $h(t)=0$ and solving for $t$ shows that the time to drain the tank would
 Consider now the equation
 
 $$~
-y'(x) = y^2, \quad y(x_0) = y_0.
+y'(x) = y(x)^2, \quad y(x_0) = y_0.
 ~$$
 
 This is called a *non-linear* ordinary differential equation, as the $y$ variable on the right hand side presents itself in a non-linear form (it is squared). These equations may have solutions that are not defined for all times.
@@ -221,7 +246,7 @@ This answer can demonstrate *blow-up*. That is, in a finite range for $x$ values
 
 ## Separable equations
 
-We've  seen equations of the form $y'(x) = g(y)$ and $y'(x) = f(x)$ both solved by integrating. The same tricks will work for equations of the form $y'(x) = f(x) \cdot g(y)$. Such equations are called *separable*.
+We've seen equations of the form $y'(x) = f(x)$ and $y'(x) = g(y)$ both solved by integrating. The same tricks will work for equations of the form $y'(x) = f(x) \cdot g(y)$. Such equations are called *separable*.
 
 Basically, we equate up to constants
 
@@ -275,7 +300,7 @@ $$~
 u'(x) = a u(1-u), \quad a > 0
 ~$$
 
-Before beginning, we look at the form of the equation. When $u=0$ or $u=1$ the rate of change is $0$, so we expect the function to be bounded within that range. Let's see.
+Before beginning, we look at the form of the equation. When $u=0$ or $u=1$ the rate of change is $0$, so we expect the function might be bounded within that range. If not, when $u$ gets bigger than $1$, then the slope is negative and when $u$ gets less than $0$, the slope is positive, so there will atleast be a drift back to the range $[0,1]$. Let's see exactly what happens.
 
 We first load `SymPy` and then create a symbolic variable and function:
 
@@ -315,7 +340,7 @@ And we plug in with:
 eq(C1 => c1[1])
 ```
 
-That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are independent variable (`x`) and tuples of conditions of the form `(function, x0, y0)`:
+That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are independent variable (`x`) and tuples of conditions of the form `(SymFunction, x0, y0)`:
 
 ```
 x0, y0 = 0, 1//2
@@ -327,19 +352,23 @@ dsolve(eqn, x, (u, x0, y0))
 
 In the first example, we solved for position, $x(t)$, from an assumption of constant acceleration in two steps. The equation relating the two is a second-order equation: $x''(t) = a$, so two constants are generated. That a second-order equation could be reduced to two first-order equations is not happy circumstance, as it can always be done. Rather than show the technique though, we demonstrate that `SymPy` can also handle some second-order ODEs.
 
-Hooke's law relates the force on an object to its position via $F=ma = -kx$, or $x''(t) = -(k/a)x(t)$.
+Hooke's law relates the force on an object to its position via $F=ma = -kx$, or $x''(t) = -(k/m)x(t)$.
 
-Suppose $k > 0$ and we take $a=9.8$. Then we can solve, similar to the above, with:
+Suppose $k > 0$. Then we can solve, similar to the above, with:
 
 ```
 k = symbols("k", positive=true)
-eqn = u''(x) + k*u(x)
+m = symbols("m")
+eqn = u''(x) + k/m*u(x)
 dsolve(eqn)
 ```
 
-Here we find two constants, as anticipated, for we would guess that two integrations are needed in the solution.
+Here we find two constants, as anticipated, for we would guess that
+two integrations are needed in the solution.
 
-Suppose the spring were started by pulling it down to a bottom and releasing. The initial position at time $0$ would be $a$, say, and initial velocity $0$. Here we get the solution:
+Suppose the spring were started by pulling it down to a bottom and
+releasing. The initial position at time $0$ would be $a$, say, and
+initial velocity $0$. Here we get the solution:
 
 ```
 a = symbols("a", positive=true)
@@ -348,7 +377,7 @@ dsolve(eqn, x, (u, 0, -a), (u', 0, 0))
 
 
 We get that the motion will follow
-$u(x) = -a \cos(\sqrt{k}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $a$ and the period $2\pi/\sqrt{k}$. Larger $k$ values mean shorter periods.
+$u(x) = -a \cos(\sqrt{k/m}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $a$ and the period $2\pi/\sqrt{k/m}$. Larger $k$ values mean shorter periods; larger $m$ values mean longer periods.
 
 
 ##### The pendulum
@@ -551,7 +580,7 @@ What is the amount of salt at time $t=5$?
 ```
 q(t) = (1 + sin(t))//100
 v(t) = 10 - t
-eqn = u(x) - (q(x) - 2*u(x)/v(x))
+eqn = u'(x) - (q(x) - 2*u(x)/v(x))
 out = dsolve(eqn, x, (u, 0, 1//2))
 val = N(rhs(out)(5))
 numericq(val)

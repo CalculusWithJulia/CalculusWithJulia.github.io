@@ -357,8 +357,7 @@ Hooke's law relates the force on an object to its position via $F=ma = -kx$, or 
 Suppose $k > 0$. Then we can solve, similar to the above, with:
 
 ```
-k = symbols("k", positive=true)
-m = symbols("m")
+k, m = symbols("k, m", positive=true)
 eqn = u''(x) + k/m*u(x)
 dsolve(eqn)
 ```
@@ -414,8 +413,80 @@ eqn = u''(x) + g/l * u(x)
 dsolve(eqn, x, (u, 0, a), (u', 0, 0))
 ```
 
+##### Example: projectile motion in a medium
 
-### Visualizing a first-order initial value problem
+
+The first example describes projectile motion without air resistance. If we use $(x(t), y(t))$ to describe position at time $t$, the functions satisfy:
+
+$$~
+x''(t) = 0, \quad y''(t) = -g.
+~$$
+
+That is, the $x$ position -- where no forces act -- has $0$ acceleration, and the $y$ position -- where the force of gravity acts -- has constant acceleration, $-g$, where $g=9.8m/sec^2$ is the gravitational constant. These equations can be solved to give:
+
+$$~
+x(t) = x_0 + v_0 \cos(\alpha) t, \quad y(t) = y_0 + v_0\sin(\alpha)t - \frac{1}{2}g \cdot t^2.
+~$$
+
+
+Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(x)$:
+
+```
+x0, y0, v0, alpha, g = symbols("x0, y0, v0, alpha, g",real=true)
+x, y, t = symbols("x,  y, t")
+y = y0 + v0 * sin(alpha) * t - 1//2 * g * t^2
+ts = solve(x - (x0 + v0 * cos(alpha) *t), t)[1]
+y(t=> ts)
+```
+
+The answer is a quadratic polyonmial in $x$ which gives the familiar
+parabolic motion for a trajectory.
+
+
+In a resistive medium, there are drag forces at play. If this force is
+proportional to the velocity, say, with proportion $\gamma$, then the
+equations become:
+
+$$~
+x''(t) = -\gamma x'(t), \quad y''(t) = -\gamma y'(t) -g, \quad x(0) = x_0, y(0)=y_0, x'(0) = v_0\cos(\alpha), y'(0) = v_0 \sin(\alpha).
+~$$
+
+
+We now attempt to solve these:
+
+```
+gamma = symbols("gamma")
+u = SymFunction("u")
+a1 = dsolve(u''(t) + gamma * u'(t),     t, (u, 0, x0), (u', 0, v0 * cos(alpha)))
+a2 = dsolve(u''(t) + gamma * u'(t) + g, t, (u, 0, y0), (u', 0, v0 * sin(alpha)))
+ts = solve(x - rhs(a1), t)[1]
+y = simplify(rhs(a2)(t => ts))
+```
+
+
+This gives $y$ as a function of $x$.
+
+There are a lot of symbols. Lets simplify by using constants $x_0=y_0=0$:
+
+```
+y = y(x0 => 0, y0 => 0)
+```
+
+
+What is the trajectory? We see
+that the `log` function part will have issues when
+$-\gamma x + v_0 \cos(\alpha) = 0$.
+
+If we fix some parameters, we can plot.
+
+```
+v_0, gam, alp = 200, 1/2, pi/4
+plot(y(v0=>v_0, gamma=>gam, alpha=>alp, g=>9.8), 0, v_0 * cos(alp) / gam - 1/10)
+```
+
+We can see that the resistance makes the path quite non-symmetric.
+
+## Visualizing a first-order initial value problem
 
 The solution, $y(x)$, is known through its derivative. A useful tool to visualize the solution to a first-order differential equation is the [slope field](http://tinyurl.com/jspzfok) (or direction field) plot, which at different values of $(x,y)$, plots a vector with slope given through $y'(x)$. These plots are made possible with the `vectorfieldplot` function of `SymPy`.
 

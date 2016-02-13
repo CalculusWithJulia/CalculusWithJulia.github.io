@@ -100,7 +100,7 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Inequalities, Logical expressions</h1><p>In mathematics it is common to test if an expression is true or false. For example, is the point &#36;&#40;1,2&#41;&#36; inside the disc &#36;x^2 &#43; y^2 \leq 1&#36;? We would check this by substituting &#36;1&#36; for &#36;x&#36; and &#36;2&#36; for &#36;y&#36;, evaluating both sides of the inequality and then assessing of the relationship is true or false. In this case, we end up with a comparison of &#36;5 \leq 1&#36;, which we of course know is false.</p><p><code>Julia</code> provides numeric comparisons that allow this notation to be exactly mirrored:</p><pre class="sourceCode julia">x, y = 1, 2
+<h1>Inequalities, Logical expressions</h1><p>In mathematics it is common to test if an expression is true or false. For example, is the point $(1,2)$ inside the disc $x^2 + y^2 \leq 1$? We would check this by substituting $1$ for $x$ and $2$ for $y$, evaluating both sides of the inequality and then assessing of the relationship is true or false. In this case, we end up with a comparison of $5 \leq 1$, which we of course know is false.</p><p><code>Julia</code> provides numeric comparisons that allow this notation to be exactly mirrored:</p><pre class="sourceCode julia">x, y = 1, 2
 x^2 + y^2 <= 1</pre>
 <pre class="output">
 false</pre>
@@ -109,7 +109,7 @@ false</pre>
 <pre class="output">
 false</pre>
 
-<p>For  convenience, <code>a &#33;&#61; b</code> can be used in place of <code>&#33;&#40;a &#61;&#61; b&#41;</code>.</p><h2>Algebra of inequalities</h2><p>To illustrate, let's see that the algebra of expressions works as expected.</p><p>For example, if &#36;a &lt; b&#36; then for any &#36;c&#36; it is also true that &#36;a &#43; c &lt; b &#43; c&#36;.</p><p>We can't "prove" this through examples, but we can investigate it by the choice of various values of &#36;a&#36;, &#36;b&#36;, and &#36;c&#36;. For example:</p><pre class="sourceCode julia">a,b,c = 1,2,3
+<p>For  convenience, <code>a &#33;&#61; b</code> can be used in place of <code>&#33;&#40;a &#61;&#61; b&#41;</code>.</p><h2>Algebra of inequalities</h2><p>To illustrate, let's see that the algebra of expressions works as expected.</p><p>For example, if $a < b$ then for any $c$ it is also true that $a + c < b + c$.</p><p>We can't "prove" this through examples, but we can investigate it by the choice of various values of $a$, $b$, and $c$. For example:</p><pre class="sourceCode julia">a,b,c = 1,2,3
 a < b, a + c < b + c</pre>
 <pre class="output">
 (true,true)</pre>
@@ -121,20 +121,20 @@ a < b, a + c < b + c</pre>
 
 <p>Trying other choices will show that the two answers are either both <code>false</code> or both <code>true</code>.</p><div class="alert alert-success" role="alert"><div class="markdown"><p>Well, almost, when <code>Inf</code> or <code>NaN</code> are involved, this may not hold, for example <code>1 &#43; Inf &lt; 2 &#43; Inf</code> is actually <code>false</code>. </p>
 </div></div>
-<p>So adding or subtracting any finite value from an inequality will preserve the inequality, just as it does for equations.</p><p>What about addition and multiplication?</p><p>Consider the case &#36;a &lt; b&#36; and &#36;c &gt; 0&#36;. Then &#36;ca &lt; cb&#36;. Here we investigate using 3 random values (which will be positive):</p><pre class="sourceCode julia">a,b,c = rand(3)   # 3 random numbers in (0,1)
+<p>So adding or subtracting any finite value from an inequality will preserve the inequality, just as it does for equations.</p><p>What about addition and multiplication?</p><p>Consider the case $a < b$ and $c > 0$. Then $ca < cb$. Here we investigate using 3 random values (which will be positive):</p><pre class="sourceCode julia">a,b,c = rand(3)   # 3 random numbers in (0,1)
 a < b, c*a < c*b</pre>
 <pre class="output">
 (true,true)</pre>
 
-<p>Whenever these two commands are run, the two logical values should be identical, even though the specific values of <code>a</code>, <code>b</code>, and <code>c</code> will vary.</p><p>The restriction that &#36;c &gt; 0&#36; is needed. For example, if &#36;c &#61; -1&#36;, then we have &#36;a &lt; b&#36; if and only if &#36;-a &gt; -b&#36;. That is the inequality is "flipped."</p><pre class="sourceCode julia">a,b = rand(2)
+<p>Whenever these two commands are run, the two logical values should be identical, even though the specific values of <code>a</code>, <code>b</code>, and <code>c</code> will vary.</p><p>The restriction that $c > 0$ is needed. For example, if $c = -1$, then we have $a < b$ if and only if $-a > -b$. That is the inequality is "flipped."</p><pre class="sourceCode julia">a,b = rand(2)
 a < b, -a > -b</pre>
 <pre class="output">
-(false,false)</pre>
+(true,true)</pre>
 
-<p>Again, whenever this is run, the two logical values should be the same. The values &#36;a&#36; and &#36;-a&#36; are the same distance from &#36;0&#36;, but on opposite sides. Hence if &#36;0 &lt; a &lt; b&#36;, then &#36;b&#36; is farther from &#36;0&#36; than &#36;a&#36;, so &#36;-b&#36; will be farther from &#36;0&#36; than &#36;-a&#36;, which in this case says &#36;-b &lt; -a&#36;, as expected.</p><p>Finally, we have the case of division. The relation of &#36;x&#36; and &#36;1/x&#36; (for &#36;x &gt; 0&#36;) is that the farther &#36;x&#36; is from &#36;0&#36;, the closer &#36;1/x&#36; is to &#36;0&#36;. So large values of &#36;x&#36; make small values of &#36;1/x&#36;. This leads to this fact for &#36;a,b &gt; 0&#36;: &#36;a &lt; b&#36; if and only if &#36;1/a &gt; 1/b&#36;.</p><p>We can check with random values again:</p><pre class="sourceCode julia">a,b = rand(2)
+<p>Again, whenever this is run, the two logical values should be the same. The values $a$ and $-a$ are the same distance from $0$, but on opposite sides. Hence if $0 < a < b$, then $b$ is farther from $0$ than $a$, so $-b$ will be farther from $0$ than $-a$, which in this case says $-b < -a$, as expected.</p><p>Finally, we have the case of division. The relation of $x$ and $1/x$ (for $x > 0$) is that the farther $x$ is from $0$, the closer $1/x$ is to $0$. So large values of $x$ make small values of $1/x$. This leads to this fact for $a,b > 0$: $a < b$ if and only if $1/a > 1/b$.</p><p>We can check with random values again:</p><pre class="sourceCode julia">a,b = rand(2)
 a < b, 1/a > 1/b</pre>
 <pre class="output">
-(false,false)</pre>
+(true,true)</pre>
 
 <p>In summary we verified numerically that the following hold:</p><ul>
 <li><code>a &lt; b</code> if and only if <code>a &#43; c &lt; b &#43; c</code> for all finite <code>a</code>, <code>b</code>, and <code>c</code>.</li>
@@ -144,20 +144,20 @@ a < b, 1/a > 1/b</pre>
 <li><code>a &lt; b</code> if and only if <code>-a &gt; -b</code> for all finite <code>a</code> and <code>b</code>.</li>
 </ul><ul>
 <li><code>a &lt; b</code> if and only if <code>1/a &gt; 1/b</code> for all finite, positive <code>a</code> and <code>b</code>.</li>
-</ul><h2>Some examples</h2><p>We now show some inequalities highlighted on this  <a href="http://en.wikipedia.org/wiki/Inequality_&#37;28mathematics&#37;29">Wikipedia</a> page.</p><p>Numerically investigate the fact &#36;\exp&#40;x&#41; \geq 1 &#43; x&#36; by showing it is true for three different values of &#36;x&#36;. We pick &#36;x&#61;-1&#36;, &#36;0&#36;, and &#36;1&#36;:</p><pre class="sourceCode julia">x = -1; exp(x) >= 1 + x
+</ul><h2>Some examples</h2><p>We now show some inequalities highlighted on this  <a href="http://en.wikipedia.org/wiki/Inequality_&#37;28mathematics&#37;29">Wikipedia</a> page.</p><p>Numerically investigate the fact $\exp(x) \geq 1 + x$ by showing it is true for three different values of $x$. We pick $x=-1$, $0$, and $1$:</p><pre class="sourceCode julia">x = -1; exp(x) >= 1 + x
 x =  0; exp(x) >= 1 + x
 x =  1; exp(x) >= 1 + x</pre>
 <pre class="output">
 true</pre>
 
-<p>Now, let's investigate that for any distinct real numbers, &#36;a&#36; and &#36;b&#36; that</p>$$~
+<p>Now, let's investigate that for any distinct real numbers, $a$ and $b$ that</p>$$~
 \frac{e^b - e^a}{b - a} > e^{(a+b)/2}
-~$$<p>For this, we use <code>rand&#40;2&#41;</code> to generate two random numbers in &#36;&#40;0,1&#41;&#36;:</p><pre class="sourceCode julia">a, b = rand(2)
+~$$<p>For this, we use <code>rand&#40;2&#41;</code> to generate two random numbers in $(0,1)$:</p><pre class="sourceCode julia">a, b = rand(2)
 (exp(b) - exp(a)) / (b-a) > exp((a+b)/2)</pre>
 <pre class="output">
 true</pre>
 
-<p>This should evaluate to <code>true</code> for any random choice of <code>a</code> and <code>b</code> returned by <code>rand&#40;2&#41;</code>.</p><p>Finally, let's investigate the fact that the harmonic mean, &#36;2/&#40;1/a &#43; 1/b&#41;&#36; is less than or equal to the geometric mean, &#36;\sqrt&#123;ab&#125;&#36;, which is less than or equal to the quadratic mean, &#36;\sqrt&#123;a^2 &#43; b^2&#125;/\sqrt&#123;2&#125;&#36;, using two randomly chosen values:</p><pre class="sourceCode julia">a, b = rand(2)
+<p>This should evaluate to <code>true</code> for any random choice of <code>a</code> and <code>b</code> returned by <code>rand&#40;2&#41;</code>.</p><p>Finally, let's investigate the fact that the harmonic mean, $2/(1/a + 1/b)$ is less than or equal to the geometric mean, $\sqrt{ab}$, which is less than or equal to the quadratic mean, $\sqrt{a^2 + b^2}/\sqrt{2}$, using two randomly chosen values:</p><pre class="sourceCode julia">a, b = rand(2)
 h = 2 / (1/a + 1/b)
 g = (a * b) ^ (1 / 2)
 q = sqrt((a^2 + b^2) / 2)
@@ -170,7 +170,7 @@ h <= g, g <= q</pre>
 x & x \geq 0\\
 -x & \text{otherwise}.
 \end{cases}
-~$$<p>The interpretation of &#36;\lvert x\rvert&#36;, as the distance on the number line of &#36;x&#36; from &#36;0&#36;, means that many relationships are naturally expressed in terms of absolute values. For example, a simple shift: &#36;\lvert x -c\rvert&#36; is related to the distance &#36;x&#36; is from the number &#36;c&#36;. As common as they are, the concept can still be confusing when inequalities are involved.</p><p>For example, the expression &#36;\lvert x - 5\rvert &lt; 7&#36; has solutions which are all values of &#36;x&#36; within &#36;7&#36; units of &#36;5&#36;. This would be the values &#36;-2 &lt; x &lt; 12&#36;. If this isn't immediately intuited, then formally &#36;\lvert x - 5 \rvert &lt; 7&#36; is a compact representation of a chain of inequalities: &#36;-7 &lt; x - 5 &lt; 7&#36;. (Which is really two combined inequalities: &#36;-7 &lt; x-5&#36; <em>and</em> &#36;x - 5 &lt; 7&#36;.)  We can "add" 5 to each side to get &#36;-2 &lt; x &lt; 12&#36;, using the fact that adding by a finite number does not change the inequality sign.</p><p>Julia's precedence for logical expressions, allows such statements to mirror the mathematical notation:</p><pre class="sourceCode julia">x = 18
+~$$<p>The interpretation of $\lvert x\rvert$, as the distance on the number line of $x$ from $0$, means that many relationships are naturally expressed in terms of absolute values. For example, a simple shift: $\lvert x -c\rvert$ is related to the distance $x$ is from the number $c$. As common as they are, the concept can still be confusing when inequalities are involved.</p><p>For example, the expression $\lvert x - 5\rvert < 7$ has solutions which are all values of $x$ within $7$ units of $5$. This would be the values $-2 < x < 12$. If this isn't immediately intuited, then formally $\lvert x - 5 \rvert < 7$ is a compact representation of a chain of inequalities: $-7 < x - 5 < 7$. (Which is really two combined inequalities: $-7 < x-5$ <em>and</em> $x - 5 < 7$.)  We can "add" 5 to each side to get $-2 < x < 12$, using the fact that adding by a finite number does not change the inequality sign.</p><p>Julia's precedence for logical expressions, allows such statements to mirror the mathematical notation:</p><pre class="sourceCode julia">x = 18
 abs(x - 5) < 7</pre>
 <pre class="output">
 false</pre>
@@ -179,15 +179,15 @@ false</pre>
 <pre class="output">
 false</pre>
 
-<p>Read aloud this would be "minus 7 is less than x minus 5 <strong>and</strong> x minus 5 is less than 7".</p><p>The "and" equations can be combined as above with a natural notation. However, an equation like &#36;\lvert x - 5\rvert &gt; 7&#36; would emphasize an <strong>or</strong> and be "x minus 5 less than minus 7 <strong>or</strong> x minus 5 greater than 7". Expressing this requires some new notation.</p><p>The <em>boolean operators</em> <code>&amp;</code> and <code>|</code> implement "and" and "or." Thus we could write &#36;-7 &lt; x-5 &lt; 7&#36; as</p><pre class="sourceCode julia">(-7 < x - 5) & (x - 5 < 7)</pre>
+<p>Read aloud this would be "minus 7 is less than x minus 5 <strong>and</strong> x minus 5 is less than 7".</p><p>The "and" equations can be combined as above with a natural notation. However, an equation like $\lvert x - 5\rvert > 7$ would emphasize an <strong>or</strong> and be "x minus 5 less than minus 7 <strong>or</strong> x minus 5 greater than 7". Expressing this requires some new notation.</p><p>The <em>boolean operators</em> <code>&amp;</code> and <code>|</code> implement "and" and "or." Thus we could write $-7 < x-5 < 7$ as</p><pre class="sourceCode julia">(-7 < x - 5) & (x - 5 < 7)</pre>
 <pre class="output">
 false</pre>
 
-<p>and could write &#36;\lvert x-5\rvert &gt; 7&#36; as</p><pre class="sourceCode julia">(x - 5 < -7) | (x - 5 > 7)</pre>
+<p>and could write $\lvert x-5\rvert > 7$ as</p><pre class="sourceCode julia">(x - 5 < -7) | (x - 5 > 7)</pre>
 <pre class="output">
 true</pre>
 
-<p>(The first expression is false for &#36;x-18&#36; and the second expression true.)</p><div class="alert alert-success" role="alert"><div class="markdown"><p>The <a href="http://julia.readthedocs.org/en/latest/manual/control-flow/#man-short-circuit-evaluation">short circuit operators</a> are <code>&amp;&amp;</code> and <code>||</code>. For simple Boolean values, they perform a related task, though have a more general usage.</p>
+<p>(The first expression is false for $x-18$ and the second expression true.)</p><div class="alert alert-success" role="alert"><div class="markdown"><p>The <a href="http://julia.readthedocs.org/en/latest/manual/control-flow/#man-short-circuit-evaluation">short circuit operators</a> are <code>&amp;&amp;</code> and <code>||</code>. For simple Boolean values, they perform a related task, though have a more general usage.</p>
 </div></div>
 <h5>Example</h5><p>One of <a href="http://en.wikipedia.org/wiki/De_Morgan&#37;27s_laws">DeMorgan's Laws</a> states that "not (A and B)" is the same as "(not A) or (not B)". This is a kind of distributive law for "not", but note how the "and" changes to "or". We can verify this law systematically. For example, the following shows it true for 1 of the 4 possible cases for the pair <code>A</code>, <code>B</code> to take:</p><pre class="sourceCode julia">A,B = true, false  ## also true, true; false, true; and false, false
 !(A & B) == !A | !B</pre>
@@ -198,7 +198,7 @@ true</pre>
 <pre class="output">
 true</pre>
 
-<p>To represent &#36;\lvert x-5\rvert &gt; 7&#36;. Were the parentheses necessary? Let's just check. </p><pre class="sourceCode julia">x - 5 < -7 | x - 5 > 7</pre>
+<p>To represent $\lvert x-5\rvert > 7$. Were the parentheses necessary? Let's just check. </p><pre class="sourceCode julia">x - 5 < -7 | x - 5 > 7</pre>
 <pre class="output">
 false</pre>
 
@@ -206,569 +206,569 @@ false</pre>
 <pre class="output">
 false</pre>
 
-<p>which is not what is desired at all. (The value of <code>-7 | x</code> is <code>-5</code> – as <code>|</code> does something completely different when the two arguments are not boolean.)</p><p>A thorough understanding of the precedence rules can help eliminate unnecessary parentheses, but in most cases it is easier just to put them in.</p><h2>Arithmetic with</h2><p>For convenience, basic arithmetic can be performed with Boolean values, <code>false</code> becomes &#36;0&#36; and true &#36;1&#36;. For example, both these expressions make sense:</p><pre class="sourceCode julia">true + true + false, false * 1000</pre>
+<p>which is not what is desired at all. (The value of <code>-7 | x</code> is <code>-5</code> – as <code>|</code> does something completely different when the two arguments are not boolean.)</p><p>A thorough understanding of the precedence rules can help eliminate unnecessary parentheses, but in most cases it is easier just to put them in.</p><h2>Arithmetic with</h2><p>For convenience, basic arithmetic can be performed with Boolean values, <code>false</code> becomes $0$ and true $1$. For example, both these expressions make sense:</p><pre class="sourceCode julia">true + true + false, false * 1000</pre>
 <pre class="output">
 (2,0)</pre>
 
-<p>The first example shows a common means used to count the number of <code>true</code> values in a collection of Boolean values – just add them.</p><p>This can be cleverly exploited. For example, this expression returns <code>x</code> when it is positive and &#36;0&#36; otherwise:</p><pre class="sourceCode julia">(x > 0) * x</pre>
+<p>The first example shows a common means used to count the number of <code>true</code> values in a collection of Boolean values – just add them.</p><p>This can be cleverly exploited. For example, this expression returns <code>x</code> when it is positive and $0$ otherwise:</p><pre class="sourceCode julia">(x > 0) * x</pre>
 <pre class="output">
 18</pre>
 
-<p>There is a built in function, <code>max</code> that can be used for this: <code>max&#40;0, x&#41;</code>.</p><p>This expression returns <code>x</code> if it is between &#36;-10&#36; and &#36;10&#36; and otherwise &#36;-10&#36; or &#36;10&#36; depending on whether &#36;x&#36; is negative or positive.</p><pre class="sourceCode julia">(x < -10)*(-10) + (x >= -10)*(x < 10) * x + (x>=10)*10</pre>
+<p>There is a built in function, <code>max</code> that can be used for this: <code>max&#40;0, x&#41;</code>.</p><p>This expression returns <code>x</code> if it is between $-10$ and $10$ and otherwise $-10$ or $10$ depending on whether $x$ is negative or positive.</p><pre class="sourceCode julia">(x < -10)*(-10) + (x >= -10)*(x < 10) * x + (x>=10)*10</pre>
 <pre class="output">
 10</pre>
 
-<p>The <code>clamp&#40;x, a, b&#41;</code> performs this task more generally, and is used as in <code>clamp&#40;x, -10, 10&#41;</code>.</p><h2>Questions</h2><h6>Question</h6><p>Is <code>e^pi</code> or <code>pi^e</code> greater?</p><form name="WeaveQuestion" data-id="8Jj5nMLz" data-controltype="radio">
+<p>The <code>clamp&#40;x, a, b&#41;</code> performs this task more generally, and is used as in <code>clamp&#40;x, -10, 10&#41;</code>.</p><h2>Questions</h2><h6>Question</h6><p>Is <code>e^pi</code> or <code>pi^e</code> greater?</p><form name="WeaveQuestion" data-id="B4yi3oY7" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_8Jj5nMLz" value="1"><div class="markdown"><p><code>e^pi</code> is less than <code>pi^e</code></p>
+      <input type="radio" name="radio_B4yi3oY7" value="1"><div class="markdown"><p><code>e^pi</code> is equal to <code>pi^e</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_8Jj5nMLz" value="2"><div class="markdown"><p><code>e^pi</code> is equal to <code>pi^e</code></p>
+      <input type="radio" name="radio_B4yi3oY7" value="2"><div class="markdown"><p><code>e^pi</code> is greater than <code>pi^e</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_8Jj5nMLz" value="3"><div class="markdown"><p><code>e^pi</code> is greater than <code>pi^e</code></p>
+      <input type="radio" name="radio_B4yi3oY7" value="3"><div class="markdown"><p><code>e^pi</code> is less than <code>pi^e</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="8Jj5nMLz_message"></div>
+<div id="B4yi3oY7_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_8Jj5nMLz']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_B4yi3oY7']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#8Jj5nMLz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#B4yi3oY7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#8Jj5nMLz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#B4yi3oY7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is sin(1000) positive?</p><form name="WeaveQuestion" data-id="8ey5smXH" data-controltype="radio">
+<h6>Question</h6><p>Is sin(1000) positive?</p><form name="WeaveQuestion" data-id="T9K99qDe" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_8ey5smXH" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_T9K99qDe" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_8ey5smXH" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_T9K99qDe" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="8ey5smXH_message"></div>
+<div id="T9K99qDe_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_8ey5smXH']").on("change", function() {
+$("input:radio[name='radio_T9K99qDe']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#8ey5smXH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#T9K99qDe_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#8ey5smXH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#T9K99qDe_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Suppose you know &#36;0 &lt; a &lt; b&#36;. What can you say about the relationship between &#36;-1/a&#36; and &#36;-1/b&#36;?</p><form name="WeaveQuestion" data-id="yjIcMGWO" data-controltype="radio">
+<h6>Question</h6><p>Suppose you know $0 < a < b$. What can you say about the relationship between $-1/a$ and $-1/b$?</p><form name="WeaveQuestion" data-id="T44FVKRE" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_yjIcMGWO" value="1"><div class="markdown">&#36;-1/a \geq -1/b&#36;
+      <input type="radio" name="radio_T44FVKRE" value="1"><div class="markdown">$-1/a > -1/b$
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_yjIcMGWO" value="2"><div class="markdown">&#36;-1/a &lt; -1/b&#36;
+      <input type="radio" name="radio_T44FVKRE" value="2"><div class="markdown">$-1/a < -1/b$
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_yjIcMGWO" value="3"><div class="markdown">&#36;-1/a &gt; -1/b&#36;
+      <input type="radio" name="radio_T44FVKRE" value="3"><div class="markdown">$-1/a \geq -1/b$
 </div>
     </label>
     </div>
     
 
 
-<div id="yjIcMGWO_message"></div>
+<div id="T44FVKRE_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_yjIcMGWO']").on("change", function() {
+$("input:radio[name='radio_T44FVKRE']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#T44FVKRE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#T44FVKRE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Suppose you know $a < 0 < b$, is it true that $1/a > 1/b$?</h6><form name="WeaveQuestion" data-id="KuoGSNiy" data-controltype="radio">
+<div class="form-group ">
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_KuoGSNiy" value="1"><div class="markdown"><p>It is never true, as $1/a$ is negative and $1/b$ is positive</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_KuoGSNiy" value="2"><div class="markdown"><p>It can sometimes be true, though not always.</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_KuoGSNiy" value="3"><div class="markdown"><p>Yes, it is always true.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="KuoGSNiy_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_KuoGSNiy']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#yjIcMGWO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#KuoGSNiy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#yjIcMGWO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#KuoGSNiy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Suppose you know &#36;a &lt; 0 &lt; b&#36;, is it true that &#36;1/a &gt; 1/b&#36;?</h6><form name="WeaveQuestion" data-id="9HUWTStc" data-controltype="radio">
+<h6>Question</h6><p>The <code>airy</code> <a href="http://en.wikipedia.org/wiki/Airy_function">function</a> is a special function named after a British Astronomer who realized the function's value in his studies of the rainbow. It is known that it is always positive for $x > 0$, though not so for negative values of $x$. Which of these indicates the first negative value : <code>airy&#40;-1&#41;&lt;0</code>, <code>airy&#40;-2&#41;&lt;0</code>, ... <code>airy&#40;-5&#41; &lt; 0</code>?</p><form name="WeaveQuestion" data-id="Vzp4ilcC" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_9HUWTStc" value="1"><div class="markdown"><p>Yes, it is always true.</p>
+      <input type="radio" name="radio_Vzp4ilcC" value="1"><div class="markdown"><p><code>airy&#40;-1&#41; &lt; 0</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_9HUWTStc" value="2"><div class="markdown"><p>It can sometimes be true, though not always.</p>
+      <input type="radio" name="radio_Vzp4ilcC" value="2"><div class="markdown"><p><code>airy&#40;-2&#41; &lt; 0</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_9HUWTStc" value="3"><div class="markdown"><p>It is never true, as &#36;1/a&#36; is negative and &#36;1/b&#36; is positive</p>
+      <input type="radio" name="radio_Vzp4ilcC" value="3"><div class="markdown"><p><code>airy&#40;-3&#41; &lt; 0</code></p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_Vzp4ilcC" value="4"><div class="markdown"><p><code>airy&#40;-4&#41; &lt; 0</code></p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_Vzp4ilcC" value="5"><div class="markdown"><p><code>airy&#40;-5&#41; &lt; 0</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="9HUWTStc_message"></div>
+<div id="Vzp4ilcC_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_9HUWTStc']").on("change", function() {
+$("input:radio[name='radio_Vzp4ilcC']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#9HUWTStc_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Vzp4ilcC_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#9HUWTStc_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Vzp4ilcC_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The <code>airy</code> <a href="http://en.wikipedia.org/wiki/Airy_function">function</a> is a special function named after a British Astronomer who realized the function's value in his studies of the rainbow. It is known that it is always positive for &#36;x &gt; 0&#36;, though not so for negative values of &#36;x&#36;. Which of these indicates the first negative value : <code>airy&#40;-1&#41;&lt;0</code>, <code>airy&#40;-2&#41;&lt;0</code>, ... <code>airy&#40;-5&#41; &lt; 0</code>?</p><form name="WeaveQuestion" data-id="z6WqzGBg" data-controltype="radio">
+<h6>Question</h6><p>By trying three different values of $x > 0$ which of these could possibly be always true:</p><form name="WeaveQuestion" data-id="FnXDZhv4" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_z6WqzGBg" value="1"><div class="markdown"><p><code>airy&#40;-1&#41; &lt; 0</code></p>
+      <input type="radio" name="radio_FnXDZhv4" value="1"><div class="markdown"><p><code>x^x &#61;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_z6WqzGBg" value="2"><div class="markdown"><p><code>airy&#40;-2&#41; &lt; 0</code></p>
+      <input type="radio" name="radio_FnXDZhv4" value="2"><div class="markdown"><p><code>x^x &gt;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_z6WqzGBg" value="3"><div class="markdown"><p><code>airy&#40;-3&#41; &lt; 0</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_z6WqzGBg" value="4"><div class="markdown"><p><code>airy&#40;-4&#41; &lt; 0</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_z6WqzGBg" value="5"><div class="markdown"><p><code>airy&#40;-5&#41; &lt; 0</code></p>
+      <input type="radio" name="radio_FnXDZhv4" value="3"><div class="markdown"><p><code>x^x &lt;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="z6WqzGBg_message"></div>
+<div id="FnXDZhv4_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_z6WqzGBg']").on("change", function() {
-  correct = this.value == 3;
-
-  if(correct) {
-     $("#z6WqzGBg_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#z6WqzGBg_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>By trying three different values of &#36;x &gt; 0&#36; which of these could possibly be always true:</p><form name="WeaveQuestion" data-id="un6Z4wH3" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_un6Z4wH3" value="1"><div class="markdown"><p><code>x^x &lt;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_un6Z4wH3" value="2"><div class="markdown"><p><code>x^x &#61;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_un6Z4wH3" value="3"><div class="markdown"><p><code>x^x &gt;&#61; &#40;1/e&#41;^&#40;1/e&#41;</code></p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="un6Z4wH3_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_un6Z4wH3']").on("change", function() {
-  correct = this.value == 3;
-
-  if(correct) {
-     $("#un6Z4wH3_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#un6Z4wH3_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Student logic says &#36;&#40;x&#43;y&#41;^p &#61; x^p &#43; y^p&#36;. Of course, this isn't correct for all &#36;p&#36; and &#36;x&#36;. By trying a few points, which is true when &#36;x,y &gt; 0&#36; and &#36;0 &lt; p &lt; 1&#36;:</p><form name="WeaveQuestion" data-id="5zP7AMYv" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5zP7AMYv" value="1"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &#61;&#61; x^p &#43; y^p</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5zP7AMYv" value="2"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &gt; x^p &#43; y^p</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5zP7AMYv" value="3"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &lt; x^p &#43; y^p</code></p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="5zP7AMYv_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_5zP7AMYv']").on("change", function() {
-  correct = this.value == 3;
-
-  if(correct) {
-     $("#5zP7AMYv_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#5zP7AMYv_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>According to Wikipedia, one of the following inequalities is always true for &#36;a, b &gt; 0&#36; (as proved by I. Ilani in JSTOR,AMM,Vol.97,No.1,1990). Which one?</p><form name="WeaveQuestion" data-id="5Z0SJ8AY" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5Z0SJ8AY" value="1"><div class="markdown"><p><code>a^a &#43; b^b &lt;&#61; a^b &#43; b^a</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5Z0SJ8AY" value="2"><div class="markdown"><p><code>a^a &#43; b^b &gt;&#61; a^b &#43; b^a</code></p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_5Z0SJ8AY" value="3"><div class="markdown"><p><code>a^b &#43; b^a &lt;&#61; 1</code></p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="5Z0SJ8AY_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_5Z0SJ8AY']").on("change", function() {
+$("input:radio[name='radio_FnXDZhv4']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#5Z0SJ8AY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#FnXDZhv4_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#5Z0SJ8AY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#FnXDZhv4_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is &#36;3&#36; in the set &#36;\lvert x - 2\rvert &lt; 1/2&#36;?</p><form name="WeaveQuestion" data-id="CylGumT7" data-controltype="radio">
+<h6>Question</h6><p>Student logic says $(x+y)^p = x^p + y^p$. Of course, this isn't correct for all $p$ and $x$. By trying a few points, which is true when $x,y > 0$ and $0 < p < 1$:</p><form name="WeaveQuestion" data-id="hh3m9iH6" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_CylGumT7" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_hh3m9iH6" value="1"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &#61;&#61; x^p &#43; y^p</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_CylGumT7" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_hh3m9iH6" value="2"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &gt; x^p &#43; y^p</code></p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_hh3m9iH6" value="3"><div class="markdown"><p><code>&#40;x&#43;y&#41;^p &lt; x^p &#43; y^p</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="CylGumT7_message"></div>
+<div id="hh3m9iH6_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_CylGumT7']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_hh3m9iH6']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#CylGumT7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#hh3m9iH6_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#CylGumT7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#hh3m9iH6_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Which of the following is equivalent to &#36;\lvert x - a\rvert &gt; b&#36;:</p><form name="WeaveQuestion" data-id="iFvp397s" data-controltype="radio">
+<h6>Question</h6><p>According to Wikipedia, one of the following inequalities is always true for $a, b > 0$ (as proved by I. Ilani in JSTOR,AMM,Vol.97,No.1,1990). Which one?</p><form name="WeaveQuestion" data-id="DGB6awdq" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_iFvp397s" value="1"><div class="markdown"><p>$ -b < x-a \text{ and } x - a < b$</p>
+      <input type="radio" name="radio_DGB6awdq" value="1"><div class="markdown"><p><code>a^a &#43; b^b &gt;&#61; a^b &#43; b^a</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_iFvp397s" value="2"><div class="markdown"><p>$ x - a < -b \text{ or } x - a > b$</p>
+      <input type="radio" name="radio_DGB6awdq" value="2"><div class="markdown"><p><code>a^a &#43; b^b &lt;&#61; a^b &#43; b^a</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_iFvp397s" value="3"><div class="markdown">&#36;-b &lt; x - a &lt; b&#36;
+      <input type="radio" name="radio_DGB6awdq" value="3"><div class="markdown"><p><code>a^b &#43; b^a &lt;&#61; 1</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="iFvp397s_message"></div>
+<div id="DGB6awdq_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_iFvp397s']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_DGB6awdq']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#iFvp397s_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#DGB6awdq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#iFvp397s_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#DGB6awdq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>If &#36;\lvert x - \pi\rvert &lt; 1/10&#36; is &#36;\lvert \sin&#40;x&#41; - \sin&#40;\pi&#41;\rvert &lt; 1/10&#36;?</p><p>Guess an answer based on a few runs of</p><pre class="sourceCode julia">x = pi + 0.2 * rand()
+<h6>Question</h6><p>Is $3$ in the set $\lvert x - 2\rvert < 1/2$?</p><form name="WeaveQuestion" data-id="1rbmWmeR" data-controltype="radio">
+<div class="form-group ">
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_1rbmWmeR" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_1rbmWmeR" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="1rbmWmeR_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_1rbmWmeR']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#1rbmWmeR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#1rbmWmeR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Which of the following is equivalent to $\lvert x - a\rvert > b$:</p><form name="WeaveQuestion" data-id="6Cqs1xKr" data-controltype="radio">
+<div class="form-group ">
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_6Cqs1xKr" value="1"><div class="markdown"><p>$ x - a < -b \text{ or } x - a > b$</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_6Cqs1xKr" value="2"><div class="markdown"><p>$ -b < x-a \text{ and } x - a < b$</p>
+</div>
+    </label>
+    </div>
+    
+    <div   class="radio"> 
+    <label>
+      <input type="radio" name="radio_6Cqs1xKr" value="3"><div class="markdown">$-b < x - a < b$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="6Cqs1xKr_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_6Cqs1xKr']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#6Cqs1xKr_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#6Cqs1xKr_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>If $\lvert x - \pi\rvert < 1/10$ is $\lvert \sin(x) - \sin(\pi)\rvert < 1/10$?</p><p>Guess an answer based on a few runs of</p><pre class="sourceCode julia">x = pi + 0.2 * rand()
 abs(x - pi) < 1/10, abs(sin(x) - sin(pi)) < 1/10
-</pre><form name="WeaveQuestion" data-id="Ft5RLGHg" data-controltype="radio">
+</pre><form name="WeaveQuestion" data-id="cX3nswQP" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio inline"> 
     <label>
-      <input type="radio" name="radio_Ft5RLGHg" value="1"><div class="markdown"><p>true</p>
+      <input type="radio" name="radio_cX3nswQP" value="1"><div class="markdown"><p>true</p>
 </div>
     </label>
     </div>
     
     <div   class="radio inline"> 
     <label>
-      <input type="radio" name="radio_Ft5RLGHg" value="2"><div class="markdown"><p>false</p>
+      <input type="radio" name="radio_cX3nswQP" value="2"><div class="markdown"><p>false</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="Ft5RLGHg_message"></div>
+<div id="cX3nswQP_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_Ft5RLGHg']").on("change", function() {
+$("input:radio[name='radio_cX3nswQP']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#Ft5RLGHg_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#cX3nswQP_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#Ft5RLGHg_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#cX3nswQP_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Does <code>12</code> satisfy &#36;\lvert x - 3\rvert &#43; \lvert x-9\rvert &gt; 12&#36;?</p><form name="WeaveQuestion" data-id="U6kXZgpJ" data-controltype="radio">
+<h6>Question</h6><p>Does <code>12</code> satisfy $\lvert x - 3\rvert + \lvert x-9\rvert > 12$?</p><form name="WeaveQuestion" data-id="EcDTiOry" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_U6kXZgpJ" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_EcDTiOry" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_U6kXZgpJ" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_EcDTiOry" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="U6kXZgpJ_message"></div>
+<div id="EcDTiOry_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_U6kXZgpJ']").on("change", function() {
+$("input:radio[name='radio_EcDTiOry']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#U6kXZgpJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#EcDTiOry_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#U6kXZgpJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#EcDTiOry_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Which of these will show DeMorgan's law holds when both values are <code>false</code>:</p><form name="WeaveQuestion" data-id="XBOmwSxK" data-controltype="radio">
+<h6>Question</h6><p>Which of these will show DeMorgan's law holds when both values are <code>false</code>:</p><form name="WeaveQuestion" data-id="5T3X6Dwc" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_XBOmwSxK" value="1"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; false &#33;&amp; false</code></p>
+      <input type="radio" name="radio_5T3X6Dwc" value="1"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; &#33;false | &#33;false</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_XBOmwSxK" value="2"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; &#33;false | &#33;false</code></p>
+      <input type="radio" name="radio_5T3X6Dwc" value="2"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; &#33;false &amp; &#33;false</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_XBOmwSxK" value="3"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; &#33;false &amp; &#33;false</code></p>
+      <input type="radio" name="radio_5T3X6Dwc" value="3"><div class="markdown"><p><code>&#33;&#40;false &amp; false&#41; &#61;&#61; false &#33;&amp; false</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="XBOmwSxK_message"></div>
+<div id="5T3X6Dwc_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_XBOmwSxK']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_5T3X6Dwc']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#XBOmwSxK_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#5T3X6Dwc_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#XBOmwSxK_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#5T3X6Dwc_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>For floating point numbers there are two special values <code>Inf</code> and <code>NaN</code>. For which of these is the answer always <code>false</code>:</p><form name="WeaveQuestion" data-id="bnKbK9X0" data-controltype="radio">
+<h6>Question</h6><p>For floating point numbers there are two special values <code>Inf</code> and <code>NaN</code>. For which of these is the answer always <code>false</code>:</p><form name="WeaveQuestion" data-id="iVGO41jA" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_bnKbK9X0" value="1"><div class="markdown"><p><code>Inf &lt; 3.0</code> and <code>3.0 &lt;&#61; Inf</code></p>
+      <input type="radio" name="radio_iVGO41jA" value="1"><div class="markdown"><p><code>Inf &lt; 3.0</code> and <code>3.0 &lt;&#61; Inf</code></p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_bnKbK9X0" value="2"><div class="markdown"><p><code>NaN &lt; 3.0</code> and <code>3.0 &lt;&#61; NaN</code></p>
+      <input type="radio" name="radio_iVGO41jA" value="2"><div class="markdown"><p><code>NaN &lt; 3.0</code> and <code>3.0 &lt;&#61; NaN</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="bnKbK9X0_message"></div>
+<div id="iVGO41jA_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_bnKbK9X0']").on("change", function() {
+$("input:radio[name='radio_iVGO41jA']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#bnKbK9X0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#iVGO41jA_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#bnKbK9X0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#iVGO41jA_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -781,36 +781,36 @@ $("input:radio[name='radio_bnKbK9X0']").on("change", function() {
 <li><code>-Inf</code> is equal to itself and less then everything else except <code>NaN</code>.</li>
 </ul><ul>
 <li><code>NaN</code> is not equal to, not less than, and not greater than anything, including itself.</li>
-</ul><p>Do all four seem to be the case within <code>Julia</code>? Find your answer by trial and error.</p><form name="WeaveQuestion" data-id="CiryE6aF" data-controltype="radio">
+</ul><p>Do all four seem to be the case within <code>Julia</code>? Find your answer by trial and error.</p><form name="WeaveQuestion" data-id="HiJ05MGX" data-controltype="radio">
 <div class="form-group ">
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_CiryE6aF" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_HiJ05MGX" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div   class="radio"> 
     <label>
-      <input type="radio" name="radio_CiryE6aF" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_HiJ05MGX" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="CiryE6aF_message"></div>
+<div id="HiJ05MGX_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_CiryE6aF']").on("change", function() {
+$("input:radio[name='radio_HiJ05MGX']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#CiryE6aF_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#HiJ05MGX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#CiryE6aF_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#HiJ05MGX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

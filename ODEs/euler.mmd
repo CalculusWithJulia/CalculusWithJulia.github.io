@@ -3,6 +3,7 @@
 ```nocode, noout
 using Plots
 gadfly()
+using Roots
 ```
 
 Let's look at the differential equation:
@@ -291,15 +292,38 @@ u = euler(F, x0, xn, y0, 10)
 plot!(u, 0, 2,  linewidth=5)
 ```
 
-We see that the answer found from using a polynomial series mathches that of Euler's method for a bit, but as time evolves, the approximate solution given by Euler's method more closely tracks the slope field.
+We see that the answer found from using a polynomial series matches that of Euler's method for a bit, but as time evolves, the approximate solution given by Euler's method more closely tracks the slope field.
 
 ##### Example
+
 
 The
 [Brachistochrone problem](http://www.unige.ch/~gander/Preprints/Ritz.pdf)
 was posed by Johann Bernoulli in 1696. It asked for the curve between
 two points for which an object will fall faster along that curve than
-any other.
+any other. For an example, a bead sliding on a wire will take  a certain amount of time to get from point $A$ to point $B$, the time depending on the shape of the wire. Which shape will take the least amount  of time?
+
+
+```
+using WeavePynb
+out = gif_to_data("figures/bead-game.jpg", """
+
+A child's bead game. What shape wire will produce the shortest time for a bed to slide from a top to the bottom?
+
+""")
+WeavePynb.HTMLoutput(out)
+```
+
+Restrict our attention to the $x$-$y$ plane, and consider a path,
+between the point $(0,A)$ and $(B,0)$. Let $y(x)$ be the distance from
+$A$, so $y(0)=0$ and at the end $y$ will be $A$. Which path is best?
+
+
+{{{brach_graph}}}
+
+
+
+
 
 [Galileo](http://www-history.mcs.st-and.ac.uk/HistTopics/Brachistochrone.html)
 knew the straight line was not the curve, but incorrectly thought the
@@ -316,33 +340,85 @@ WeavePynb.HTMLoutput(out)
 
 The solution can be
 [reduced](http://mathworld.wolfram.com/BrachistochroneProblem.html) to
-solving this equation:
+solving this equation for a positive $c$:
 
 $$~
-1 + (y'(x))^2  = \frac{1}{C^2y}.
+1 + (y'(x))^2  = \frac{c}{y}, \quad c > 0.
 ~$$
 
-Let's solve this with $C=1$ aver the interval $[0,1]$, assuming the
-initial value is $y(0)=1/5$ using Euler's method.
-
-We re-express the equation as
+Reexpressing, this becomes:
 
 $$~
-y'(x) = \sqrt{\frac{1}{y(x)} - 1}, \quad y(0) = 1/5
+\frac{dy}{dx} = \sqrt{\frac{C-y}{y}}.
 ~$$
 
-So the solution can be approximated with
+This is a separable equation and can be solved, but even `SymPy` has
+trouble with this integral. However, the result has been known to be a piece of cycloid since the insightful
+Jacob Bernoulli used an analogy from light bending to approach the problem. The answer is best described parametrically
+through:
+
+$$~
+x(u) = c\cdot u - \frac{c}{2}\sin(2u), \quad y(u) = \frac{c}{2}( 1- \cos(2u)), $0 \leq u \leq U$.
+~$$
+
+The values of $U$ and $c$ must satisfy $(x(U), y(U)) = (B, A)$.
+
+
+Rather than pursue this, we will solve it numerically for a fixed
+value of $C$ over a fixed interval to see the shape.
+
+
+The equation can be written in terms of $y'=F(y,x)$, where
+
+$$~
+F(y,x) = \sqrt{\frac{c-y}{y}}.
+~$$
+
+But as $y_0 = 0$, we immediately would have a problem with the first step, as there would be division by $0$.
+
+This says that for the optimal solution, the bead picks up speed by first sliding straight down before heading off towards $B$. That's great for the physics, but runs roughshod over our Euler method, as the first step has an infinity.
+
+For this, we can try the *backwards Euler* method which uses the slope at $(x_{n+1}, y_{n+1})$, rather than $(x_n, y_n)$. The update step becomes:
+
+$$~
+y_{n+1} = y_n + h \cdot F(y_{n+1}, x_{n+1}).
+~$$
+
+Seems innocuous, but the value we are trying to find, $y_{n+1}$, is
+now on both sides of the equation, so is only *implicitly* defined. In
+this code, we use the `fzero` function from the `Roots` package. The
+caveat is, this function needs a good initial guess, and the one we
+use below need not be widely applicable.
+
 
 ```
-F(y, x) = sqrt(1/y - 1)
-x0, xn, y0 = 0, 1, 1/5
-f = euler(F, x0, xn, y0, 50)
-plot(f, x0, xn)
+using Roots
+function back_euler(F, x0, xn, y0, n)
+    h = (xn - x0)/n
+    xs = zeros(n+1)
+    ys = zeros(n+1)
+    xs[1] = x0
+    ys[1] = y0
+    for i in 1:n
+        xs[i + 1] = xs[i] + h
+        ## solve y[i+1] = y[i] + h * F(y[i+1], x[i+1])
+        ys[i + 1] = fzero(y -> ys[i] + h * F(y, xs[i + 1]) - y, ys[i]+h)
+    end
+  linterp(xs, ys)
+end
 ```
 
-This shows the curve "upside down." The theoretical answer is a
-cycloid. It shows that the fastest path is to be steeper than average at first,
-then use the momentum to coast in.
+We then have with $C=1$ over the interval $[0,\pi]$ the following:
+
+```
+F(y, x; C=1) = sqrt(C/y - 1)
+x0, xn, y0 = 0, 1.2, 0
+cyc = back_euler(F, x0, xn, y0, 50)
+plot(x -> 1 - cyc(x), x0, xn) 
+```
+
+(Remember, $y$ is the displacement from the top, so it is non-negative. Above we flipped the graph to make it look more like expectation.)
+
 
 
 ##### Example: Stiff equations
@@ -367,9 +443,19 @@ plot(x -> y0 * exp(-5x), 0, 2)
 plot!(u, 0, 2)
 ```
 
-This is an example of a [stiff equation](XXX). Such equations cause
+This is an example of a [stiff equation](https://en.wikipedia.org/wiki/Stiff_equation). Such equations cause
 explicit methods like the Euler one problems, as small $h$s are needed
 to good results.
+
+The implicit, backward Euler method does not have this issue, as we can see here:
+
+```
+u = back_euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
+vectorfieldplot([1, F(y,x)], (x, 0, 2), (y, -1, 1))
+plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
+plot!(u, 0, 2, linewidth=5)
+```
+
 
 ##### Example: The pendulum
 

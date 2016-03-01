@@ -413,6 +413,86 @@ eqn = u''(x) + g/l * u(x)
 dsolve(eqn, x, (u, 0, a), (u', 0, 0))
 ```
 
+
+##### Example: Hanging cables
+
+A chain hangs between two supports a distance $L$ apart. What shape
+will it take if there are no forces outside of gravity acting on it?
+What about if the force is uniform along length of the chain, like a
+suspension bridge? How will the shape differ then?
+
+Let $y(x)$ describe the chain at position $x$, with $0 \leq X \leq L$,
+say. We consider first the case of the chain with no force save
+gravity. Let $w(x)$ be the density of the chain at $x$.
+
+The chain is in equlibrium, so tension, $T(x)$, in the chain will be
+in the direction of the derivative. Let $V$ be the vertical component
+and $H$ the horizontal component. With only gravity acting on the
+chain, the value of $H$ will be a constant. The value of $W$ will vary
+with position.
+
+At a point $x$, there is $s(x)$ amount of chain with weight $w \cdot s(x)$. The tension is in the direction of the tangent line, so:
+
+$$~
+\tan(\theta) = y'(x) = \frac{w s(x)}{H}.
+~$$
+
+In terms of an increment of chain, we have:
+
+$$~
+\frac{w ds}{H} = d(y'(x)).
+~$$
+
+That is the ratio of the vertical and horizontal tensions in the increment are in balance with the differential of the derivative.
+
+
+But $ds = \sqrt{dx^2 + dy^2} = \sqrt{dx^2 + y'(x)^2 dx^2} = \sqrt{1 + y'(x)^2}dx$, so we can simplify to:
+
+
+$$~
+\frac{w}{H}\sqrt{1 + y'(x)^2}dx =y''(x)dx.
+~$$
+
+This yields the second-order equation:
+
+$$~
+y''(x) = \frac{w}{H} \sqrt{1 + y'(x)}.
+~$$
+
+This equation can be solved exactly, though with some work, as a direct approach fails:
+
+```
+using SymPy
+x, w, H = symbols("x, w, H", positive=true)
+u = SymFunction("u")
+out = dsolve(u''(x) - w/H * sqrt(1 + u'(x)^2))
+```
+
+Let $u = y'$, then we have $u'(x) = (w/H)\sqrt{1 + u(x)^2}$:
+
+```
+out = dsolve(u'(x) - w/H * sqrt(1 + u(x)^2))
+```
+
+So $y'(x) = \sinh(C_1 + w*x/H)$. This can be solved by direct integration as there is no $u(x)$ term on the right hand side.
+
+```
+out1 = dsolve(u'(x) - rhs(out))
+```
+
+The shape is a hyperbolic cosine, known as the catenary.
+
+
+If the chain has a uniform load, sufficient to make the weight of the chain neglible, then how does the above change? Then the vertical tension comes from $Udx$ and not $w ds$, so the equation becomes instead:
+
+$$~
+\frac{Udx}{H} = d(y'(x)).
+~$$
+
+This $y''(x) = U/H$, a constant. So it's answer will be a parabola.
+
+
+
 ##### Example: projectile motion in a medium
 
 

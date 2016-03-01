@@ -44,4 +44,82 @@ actual solution.
 
 euler_graph = gif_to_data(imgfile, caption)
 
+
+
+using Roots
+Base.ctranspose(f::Function) = D(f)
+
+function make_brach_graph(n,args...)
+    n = max(1, Int(n))
+    
+    A, B = 1, 1
+    f(x) = B/A * x
+    g(x) = sqrt(1 - (x-1)^2)
+    h(x) = 1 - (2x^2 - 3x + 1)
+    
+    function i(x)
+        U = 1.20600557195676; c = 1.1458340750635
+        @assert 0 <= x <= 1
+        x1 =  u -> c*u - c/2*sin(2u)
+        y1 =  u -> c/2 * (1 - cos(2u))
+        
+        # solve (x1(u) = x, then return y1(u)
+        Roots.fzero(u -> x1(u) - x, 0, U) |> y1
+    end
+    
+    
+    J(x, f) = quadgk(u -> sqrt(1 + (f'(u))^2)/sqrt(2*10*f(u)), 0.01, x)[1]
+    function ji(t,f)
+        out = NaN
+        try
+            out = Roots.fzero(x -> J(x,f) - t, 0.0001, J(B-.001,f))
+        catch err
+            out = Roots.fzero(x -> J(x,f) - t, J(B/2,f))
+        end
+        out
+    end
+    
+    ts = (1:10)/20
+    
+
+    fs = [f, g, h, i]
+    M = [f => J(B,f) for f in fs]
+    cols = [:blue, :green, :red, :brown]
+    Cols = [f=>cols[i] for (i,f) in enumerate(fs)]
+    
+    p = plot(x -> A-fs[1](x), 0, 1, legend=false, color=Cols[fs[1]])
+    for fn in fs[2:end]
+        plot!(p,x -> A-fn(x), 0.01, .99, color=Cols[fn])
+    end
+    
+
+    n < 1 && return p
+    
+    ts = linspace(.05, .55, 8)
+    t = ts[n]
+    for fn in fs
+        if t < M[fn]
+            a = ji(t, fn)
+            scatter!(p, [a], [A-fn(a)], color=Cols[fn])
+        else
+            scatter!(p, [B], [A-A], color=Cols[fn])
+        end
+    end
+    
+    p
+end
+
+film = Reel.roll(make_brach_graph, fps=1, duration=9)
+film.fps=1
+imgfile = tempname() * ".gif"
+write(imgfile, film)
+
+caption = """
+The race is on. An illustration of beads falling along a path, as can be seen some paths are faster than others. The fastest one follows a cycloid.
+"""
+
+brach_graph = gif_to_data(imgfile, caption)
+
+
+
 end

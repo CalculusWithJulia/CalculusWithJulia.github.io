@@ -408,7 +408,7 @@ function back_euler(F, x0, xn, y0, n)
 end
 ```
 
-We then have with $C=1$ over the interval $[0,\pi]$ the following:
+We then have with $C=1$ over the interval $[0,1.2]$ the following:
 
 ```
 F(y, x; C=1) = sqrt(C/y - 1)
@@ -417,13 +417,25 @@ cyc = back_euler(F, x0, xn, y0, 50)
 plot(x -> 1 - cyc(x), x0, xn) 
 ```
 
-(Remember, $y$ is the displacement from the top, so it is non-negative. Above we flipped the graph to make it look more like expectation.)
+Remember, $y$ is the displacement from the top, so it is
+non-negative. Above we flipped the graph to make it look more like
+expectation. In general, the trajectory may actually dip below the
+ending point and come back up. The above won't see this, for as
+written $dy/dx \geq 0$, which need not be the case, as the defining
+equation is in terms of $(dy/dx)^2$, so the derivative could have any
+sign.
 
 
 
 ##### Example: Stiff equations
 
-The Euler method is *convergent*, in that as $h$ goes to $0$, the approximate solution will converge to the actual answer. However, this does not say that for a fixed size $h$, the approximate value will be good. For example, consider the differential equation $y'(x) = -5y$. This has solution $y(x)=y_0 e^{-5x}$. However, if we try the Euler method to get an answer over $[0,2]$ with $h=0.5$ we don't see this:
+The Euler method is *convergent*, in that as $h$ goes to $0$, the
+approximate solution will converge to the actual answer. However, this
+does not say that for a fixed size $h$, the approximate value will be
+good. For example, consider the differential equation $y'(x) =
+-5y$. This has solution $y(x)=y_0 e^{-5x}$. However, if we try the
+Euler method to get an answer over $[0,2]$ with $h=0.5$ we don't see
+this:
 
 ```
 F(y,x) = -5y
@@ -443,9 +455,10 @@ plot(x -> y0 * exp(-5x), 0, 2)
 plot!(u, 0, 2)
 ```
 
-This is an example of a [stiff equation](https://en.wikipedia.org/wiki/Stiff_equation). Such equations cause
-explicit methods like the Euler one problems, as small $h$s are needed
-to good results.
+This is an example of a
+[stiff equation](https://en.wikipedia.org/wiki/Stiff_equation). Such
+equations cause explicit methods like the Euler one problems, as small
+$h$s are needed to good results.
 
 The implicit, backward Euler method does not have this issue, as we can see here:
 
@@ -500,7 +513,9 @@ function euler2(x0, xn, y0, yp0, n; g=9.8, l = 5)
 end
 ```
 
-Let's take $a = \pi/4$ as the initial angle, then the approximate solution should be $\pi/4\cos(\sqrt{g/l}x)$ with period $T = 2\pi\sqrt{l/g}$. We try first to plot then over 4 periods:
+Let's take $a = \pi/4$ as the initial angle, then the approximate
+solution should be $\pi/4\cos(\sqrt{g/l}x)$ with period $T =
+2\pi\sqrt{l/g}$. We try first to plot then over 4 periods:
 
 ```
 l, g = 5, 9.8
@@ -511,8 +526,9 @@ plot(euler2(x0, xn, y0, yp0, 20), 0, 4T)
 
 Something looks terribly amiss. The issue is the step size, $h$, is
 too large to capture the oscillations. There are basically only $5$
-steps to capture a full up and down. Instead, we try to get 20 period so $n$ must be not 20, but $4 \cdot 20 \cdot T \approx 360$. To this graph, we add the
-approximate one:
+steps to capture a full up and down motion. Instead, we try to get $20$ steps per period
+so $n$ must be not $20$, but $4 \cdot 20 \cdot T \approx 360$. To this
+graph, we add the approximate one:
 
 ```
 plot(euler2(x0, xn, y0, yp0, 360), 0, 4T)

@@ -8,7 +8,7 @@ The `round` function will round the values of `f` up or down to the nearest inte
 
 ```
 g(x) = f(x) - round(f(x))
-```
+
 
 Concentrating on $[-2,1]$ there are many roots, in fact more than 250. Knowing this, we instruct the `fzeros` function to use more points in its initial partitioning of the interval:
 

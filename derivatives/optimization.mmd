@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 This section discusses a basic application of calculus to answer
@@ -108,7 +108,7 @@ h(b) = (20 - 2b) / 2
 
 Then to get `A(b)` we simply need to substitute `h(b)` into our
 formula for the area, `A`. However, instead of doing the substitution
-ourselves using algebra we let `julia` do it through composition of
+ourselves using algebra we let `Julia` do it through composition of
 functions:
 
 ```
@@ -121,7 +121,7 @@ From this we can solve as before.
 ```
 alert("""
 
-Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both is used. The advantage of multiple dispatch is illustrated: the same concept -- area -- has one function name, though there may be different ways to compute the area, so there is more than one implementation.
+Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept -- area -- has one function name, though there may be different ways to compute the area, so there is more than one implementation.
 
 """)
 ```
@@ -143,19 +143,17 @@ This figure shows two such windows, one with base length given by
 $x=4$, the other with base length given by $x=3$. The one with base
 length $4$ seems to have much bigger area.
 
-```
+```nocode
 ts = linspace(0, pi)
 x1,y1 = 4, 4.85840
 x2,y2 = 3, 6.1438
 delta = 4
-p = Gadfly.plot(
- Gadfly.layer(x=delta+x1*[0, 1,1,0], y=y1*[0,0,1,1],  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("blue"))),
- Gadfly.layer(x=delta+x1/2+x1/2*cos(ts), y=y1+x1/2*sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("red"))),
+p = plot(delta+x1*[0, 1,1,0], y1*[0,0,1,1],          linetype=:polygon, fillcolor=:blue, legend=false)
+plot!(p, x2*[0, 1,1,0], y2*[0,0,1,1],                linetype=:polygon, fillcolor=:blue)
 
- Gadfly.layer(x=x2*[0, 1,1,0], y=y2*[0,0,1,1],  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("blue"))),
- Gadfly.layer(x=x2/2+x2/2*cos(ts), y=y2+x2/2*sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true),  Gadfly.Theme(default_color= Gadfly.color("red")))
-)
-Outputonly(p)
+plot!(p, delta+x1/2+x1/2*cos(ts), y1+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
+plot!(p, x2/2+x2/2*cos(ts), y2+x2/2*sin.(ts),         linetype=:polygon, fillcolor=:red)
+p
 ```
 
 For this problem, we have two equations.
@@ -223,7 +221,7 @@ plot(D(A), 5.5, 5.7)
 
 We confirm that the critical point is around $5.6$.
 
-### Using fzero to locate critical points.
+#### Using fzero to locate critical points.
 
 Rather than zoom in graphically, we now use a root-finding algorithm,
 to find a more precise value. We know that the maximum will occur at a
@@ -253,40 +251,41 @@ function. The value and maximum area is then given by:
 greatest area for a fixed perimeter, or just the figure amongst all
 rectangles?)
 
-### A symbolic approach
+#### A symbolic approach
 
 We could also do the above problem symbolically with the aid of `SymPy`. Here are the steps:
 
 ```
 using SymPy
+@vars width height real=true
 
-width, height = symbols("width, height", real=true)
-Area = width * height + pi * (width/2)^2 / 2
-Perim = 2height + width + pi*width/2
-h0 = solve(Perim - 20, height)[1]
-Area = subs(Area, height=> h0)
-w0 = solve(diff(Area,width), width)[1]
+Area  = width * height + pi * (width/2)^2 / 2
+Perim = 2*height + width + pi * width/2
+h0    = solve(Perim - 20, height)[1]
+Area  = Area(height=> h0)
+w0    = solve(diff(Area,width), width)[1]
 ```
 
 
-We know that `w0` is the maximum in this example from our previous work. We shall see soon, that just knowing that the second derivative is negative at `w0` would suffice to know this. Here we check that condition:
+We know that `w0` is the maximum in this example from our previous
+work. We shall see soon, that just knowing that the second derivative
+is negative at `w0` would suffice to know this. Here we check that
+condition:
 
 ```
-subs(diff(Area, width, 2), width=>w0)
+diff(Area, width, 2)(width => 40)
 ```
 
 As an aside, compare the steps involved above for a symbolic solution to those of previous work for a numeric solution:
 
 ```
-Verbatim("""
-A(x, y) = x*y + pi*(x/2)^2 / 2
-y(x) = (20 - x - pi * x/2) / 2
-A(x) = A(x, y(x))
-fzero(D(A), 0, 20/(1+pi/2))
-""")
+A(w, h) = w*h + pi*(w/2)^2 / 2
+h(w)    = (20 - w - pi * w/2) / 2
+A(w)    =  A(w, h(w))
+fzero(D(A), 0, 20/(1+pi/2))  # 40 / (pi + 4)
 ```
 
-They are similar, except we solved for `h0` symbolically, rather than by hand, when we solved for `y(x)`.
+They are similar, except we solved for `h0` symbolically, rather than by hand, when we solved for `h(w)`.
 
 ## Trigonometry
 
@@ -304,16 +303,15 @@ The figure shows a ladder of length $l_1 + l_2$ that got stuck -- it
 was too long.
 
 
-```
-
-p = plot([0, 0, 15], [15, 0, 0], color=:gray, legend=false)
-plot!([5, 5, 15], [15, 8, 8], color=:gray)
-plot!([0,14.53402874075368], [12.1954981558864, 0], linewidth=3)
-plot!([0,5], [8,8], color=:orange)
-plot!([5,5], [0,8], color=:orange)
-annotate!([(13, 1/2, "θ"), (2.5, 11, "l1"), (10, 5, "l2"), (2.5, 7.0, "l2cos(θ)"), (5.1, 5, "l2sin(θ)")])
-
-Outputonly(p)
+```nocode
+p = plot([0, 0, 15], [15, 0, 0], color=:blue, legend=false)
+plot!(p, [5, 5, 15], [15, 8, 8], color=:blue)
+plot!(p, [0,14.53402874075368], [12.1954981558864, 0], linewidth=3)
+plot!(p, [0,5], [8,8], color=:orange)
+plot!(p, [5,5], [0,8], color=:orange)
+annotate!(p, [(13, 1/2, "θ"),
+              (2.5, 11, "l1"), (10, 5, "l2"), (2.5, 7.0, "l1 * cos(θ)"),
+	      (5.1, 5, "l2 * sin(θ)")])
 ```
 
 
@@ -358,7 +356,7 @@ delta = 0.2
 plot(l, delta, pi/2 - delta)
 ```
 
-The minimum occurs between 0.5 and 1.0 radians, we will use a bracketing method:
+The minimum occurs between 0.5 and 1.0 radians, a bracket for the derivative:
 
 ```
 x = fzero(D(l), 0.5, 1.0)
@@ -395,8 +393,8 @@ A quick analysis says:
   
 Now, if he drives $x$ miles west ($0 < x < 10$) he would run an amount
 given by the hypotenuse of a triangle with lengths $5$ and $10-x$. His
-time driving would be $x/30$ and his time running would be $\sqrt{5^2
-+ (10-x)^2}/10$ for a total of:
+time driving would be $x/30$ and his time running would be
+$\sqrt{5^2+(10-x)^2}/10$ for a total of:
 
 $$~
 T(x) = x/30 + \sqrt{5^2 + (10-x)^2}/10, \quad 0 < x < 10
@@ -445,7 +443,7 @@ sqrt(10^2 + 5^2)/10, T(x), (10+5)/30
 
 Ahh, we see that $T(x)$ is not continous on $[0, 10]$, as it jumps at
 $x=10$ down to an even smaller amount of $1/2$.  It may not look as
-impressive as a miles-long sprint, but Mr. Hunt is advised to drive
+impressive as a miles-long sprint, but Mr. Hunt is advised by Benji to drive
 the whole way.
 
 ## Unbounded domains
@@ -485,7 +483,7 @@ The maximum is then at
 f(x)
 ```
 
-### Minimize surface area of a can
+### Minimize the surface area of a can
 
 
 For a more applied problem of this type (infinite domain), consider a
@@ -515,19 +513,19 @@ First the surface area in both variables is given by
 SA(h, r) = h * 2pi * r + 2pi * r^2
 ```
 
-And solving from the constraint on the volume for `h` in terms of `r` we have
+Solving from the constraint on the volume for `h` in terms of `r` yields:
 
 ```
 h(r) = 355 / (pi * r^2)
 ```
 
-And composing gives us a function of `r` alone:
+Composing gives a function of `r` alone:
 
 ```
 SA(r) = SA(h(r), r)
 ```
 
-This we minimize subject to the constraint that $r \geq 0$. A quick
+This is minimized subject to the constraint that $r \geq 0$. A quick
 glance shows that as $r$ gets close to $0$, the can must get
 infinitely tall to contain that fixed volume, and would have infinite
 surface area as the $1/r^2$ in the first term implies. On the other
@@ -686,14 +684,11 @@ numericq(val, 1e-3)
 A movie screen projects on a wall 20 feet high beginning 10 feet above
 the floor.  This figure shows $\theta$ for $x=30$:
 
-```
-
+```nocode
 p = plot([0, 30,30], [0,0,10], xlim=(0, 32), color=:blue, legend=false)
-plot!([30, 30], [10, 30], color=:blue, linewidth=4)
-plot!([0, 30,30,0], [0,10,30,0], color=:orange)
-annotate!([(x,y,l) for (x,y,l) in zip([15, 5, 31, 31], [1.5, 3.5, 5, 20], ["x=30", "θ", "10", "20"])])
-
-Outputonly(p)
+plot!(p, [30, 30], [10, 30], color=:blue, linewidth=4)
+plot!(p, [0, 30,30,0], [0,10,30,0], color=:orange)
+annotate!(p, [(x,y,l) for (x,y,l) in zip([15, 5, 31, 31], [1.5, 3.5, 5, 20], ["x=30", "θ", "10", "20"])])
 ```
 
 What value of $x$ gives the largest angle $\theta$? (In degrees.)
@@ -750,7 +745,7 @@ cps = solve(diff(s(x), x), x)
 """)
 ```
 
-Based on the critical points found, what do you guess will be the
+Run the above code. Baseed on the critical points found, what do you guess will be the
 minimum value in terms of the values $x_1$, $x_2, \dots$?
 
 ```
@@ -838,25 +833,16 @@ numericq(hstar)
 Find the value $x > 0$ which minimizes the distance from the graph of
 $f(x) = \log_e(x) - x$ to the origin $(0,0)$.
 
-```
+```nocode
 f(x) = log(x) - x
 p = plot(f, 0.2, 2, ylim=(-2,0.25), legend=false, linewidth=3)
-plot!([0,0], [-2, 0.25], color=:gray)
-plot!([0,2],[0,0], color=:gray)
+plot!(p, [0,0], [-2, 0.25], color=:blue)
+plot!(p, [0,2],[0,0], color=:blue)
 xs = [0,1]; ys = [0, f(1)]
-scatter!(xs,ys, color=:orange)
-plot!(xs, ys, color=:orange, linewidth=3)
-annotate!([(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2),2))")])
-
-Outputonly(p)
-
-
-f(x) = log(x) - x
-xs = linspace(0.2, 2)
-p = plot(layer(x=xs, y=map(f, xs), Geom.line),
-layer(x=[0,1], y =[0, f(1)], Geom.line, Geom.point, Theme(default_color=color("orange"))),
-layer(x=[.75], y=[f(.5)/2], label=["d = $(round(sqrt(.5^2 + f(.5)^2),2))"], Geom.label))
-Outputonly(p)
+scatter!(p, xs,ys, color=:orange)
+plot!(p, xs, ys, color=:orange, linewidth=3)
+annotate!(p, [(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2),2))")])
+p
 ```
 
 ```

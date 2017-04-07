@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 The
@@ -21,7 +21,7 @@ The graph crosses the $x$-axis at both $0$ and $1$. If highlighting of these poi
 
 ```
 plot(f, -2, 2)
-plot!(zero, -2, 2)    # or plot!(x -> 0, -2, 2)
+plot!(zero)          # or plot!(x -> 0)
 ```
 
 What is known about polynomial roots? Some simple questions might be:
@@ -34,7 +34,7 @@ We look at such questions here.
 
 
 We begin with a comment that ties together two concepts related to
-polynomials.
+polynomials. It allows us to speak of roots or factors interchangebly:
 
 
 > The [factor theorem](http://en.wikipedia.org/wiki/Factor_theorem)
@@ -128,7 +128,7 @@ attempt to divide won't "just work" though:
 
 ```
 using SymPy
-x = symbols("x", real=true)
+x = @vars x real=true)
 (x^4 + 2x^2 + 5) / (x-2)
 ```
 
@@ -174,10 +174,11 @@ when techniques of integration are looked at.
 
 Factoring polynomials to find zeros is a task that most all readers
 here will recognize, and, perhaps, remember not so fondly. One helpful
-trick to find possible zeros is the [rational root theorem](http://en.wikipedia.org/wiki/Rational_root_theorem): if a
-polynomial has integer coefficients with $a_0 \neq 0$, than any rational root, $p/q$,
-must have $p$ dividing the constant $a_0$ and $q$ dividing the
-leading term $a_n$.
+trick to find possible zeros *by hand* is the [rational root
+theorem](http://en.wikipedia.org/wiki/Rational_root_theorem): if a
+polynomial has integer coefficients with $a_0 \neq 0$, than any
+rational root, $p/q$, must have $p$ dividing the constant $a_0$ and
+$q$ dividing the leading term $a_n$.
 
 
 To glimpse why, suppose we have a polynomial with a rational root and
@@ -194,15 +195,29 @@ coefficients is monic, then any rational root must be an integer.
 This gives a finite -- though possibly large -- set of values that can
 be checked to exhaust the possibility of a rational root. By
 hand this can be tedious, though may be speeded up using synthetic
-division. However, `SymPy` can easily do this to fully factor
-polynomials with rational coefficients over all possible rational
-factors.
+division. It is one of the mainstays of high school algebra.
 
 
+However, one of the great triumphs of computer algebra is the ability
+to factor polynomials with integer (or rational) coefficients over the
+rational nunbers. This is typically done by first factoring over
+modular numbers (akin to those on a clock face) and has nothing to do
+with the rational root test.
+
+`SymPy` can quickly find such a factorization, even
+for quite large polynomials.
+
+for example, factoring $p = 2x^4 + x^3 -19x^2 -9x +9$. This has
+*possible* rational roots of plus or minus $1$ or $2$ divided by $1$,
+$3$, or $9$ -- $12$ possible answers for this modest question. By hand
+that can be a bit of work, but `factor` does it without fuss:
 
 ```
-note(L"Well, within reason. Factoring just $a_0$ and $a_n$ might be hard for large values.")
+p = 2x^4 +  x^3 -19x^2 -9x +9
+factor(p)
 ```
+
+
 
 ### Fundamental theorem of algebra
 
@@ -227,16 +242,17 @@ possible complex roots to get all $n$. (Consider $x^2$ to see why
 multiplicity must be accounted for and $x^2 + 1$ to see why complex
 values may be necessary.)
 
-(The special case of the $0$ polynomial having no degree defined eliminates needing to exclude it, as it has infinitely many roots.)
+(The special case of the $0$ polynomial having no degree defined
+eliminates needing to exclude it, as it has infinitely many roots.)
 
 ## Finding roots of a polynomial
 
 Knowing that a certain number of roots exist and actually finding
-those roots are different matters. For the simplest cases (the linear case) with $a_0
-+ a_1x$, we know by solving algebraically that the root is $-a_0/a_1$. (We assume $a_1 \neq
-0$.) Of course, when $a_1 \neq 0$, the graph of the polynomial
-will be a line with some non-zero slope, so will cross the $x$-axis as
-the line and this axis are not parallel.
+those roots are different matters. For the simplest cases (the linear
+case) with $a_0+a_1x$, we know by solving algebraically that the root
+is $-a_0/a_1$. (We assume $a_1\neq 0$.) Of course, when $a_1 \neq 0$,
+the graph of the polynomial will be a line with some non-zero slope,
+so will cross the $x$-axis as the line and this axis are not parallel.
 
 For the quadratic case, there is the famous
 [quadratic formula](http://en.wikipedia.org/wiki/Quadratic_formula) (known since
@@ -246,8 +262,8 @@ $$~
 \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}.
 ~$$
 
-The discriminant is defined as $b^2 - 4ac$. When this is negative, the square
-root requires the concept of  complex numbers to be defined, and
+The discriminant is defined as $b^2 - 4ac$. When this is negative, the
+square root requires the concept of complex numbers to be defined, and
 the formula shows the two complex roots are conjugates. When the
 discriminant is $0$, then the root has multiplicity two, e.g., the
 polynomial will factor as $a_2(x-r)^2$. Finally, when the discriminant
@@ -255,8 +271,10 @@ is positive, there will be two distinct, real roots. This figure shows
 the 3 cases, that are illustrated by $x^2 -1$, $x^2$ and $x^2 + 1$:
 
 ```
-plot([x^2 - 1, x^2, x^2 + 1], -2,2)
-plot!(zero, -2, 2)
+plot(x^2 - 1,  -2, 2, legend=false)  # two roots
+plot!(x^2)                           # one (double) root
+plot!(x^2 + 1)                       # no real root
+plot!(zero)
 ```
 
 There are similar formulas for the
@@ -275,27 +293,9 @@ there is no general method as to how. (It is the case that *some* such
 polynomials may be solvable by radicals, just not all of them.)
 
 
-SymPy provides a `roots` function to find the roots of polynomial
-expressions, but `SymPy` renames this `polyroots` so as to not
-conflict with the `roots` function introduced below. Here we see an example:
 
-```
-ex = 540x^7 - 4968x^6 + 19539x^5 - 42581x^4 + 55526x^3 - 43320x^2 + 18720x - 3456
-polyroots(ex)
-```
-
-The output is a *dictionary* with keys which are the roots and values
-which indicate the multiplicity. Factoring  the expression gives the same information in a different format:
-
-```
-factor(ex)
-```
-
-
-
-
-Finding roots with `SymPy` can be also be done with its `solve`
-function, which has a more general usage. This function can solve
+Finding roots with `SymPy` can be also  with its `solve`
+function, a function which also has a more general usage, as it can solve
 simple expressions or more than one expression. Here we illustrate
 that `solve` can easily handle quadratic expressions:
 
@@ -311,18 +311,20 @@ g(x)$, one can solve $f(x) - g(x) = 0$ or use the `Eq` function.
 
 When the expression to solve has more than one free variable, the
 variable to solve for should be explicitly stated with a second
-argument. For example, here we show that `solve` is aware of the quadratic formula:
+argument. For example, here we show that `solve` is aware of the
+quadratic formula:
 
 ```
-a,b,c = symbols("a,b,c")
+@vars a b c
 solve(a*x^2 + b*x + c, x)
 ```
 
-The `solve` function will respect assumptions made when a variable is defined through `symbols`:
+The `solve` function will respect assumptions made when a variable is
+defined through `symbols` or `@vars`:
 
 ```
-a = symbols("a")
-b = symbols("b", real=true)
+@vars a
+@vars b real=true
 c = symbols("c", positive=true)
 solve(a^2 + 1)     # works, as a can be complex
 ```
@@ -348,7 +350,7 @@ Nothing is found, as the roots are $\pm \sqrt{2}$, irrational numbers.
 
 ```
 rts = solve(p)
-prod([x-r for r in rts])
+prod(x-r for r in rts)
 ```
 
 Solving cubics and quartics can be done exactly using radicals. For
@@ -358,12 +360,12 @@ solutions, if any, will be found.)
 
 
 ```
-x = symbols("x")
+@vars x
 solve(x^4 - 2x - 1)
 ```
 
 Some fifth degree polynomials are solvable in terms of radicals,
-however, `solve` will not have luck with this particular fifth degree
+however, `solve` will not seem to have luck with this particular fifth degree
 polynomial:
 
 ```
@@ -374,72 +376,54 @@ solve(x^5 - x + 1)
 equation, there is a formula for the roots in terms of a function
 called the [Bring radical](http://en.wikipedia.org/wiki/Bring_radical).)
 
+### Numerically finding roots
 
-However, calling `N` on the solutions will find numeric approximations:
-
-```
-[N(r) for r in solve(x^5 - x + 1)]
-```
-
-## Numeric roots with the Roots package
-
-As just seen, for problems where  exact solutions are not available,
-numeric algorithms can be used to provide approximate answers. (Any
-rational roots will be found by `solve`.)
-
-Even though `SymPy` has tools for numeric solutions to polynomial
-equations, we take this opportunity to introduce the `Roots` package,
-a package with various algorithms to solve for zeros of $f(x) = 0$ for
-univariate functions, not just polynomials. Using `Roots` for such tasks is in line with a
-philosophy of these notes to use `Julia` for numeric solutions and `SymPy` for
-algebraic solutions.
-
-Functions in the `Roots` package do not take symbolic expressions for arguments, rather
-functions for arguments. (This is the operator approach.) `Roots` has three main functions implemented for
-polynomial functions:
-
-- `roots(f)` will return all roots of a polynomial
-
-- `fzeros(f)` will return all *real* roots of a polynomial
-
-- `fzero(f, x0)` will return a numeric value for a root starting at `x0`.
-
-The latter is not so useful for polynomials, but is useful to to solve
-$f(x) = 0$ for more general real-valued functions.
-
-
-To illustrate, consider again $x^5 - x + 1$. We begin by defining a
-polynomial function:
+The `solve` function can be used to get numeric approximations to the
+roots. It is a easy as calling `N` on the solutions:
 
 ```
-using Roots
-f(x) = x^5 - x + 1
+rts = solve(x^5 - x + 1)
+N.(rts)     # note the `.(` to map over all values in rts
 ```
 
-Then the set of all roots is found with:
+
+Here we see another example:
 
 ```
-roots(f)
+ex = x^7 -3x^6 +  2x^5 -1x^3 +  2x^2 + 1x^1  - 2
+solve(ex)
 ```
 
-The function object, `f`, is passed to `roots`, not a symbolic
-expression, such is used with `polyroots`. The output is a vector and
-so all values are converted to a common type, which must be complex,
-as there is only 1 real root for this function, the remaining 4 being
-complex. The `roots` function can identify polynomial functions and
-when it is passed one, will actually call the `roots` function from
-`Julia`'s `Polynomials` package.
-
-The lone real root is found through:
+This finds two of the seven roots, the remainder can be found numerically:
 
 ```
-fzeros(f)
+N.(solve(ex))
 ```
 
-The return type is a vector, and not a single number, as in general
-there may be 0, 1, or more real roots of a polynomial. To retrieve the
-value, indexing can be used. The `fzeros` function in `Roots` finds
-real zeros, not complex ones, for various types of problems.
+### The solveset function
+
+SymPy is phasing in the `solveset` function to replace `solve`. The
+main reason being that `solve` has too many different output
+types. The output of `solveset` is always set. For tasks like this, we use
+the `elements` function to access the individual answers. To
+illustrate:
+
+```
+p = 8x^4 - 8x^2  + 1
+rts = solveset(p)
+```
+
+The `rts` object does not allow immediate access to its elements. For that, as `rts` is a finite set, `elements` will work:
+
+```
+elements(rts)
+```
+
+So to get the numeric approximation is
+
+```
+N.(elements(solveset(p)))
+```
 
 ## Do numeric methods matter when you can just graph?
 
@@ -458,8 +442,8 @@ this polynomial in expanded form: $x^5 - 100x^4 + 4000x^3 - 80000x^2 +
 roots.  A nieve graph might be to plot over $[-10, 10]$:
 
 ```
-f(x) =   x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
-plot(f, -10, 10)
+p =   x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
+plot(p, -10, 10)
 ```
 
 This seems to indicate a root near 10. But look at the scale of the
@@ -470,7 +454,7 @@ large.
 A graph over $[10,20]$ is still unclear:
 
 ```
-plot(f, 10,20)
+plot(p, 10,20)
 ```
 
 We see that what looked like a zero near 10, was actually a number around $-100,000$.
@@ -484,7 +468,7 @@ $0$, and might make us think where the function dips back down there
 is a second or third zero, when only 1 is the case. (We know that, as this is the same $x^5 - x + 1$ shifted to the right by 20 units.)
 
 ```
-plot(f, 18, 22)
+plot(p, 18, 22)
 ```
 
 
@@ -552,8 +536,8 @@ leaves all "-" signs, so there are $0$ negative roots. From the graph,
 we saw just 1 real root, not 3 or 5. We can verify numerically with:
 
 ```
-f(x) =  x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
-fzeros(f)
+p =  x^5 - 100x^4 + 4000x^3 - 80000x^2 + 799999x - 3199979
+N.(solve(p))
 ```
 
 ### Cauchy's bound on the magnitude of the real roots.
@@ -701,9 +685,9 @@ Factor $p$. What are the factors?
 
 ```
 choices = [
-L"$2$ and  $3$",
-L"$(x-2)$ and $(x-3)$",
-L"$(x+2)$ and $(x+3)$"]
+L" $2$ and  $3$",
+L" $(x-2)$ and $(x-3)$",
+L" $(x+2)$ and $(x+3)$"]
 ans = 2
 radioq(choices, ans)
 ```
@@ -747,7 +731,7 @@ Consider the polynomial $x^5 - 3x + 1$. Does it have more than one real root?
 
 ```
 using Roots
-xs = fzeros(x -> x^5 - 3x + 1)
+xs = fzeros(x -> x^5 - 3x + 1, -10, 10)
 yesnoq(length(xs) > 1)
 ```
 
@@ -756,7 +740,7 @@ Consider the polynomial $x^5 - 1.5x + 1$. Does it have more than one real root?
 
 ```
 using Roots
-xs = fzeros(x -> x^5 - 1.5x + 1)
+xs = fzeros(x -> x^5 - 1.5x + 1, -10, 10)
 yesnoq(length(xs) > 1)
 ```
 
@@ -789,7 +773,7 @@ numericq(1)
 
 ###### Question
 
-Let $f(x) = x^5 - 4x^4 + x^3 - 2x^2 + x$. What does Cauchy's bound say is largest possible magnitude of a root?
+Let $f(x) = x^5 - 4x^4 + x^3 - 2x^2 + x$. What does Cauchy's bound say is the largest possible magnitude of a root?
 
 ```
 ans = 1 + 4 + 1 + 2 + 1
@@ -800,8 +784,8 @@ What is the largest magnitude of a real root?
 
 ```
 f(x) = x^5 - 4x^4 + x^3 - 2x^2 + x
-rts = fzeros(f)
-ans = maximum(abs(rts))
+rts = fzeros(f, -5, 5)
+ans = maximum(abs.(rts))
 numericq(ans)
 ```
 
@@ -815,14 +799,63 @@ is one of $2,3,4$. By considering all 6 such possible polynomials
 
 
 ```
+using Combinatorics
 m = 0
 for (a,b,c) in permutations([2,3,4])
-    f(x) = x^3 - a*x^2 + b*x - c
-    rts = fzeros(f)
-	ans = maximum(abs(rts))
+    fn = x -> x^3 - a*x^2 + b*x - c
+    rts = fzeros(fn, -10, 10)
+	ans = maximum(abs.(rts))
 	m = ans > m ? ans : m
 end
 numericq(m)
 ```
 
 
+###### Question
+
+The roots of the [Chebyshev](https://en.wikipedia.org/wiki/Chebyshev_polynomials) polynomials are helpful for some numeric algorithms. These are a family of polynomials related by $T_{n+1}(x) = 2xT_n(x) - T_{n-1}(x)$ (a recurrence relation in the manner of the Fibonacci sequence). The first two are $T_0(x) = 1$ and $T_1(x) =x$.
+
+
+
+* Based on the relation, figure out $T_2(x)$. It is
+
+```
+choices = [L"4x^2 - 1", L"2x^2", L"x", L"2x"]
+ans = 1
+radioq(choices, ans)
+```
+
+* True or false, the $degree$ of $T_n(x)$ is $n$: (Look at the defining relation and reason this out).
+
+```
+yesnoq(true)
+```
+
+* The fifth one is $T_5(x) = 32x^5 - 32x^3 + 6x$. Cauchy's bound says that the largest root has absolute value
+
+```
+1 + 1 + 6/32
+```
+
+The Chebyshev polynomials have the property that in fact all $n$ roots are real, distinct, and in $[-1, 1]$. Using `SymPy`, find the magnitude of the largest root:
+
+```
+@syms x
+p = 16x^5 - 20x^3 + 5x
+rts = N.(solve(p))
+ans = maximum(norm.(rts))
+numericq(ans)
+```
+
+* Plotting `p` over the interval $[-2,2]$ does not help graphically identify the roots:
+
+```
+plot(p, -2, 2)
+```
+
+
+Does graphing over $[-1,1]$ show clearly the $5$ roots?
+
+```
+yesnoq(true)
+```

@@ -9,15 +9,15 @@ could be drawn without having to lift the pencil drawing it.
 Consider these two graphs:
 
 ```nocode
-using Gadfly
-plot(layer(x=[-1,0], y=[-1,-1], Geom.line),
-    layer(x=[0, 1], y=[ 1, 1], Geom.line))
+plt = plot([-1,0], [-1,-1],  color=:black, legend=false, linewidth=5)
+plot!(plt, [0, 1], [ 1, 1], color=:black, linewidth=5)
+plt
 ```
 
 and
 
 ```nocode
-plot(layer(x=[-1,-.1, .1, 1], y=[-1,-1, 1, 1], Geom.line))
+plot([-1,-.1, .1, 1], [-1,-1, 1, 1], color=:black, legend=false, linewidth=5)
 ```
 
 Though similar at some level, the first has a "jump" from $-1$ to $1$
@@ -57,7 +57,15 @@ Finally, as with limits, it can be convenient to speak of *right*
 continuity and *left* continuity at a point, where the limit in the
 defintion is replaced by a right or left limit, as appropriate.
 
-##### Examples
+
+```
+alert("""
+The limit in the definition of continuity is the basic limit and not an extended sense where 
+infinities are accounted for. As with limits, such extensions are qualified in the language, 
+as in "*right* continous."
+""")
+```
+##### Examples of continuity
 
 Most familiar functions are continuous everywhere.
 
@@ -70,6 +78,9 @@ are continuous everywhere.
 
 - So are the exponential functions $f(x) = a^x, a > 0$.
 
+- The hyperbolic sine ($(e^x - e^{-x})/2$) and cosine ($(e^x + e^{-x})/2$) are, as $e^x$ is.
+
+- The hyperbolic tangent is, as $\cosh(x) > 0$ for all $x$. 
 
 Some familiar functions are continuous but not everywhere.
 
@@ -80,18 +91,21 @@ can't possibly be continuous there.
 - Similarly, $f(x) = \log(x)$ is continuous on $(0,\infty)$, but it is
 not defined at $x=0$, so is not right continuous at $0$.
 
-```
-alert("""
-The limit in the definition of continuity is the basic limit and not an extended sense where 
-infinities are accounted for.
-""")
-```
+- The tangent function $\tan(x) = \sin(x)/\cos(x)$ is continuous everywhere *except* the points $x$ with $\cos(x) = 0$ ($\pi/2 + k\pi, k$ an integer).
+
+- The hyperbolic co-tangent is not continuous at $x=0$ when $\sinh$ is $0$,
+
+- The semicircle $f(x) = \sqrt{1 - x^2}$ is *continous* on $(-1, 1)$. It is not continous at $-1$ and $1$, though it is right continuous at $-1$ and left continous at $1$.
 
 ##### Examples of discontinuity
 
 There are various reasons why a function may not be continuous.
 
 - The function $f(x) = \sin(x)/x$ has a limit at $0$ but is not defined at $0$, so is not continuous at $0$. The function can be redefined to make it continuous.
+
+- The function $f(x) = 1/x$ is continuous everywhere *except* $x=0$.
+
+- A rational function $f(x) = p(x)/q(x)$ will be continuous everywhere except where $q(x)=0$.
 
 - The function
 
@@ -106,18 +120,18 @@ f(x) = \begin{cases}
 is implemented by `Julia`'s `sign` function. It has a value at $0$,
 but no limit at $0$, so is not continuous at $0$. Furthermore, the
 left and right limits exist at $0$ but are not equal to $f(0)$ so the
-function is not left or right continuous at $0$.
+function is not left or right continuous at $0$. It is continous everywhere except at $x=0$.
 
 - Similarly, the function defined by this graph
 
 ```nocode
-plot(layer(x=[-1,-.01], y=[-1,-.01], Geom.line),
-       layer(x=[.01, 1], y=[.01, 1], Geom.line),
-       layer(x=[0], y=[1/2], Geom.point))
+plot([-1,-.01], [-1,-.01], legend=false, color=:black)
+plot!([.01, 1], [.01, 1], color=:black)
+scatter!([0], [1/2], markersize=5, markershape=:circle)
 ```
 
 is not continuous at $x=0$. It has a limit of $0$ at $0$, a function
-value $f(0) =1$, but the limit and the function value are not equal.
+value $f(0) =1/2$, but the limit and the function value are not equal.
 
 - The `floor` function, which rounds down to the nearest integer, is
 also not continuous at the integers, but is right continuous at the
@@ -125,12 +139,13 @@ integers, as, for example, $\lim_{x \rightarrow 0+} f(x) = f(0)$. This graph emp
 
 ```nocode
 x = [0,1]; y=[0,0]
-plot(layer(x=x-2, y=y-2, Geom.line),
-         layer(x=x-1, y=y-1, Geom.line),
-         layer(x=x-0, y=y-0, Geom.line),	
-         layer(x=x+1, y=y+1, Geom.line),
-         layer(x=x+2, y=y+2, Geom.line),
-	 layer(x=[-2,-1,0,1,2], y=[-2,-1,0,1,2], Geom.point))
+plt = plot(x-2, y-2, color=:black, legend=false)
+plot!(plt, x-1, y-1, color=:black)
+plot!(plt, x-0, y-0, color=:black)	
+plot!(plt, x+1, y+1, color=:black)
+plot!(plt, x+2, y+2, color=:black)
+scatter!(plt, [-2,-1,0,1,2], [-2,-1,0,1,2], markersize=5, markershape=:circle)
+plt
 ```
 
 
@@ -138,7 +153,18 @@ plot(layer(x=x-2, y=y-2, Geom.line),
 defined at $x=0$ and $f(x)$ has no limit at $x=0$ (in the usual
 sense).
 
+- On the Wikipedia page for [continuity](https://en.wikipedia.org/wiki/Continuous_function) the example of Dirichlet's function is given:
 
+$$~
+f(x) = \begin{cases}
+0 & \text{if } x \text{ is irrational,}\\
+1 & \text{if } x \textP is rational.}
+~$$
+
+
+The limit for any $c$ is discontinuous, as any interval about $c$ will
+contain *both* rational and irrational numbers so the function will
+not take values in a small neighborhood around any potential $L$.
 
 ## Rules for continuity
 

@@ -1,0 +1,648 @@
+# Taylor Polynomials and other Approximating Polynomials
+
+The tangent line may be thought of as the "best" linear approximation to a function at a point $c$. What would be the best "quadratic" approximation? The best $n$th-degree polynomial approximation. We will see in this section that the Taylor Polynomial is the appropriate generalization of the the tangent line.
+
+
+{{{taylor_animation}}}
+
+## Secant line and the tangent line approximation
+
+To motivate, we have two related formulas. Suppose we have a function $f(x)$ which is defined in a neighborhood of $c$ and has as many derivatives as we care to take at $c$. 
+
+The *tangent line* to the graph of $f(x)$ at $x=c$ is described by the function
+
+$$~
+tl(x) = f(c) + f'(c) \cdot(x - c).
+~$$
+
+We have seen earlier that the Mean Value Theorem will imply that there exists some $\xi$ between $x$ and $c$ for which:
+
+$$~
+f(x) - tl(x) = \frac{f''(\xi)}{2} \cdot (x-c)^2.
+~$$
+
+The secant line for a value of $h>0$ is given by
+
+$$~
+sl(x) = f(c) + \frac{(f(c+h) - f(c))}{h} \cdot (x-c).
+~$$
+
+This is similar, only the slope of the secant line is replaced by the slope of the tangent at $c$ in the first formula.
+
+
+Let's take a small detour to define some notation. Instead of writing our two points as $c$ and $c+h$, let's use $x_0$ and $x_1$. For any set of points $x_0, x_1, \dots$, let $m$ be the smallest of them and $M$ the largest.
+
+Define the **divided differences** of $f$ inductively, as follows:
+
+$$~
+\begin{align}
+f[x_0] &= f(x_0) \\
+f[x_0, x_1] &= \frac{f[x_1] - f[x_0]}{x_1 - x_0}\\
+\cdots &\\
+f[x_0, x_1, x_2, \dots, x_n] &= \frac{f[x_1, \dots, x_n] - f[x_0, x_1, x_2, \dots, x_{n-1}]}{M-m}.
+\end{align}
+~$$
+
+
+We see the first two values look familiar, and to generate more we just take certain ratios akin to those formed when finding a secant line.
+
+
+With this notation the secant line can be reexpressed as:
+
+$$~
+sl(x) = f[c] + f[c, c+h] \cdot (x-c)
+~$$
+
+If we think of $f[c, c+h]$ as be an approximate *first* derivative, we have an even stronger relationship to the tangent line.
+
+To see that this isn't far-fetched, we investigate with `SymPy`. First we create a recursive function to compute the divided differences:
+
+```
+divided_differences(f, x) = f(x)
+function divided_differences(f, x, xs...)
+   xis = vcat(x, xs...)
+   m, M = minimum(xis), maximum(xis)
+   (divided_differences(f, xis[2:end]...) - divided_differences(f, xis[1:end-1]...)) / (M-m)
+end			   
+```
+
+With `SymPy` we have, using $u$ in place of $f$:
+
+```
+using SymPy
+@vars x c real=true
+@vars h positive=true
+u = SymFunction("u")
+
+ex = divided_differences(u, c, c+h)
+```
+
+We can take a limit and see the familiar (yet differently represented) value of $u'(c)$:
+
+```
+limit(ex, h => 0)
+```
+
+Before proceeding, let's look at one more:
+
+```
+ex = divided_differences(u, c-h, c, c+h)
+```
+
+Not pretty, but the limit is:
+
+```
+limit(ex, h => 0)
+```
+
+Well, if you recognize $(1/2) \cdot u''(c)$, that is.
+
+In general, we have this [theorem](http://tinyurl.com/zjogv83):
+
+> Suppose $m=x_0 < x_1 < x_2 < \cdots < x_n= M$ *and* $f$ has $n$ continuous derivatives then there exists a value $\xi$ where $m \leq \xi \leq M$ satisfying
+$$~
+f[x_0, x_1, \dots, x_n] = \frac{1}{n!} \cdot f^{(n)}(\xi).
+~$$
+
+This immediately applies to the above, where we parameterized by $h$:
+$x_0=c-h, x_1=c, x_2 = c+h$. For then, as $h$ goes to $0$, it must be that $m, M
+\rightarrow c$, and so the limit of the divided differences must
+converge to $(1/2!) \cdot f^{(2)}(c)$, as $f^{(2)}(\xi)$ converges to $f^{(2)}(c)$.
+
+
+
+## Quadratic approximations
+
+Why the fuss? The answer comes from the from a fact due to Newton about *interpolating* polynomials. Consider a function $f$ and $n+1$ points $x_0$, $x_1, \dots, x_n$. Then an interpolating polynomial is *the* polynomial of least degree that goes through each point $(x_i, f(x_i)$.
+
+For $x_0=c$ and $x_1=c+h$, this is just the secant line approximation. We want to consider 3 points, which we take to be $c-h$, $c$, and $c+h$. The [Newton form](https://en.wikipedia.org/wiki/Newton_polynomial) of such a polynomial can be written:
+
+$$~
+f[x_0] + f[x_0,x_1] \cdot (x-x_0) + f[x_0, x_1, x_2] \cdot (x-x_0) \cdot (x-x_1).
+~$$
+
+
+If we let $x_0 = c-h$, $x_1=c$ and $x_2=c+h$, then as $h$ goes to zero, this becomes:
+
+$$~
+f(c) + f'(c) \cdot (x-c) + \frac{1}{2!} \cdot f''(c) (x-c)^2.
+~$$
+
+
+
+This is clearly related to the tangent line, but has an extra quadratic term. Here we visualize with the function $\cos(x)$ at $c=0$.
+
+```
+f(x) = cos(x)
+a, b = -pi/2, pi/2
+c = 0
+h = 1/4
+
+fp = N(diff(f(x), x)(x => c))
+fpp = N(diff(f(x), x, x)(x => c))
+
+p = plot(f, a, b, linewidth=5, legend=false, color=:blue)
+plot!(p, x -> f(c) + fp*(x-c), a, b, color=:green, alpha=0.25, linewidth=5);                      # tangent line is flat
+plot!(p, x -> f(c) + fp*(x-c) + (1/2)*fpp*(x-c)^2, a, b, color=:green, alpha=0.25, linewidth=5);  # a parabola
+p
+```
+
+The mean value theorem, as in the case of the tangent line, will guarantee the existence of $\xi$ between $c$ and $c+h$, for which
+
+$$~
+f(x) - \left(f(c) + f'(c) \cdot(x-c) + (1/2)\cdot f''(c) \cdot (x-c)^2 \right) =
+\frac{1}{3!}f'''(\xi) \cdot (x-c)^3.
+~$$
+
+In this sense the above quadratic polynomial, called the Taylor Polynomial of degree 2, is the best *quadratic* approximation to $f$, as the difference goes to $0$.
+
+
+The graphs of the secant line and approximating parabola for $h=1/4$ are similar:
+
+
+```
+x0, x1, x2 = c-h, c, c+h
+f0 = divided_differences(f, x0)
+fd = divided_differences(f, x0, x1)
+fdd = divided_differences(f, x0, x1, x2)
+
+p = plot(f, a, b,                 color=:blue, linewidth=5, legend=false)
+plot!(p, x -> f0 + fd*(x-x0),     color=:green, alpha=0.25, linewidth=5);
+plot!(p, x -> f0 + fd*(x-x0) + fdd * (x-x0)*(x-x1),   color=:green, alpha=0.25, linewidth=5);
+p
+```
+
+Though similar, the graphs aren't identical. For example, in the
+tangent-line graph the parabola only intersects the cosine graph at
+$x=0$, whereas for the secant-line graph, by definition the parabola
+intersects the graph at least 3 times (at $x_0, x_1,$ and $x_2$).
+
+
+
+
+##### Example 
+
+Consider the function $f(t) = \log(1 + t)$. We have mentioned that for $t$ small, the value $t$ is a good approximation. A better one becomes:
+
+$$~
+f(0) + f'(0) \cdot t + \frac{1}{2} \cdot f''(0) \cdot t^2 = 0 + 1t - \frac{t^2}{2}
+~$$
+
+A graph shows the difference:
+
+```
+f(t) = log(1 + t)
+a, b = -1/2, 1
+plot(f, a, b, legend=false, linewidth=5)
+plot!(t -> t)
+plot!(t -> t - t^2/2)
+```
+
+Though we can see that the tangent line is a good approximation, the
+quadratic polynomial tracks the logarithm better farther from $c=0$.
+
+##### Example
+
+A wire is bent in the form of a half circle with radius $R$ centered
+at $(0,R)$, so the bottom of the wire is at the origin. A bead is
+released on the wire at angle $\theta$. As time evolves, the bead will
+slide back and forth. How? (Ignoring friction.) 
+
+
+Let $U$ be the potential energy, $U=mgh = mgR \cdot (1 -
+\cos(\theta))$. The velocity of the object will depend on $\theta$ --
+it will be $0$ at the high point, and largest in magnitude at the
+bottom -- and is given by $v(\theta) = R \cdot d\theta/ dt$. (The bead
+moves along the wire so its distance traveled is $R\cdot \Delta
+\theta$, this, then, is just the time derivative of distance.)
+
+By ignoring friction, the total energy is conserved giving:
+
+$$~
+K = \frac{1}{2}m v^2 + mgR \cdot (1 - \cos(\theta) =
+\frac{1}{2} m R^2 (\frac{d\theta}{dt})^2 +  mgR \cdot (1 - \cos(\theta)).
+~$$
+
+The value of $1-\cos(\theta)$ inhibits further work which would be possible were there an easier formula there. In fact, we could try the excellent approximation $1 - \theta^2/2$ from the quadratic approximation. Then we have:
+
+$$~
+K \approx \frac{1}{2} m R^2 (\frac{d\theta}{dt})^2 +  mgR \cdot (1 - \theta^2/2).
+~$$
+
+Assuming equality and differentiating in $t$ gives by the chain rule:
+
+$$~
+0 = \frac{1}{2} m R^2 2\frac{d\theta}{dt} \cdot \frac{d^2\theta}{dt^2} - mgR \theta\cdot \frac{d\theta}{dt}.
+~$$
+
+This can be solved to give this relationship:
+
+$$~
+\frac{d^2\theta}{dt^2} = - \frac{g}{R}\theta.
+~$$
+
+The solution to this "equation" can be written (in some
+parameterization) as $\theta(t)=A\cos \left(\omega t+\phi
+\right)$. This motion is the well-studied simple [hormonic
+oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator), a
+model for a simple pendulum.
+
+## Interpolating polynomials
+
+The Newton form of an interpolating polynomial appears to follow a
+pattern, and indeed it does. If $x_0$, $x_1, \dots, x_n$ are distinct
+points, then the following polynomial will be *the* polynomial with
+smallest degree that intersects the graph of $f$ at each of the
+points:
+
+$$~
+f[x_0] + f[x_0,x_1] \cdot (x - x_0) + f[x_0, x_1, x_2] \cdot (x - x_0)\cdot(x-x_1) +
+\cdots + f[x_0, x_1, \dots, x_n] \cdot (x-x_0) \cdot \cdots \cdot (x-x_{n-1}).
+~$$
+
+This polynomial has degree at most $n$; it may be less, as when $f[x_0, x_1, \dots, x_n]$ happens to be $0$.
+
+Here is one way to create a function implementing the above. It
+requires a vector of points:
+
+```
+function newton_form(f, xs)
+  n = length(xs)
+  x -> begin
+     tot = divided_differences(f, xs[1])
+     for i in 2:n
+        tot += divided_differences(f, xs[1:i]...) * prod([x-xs[j] for j in 1:(i-1)])
+     end
+     tot
+  end	
+end
+```
+
+To see a plot, we have
+
+```
+xs = [1,2,3,4,5]
+plot(sin, 0, 2pi)
+plot!(newton_form(sin, xs))
+```
+
+To get a better sense, we plot the differences here:
+
+```
+g(x) = sin(x) - newton_form(sin, xs)(x)
+plot(g, 1, 5)
+```
+
+The graph should be $0$ at each of the the points in `xs`, which we
+can verify in the graph above. Plotting over a wider region shows a
+common phenomenon that these polynomials approximate the function near
+the values, but quickly deviate away:
+
+```
+plot(sin, -2, 2pi)
+plot!(newton_form(sin, xs))
+```
+
+
+
+## The Taylor polynomial approximation
+
+
+If we take a "limit" with the $x_0, x_1, x_2, \cdots, x_n$ squeezing in on a given value $c$, and we use the limit fact about divided differences, we get the Taylor polynomial about $c$ of degree $n$:
+
+$$~
+T_n(x) = f(c) + f'(c) \cdot (x-c) + \frac{f''(c)}{2!}\cdot(x-c)^2 + \cdots +
+\frac{f^{(n)}(c)}{n!}\cdot(x-c)^n
+~$$
+
+This polynomial will be a good approximation to the function $f$, near $c$. The error will be given -- again by an application of the Mean Value Theorem -- by $(1/(n+1)!) \cdot f^{(n+1)}(\xi) \cdot (x-c)^n$.
+
+
+
+The Taylor polynomial for $f$ about $c$ of degree $n$ can be computed by taking $n$ derivatives. For such a task, the computer is very helpful. In `SymPy` the `series` function will compute this. For example, here is the series expansion to 10 terms of the function $\log(1+x)$ about $c=0$:
+
+```
+@vars x
+c, n = 0, 10
+l = series(log(1 + x), x, c, n+1)
+```
+
+A pattern can be observed. The output of `series` includes a big "Oh" term, which identifies the error, but also gets in the way of the output. `SymPy` provides the `removeO` function to strip this. 
+
+```
+Tn = removeO(l)
+```
+
+With the big "O" gone, this object can be used as any other SymPy object. For example, here we see the difference between the Taylor polynomial and the answer for a small value of $x$:
+
+```
+a = .1
+Tn(x=>a) - log(1 + .1)
+```
+
+
+
+
+Using `series`, we can see Taylor polynomials for several familiar functions:
+
+```
+series(exp(x), x, 0, 10)
+```
+
+
+```
+series(sin(x), x, 0, 10)
+```
+
+
+```
+series(cos(x), x, 0, 10)
+```
+
+```
+series(1/(1-x), x, 0, 10)
+```
+
+Each of these has a pattern that can be expressed quite succinctly. The only thing to be seen is the denominator for many of the above is $n!$.
+
+
+### Plotting
+
+For plotting, the big "O" notation is cumbersome. Here is a helper function to strip that off. As well, it parameterizes the value by the degree of the polynomial, and not the order of the eror term, as `series` does:
+
+```
+taylor(f, x, c, n) = removeO(series(f, x, c, n+1))
+```
+
+
+(This could also be defined directly through: `taylor(f, x, c, n) = sum(diff(f,x,k)(c) * (x-c)^k / factorial(k) for k=0:n)`.)
+
+In this graph we make a plot of the Taylor polynomial for different sizes of $n$:
+
+
+```
+u = 1 - cos(x)
+a, b = -pi, pi
+plot(u, a, b, linewidth=5)
+plot!(taylor(u, x, 0, 2))
+plot!(taylor(u, x, 0, 4))
+plot!(taylor(u, x, 0, 6))
+```
+
+Though all are good approximations near $c=0$, for larger values of $n$, the resulting Taylor polynomial is a good approximations for a wider range of values.
+
+
+##### Example Computing $\log(x)$
+
+Where exactly does the value assigned to $\log(2)$ come from? The
+value needs to be computed. But how? One can see details of a possible
+way
+[here](https://github.com/musm/Amal.jl/blob/master/src/log.jl). First,
+there is usually a reduction stage, and for this function values of
+$k$ and $f$ are found so that $x = 2^k \cdot (1+f)$ *and* $\sqrt{2}/2 <
+1+f < \sqrt{2}$. If these are found, then $\log(x) = k \cdot \log(2) +
+\log(1+f)$. The first value can easily be computed, the second then
+*reduces* the problem to an interval. Now, for this problem a further
+trick is utilized, writing $s= f/(2+f)$ so that $\log(1+f) = \log(1+s)
+- \log(1-s)$.
+
+Here, we can find a Taylor series. Let's go out to degree $19$ and use `SymPy` to do the work:
+
+```
+@vars s
+a = series(log(1 + s), s, 0, 19)
+b = series(log(1 - s), s, 0, 19)
+a - b
+```
+
+This is rexpressed as $2s + s \cdot p$:
+
+```
+p = cancel((removeO(a-b)-2s)/s)
+```
+
+Now, $2s = f - s\cdot f = f - (1/2)f^2 + s\cdot(1/2)f^2$, so the above can be reworked to be either:
+
+$$~
+\begin{align}
+\log(1+f) &=  f - s \cdot (f-p) \quad f \text{ is not too large}\\
+\log(1+f) &= f - (\frac{1}{2}f^2 - s \cdot (\frac{1}{2}f^2 + p)) \quad \text{better accuracy}
+\end{align}
+~$$
+
+For small values of $f$ (near $0$), the first can be used, the latter
+is for bigger values. This is like the difference between the accuracy
+of the tangent line approximation or the quadratic approximation.
+
+How big can the error be between these *approximations* and $\log(1+f)$? We plot to see how big $s$ can be:
+
+```
+@vars u
+plot(u/(2+u), sqrt(2)/2 - 1, sqrt(2)-1)
+```
+
+This shows, $s$ is as big as
+
+```
+M = (u/(2+u))(u => sqrt(2) - 1)
+```
+
+The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of $M$. Large is relative, it is really small:
+
+```
+(2/19)*M^19
+```
+
+Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done. 
+
+
+The actual code is a bit different, as the Taylor polynomial isn't
+used. The Taylor polynomial is a great approximation near a point, but
+hthere might be better approximations for all values in an interval.
+In this case there is, and that is used in the production
+setting. This makes things a bit more efficient, but the basic idea
+remains -- for a prescribed accuracy, a polynomial approximation can
+be found over a given interval, which can be cleverly utilized to
+solve for all applicable values.
+
+
+
+
+
+
+## Questions
+
+###### Question
+
+Compute the Taylor polynomial  of degree 10 for $\sin(x)$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
+
+```
+choices = [
+L"\sum_{k=0}^{10} x^k",
+L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
+L"\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}",
+L"\sum_{k=0}^{10} x^n/n!"
+]
+ans = 3
+radioq(choices, ans)
+```
+
+###### Question
+
+Compute the Taylor polynomial  of degree 10 for $e^x$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
+
+```
+choices = [
+L"\sum_{k=0}^{10} x^k",
+L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
+L"\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}",
+L"\sum_{k=0}^{10} x^n/n!"
+]
+ans = 4
+radioq(choices, ans)
+```
+
+
+
+###### Question
+
+Compute the Taylor polynomial  of degree 10 for $1/(1-x)$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
+
+```
+choices = [
+L"\sum_{k=0}^{10} x^k",
+L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
+L"\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}",
+L"\sum_{k=0}^{10} x^n/n!"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Let $T_5(x)$ be the Taylor polynomial of degree 5 for the function $\sqrt{1+x}$ about $x=0$. What is the coefficient of the $x^5$ term?
+
+```
+choices = [
+L"7/256",
+L"-5/128",
+L"1/5!",
+L"2/15"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+The 5th order Taylor polynomial for $\sin(x)$ about $c=0$ is: $x - x^3/3! + x^5/5!$. Use this to find the first 3 terms of the Taylor polynomial of $\sin(x^2)$ about $c=0$.
+
+They are:
+
+```
+choices = [
+L"x^2 - x^6/3! + x^{10}/5!",
+L"x^2",
+L"x^2 \cdot (x - x^3/3! + x^5/5!)"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+
+
+###### Question
+
+A more direct derivation of the form of the Taylor polynomial (here taken about $c=0$) is to *assume* a polynomial form that matches $f$:
+
+$$~
+f(x) = a + bx + cx^2 + dx^3 + ex^4 + \cdots
+~$$
+
+If this is true, then formally evaluating at $x=0$ gives $f(0) = a$, so $a$ is determined. Similarly, formally differentiating and evaluating at $0$ gives $f'(0) = b$. What is the result of formally differentiating $4$ times and evaluating at $0$:
+
+```
+choices = [L"f''''(0) = e",
+L"f''''(0) = 4\cdot 3\cdot2 e",
+L"f''''(0) = 0"]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+How big an error is there in approximating $e^x$ by its 5th degree Taylor polynomial about $c=0$, $1 + x + x^2/2! + x^3/3! + x^4/4! + x^5/5!$?, over $[-1,1]$.
+
+The error is known to be $(  f^{(6)}(\xi)/6!) \cdot x^6$ for some $\xi$ in $[-1,1]$.
+
+
+* The 6th derivative of $e^x$ is still $e^x$:
+
+```
+yesnoq(true)
+```
+
+* Which is true about the function $e^x$:
+
+```
+choices =["It is increasing", "It is decreasing", "It both increases and decreases"]
+ans = 1
+radioq(choices, ans)
+```
+
+
+* The maximum value of $e^x$ over $[-1,1]$ occurs at
+
+```
+choices=["A critical point", "An end point"]
+ans = 2
+radioq(choices, ans)
+```
+
+* Which theorem tells you that for a *continuous* function over  *closed* interval, a maximum value will exist?
+
+```
+choices = [
+"The intermediate value theorem",
+"The mean value theorem",
+"The extreme value theorem"]
+ans = 2
+radioq(choices, ans)
+```
+
+* What is the *largest* possible value of the error:
+
+```
+choices = [
+L"1/6!\cdot 1^6 \cdot 1^6",
+L"1^6 \cdot 1^6"]
+ans = 1
+radioq(choices,ans)
+```
+
+###### Question
+
+The error in using $T_k(x)$ to approximate $e^x$ over the interval $[-1/2, 1/2]$ is $(1/(k+1)!) e^\xi x^{k+1}$, for some $\xi$ in the interval. This is *less* than $1/((k+1)!) e^{1/2} (1/2)^k$.
+
+* Why?
+
+```
+choices = [
+L"The function $e^x$ is increasing, so takes on its largest value at the endpoint and the function $|x^n| \leq |x|^n \leq (1/2)^n$",
+L"The function has a critical point at $x=1/2$",
+L"The function is monotonic in $k$, so achieves its maximum at $k+1$"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+Assuming the above is right, find the smallest value $k$ guaranteeing a error no more than $10^{-16}$.
+
+```
+f(k) = 1/factorial(k) * exp(1/2) * (1/2)^k
+(f(14) > 1e-16 && f(15) < 1e-16) && numericq(15)
+```
+
+
+

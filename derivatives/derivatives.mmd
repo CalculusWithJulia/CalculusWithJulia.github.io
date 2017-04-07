@@ -1,11 +1,13 @@
+# (PART) The derivative of a function {-}
+
 # Derivatives
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
-Before defining the derivative, let's begin with two motivating examples that are familiar to any reader of a calculus text.
+Before defining the derivative, let's begin with two motivating examples that should be familiar.
 
 ##### Example: Driving
 
@@ -51,7 +53,7 @@ $\Delta x / \Delta t$. That is
 Now suppose, the GPS in the car gives us a readout of distance traveled
 as a function of time. The graph looks like this:
 
-```
+```nocode
 function position(t) 
   if t <= 3
      60*t
@@ -65,8 +67,7 @@ function position(t)
      position(4) + 60(t-4.5)
   end
 end
-p = plot(position, 0, 6)
-Outputonly(p)
+plot(position, 0, 6)
 ```
 
 We can see with some effort that the slope is steady for the first three hours, is slightly less between $3$ and
@@ -304,7 +305,7 @@ at a point.
 
 ```
 using SymPy
-x, h = symbols("x, h", real=true)
+@var x h real=true
 n = 5
 ex = expand((x+h)^n - x^n)
 ```
@@ -319,7 +320,7 @@ We see the lone term `5x^4` without an $h$, so as we let $h$ go to $0$, this wil
 
 
 For general integer-value, positive $n$, the binomial theorem gives an
-expansion $(x+h)^n = x^n + nx^{n-1} + \cdots$. Subtracting $x^n$
+expansion $(x+h)^n = x^n + nx^{n-1}\cdot h^1 + n\cdot(n-1)x^{n-2}\cdot h^2 + \cdots$. Subtracting $x^n$
 then dividing by $h$ leaves just the term $nx^{n-1}$ without a power
 of $h$, so the limit, in general, is just this term. That is $[x^n]' =
 nx^{n-1}$.
@@ -333,7 +334,7 @@ general, the power rule applies for any $n$ where $x^n$ is defined.
 - What is the derivative of $f(x) = \sin(x)$? We know that $f'(0)= 1$
   by an earlier example, here we solve in general.
 
-We need to consider $\sin(x+h) - \sin(x)$:
+We need to consider the difference $\sin(x+h) - \sin(x)$:
 
 ```
 ex = expand_trig(sin(x+h) - sin(x))
@@ -341,13 +342,13 @@ ex = expand_trig(sin(x+h) - sin(x))
 
 That used the formula $\sin(x+h) = \sin(x)\cos(h) + \sin(h)\cos(x)$.
 
-We could rearrange this as
+We could then rearrange the secant line slope formula to become:
 
 $$~
 \cos(x) \cdot \frac{\sin(h)}{h} + \sin(x) \cdot \frac{\cos(h) - 1}{h}
 ~$$
 
-and take a limit (can you see what it will be?) or just let `SymPy` do this work:
+and take a limit. If the answer isn't clear, we can let `SymPy` do this work:
 
 ```
 limit((sin(x+h) - sin(x))/ h, h, 0)
@@ -378,12 +379,12 @@ alert(L"""
 
 There are several different
 [notations](http://en.wikipedia.org/wiki/Notation_for_differentiation)
-for derivatives. Some of this is historical, some just adds
+for derivatives. Some are historical, some just add
 flexibility. We use the prime notation of Lagrange: $f'(x)$, $u'$ and $[\text{expr}]'$,
 where the first emphasizes that the derivative is a function with a
 value at $x$, the second emphasizes the derivative operates on
 functions, the last emphasize that we are taking the derivative of
-some expression.
+some expression (the "rule" part of an unnamed function).
 
 There are many other notations:
 
@@ -400,7 +401,7 @@ The notation -- $\big|$ -- on the right-hand side separates the tasks of finding
 derivative and evaluating the derivative at a specific value.
 
 - Euler used `D` for the operator `D(f)`. This is appropriated by an
-  operator in the `Roots` package. This use was initially used by
+  operator in the `Roots` package. This was initially used by
   [Argobast](http://jeff560.tripod.com/calculus.html).
 
 - Newton used a "dot" $\dot{x}(t)$, which is still widely used in physics to indicate  a derivative in
@@ -417,7 +418,7 @@ time.
 We could proceed in a similar manner to find other derivatives, but
 let's not. If we have a function $f(x) = x^5 \sin(x)$, it would be
 nice to leverage our previous work on the derivatives of $f(x) =x^5$
-and $g(x) = \sin(x)$.
+and $g(x) = \sin(x)$, rather than derive an answer from scratch. 
 
 
 As with limits and continuity, it proves very useful to consider rules
@@ -454,7 +455,7 @@ well. Here we define to symbolic functions `u` and `v` and let `SymPy`
 derive a formula for the derivative of a product of functions:
 
 ```
-u,v = symbols("u,v", cls=SymFunction) # make symbolic functions
+u,v = SymFunction("u,v") # make symbolic functions
 f(x) = u(x) * v(x)
 limit((f(x+h) - f(x))/h, h, 0)
 ```
@@ -643,7 +644,7 @@ derivative of an *inverse* function.
 
 
 
-- The general product rule: When $n$ is not a positive integer we can re-express the power using $e$:
+- The general product rule:  For any $n$ -- not just integer values --  we can re-express $x^n$  using $e$:
 $x^n = e^{n \log(x)}$. Now the chain rule can be applied:
 
 $$~
@@ -824,7 +825,7 @@ ds_value, fwd, ds_value - fwd
 Finally, `SymPy` gives an exact value we use to compare:
 
 ```
-x = symbols("x")
+@vars x
 actual = diff(f(x), x) |> subs(x, PI/4) |> N
 actual - ds_value, actual - fwd
 ```
@@ -861,12 +862,76 @@ We pass in the function object, `f''`, and not the evaluated function.
 
 ###### Question
 
+The derivative at $c$ is the slope of the tangent line at $x=c$. Answer the following based on this graph:
+
+```
+fn = x -> -x*exp(x)*sin(pi*x)
+plot(fn, 0, 2)
+```
+
+At which of these points $c= 1/2, 1, 3/2$ is the derivative negative?
+
+```
+choices = [L"f(1/2)", L"f(1)", L"f(3/2)"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+Which value looks bigger from reading the graph:
+
+```
+choices = [L"f(1)", L"f(3/2)", keep_order=true]
+ans = 2
+radioq(choices, ans)
+```
+
+At $0.708\dots$ and $1.650/dots$ the derivative has a common value. What is it?
+
+```
+numericq(0, 1e-2)
+```
+
+###### Question
+
+Consider the graph of the `airy` function over $[-5, 5]$.
+
+```nocode
+plot(airy, -5, 5)
+```
+
+At $x = -2.5$  the derivative is postive or negative?
+
+```
+choices = ["positive", "negative"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+
+At $x=0$ the derivative is postive or negative?
+
+```
+choices = ["positive", "negative"]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+At $x = 2.5$  the derivative is postive or negative?
+
+```
+choices = ["positive", "negative"]
+ans = 2
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
 Compute the derivative of $e^x$ using `limit`. What do you get?
 
 ```
 choices = [q"e^x", q"x^e", q"(e-1)x^e", q"e x^(e-1)", "something else"]
 ans = 1
-radioq(choices, ans)
+radioq(choices, ans, keep_order=true)
 ```
 
 ###### Question
@@ -876,7 +941,7 @@ Compute the derivative of $x^e$ using `limit`. What do you get?
 ```
 choices = [q"e^x", q"x^e", q"(e-1)x^e", q"e x^(e-1)", "something else"]
 ans = 5
-radioq(choices, ans)
+radioq(choices, ans, keep_order=true)
 ```
 
 ###### Question
@@ -886,7 +951,7 @@ Compute the derivative of $e^{e\cdot x}$ using `limit`. What do you get?
 ```
 choices = [q"e^x", q"x^e", q"(e-1)x^e", q"e x^(e-1)", q"e \cdot e^{e\cdot x}", "something else"]
 ans = 5
-radioq(choices, ans)
+radioq(choices, ans, keep_order=true)
 ```
 
 ###### Question

@@ -2,7 +2,8 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
+using QuadGK
 ```
 
 ```
@@ -144,7 +145,7 @@ This integral is done by a trig substitution, but gets involved. We let `SymPy` 
 
 ```
 using SymPy
-x = symbols("x")
+@vars x
 F = integrate(2 * PI * x^2 * sqrt(1 + (2x)^2), x)
 ```
 
@@ -162,7 +163,7 @@ Rotate the graph of $x^x$ from $0$ to $2$ around the $x$ axis. What is the surfa
 We work numerically for this one, as no antiderivative is forthcoming.
 
 ```
-using Roots # for D
+using Roots, QuadGK # for D, quadgk
 f(x) = x^x
 a, b = 0, 2
 val, _ = quadgk(x -> 2pi * f(x) * sqrt(1 + D(f)(x)^2), a, b)
@@ -196,7 +197,7 @@ $$~
 We do this with `SymPy`:
 
 ```
-M = symbols("M")
+@vars M
 ex = integrate(2PI * (1/x) * sqrt(1 + (-1/x)^2), (x, 1, M))
 ```
 

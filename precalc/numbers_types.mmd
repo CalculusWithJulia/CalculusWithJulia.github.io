@@ -16,28 +16,32 @@ Mathematically, these number systems are naturally nested within each
 other as integers are rational numbers which are real numbers, which
 can be viewed as part of the complex numbers.
 
+However, we will see that their representation within `Julia`, while
+nearly identical, is not exactly the same. For the most part being
+aware of these differences is not important, but there are some cases
+which can be surprising if these differences are not appreciated.
+
 ## Closure
 
 A desirable algebraic property of a set of numbers and an operation on
-them is *closure*. That is, if one takes an operation like `+` and add
-two numbers in a set, will that result also be in the set? If so for
-any pair of numbers, then the set is closed with respect to
-addition. For the even numbers with `+`, the answer is yes and for the odd
-numbers, false as, the sum of any two odd numbers is even, for
-example, $3+3=6$. If we start with the *natural numbers*, then it is
-closed under addition, However, if you think of subtraction as the
-operation, then the natural numbers are not closed under subtraction,
-as, for example, $1 - 2 = -1$. The integers are closed under addition,
-subtraction, and, as well, multiplication. That being said, once we
-look at division, closure is no longer the case for the integers, as,
-for example $1/2$ is not an integer. Before talking about the rational
-numbers, which are closed by division -- as long as we don't try to
-divide by 0, we note that there are other ideas of division of
-integers. Euclidean division decomposes $a/b$ via $a = q \cdot b + r$,
-where $0 \leq r < q$, $q$, $r$ are integers. The value $r$ is the
-*remainder* and $q$ the *quotient*.
+them is *closure*. That is, if one takes an operation like `+` and
+then uses it to add two numbers in a set, will that result also be in
+the set? If this is so for any pair of numbers, then the set is closed with
+respect to operation addition. For the even numbers with `+`, the answer is yes
+and for the odd numbers, false, as the sum of any two odd numbers is
+even, for example, $3+3=6$. If we start with the *natural numbers*,
+then it is closed under addition, However, if you think of subtraction
+as the operation, then the natural numbers are not closed under
+subtraction, as, for example, $1 - 2 = -1$. The integers are closed
+under addition, subtraction, and, as well, multiplication. That being
+said, once we look at division, closure is no longer the case for the
+integers, as, for example $1/2$ is not an integer. Before talking
+about the rational numbers, which are closed by division -- as long as
+we don't try to divide by 0, we note that there are other ideas of
+division of integers. Euclidean division decomposes $a/b$ via $a = q
+\cdot b + r$, where $0 \leq r < q$, $q$, $r$ are integers. The value
+$r$ is the *remainder* and $q$ the *quotient*.
 
-<!-- cf https://github.com/JuliaLang/julia/issues/9283#issuecomment-72710205 -->
 
 Back to the rational numbers. These are closed under addition, subtraction, multiplication, and division (with the standard caveat about dividing by 0). 
 
@@ -49,7 +53,7 @@ $$~
 a^n=a\cdot a \cdot a \cdots a \text{ (n times); }  a, n \text{ are integers, $n$ is positive}.
 ~$$
 
-We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically.
+We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as `1` within `Julia`).
 
 (Here we abuse the notion of closure, as we don't assume the same number system for the base and the exponent. Above, $a^n$ can be defined the same way for $a$ a real number and $n$ a positive integer. For any $a$ and $n$ $a^n$ will be a real number (except $0^0$) so we consider the operation $a$ into $a^n$ closed.)
 
@@ -71,8 +75,8 @@ $(-1)^{1/2}$ is the definition of $i$, the imaginary unit.
 
 As you can see, even with these familiar operations, the desire for
 simple things, such as the natural numbers and closure, leads one
-naturally into the need for more complicated systems such as the real
-numbers or complex numbers.
+naturally into the need for more complicated systems such as the rational numberss, the real
+numbers or the complex numbers.
 
 ## Julia and number systems
 
@@ -104,7 +108,7 @@ Julia also has *abstract types* `Integer`, `Real`, and `Number`, all of the abov
 ```
 note("""
 
-That numbers without decimal points are read in as integers is accurate, but that they will be of type `Int` is typical though not always the case. `Julia` will use different storage types for each of `1234567890`, `12345678901234567890`, and `1234567890123456789012345678901234567890`.
+That numbers without decimal points are read in as integers is accurate, but that they will be of type `Int` is typical, though not always the case. `Julia` will use different storage types for each of `1234567890`, `12345678901234567890`, and `1234567890123456789012345678901234567890`.
 
 """)
 ```
@@ -164,7 +168,7 @@ As per IEEE Standard 754, the `Float64` type gives 52 bits to the precision (wit
 
 
 ```
-WeavePynb.popup("""
+alert("""
 You can discover more about the range of floating point values provided by calling a few different functions.
 
 - `typemax(0.0)` gives the largest (`Inf`).
@@ -228,7 +232,7 @@ Whereas, these produce an infinity
 1/0, Inf + Inf, 1 * Inf
 ```
 
-Finally, these are mathematically undefined, but still yield a finite value:
+Finally, these are mathematically undefined, but still yield a finite value with `Julia`:
 
 ```
 0^0, Inf^0
@@ -246,7 +250,7 @@ are cases where one needs to have it in mind. Here are a few:
   functions for working with this distinction.)
 
 * Floating point numbers are approximations for most values, even
-  simple ones like $1/3$. This leads to oddities such as this value
+  simple rational ones like $1/3$. This leads to oddities such as this value
   not being $0$:
 
 ```
@@ -276,7 +280,10 @@ Such differences are usually very small and are generally attributed to rounding
 
 ## Rational numbers
 
-Rational numbers in `Julia` are stored as two numbers `den` and `num`, each some type of integer. They can exactly represent a rational number. Unlike with floating point values, this leads to the familiar things being true:
+Rational numbers in `Julia` are stored as two numbers, one for the
+denominator and one for the numerator, each some type of integer. They
+can exactly represent a rational number. Unlike with floating point
+values, this leads to the familiar things being true:
 
 ```
 1//10 + 2//10 == 3//10

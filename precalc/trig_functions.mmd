@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 The trigonometric functions are used to describe relationships between triangles, circles and oscillatory motions. With such a wide range of utility is no wonder that they pop up in many places and their [origins](https://en.wikipedia.org/wiki/Trigonometric_functions#History) date to Hipparcus and Ptolemy over 2000 years ago.
@@ -11,7 +11,14 @@ This section gives a quick overview of some topics related to the trigonometric 
 
 ## The 6 basic trigonometric functions
 
-For a right triangle with angles $\theta$, $\pi/2 - \theta$ and $\pi/2$ we call the side opposite $\theta$ the "opposite" side, the shorter adjacent side the "adjacent" side and the longer adjacent side the hypotenuse. With these, the basic definitions for the primary trigonometric functions are
+We measure angles in radians, where $360$ degrees is $2\pi$
+radians. By proportions, $90$ degree is $\pi/2$.
+
+For a right triangle with angles $\theta$, $\pi/2 - \theta$ and
+$\pi/2$ we call the side opposite $\theta$ the "opposite" side, the
+shorter adjacent side the "adjacent" side and the longer adjacent side
+the hypotenuse. With these, the basic definitions for the primary
+trigonometric functions are
 
 $$~
 \begin{align}
@@ -30,19 +37,29 @@ Some algebra shows that $\tan(\theta) = \sin(\theta)/\cos(\theta)$. There are al
 
 These definitions in terms of sides only apply for $0 \leq \theta \leq \pi/2$. More generally, if we relate any angle taken in the counter clockwise direction for the $x$-axis with a point $(x,y)$ on the *unit* circle, then we can extend these definitions -- the point $(x,y)$ is also $(\cos(\theta), \sin(\theta))$.
 
-The fact that $x^2 + y^2 = 1$ for the unit circle leads to the "Pythagorean identity" for trigonometric functions:
+```nocode
+p = plot(cos, sin, 0, 2pi, legend=false, size=(400, 400))
+t = 3pi/4
+plot!(p, [0,cos(t)], [0, sin(t)])
+plot!(p, [0,cos(0)], [0, sin(0)])
+r = 1/6
+plot!(p, t -> r*cos(t), t -> r*sin(t), 0, t)
+scatter!(p, [cos(t)], [sin(t)])
+annotate!(p, [(2/7 * cos(t-pi/8), 2/7 * sin(t - pi/8), "t"),
+              (cos(t)+.1, sin(t), "(cos(t), sin(t))"])
 
-$$~
-\sin(\theta)^2 + \cos(\theta)^2 = 1.
-~$$
+p
+```
 
-This basic fact can be manipulated many ways. For example, dividing through by $\cos(\theta)^2$ gives the related identity: $\tan(\theta)^2 + 1 = \sec(\theta)^2$.
 
 ### The trigonometric functions in Julia
 
 Julia has the 6 basic trigonometric functions defined through the functions `sin`, `cos`, `tan`, `csc`, `sec`, and `cot`.
 
-With some basic trigonometry, exact values can be derived for specific angles. In particular, the following values are usually committed to memory:
+Two right triangles -- the one with equal, $\pi/4$, angles; and the
+one with $\pi/6$ and $\pi/3$ can have the ratio of their sides
+computed from basic geometry. In particular, the following values are
+usually committed to memory:
 
 $$~
 \begin{align}
@@ -51,7 +68,28 @@ $$~
 \end{align}
 ~$$
 
-However, `Julia`'s functions can compute values for any angles, including these:
+Using the circle definition allows these basic values to inform us of
+values throughout the unit circle. In fact, the following are clear from the definition involving the unit circle:
+
+
+* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then the angle $-\theta$ corresponds to $(x, -y)$. So $\sin(\theta) = - \sin(-\thetea)$ (an odd function), but $\cos(\theta) = \cos(-\theta)$ (an even function).
+
+* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi$ moves the points to $(-x, -y)$. So $\cos(\theta) = x = - \cos(\theta + \pi)$, and $\sin(\theta) = y = -\sin(theta + \pi)$.
+
+
+* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi/2$ moves the points to $(-y, x)$. So $\cos(\theta) = x = \sin(\theta + \pi/2)$.
+
+* The fact that $x^2 + y^2 = 1$ for the unit circle leads to the
+  "Pythagorean identity" for trigonometric functions:
+
+$$~
+\sin(\theta)^2 + \cos(\theta)^2 = 1.
+~$$
+
+This basic fact can be manipulated many ways. For example, dividing through by $\cos(\theta)^2$ gives the related identity: $\tan(\theta)^2 + 1 = \sec(\theta)^2$.
+
+
+`Julia`'s functions can compute values for any angles, including these:
 
 ```
 [sin(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
@@ -93,7 +131,7 @@ The tangent function does not have all $\theta$ for its domain, rather those poi
 
 The tangent function is also periodic, but not with period $2\pi$, but rather just $\pi$. A graph will show this. Here we trim the graph to avoid the impact of the vertical asymptotes at the zeros of the cosine function:
 
-```
+```noout
 trim(f, c=20) = x -> abs(f(x)) > c ? NaN : f(x)
 plot(trim(tan), -2pi, 2pi)
 ```
@@ -117,7 +155,7 @@ using the values just involving $\beta$ and $\alpha separately?
 
 According to [Wikipedia](https://en.wikipedia.org/wiki/Trigonometric_functions#Identities) the following figure (from [mathalino.com](http://www.mathalino.com/reviewer/derivation-of-formulas/derivation-of-sum-and-difference-of-two-angles)) has ideas that date to Ptolemy:
 
-!["Geometric picture"](http://www.mathalino.com/sites/default/files/users/Mathalino/summary-sum-and-difference-of-two-angles.jpg)
+![Geometric picture](http://www.mathalino.com/sites/default/files/users/Mathalino/summary-sum-and-difference-of-two-angles.jpg)
 
 This shows that
 
@@ -139,7 +177,7 @@ $$~
 \end{align}
 ~$$
 
-The latter looks like the Pythagorean identify, but has a minus sign. In fact, the Pythagorean identify is often used to rewrite this, for example $\cos(2\alpha) = 2\cos(\alpha)^2 - 1$ of $1 - 2\sin(\alpha)^2$.
+The latter looks like the Pythagorean identify, but has a minus sign. In fact, the Pythagorean identify is often used to rewrite this, for example $\cos(2\alpha) = 2\cos(\alpha)^2 - 1$ or $1 - 2\sin(\alpha)^2$.
 
 
 Applying the above with $\alpha = \beta/2$, we get that $\cos(\beta) = 2\cos(\beta/2)^2 -1$, which rearranged yields the "half-angle" formula: $\cos(\beta/2)^2 = (1 + \cos(\beta))/2$.
@@ -211,7 +249,7 @@ atan(y/x)
 But,
 
 ```
-atan2(y,x)
+atan2(y, x)
 ```
 
 ##### Example: The Chebyshev Polynomials

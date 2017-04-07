@@ -40,19 +40,29 @@ It is important to note that this sketch would not include *all* the pairs $(x,f
 
 ## Graphing a function with Julia
 
-`Julia` has several different options for rendering graphs, all in external packages. Such packages include `Gadfly`, `Winston`, `PyPlot`, `Bokeh`, and `Plotly`. We will focus in these notes on the `Plots` package for most graphics and the `PyPlot` package for 3-dimensional graphics. The `Plots` package provides an common interface to several different plotting backends.
+`Julia` has several different options for rendering graphs, all in
+external packages. We will focus in these notes on the `Plots`
+package, which provides an common interface to several different
+plotting backends. 
 
-As such, we begin by loading the `Plots` package (which must have been installed on the system at some point with a command such as `Pkg.add("Plots")`) and setting the `Gadfly` backend:
+As such, we begin by loading the `Plots` package (which must have been
+installed on the system at some point with a command such as
+`Pkg.add("Plots")`) and setting the `plotly` backend:
 
 ```
 using Plots
-gadfly()
+plotly()
 ```
 
-The `Gadfly` backend makes pretty plots very easy to generate, but has
-a drawback in that it is a bit slow to load and the first plot made can take
-a long time to render, though subsequent ones are speedy. Focusing on
-the easyness, we can see that it is very easy to graph a function.
+```
+note("""
+The `plotly` backend is part of the `Plots` package. Other backends require installation. Some others are `pyplot`, for the `PyPlot` package; `gr`, for the `GR` package, `plotlyjs`, for an enhanced Plotly backend through `PlotlyJS`.
+""")
+
+```
+
+
+With `Plots`, it is very easy to graph a function.
 
 For example, to graph $f(x) = 1 - x^2/2$ over the interval $[-3,3]$ we have:
 
@@ -65,7 +75,11 @@ The `plot` command does the hard work behind the scenes. It needs 2 pieces of in
 
 * what to plot. With this invocation, this detail is expressed by passing a function object to `plot`
 
-* where to plot. As with a sketch, it is impossible in this case to render a graph with all possible $x$ values in the domain of $f$, so we need to pick some viewing window. In the example this is $[-3,3]$ which is expressed by passing the two endpoints as the second and third arguments.
+* where to plot. As with a sketch, it is impossible in this case to
+  render a graph with all possible $x$ values in the domain of $f$, so
+  we need to pick some viewing window. In the example this is $[-3,3]$
+  which is expressed by passing the two endpoints as the second and
+  third arguments.
 
 Plotting a function is then this simple: `plot(f, a, b)`.
 
@@ -102,6 +116,7 @@ We could skip the first step of defining a function by using an *anonymous funct
 plot(x -> cos(x) - x, 0, pi/2)
 ```
 
+
 ```
 note("""
 
@@ -123,6 +138,9 @@ viewing window crosses several places where the function blows up:
 f(x) = tan(x)
 plot(f, -10, 10)
 ```
+
+
+Though this graph shows the asymptote structure and periodicity, it doesn't give much instight into each period.
 
 ## The details of graph making
 
@@ -176,9 +194,16 @@ single value is being referred to, hence "`x in xs`".
 """)
 ```
 
-#### Maps
+The second style is to use the a "dot." Julia has an alternative
+syntax for calling a function whereby the function is applied (mapped)
+over each different value, techically named "broadcasting." Instead of writing `f(xs)`, which may not be defined, an extra dot is inserted, as with `f.(xs)`:
 
-Comprehensions have familiar notation, but can be a bit verbose to type, especially when a function object is already defined.The `map` function does the same task of applying the specified function over a collection of values:
+```
+f.(xs)
+```
+
+If the dot is too subtle, the `map` function does the same task of
+ applying the specified function over a collection of values:
 
 ```
 ys = map(f, xs)
@@ -196,6 +221,8 @@ Finally, to plot the set of points and connect with lines. If the collection of 
 plot(xs, ys)
 ```
 
+This plots the points as pairs and then connects them in order using
+straight lines. Basically, it creates a dot-to-dot graph.
 
 #### NaN values
 
@@ -223,7 +250,7 @@ By using an odd number of points, we hsould have that $0.0$ is amongst the `xs`.
 Alternatively, you might modify the function itself to return `NaN` for values close to $0$:
 
 ```
-g(x) = abs(x) < .01 ? NaN : f(x)
+g(x) = abs(x) < .05 ? NaN : f(x)
 plot(g, -1, 1)
 ```
 
@@ -235,7 +262,7 @@ For example, to plot $\sin(x)$ over $(-\pi,\pi)$ we might do:
 
 ```
 xs = linspace(-pi, pi)
-ys = map(sin, xs)
+ys = sin.(xs)
 plot(xs, ys)
 ```
 
@@ -330,28 +357,43 @@ It can be useful at times to create these layers one by one. This
 might better match the workflow. As well, it affords the possibility
 of different kinds of layers.
 
-For example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$
+To redo the previous plot adding first the graph of the function `f` and then the function `zero`, we have:
+
+```
+plot(f, -1.5, 1.4)
+plot!(zero)
+```
+
+
+The `plot!` call adds a layer. In this example, no range $[a,b]$ is
+specified, so `plot!` will reuse the current range of the axis. 
+
+
+For another example, suppose we wish to plot the function $f(x)=x\cdot(x-1)$
 over the interval $[-1,2]$ and emphasize with points the fact that $0$
 and $1$ are zeros. We can do this with two layers: the first to graph
-the function, the second to graph the points. Adding a layer is
-achieved by using `plot!`, or in this case `scatter!` (to add points,
-not lines):
+the function, the second to graph the points. 
 
 ```
 f(x) = x*(x-1)
-xs = linspace(-1, 2)
-ys = map(f, xs)
-plot(xs, ys)
+plot(f, -1, 2)
 scatter!([0,1], [0,0])
 ```
+
+The 3 main functions for adding layers are:
+
+* `plot!(f)` or `plot!(f, a, b)` to add the graph of the function `f`
+* `scatter!(xs, ys)` to add points $(xs_1, ys_1), (xs_2, ys_2), \dots$.
+* `annotate!((x,y, label))` to add a label at $(x,y)$
+
 
 ```
 alert("""
 
 Julia has a convention to use functions named with a `!` suffix to
 indicate that they mutate some object. In this case, the object is the
-current graph. Both `plot!` and `scatter!` (and others) do this by
-adding a layer.
+current graph, though it is implicit. Both `plot!`, `scatter!`, and
+`annotate!` (others too) do this by adding a layer.
 
 """)
 ```
@@ -380,7 +422,7 @@ The most "famous" parametric graph is one we are already familiar with, as it fo
 ```
 f(x) = cos(x); g(x) = sin(x)
 xs = linspace(0, 2pi)
-plot(map(f, xs), map(g, xs))
+plot(f.(xs), g.(xs))
 ```
 
 Any point $(a,b)$ on this graph is represented by $(\cos(x), \sin(x))$
@@ -416,7 +458,7 @@ larger. However, the parametric graph is quite different:
 
 ```
 xs = linspace(0, 5)
-plot(map(g, xs), map(f, xs))
+plot(g, f, 0, 25)
 ```
 
 In this graph, as $f(x)/g(x) = x$, as $x$ gets large, the ratio stays reasonable.
@@ -541,7 +583,7 @@ radioq(choices, ans)
 
 Plot the function $f(x) = 3x^4 + 8x^3 - 18x^2$. Where (what $x$ value)
 is the smallest value? (That is, for which input $x$ is the output
-$f(x) as small as possible.
+$f(x)$ as small as possible.
 
 ```
 f(x) = 3x^4 + 8x^3 - 18x^2
@@ -651,9 +693,9 @@ The *viewport* of a graph is the $x$-$y$ range of the viewing window.
 By default, the $y$-part of the viewport is determined by the range of
 the function over the specified interval $[a,b]$. For some functions
 this can produce poor graphs, especially when there is a vertical
-asymptote. Here are two ways to restrict this with `Gadfly`:
+asymptote. Here are two ways to restrict this with `Plots`:
 
-- Add an argument `Scale.y_continuous(minvalue=-10, maxvalue=10))`
+- Add an argument `ylim = (m, M)` where `m` and `M` are the min and maximum of the range you wish to show.
 
 - trim the $y$ values returned by the function so that if they are bigger than 10, say, they are not shown. For this, a function like following can be useful:
 

@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
 using Roots
 ```
 
@@ -34,9 +34,10 @@ out = dsolve(u'(x) - F(u(x),x), x, (u, x0, y0))
 We can plot this solution over the slope field through
 
 ```
-vectorfieldplot([1, F(y,x)], (x, x0, 2), (y, y0, y0 + 5))
-plot!(rhs(out), x0, 2, linewidth=5)
+Plot(VectorField((x,y) -> F(y,x))
+plot!(rhs(out),  linewidth=5)
 ```
+
 
 We see that the vectors that are drawn seem to be tangent to the graph of the solution.
 
@@ -115,8 +116,8 @@ end
 So how did we do? Let's look graphically:
 
 ```
-	plot(exp(-1/2)*exp(x^2/2), x0, 2)
-	plot!(xs, ys)
+plot(exp(-1/2)*exp(x^2/2), x0, 2)
+plot!(xs, ys)
 ```
 
 Not bad. We wouldn't expect this to be exact -- due to the concavity
@@ -126,19 +127,15 @@ topic we pursue in just a bit.
 
 Rather than type in the above command each time, we wrap it all up in
 a function.  The inputs are $n$, $a=x_0$, $b=x_n$, $y_0$, and, most
-importantly, $F$. The output is massaged into a function through the
-call `linterp`, rather than two vectors. The `linterp` function is not
-shown, but it just finds a function that linearly interpolates between the points and is
-`NaN` outside of the range of the $x$ values.
+importantly, $F$. The output is massaged into a function through a
+call to `linterp`, rather than two vectors. The `linterp` function just
+finds a function that linearly interpolates between the points and is
+`NaN` outside of the range of the $x$ values:
 
-```nocode, noout
-"""
-return a function that linearly interpolates the points (xs[1], ys[1]), ....
-Assumes `xs` are sorted. Returned function gives `NaN` when outside range of `[xs[1], xs[end]]`.
-"""
+```
 function linterp(xs, ys)
     function(x)
-        (x < xs[1]) || (x > xs[end]) && return NaN
+        ((x < xs[1]) || (x > xs[end])) && return NaN
         for i in 1:(length(xs) - 1)
             if xs[i] <= x < xs[i+1]
                 l = (x-xs[i]) / (xs[i+1] - xs[i])
@@ -150,6 +147,7 @@ function linterp(xs, ys)
 end        
 ```
 
+With that, here is our function:
 
 ```
 function euler(F, x0, xn, y0, n)
@@ -166,9 +164,9 @@ function euler(F, x0, xn, y0, n)
 end
 ```
 
-With this, it becomes easy to explore different values.
+With `euler`, it becomes easy to explore different values.
 
-For example, we though the solution would look better with a smaller $h$ (or larger $n$). Instead of $n=5$, let's try $n=50$:
+For example, we thought the solution would look better with a smaller $h$ (or larger $n$). Instead of $n=5$, let's try $n=50$:
 
 ```
 u = euler(F, 1, 2, 1, 50)
@@ -176,19 +174,11 @@ plot(exp(-1/2)*exp(x^2/2), x0, 2)
 plot!(u, x0, 2)
 ```
 
-It is more work for the computer, but clearly a much better approximation to the actual answer.
+It is more work for the computer, but not for us, and clearly a much better approximation to the actual answer is found.
 
 
 ## The Euler method
 
-The name of our function reflects the [mathematician](https://en.wikipedia.org/wiki/Leonhard_Euler) associated with the iteration:
-
-$$~
-x_{n+1} = x_n + h, \quad y_{n+1} = y_n + h \cdot F(y_n, x_n),
-~$$
-
-to approximate a solution to the first-order, ordinary differential
-equation with initial values: $y'(x) = F(y,x)$.
 
 ```
 using WeavePynb
@@ -200,6 +190,15 @@ Figure from first publication of Euler's method. From [Gander and Wanner](http:/
 WeavePynb.HTMLoutput(out)
 ```
 
+
+The name of our function reflects the [mathematician](https://en.wikipedia.org/wiki/Leonhard_Euler) associated with the iteration:
+
+$$~
+x_{n+1} = x_n + h, \quad y_{n+1} = y_n + h \cdot F(y_n, x_n),
+~$$
+
+to approximate a solution to the first-order, ordinary differential
+equation with initial values: $y'(x) = F(y,x)$.
 
 
 [The Euler method](https://en.wikipedia.org/wiki/Euler_method) uses
@@ -260,9 +259,9 @@ actual value of the solution slightly.
 ##### Example
 
 The equation $y'(x) = \sin(x \cdot y)$ is not separable, so need not have an
-easy solution. `SymPy` will return a power series approximation. Let's
-look at comparing an answer given by the Euler method and compare to
-that returned by `SymPy`.
+easy solution. `SymPy` will return a power series *approximation*. Let's
+look at comparing an approximate answer given by the Euler method and  to
+that one returned by `SymPy`.
 
 First, the `SymPy` solution:
 
@@ -285,11 +284,11 @@ The approximate value given by the Euler method is
 
 ```
 x0, xn, y0 = 0, 2, 1
-vectorfieldplot([1, F(y,x)], (x, x0, xn), (y, 0, 5))
-plot!(removeO(rhs(out)), 0, 2, linewidth=5)
+plot(VectorField((x,y) -> F(y,x)), xlims=(x0,xn), ylims=(0,5))
+plot!(removeO(rhs(out)),  linewidth=5)
 
 u = euler(F, x0, xn, y0, 10)
-plot!(u, 0, 2,  linewidth=5)
+plot!(u, linewidth=5)
 ```
 
 We see that the answer found from using a polynomial series matches that of Euler's method for a bit, but as time evolves, the approximate solution given by Euler's method more closely tracks the slope field.
@@ -353,12 +352,12 @@ $$~
 ~$$
 
 This is a separable equation and can be solved, but even `SymPy` has
-trouble with this integral. However, the result has been known to be a piece of cycloid since the insightful
+trouble with this integral. However, the result has been known to be a piece of a cycloid since the insightful
 Jacob Bernoulli used an analogy from light bending to approach the problem. The answer is best described parametrically
 through:
 
 $$~
-x(u) = c\cdot u - \frac{c}{2}\sin(2u), \quad y(u) = \frac{c}{2}( 1- \cos(2u)), $0 \leq u \leq U$.
+x(u) = c\cdot u - \frac{c}{2}\sin(2u), \quad y(u) = \frac{c}{2}( 1- \cos(2u)), \quad 0 \leq u \leq U.
 ~$$
 
 The values of $U$ and $c$ must satisfy $(x(U), y(U)) = (B, A)$.
@@ -441,7 +440,7 @@ this:
 F(y,x) = -5y
 x0, xn, y0 = 0, 2, 1
 u = euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-vectorfieldplot([1, F(y,x)], (x, 0, 2), (y, -5, 5))
+plot(VectorField((x,y) -> F(y,x)), xlims=(0, 2), ylims=(-5, 5))
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```
@@ -464,7 +463,7 @@ The implicit, backward Euler method does not have this issue, as we can see here
 
 ```
 u = back_euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-vectorfieldplot([1, F(y,x)], (x, 0, 2), (y, -1, 1))
+plot(VectorField((x,y) -> F(y,x)),  xlims=(0, 2), ylims=(-1, 1))
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```

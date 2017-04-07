@@ -1,24 +1,15 @@
 module vectors
 using LaTeXStrings
+using WeavePynb
 
 macro q_str(x) 
         "`$x`"
 end
 
+fig_size = (400, 300)
 
-gif_to_data_tpl = """
-
-<div class="well">
-<figure>
-    <img src="data:image/gif;base64, {{{:data}}}"/>
-  <figcaption>{{:caption}}</figcaption>
-</figure>
-</div>
-
-"""
-
-
-using Mustache, Gadfly, DataFrames, Reel
+using Plots
+pyplot()
 
 x0 = [0, 64]
 v0 = [20, 0]
@@ -34,43 +25,37 @@ y_ticks = collect(0:10:80)
 
 
 rotate(t, v) = [cos(t) -sin(t); sin(t) cos(t)] * v
-function make_arrow(p0, p; col="blue", width=2px, opacity=1.0, kwargs...)
-    θ, λ = pi/16, 1/20
-    
-    l =  rotate(pi - θ, p) * λ
-    r =  rotate(pi + θ, p) * λ
-
-    pos = [p0 p0+p p0+p+l p0+p+r p0+p]
-    layer(x=pos[1,:]', y=pos[2,:]',
-          Geom.line(preserve_order=true),
-          Theme(default_color=color(col), line_width=width, lowlight_opacity=opacity),
-          kwargs...
-          )
+function make_arrow!(plt, p0, p; col="blue", width=2px, opacity=1.0, kwargs...)
+    quiver!(plt, p0[1:1], p0[2:2], quiver=(p[1:1], p[2:2]), color=col)
+    return nothing
 end
 
-function make_plot(t,_)
+function make_plot(t)
+
+    xn = (t) -> x0 + v0*t + 1/2*g*t^2
+    vn = (t) -> v0 + g*t
+    an = (t) -> g
+
+    
     t = 1/10 + t*2/10
     
     ts = linspace(0, 2, 100)
-    xys = map(x, ts)
+    xys = map(xn, ts)
 
-    layers=Any[]
-    push!(layers, layer(x=[p[1] for p in xys], y=[p[2] for p in xys], Geom.line))
-    push!(layers, layer(x=0:80, y=0*collect(0:80), Geom.line,
-                        Theme(default_color=color("orange"), lowlight_opacity=0.5)))
-    push!(layers, make_arrow(x(t), 10*unit(x(t)), col="black"))
-    push!(layers, make_arrow(x(t), 10*unit(v(t)), col="red"))
-    push!(layers, make_arrow(x(t), 10*unit(a(t)), col="green"))
-
-    plot(layers...,  Guide.xticks(ticks=x_ticks), Guide.yticks(ticks=y_ticks))
-end
+    xs, ys = [p[1] for p in xys], [p[2] for p in xys]
     
+    plt = Plots.plot(xs, ys, legend=false, size=fig_size)
+    plot!(plt, zero, extrema(xs)...)
+    make_arrow!(plt, xn(t), 10*unit(xn(t)), col="black")
+    make_arrow!(plt, xn(t), 10*unit(vn(t)), col="red")
+    make_arrow!(plt, xn(t), 10*unit(an(t)), col="green")
 
-film = roll(make_plot, fps=1, duration=11)
-film.fps=1
+    plt
+    
+   
+end
+
 imgfile = tempname() * ".gif"
-write(imgfile, film)
-data = base64encode(readall(imgfile))
 caption = """
 
 Position, velocity, and acceleration vectors (scaled) for projectile
@@ -80,7 +65,17 @@ vector (red) is in the direction of the trajectory, and the
 acceleration vector (green) is a constant pointing downward.
 
 """
-xva_trajectory =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
+
+n = 8
+anim = @animate for i=1:n
+    make_plot(i)
+end
+   
+gif(anim, imgfile, fps = 1)
+
+
+xva_trajectory =  WeavePynb.gif_to_data(imgfile, caption)
+
 
 
 
@@ -92,24 +87,20 @@ a1 = [4,1]
 b1 = [-2,2]
 
 
-vector_addition_image = plot(make_arrow(p0, a1, col="blue"),
-                             make_arrow(p0+a1, b1, col="red"),
-                             make_arrow(p0, a1+b1, col="black"),
-                             layer(x=[2, 3, 1.25], y=[.5,2.25,1.75], label=["a","b", "a+b"], Geom.label)
-                             )
+plt = Plots.plot(legend=false, size=fig_size)
+make_arrow!(plt, p0, a1, col="blue")
+make_arrow!(plt, p0+a1, b1, col="red")
+make_arrow!(plt, p0, a1+b1, col="black")
+annotate!(plt, [(2, .25, "a"), (3, 2.25, "b"), (1.25, 1.5, "a+b")])
 
 imgfile = tempname() * ".png"
-io = open(imgfile, "w")
-writemime(io, "image/png", vector_addition_image)
-close(io)
-
-data = base64encode(readall(imgfile))
+png(plt, imgfile)
 caption = """
 
 The sum of two vectors can be visualized by placing the tail of one at the tip of the other
 
 """
-vector_addition_image =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
+vector_addition_image =  WeavePynb.gif_to_data(imgfile, caption)
 
 
 
@@ -119,26 +110,23 @@ p0 = [0,0]
 a1 = [4,1]
 b1 = [-2,2]
 
+plt = plot(legend=false, size=fig_size)
+make_arrow!(plt, p0, a1, col="blue")
+make_arrow!(plt, p0, b1, col="red")
+make_arrow!(plt, b1, a1-b1, col="black")
+annotate!(plt, [(-1, .5, "a"), (2.45, .5, "b"), (1, 1.75, "a-b")])
 
-vector_subtraction_image = plot(make_arrow(p0, a1, col="blue"),
-                             make_arrow(p0, b1, col="red"),
-                             make_arrow(b1, a1-b1, col="black"),
-                             layer(x=[2, -1, 1.25], y=[.5,.75,1.75], label=["a","b", "a-b"], Geom.label)
-                             )
-
+          
 imgfile = tempname() * ".png"
-io = open(imgfile, "w")
-writemime(io, "image/png", vector_subtraction_image)
-close(io)
+png(plt, imgfile)
 
-data = base64encode(readall(imgfile))
 caption = """
 
 The sum of two vectors can be visualized by placing the tail of one at the tip of the other
 
 """
-vector_subtraction_image =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
 
+vector_subtraction_image = WeavePynb.gif_to_data(imgfile, caption)
 
 ## Generic vector
 
@@ -148,24 +136,23 @@ a1 = [4,1]
 b1 = [-2,2]
 
 
-generic_vector = plot(make_arrow(p0, a1, col="blue"),
-                      make_arrow([1,1], unit(a1), col="red"),
-                      layer(x=[.25,3.5], y=[.1, .9], label=["(x₀, y₀)","(x₁, y₁)"], Geom.label),
-                      Guide.xticks(ticks=collect(0:4)), Guide.yticks(ticks=collect(0:4))
-                      )
+plt = plot(legend=false, size=fig_size)
+make_arrow!(plt, p0, a1, col="blue")
+make_arrow!(plt, [1,1], unit(a1), col="red")
+annotate!(plt, [(2, .4, "v"), (1.6, 1.05, "vhat")])
 
 imgfile = tempname() * ".png"
-io = open(imgfile, "w")
-writemime(io, "image/png", generic_vector)
-close(io)
+png(plt, imgfile)
 
-data = base64encode(readall(imgfile))
 caption = """
 
 A vector and its unit vector. They share the same direction, but the unit vector has a standardized magnitude.
 
 """
-generic_vector =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
+
+generic_vector = WeavePynb.gif_to_data(imgfile, caption)
+
+
 
 ## Vector decomposition
 
@@ -175,23 +162,18 @@ cc = [4,3]
 alpha = 2/3
 beta = 5/3
 
-vector_decomp = plot(
-                     make_arrow(p0, cc, col="black", width=1px),
-                     make_arrow(p0, aa, col="black", width=1px),
-                     make_arrow(alpha*aa, bb, col="black", width=1px),
-                     make_arrow(p0, alpha*aa, col="orange", width=4px, opacity=0.5),
-                     make_arrow(alpha*aa, beta*bb, col="orange", width=4px, opacity=0.5),
-                     layer(x=[2, .5, 1.75], y=[1.25,1.0,2.25], label=["c","2/3⋅a", "5/3⋅b"], Geom.label)
-                     )
-
+plt = plot(legend=false, size=fig_size)
+make_arrow!(plt, p0, cc, col="black", width=1px)
+make_arrow!(plt, p0, aa, col="black", width=1px)
+make_arrow!(plt, alpha*aa, bb, col="black", width=1px)
+make_arrow!(plt, p0, alpha*aa, col="orange", width=4px, opacity=0.5)
+make_arrow!(plt, alpha*aa, beta*bb, col="orange", width=4px, opacity=0.5)
+annotate!(plt, collect(zip([2, .5, 1.75], [1.25,1.0,2.25], ["c","2/3 * a", "5/3 * b"])))
 
 
 imgfile = tempname() * ".png"
-io = open(imgfile, "w")
-writemime(io, "image/png", vector_decomp)
-close(io)
+png(plt, imgfile)
 
-data = base64encode(readall(imgfile))
 caption = L"""
 
 The vector $\langle 4,3 \rangle$ is written as
@@ -201,24 +183,17 @@ $\vec{a}$ and $\vec{b}$ are not parallel.
 
 """
 
-vector_decomp =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
+vector_decomp =  WeavePynb.gif_to_data(imgfile, caption)
 
-## <x,y> -> r theta
-
-vector_rtheta = plot(
-                     make_arrow(p0, [2,3], col="black"),
-                     make_arrow(p0, [2,0], col="orange"),
-                     make_arrow(p0+[2,0], [0,3], col="orange"),
-                     layer(x=[.25, 1,1,2], y=[.35, 1.9,.25,1], label=["θ","r", "r ⋅ cos(θ)", "r ⋅ sin(θ)"], Geom.label)
-                     )
-
+plt = plot(legend=false, size=fig_size)
+make_arrow!(plt, p0, [2,3], col="black")
+make_arrow!(plt, p0, [2,0], col="orange")
+make_arrow!(plt, p0+[2,0], [0,3], col="orange")
+annotate!(plt, collect(zip([.25, 1,1,1.75], [.35, 1.9,.25,1], ["t","r", "r * cos(t)", "r * sin(t)"]))) #["θ","r", "r ⋅ cos(θ)", "r ⋅ sin(θ)"]
 
 imgfile = tempname() * ".png"
-io = open(imgfile, "w")
-writemime(io, "image/png", vector_rtheta)
-close(io)
+png(plt, imgfile)
 
-data = base64encode(readall(imgfile))
 caption = L"""
 
 A vector $\langle x, y \rangle$ can be written as $\langle r\cdot
@@ -228,6 +203,7 @@ $\theta$.
 
 """
 
-vector_rtheta =  Mustache.render(gif_to_data_tpl, data=data, caption=caption)
+vector_rtheta = WeavePynb.gif_to_data(imgfile, caption)
+
 
 end

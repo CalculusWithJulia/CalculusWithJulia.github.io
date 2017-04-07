@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 
@@ -26,7 +26,7 @@ differentiation.
 
 For example:
 
-> What is the integral of the derivative? That is, what is $A = \int_a^b f'(x) dx$?
+> What is the definite integral of the derivative? That is, what is $A = \int_a^b f'(x) dx$? (Assume $f'$ is continuous.)
 
 To investigate, we begin with the right Riemann sum using $h = (b-a)/n$:
 
@@ -34,7 +34,7 @@ $$~
 A \approx S_n = \sum_{i=1}^n f'(a + ih) \cdot h.
 ~$$
 
-But we have for small $h$ that $f'(x) \approx (f(x) - f(x-h))/h$. Using this approximation gives us:
+But the Mean Value Theorem says that for small $h$ we have $f'(x) \approx (f(x) - f(x-h))/h$. Using this approximation with $x=a+ih$ gives:
 
 $$~
 A \approx 
@@ -44,7 +44,7 @@ A \approx
 If we let $g(i) = f(a + ih)$, then the summand above is just $g(i) - g(i-1) = D(g)(i)$ and the above then is just the sum of the $D(g)(i)$s, or:
 
 $$~
-A \approx S(D(g))(n) = g(n) - g(0)
+A \approx S(D(g))(n) = g(n) - g(0).
 ~$$
 
 But $g(n) - g(0) = f(a + nh) - f(a + 0h) = f(b) - f(a)$. That is we
@@ -61,13 +61,13 @@ The other question would be
 > What is the derivative of the integral? That is, can we find the derivative of $\int_0^x f(u) du$?
 
 
-Let's look first at the integral using the right-Riemann sum:
+Let's look first at the integral using the right-Riemann sum, again using $h=(b-a)/n$:
 
 $$~
-\int_a^b f(u) du \approx f(a + 1h)h + f(a + 2h)h + \cdots f(a +nh)h
+\int_a^b f(u) du \approx f(a + 1h)h + f(a + 2h)h + \cdots f(a +nh)h = S(g)(n),
 ~$$
 
-If we let $g(i) = f(a + ih)h$ then this is just $S(g)(n)$. In the
+where we define $g(i) = f(a + ih)h$. In the
 above, $n$ relates to $b$, but we could have stopped accumulating at
 any value. The analog for $S(g)(k)$ would be $\int_a^x f(u) du$ where
 $x = a + kh$. That is we can make a function out of integration by
@@ -88,7 +88,19 @@ F'(x) = & \frac{d}{dx} \int_a^x f(u) du \\
 \end{align*}
 ~$$
 
-If $g(i) = f(a + ih)$, then the above becomes just $S(g)(M) - S(g)(M-1)$. That is $D(S(g))(M)$. But this simplifies to just $g(M) = f(a + Mh) = f(x)$. That is $F'(x) \approx f(x)$.
+If $g(i) = f(a + ih)$, then the above becomes
+
+$$~
+\begin{align*}
+F'(x) & \approx D(S(g))(M) \\
+&= f(a + Mh)\\
+&= f(x).
+\end{align*}
+~$$
+
+
+
+That is $F'(x) \approx f(x)$.
 
 In the limit, then, we would expect that
 
@@ -96,13 +108,10 @@ $$~
 \frac{d}{dx} \int_a^x f(u) du = f(x).
 ~$$
 
-This is basically what the second part of the Fundamental Theorem of
-Calculus states.
 
+With these heuristics, we know have:
 
-
-
-> **Fundamental Theorem of Calculus**
+> **The Fundamental Theorem of Calculus**
 >
 > Part 1: Let $f$ be a continuous
 > function on a closed interval $[a,b]$ and define $F(x) = \int_a^x
@@ -115,10 +124,11 @@ Calculus states.
 > f(x)$. Then $\int_a^b f(x)dx=F(b)-F(a)$.
 
 
+
 ```
 note(L"""
 
-In part 1, the integral $F(x) = \int_a^x f(u) du$ is defined for any
+In Part 1, the integral $F(x) = \int_a^x f(u) du$ is defined for any
 Riemann integrable function, $f$. If the function is not continuous,
 then it is true the $F$ will be continuous, but it need not be true
 that it is differentiable at all points in $(a,b)$. Forming $F$ from
@@ -162,7 +172,7 @@ We note that the above includes the case of a constant, or $n=0$: $\int 1 dx = x
 
 
 What about the case $n=-1$, or $f(x) = 1/x$, that is not covered by
-the above? For this special case, it is known that the $F(x) =
+the above? For this special case, it is known that $F(x) =
 \log(x)$ (natural log) will have $F'(x) = 1/x$. This gives for $0 < a
 < b$:
 
@@ -183,14 +193,16 @@ $$~
 The expression $F(b) - F(a)$ is often written in this compacted form:
 
 $$~
-\int_a^b f(x) dx = F(b) - F(a) = F(x)\big|_{x=a}^b.
+\int_a^b f(x) dx = F(b) - F(a) = F(x)\big|_{x=a}^b,
 ~$$
+
+or just $\text{expr}\big|_{x=a}^b$.
 
 
 The vertical bar is used for the *evaluation* step, in this case the
 $a$ and $b$ mirror that of the definite integral. This notation lends
 itself to working inline, as we illustrate with this next problem
-where we "know" the antiderivative, so just express it "inline":
+where we "know" a function "$F$", so just express it "inline":
 
 $$~
 \int_0^{\pi/4} \sec^2(x) dx = \tan(x) \big|_{x=0}^{\pi/4} = 1 - 0 = 1.
@@ -357,7 +369,7 @@ $$~
 This seems like a lot of work, and indeed it is more than is needed. The following would be more typical once the rules are learned:
 
 $$~
-\int_0^\pi 100 \sin(x) dx = (-100\cos(x)) \big|_0^{\pi} = 100 \cos(x) \big|_{\pi}^0 = 100(1) - 100(-1) = 200.
+\int_0^\pi 100 \sin(x) dx = -100(-\cos(x)) \big|_0^{\pi} = 100 \cos(x) \big|_{\pi}^0 = 100(1) - 100(-1) = 200.
 ~$$
 
 ## The derivative of the integral
@@ -473,7 +485,7 @@ F'(x) = (-2x)e^{-x^2} \int_0^x e^{t^2} dt + e^{-x^2} e^{x^2} = -2x F(x) + 1
 We need to figure out when this is $0$. For that, we use some numeric math.
 
 ```
-using Roots
+using Roots, QuadGK
 F(x) = exp(-x^2) * quadgk(t -> exp(t^2), 0, x)[1]
 Fp(x) = -2x*F(x) + 1
 cps = fzeros(Fp, -4,4)
@@ -641,8 +653,8 @@ with a higher-pixel display, then the function to display would be $c(t)
 
 Thinking a bit harder, she knows that her `update` function is getting
 $C(t)$, and displaying the *rate* of calorie burn leads to the area
-displayed being interpretable as the total calories burned between $t$ and $t-10$ (or $C(t)
-- C(t-10)$) by the Fundamental Theorem of Calculus.
+displayed being interpretable as the total calories burned between $t$
+and $t-10$ (or $C(t)-C(t-10)$) by the Fundamental Theorem of Calculus.
 
 ## Questions
 
@@ -738,7 +750,7 @@ Using `SymPy`, integrate the function $\int_0^{2\pi} e^x \cdot \sin(x) dx$.
 
 ```
 using SymPy
-x = symbols("x")
+@vars x
 val = N(integrate(exp(x) * sin(x), x, 0, 2pi))
 numericq(val)
 ```
@@ -897,15 +909,13 @@ Q = f(x)
 P = A(x)
 secpt = u -> 0 + P/(x-T) * (u-T)
 xs = linspace(0, x+1/4)
-p = Gadfly.plot(Gadfly.layer(x = xs, y=map(f,xs),  Gadfly.Geom.line),
-    Gadfly.layer(x = xs, y=map(A,xs),  Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("red"))),
-	Gadfly.layer(x = [T, x, x, x], y=[0, 0, Q, P], Gadfly.Geom.point),
-    Gadfly.layer(x = [T, x, x, x], y=[0, 0, Q, P+1/8], label=["T", "x", "Q", "P"], Gadfly.Geom.label),
-	Gadfly.layer(x = [T-1/4, x+1/4], y = map(secpt, [T-1/4, x + 1/4]),
-	        Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("orange"))),
-    Gadfly.layer(x = [T, x, x], y = [0, 0, P], Gadfly.Geom.line,
-	        Gadfly.Theme(default_color=Gadfly.color("yellow")))
-	)
+p = plot(f, 0, x + 1/4, legend=false)
+plot!(p, A, 0, x + 1/4, color=:red)
+scatter!(p, [T, x, x, x], [0, 0, Q, P], color=:orange)
+annotate!(p, collect(zip([T, x, x+.1, x+.1], [0-.15, 0-.15, Q-.1, P], ["T", "x", "Q", "P"])))
+plot!(p,  [T-1/4, x+1/4], map(secpt, [T-1/4, x + 1/4]), color=:orange)
+plot!(p, [T, x, x], [0, 0, P], color=:yellow)
+
 Outputonly(p)	
 ```
 

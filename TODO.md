@@ -1,3 +1,9 @@
+# v0.6
+
+QuadGK
+SymPy fix
+bookdown prot
+
 - finish up
 - trig integrals?
 - polar coordinates

@@ -2,8 +2,9 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
 ```
+
 
 We can easily make a graph of a function over a specified
 interval. What is not always so easy is to pick an interval that shows
@@ -39,7 +40,11 @@ only when the second function `g` is positive.
 
 ```
 using Plots
-plotif(f, g, a, b) = plot([f, x -> g(x) > 0 ? f(x) : NaN], a, b, linewidth=5)
+function plotif(f, g, a, b)
+   p = plot(f, a, b, linewidth=5, color=:blue, legend=false)
+   plot!(p, x -> g(x) >= 0 ? f(x) : NaN, a, b, linewidth=5, color=:red)
+   p
+end	
 ```
 
 To see where a function is positive, we simply pass the function
@@ -62,19 +67,21 @@ Maybe surprisingly, we see that the increasing parts of the sine curve are now
 highlighted. Of course, the cosine is the derivative of the sine
 function, now we discuss that this is no coincidence.
 
-## The derivative and increasing and decreasing
+## The relationship of the derivative and increasing
 
 The derivative, $f'(x)$, computes the slope of the tangent line to the
 graph of $f(x)$ at the point $(x,f(x))$. If the derivative is
 positive, the tangent line will have an increasing slope. Clearly if
-we see an increasing function and mentally layer on a tangent, it will
-have a positive slope. Intuitively then increasing functions and
+we see an increasing function and mentally layer on a tangent line, it will
+have a positive slope. Intuitively then, increasing functions and
 positive derivatives are related concepts. But there are some
-technicalities. Suppose $f(x)$ has a derivative on $I$ . Then
+technicalities.
+
+Suppose $f(x)$ has a derivative on $I$ . Then
 
 > If $f'(x)$ is positive on an interval $I=(a,b)$, then $f(x)$ is strictly increasing on $I$.
 
-Meanwhile
+Meanwhile,
 
 > If a function $f(x)$ is increasing on $I$, then $f'(x) \geq 0$.
 
@@ -98,12 +105,13 @@ though there is no guarantee the limit will be positive.
 
 
 So, to visualize where a function is increasing, we can just pass in
-the derivative as the masking function in our `plotif` function. For
-example,
+the derivative as the masking function in our `plotif` function, as long as we are wary about places with $0$ derivative (flat spots).
+
+For example,
 
 ```
 using Roots                           # for D
-Base.ctranspose(f::Function) = D(f)   # to use f' in place of D(f)
+Base.ctranspose(f::Function) = D(f)   # to use f' notation in place of D(f)
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
 plotif(f, f', -2, 2)
 ```
@@ -122,14 +130,14 @@ answer can be answered by considering the first derivative.
 
 > *The first derivative test*: If $c$ is a critical point for $f(x)$ and
 > *if* $f'(x)$ changes sign at $x=c$, then $f(c)$ will be either a
-> relative maximum or a relative minimum. It will be a maximum if the
-> derivative changes sign from $+$ to $-$ and a minimum if the
+> relative maximum or a relative minimum. It will be a relative maximum if the
+> derivative changes sign from $+$ to $-$ and a relative minimum if the
 > derivative changes sign from $-$ to $+$. If $f'(x)$ does not change sign
 > at $c$, then $(c,f(c))$ is *not* a relative maximum or minimum.
 
-The classification part, should be clear: if the derivative is positive then
+The classification part, should be clear: e.g., if the derivative is positive then
 negative, the function $f$ will increase to $(c,f(c))$ then decrease
-from $(c,f(c))$ and vice versa.
+from $(c,f(c))$ -- so a local maximum. 
 
 Our definition of critical point *assumes* $f(c)$ exists, as $c$ is in
 the domain of $f$. With this assumption, vertical asymptotes are
@@ -148,8 +156,8 @@ f(x) = exp(-abs(x)) * cos(pi * x)
 plotif(f, f', -3, 3)
 ```
 
-We can see the first derivative test in action -- at the peaks and
-valleys, the relative extrema, the color changes, as the function
+We can see the first derivative test in action: at the peaks and
+valleys -- the relative extrema -- the color changes, as the function
 changes from increasing to decreasing or vice versa.
 
 ##### Example
@@ -169,10 +177,11 @@ cps = fzeros(f', -2, 2)
 ```
 
 We should be careful though, as `fzeros` may miss zeros that are not
-simple or too close together. A critical point will be a simple zero
-if the function crosses the axis, so these can not be "pauses." As
-this is exactly the case we are screening for, we double check that
-all the critical points are accounted for by graphing the derivative:
+simple or too close together. A critical point will corresponde to a
+relative maximum if the function crosses the axis, so these can not be
+"pauses." As this is exactly the case we are screening for, we double
+check that all the critical points are accounted for by graphing the
+derivative:
 
 ```
 plot([f', zero], -2, 2)
@@ -214,7 +223,7 @@ values:
 
 ```
 test_pts = [-2, -1/2, 1/2, 2]
-[f'(x) for x in test_pts]
+f'.(test_pts)
 ```
 
 Reading this we have:
@@ -256,10 +265,9 @@ We will work symbolically for this example.
 
 ```
 using SymPy
-x = symbols("x", real=true)
-
 f(x) = sin(x) - x
-cps = solve(diff(f(x)), x)
+fp = diff(f)
+cps = solve(fp)
 ```
 
 We get values of $0$ and $2\pi$. Let's look at the derivative at these points:
@@ -267,7 +275,7 @@ We get values of $0$ and $2\pi$. Let's look at the derivative at these points:
 At $x=0$ we have to the left and right signs found by
 
 ```
-[subs(diff(f), x=>y) for y in [-1/10,  1/10]]
+fp.([-1/10, 1/10])
 ```
 
 Both are negative. The derivative does not change sign at $0$, so the critical point is neither a relative minimum or maximum.
@@ -275,7 +283,7 @@ Both are negative. The derivative does not change sign at $0$, so the critical p
 What about at $2\pi$? We do something similar:
 
 ```
-[subs(diff(f), x=>y) for y in 2*pi + [-1/10,  1/10]]
+fp.(2*pi + [-1/10,  1/10])
 ```
 
 Again, both negative. The function $f(x)$ is just decreasing near
@@ -302,7 +310,7 @@ $$~
 f(x) = \frac{(x-1)\cdot(x-3)^2}{x \cdot (x-2)}.
 ~$$
 
-Not much here if you are satisfied with a graph that only gives insight into the asymptotes of this rational function:
+Not much to do here if you are satisfied with a graph that only gives insight into the asymptotes of this rational function:
 
 ```
 f(x) = ( (x-1)*(x-3)^2 ) / (x * (x-2) )
@@ -310,7 +318,7 @@ plot(f, -10, 10)
 ```
 
 We can see the slant asymptote and hints of vertical asymptotes, but,
-we'd like to see much more of the basic features of the graph.
+we'd like to see more of the basic features of the graph.
 
 Previously, we have discussed rational functions and their
 asymptotes. This function has numerator of degree 3 and denominator of
@@ -319,7 +327,7 @@ denominator, $0$ and $-2$, will lead to vertical asymptotes. To get
 all those into one graph, we used a function to trim the large $y$ values:
 
 ```
-trim(f, M=10) = x -> abs(f(x)) > M ? NaN : f(x)
+trim(f, M=20) = x -> abs(f(x)) > M ? NaN : f(x)
 plot(trim(f), -10, 10)
 ```
 
@@ -337,7 +345,7 @@ cps = fzeros(f', -4, 4)
 The values of $f$ at the critical points are:
 
 ```
-[f(cp) for cp in cps]
+f.(cps)
 ```
 
 Its $0$. In general we don't want to trim these values off when plotting, so we will use 20, not the default of 10, when trimming.
@@ -345,7 +353,7 @@ Its $0$. In general we don't want to trim these values off when plotting, so we 
 We check that $(0,f(0))$ is a relative minimum, by checking values of the derivative to the left and right:
 
 ```
-[sign(f'(x)) for x in [2.5, 3.5]]
+[sign(f'(x)) for x in [2.5, 3.5]]  # 
 ```
 
 We see the pattern negative to positive that indicates a minimum.
@@ -372,32 +380,31 @@ of interest are so we can see them clearly.
 
 Consider the function $f(x) = x^2$. Over this function we draw some secant lines:
 
-```
+```nocode
 f(x) = x^2
 seca(f,a,b) = x -> f(a) + (f(b) - f(a)) / (b-a) * (x-a)
 sec1(f,a,b) = x -> (a < x <  b) ? seca(f,a,b)(x) : NaN
-p = plot(f, -2, 3, legend=false, linewidth=5)
-plot!(seca(f, -1, 2), -2, 3)
-plot!(sec1(f, -1, 2), -2, 3, linewidth=5)
-plot!(seca(f, 0, 3/2), -2, 3)
-plot!(sec1(f, 0, 3/2), -2, 3, linewidth=5)
-
-Outputonly(p)
+p = plot(f, -2, 3, legend=false, linewidth=5, xlim=(-2,3), ylim=(-2, 9))
+plot!(p,seca(f, -1, 2))
+plot!(p,sec1(f, -1, 2), linewidth=5)
+plot!(p,seca(f, 0, 3/2))
+plot!(p,sec1(f, 0, 3/2), linewidth=5)
+p
 ```
 
 The graph attempts to illustrate that for this function the secant
-line between any two points $a$ and $b$ will lie above the graph.
+line between any two points $a$ and $b$ will lie above the graph over $[a,b]$.
 
-This is a special property not shared by all functions.
+This is a special property not shared by all functions. Let $I$ be an open interval.
 
-> **Concave up**: A function $f(x)$ is concave up on $I$ if for any $a <
-> b$ in $I$ the secant line between $a$ and $b$ lies above the graph
+> **Concave up**: A function $f(x)$ is concave up on $I$ if for any 
+> $a<b$ in $I$ the secant line between $a$ and $b$ lies above the graph
 > of $f(x)$ over $[a,b]$.
 
 A similar definition exists for *concave down* where the secant lines
 lie below the graph.  Notationally, concave up says $f(a) + (f(b) -
-f(a))/(b-a) \cdot (x-a) \geq f(x)$ for any $x$ in $[a,b]$.  Replacine
-$\geq$ with $leq$ defines *concave up*, and with either $>$ or $<$
+f(a))/(b-a) \cdot (x-a) \geq f(x)$ for any $x$ in $[a,b]$.  Replacing
+$\geq$ with $\leq$ defines *concave up*, and with either $>$ or $<$
 will add the prefix "strictly." These definitions are useful for a
 general definition of
 [convex functions](https://en.wikipedia.org/wiki/Convex_function).  We
@@ -412,22 +419,22 @@ value theorem from Rolle's theorem. Let $g(x) = f(x) - (f(a) + M \cdot
 (x-a)$, where $M$ is the slope of the secant line between $a$ and
 $b$. If $f'(x)$ is increasing, then so is $g'(x) = f'(x) + M$. Concave
 up means $g(x) \leq 0$. Suppose that there is a value where $g(x) > 0$
-in $[a,b]$. Then assuming $g'(x)$ always exists, after some work,
+in $[a,b]$. We show this can't be. Then assuming $g'(x)$ always exists, after some work,
 Rolle's theorem will ensure there is a value where $g'(c) = 0$ and
 $(c,g(c))$ is a relative maximum. The first derivative test then
 ensures that $g'(x)$ will increase to the left of $c$ and decrease to
 the right of $c$. But this can't happen as $g'(x)$ is assumed to be
 increasing on the interval.
 
-Similarly, if a function has a decreasing derivative on $[a,b]$ then it
-will be concave down on $[a,b]$.
+Similarly, if a function has a decreasing derivative on $I$ then it
+will be concave down on $I$.
 
 
 The relationship between increasing functions and their derivatives
 gives this second characterization of concavity when the second
 derivative exists:
 
-> If $f''(x)$ exists and is positive on $(a,b)$, then $f(x)$ is concave up on $(a,b)$.
+> If $f''(x)$ exists and is positive on $I$, then $f(x)$ is concave up on $I$.
 
 This follows,  as we can think of $f''(x)$ as just the first derivative
 of the function $f'(x)$, so the assumption will force $f'(x)$ to be
@@ -490,7 +497,7 @@ cps = fzeros(f', -3, 3)
 We can check the sign of the second derivative for each critical point:
 
 ```
-[f''(cp) for cp in cps]
+f''.(cps)
 ```
 
 That $f''(0.6) < 0$ implies that at $0.6$, $f(x)$ will have a relative
@@ -510,7 +517,7 @@ plotif(f, f'', -0.25, 1.25)
 For the graph we see that $0$ **is** not a relative maximum or minimum. We could have seen this numerically by checking the first derivative test, and noting there is no sign change:
 
 ```
-[sign(f'(x)) for x in [-0.1, 0.1]]
+sign.(f'.([-0.1, 0.1]))
 ```
 
 ### Inflection points
@@ -520,8 +527,9 @@ changes sign. At an inflection point the derivative will change from
 increasing to decreasing (or vice versa) and the function will change
 from concave up to down (or vice versa).
 
-We can use the `fzeros` function to find inflection points, by passing in the second derivative function. For
-example, consider the bell-shaped function
+We can use the `fzeros` function to find inflection points, by passing
+in the second derivative function. For example, consider the
+bell-shaped function
 
 $$~
 f(x) = e^{-x^2/2}.
@@ -540,6 +548,8 @@ The inflection points can be found directly, if desired, or numerically with:
 ```
 fzeros(f'', -3, 3)
 ```
+
+(The `fzeros` function may return points which are not inflection points. It primarily returns points where $f''(x)$ changes sign, but may also find points where $f''(x)$ is $0$ yet does not change sign at $x$.)
 
 ##### Example
 
@@ -680,9 +690,10 @@ radioq(choices, ans)
 Consider this graph
 
 ```
-trim(f,c=10) = x -> abs(f(x)) > c ? NaN : f(x)
 f(x) = (x-2)* (x-2.5)*(x-3) / ((x-1)*(x+1))
-p = plot(trim(f, 30), -20, 20)
+p = plot(f, -20, -1-.3, legend=false, xlim=(-20, 20), color=:blue)
+plot!(p, f, -1 + .2, 1 - .02, color=:blue)
+plot!(p, f, 1 + .05, 20, color=:blue)
 Outputonly(p)
 ```
 
@@ -715,7 +726,7 @@ choices = [
 L"That the critical point at $-1$ is a relative maximum",
 L"That the critical point at $-1$ is a relative minimum",
 L"That the critical point at $0$ is a relative maximum",
-L"That the critical point at $0$ is a relative minimum"
+       L"That the critical point at $0$ is a relative minimum"
 ]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -727,10 +738,10 @@ Mystery function $f(x)$ has $f'(2) = 0$ and $f''(0) = 2$. What is the *most* you
 
 ```
 choices = [
-L"$f(x)$ is continuous at 2",
-L"$f(x)$ is differentiable at 2",
-L"$f(x)$ is differentiable at 2 and has a critical point",
-L"$f(x)$ is differentiable at 2 and has a critical point that is a relative minimum by the second derivative test"
+L" $f(x)$ is continuous at 2",
+L" $f(x)$ is continuous and differentiable at 2",
+L" $f(x)$ is continuous and differentiable at 2 and has a critical point",
+L" $f(x)$ is continuous and differentiable at 2 and has a critical point that is a relative minimum by the second derivative test"
 ]
 ans = 3
 radioq(choices, ans, keep_order=true)
@@ -763,7 +774,7 @@ numericq(val)
 
 ###### Question
 
-How many inflection points does $f(x) = x^5 - x + 1 $ have?
+How many inflection points does $f(x) = x^5 - x + 1$ have?
 
 
 ```
@@ -790,12 +801,12 @@ radioq(choices, ans)
 
 ###### Question
 
-At $c$, $f'(c) = 0$ and $f''(c) = c^2$. Is $(c,f(c))$ a relative maximum? ($f$ is a "nice" function.)
+At $c$, $f'(c) = 0$ and $f''(c) = c^2$. Is $(c,f(c))$ a relative minimum? ($f$ is a "nice" function.)
 
 ```
 choices = [
-"No, it is a relative minimum",
-L"No, the second derivative test is possibly inconclusive if $c=0$",
+"No, it is a relative maximum",
+L"No, the second derivative test is possibly inconclusive if $c=0$, but otherwise yes",
 "Yes"
 ]
 ans = 2
@@ -868,5 +879,64 @@ L"f(x) = \lvert x \rvert / x",
 L"f(x) = \lvert x \rvert",
 L"f(x) = x^{1/3}"]
 ans=2
+radioq(choices, ans)
+```
+
+##### Question
+
+While driving we accelerate to get through a light before it turns red. However, at time $t_0$ a car cuts in front of us and we are forced to break. If $s(t)$ represents position, what is $t_0$:
+
+```
+choices = ["A zero of the function",
+"A critical point for the function",
+"An inflection point for the function"]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+##### Question
+
+Two models for population growth are *exponential* growth: $P(t) = P_0 a^t$ and *logistic*
+[growth[(https://en.wikipedia.org/wiki/Logistic_function#In_ecology:_modeling_population_growth): $P(t) = K P_0 a^t / (K + P_0(a^t - 1))$. The exponential growth model has growth rate proportional to the current population. The logistic model has growth rate depending on the current population *and* the available resources (which can limit growth).
+
+
+Letting $K=10$, $P_0=5$, and $a= e^(1/4)$. A plot over $[0,5]$ shows somewhat similar behaviour:
+
+```
+K, P0, a = 50, 5, exp(1/4)
+egrowth(t) = P0 * a^t
+lgrowth(t) = K * P0 * a^t / (K + P0*(a^t-1))
+
+plot([egrowth, lgrowth], 0, 5)
+```
+
+Does a plot over $[0,50]$ show similar behaviour?
+
+```
+yesnoq(false)
+```
+
+Exponential growth has $P''(t) = P_0 a^t \log(a)^2 > 0$, so has no inflection point. By plotting over a sufficiently wide interval, can you answer: does the logistic growth model have an inflection point?
+
+```
+yesnoq(true)
+```
+
+If yes, find it numerically:
+
+```
+using Roots
+val = fzero(D(lgrowth,2), 0, 20)
+numericq(val)
+```
+
+The available resources are quantified by $K$. As $K \rightarrow \infty$ what is the limit of the logistic growth model:
+
+```
+choices = [
+"The exponential growth model",
+"The limit does not exist",
+L"The limit is $P_0$"]
+ans = 1
 radioq(choices, ans)
 ```

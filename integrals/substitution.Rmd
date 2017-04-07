@@ -1,0 +1,1215 @@
+
+# Substitution
+
+The fundamental theorem relates the derivative and an antiderivative via:
+$$~
+\int_a^b f(x) dx = F(b) - F(a).
+~$$
+
+If $F(x) = G(u(x))$, then the chain rule tells us that $f(x) = g(u(x)) u'(x)$, so we get:
+$$~
+\int_{u(a)}^{u(b)} g(x) dx = \int_a^b g(u(x)) u'(x) dx= G(u(x)) \big|_a^b = G(x) \big|_{u(a)}^{u(b)}.
+~$$
+
+That is, this substitution formula applies:
+
+> $$
+> ~ \int_a^b g(u(x)) u'(x) dx = \int_{u(a)}^{u(b)} g(x) dx. ~
+> $$
+
+
+We've seen a special case of this where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
+
+The main use of this is to take complicated things inside of the function $g$ out of the function (the $u(x)$) then account for the change.
+
+Some examples are in order.
+
+Consider:
+$$~
+\int_0^{\pi/2} \cos(x) e^{\sin(x)} dx.
+~$$
+
+Clearly the $\sin(x)$ inside the exponential is an issue. If we let $u(x) = \sin(x)$, then $u'(x) = \cos(x)$, and this becomes
+$$~
+\int_{u(0)}^{u(\pi/2)} e^x dx = e^x \big|_{\sin(0)}^{\sin(\pi/2)} = e^1 - e^0.
+~$$
+
+This all worked as the problem was such that it was more or less obvious what to choose for $u$ and $G$.
+
+### "u" substitution
+
+The process of identifying the result of the chain rule in the function to integrate is not automatic, but rather a bit of an art. The basic step is to try some values. Typically, this is taught by "substituting" in some value for part of the expression (basically the $u(x)$) and seeing what happens.
+
+In the above problem, $\int_0^{\pi/2} \cos(x) e^{\sin(x)} dx$, we might just rename $\sin(x)$ to be $u$ (suppressing the "of $x$ part). Then we need to rewrite the "$dx$" part of the integral. We know in this case that $du/dx = \cos(x)$. In terms of differentials, this gives $du = \cos(x) dx$. But this allows us to substitute in with $u$ and $du$ as is possible:
+$$~
+\int_0^{\pi/2} \cos(x) e^{\sin(x)} dx = \int_0^{\pi/2}  e^{\sin(x)} \cdot \cos(x) dx = \int_{u(0)}^{u(\pi)} e^u du.
+~$$
+
+---
+
+Let's illustrate with a new problem: $\int_0^2 4x e^{x^2} dx$.
+
+Again, we see that the $x^2$ inside the exponential is a complication. Letting $u = x^2$ we have $du = 2x dx$. We  have $4xdx$ in the original problem, so we will end up with $2du$:
+$$~
+\int_0^2 4x e^{x^2} dx = 2\int_0^2 e^{x^2} \cdot 2x dx = 2\int_{u(0)}^{u(2)} e^u du = 2 \int_0^4 e^u du =
+2 e^u\big|_{u=0}^4 = 2(e^4 - 1).
+~$$
+
+---
+
+Consider now $\int_0^1 2x^2 \sqrt{1 + x^3} dx$. Here we see that the $1 + x^3$ makes the square root term complicated. If we call this $u$, the what is $du$? Clearly, $du = 3x^2 dx$, or $(1/3)du = x^2 dx$, so we can rewrite this as:
+$$~
+\int_0^1 2x^2 \sqrt{1 + x^3} dx = \int_{u(0)}^{u(1)} 2 \sqrt{u} (1/3) du = 2/3 \cdot \frac{u^{3/2}}{3/2} \big|_1^2 =
+\frac{4}{9} \cdot(2^{3/2} - 1).
+~$$
+
+---
+
+Consider $\int_0^{\pi} \cos(x)^3 \sin(x) dx$. The $\cos(x)$ function inside the $x^3$ function is complicated. We let $u(x) = \cos(x)$ and see what that implies: $du = \sin(x) dx$, which we see is part of the question. So the above becomes:
+$$~
+\int_0^{\pi} \cos(x)^3 \sin(x) dx = \int_{u(0)}^{u(\pi)} u^3 du= \frac{u^4}{4}\big|_0^0 = 0.
+~$$
+
+Changing limits leaves the two endpoints the same, which means the total area after substitution is $0$. A graph of this function shows that around $\pi/2$ we can see the function has symmetry about $\pi/2$, so the answer of $0$ is supported by the plot:
+
+```{r eval=FALSE}
+using Plots
+f(x) = cos(x)^3 * sin(x)
+plot(f, 0, 1pi)
+
+```
+                                    
+<div id="ed5a1d60-d3a2-46b7-b538-2adad94770f1" style="width:600px;height:400px;"></div>
+<script>
+PLOT = document.getElementById('ed5a1d60-d3a2-46b7-b538-2adad94770f1');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[0.0,0.031680036610859774,0.06304161179107222,0.09377061804764349,0.1235615888078284,0.1521218525564518,0.17917549035034586,0.20446703605876249,0.22776486276880648,0.24886420378321414,0.2675897624441694,0.2837978715481608,0.29737817026840396,0.3082547741583761,0.3163869218497866,0.32176909035191753,0.3244305792737956,0.32443457269124193,0.3218766956329119,0.31688309013081317,0.3096080433438648,0.30023120729681174,0.28895445616876064,0.2759984327136312,0.26159884020877483,0.24600254023121035,0.22946351949131685,0.2122387908650545,0.19458429462786797,0.17675086569330967,0.15898033140109152,0.14150180210378757,0.12452821350647993,0.1082531754730549,0.09284817689562017,0.07846019031271534,0.06520971335344798,0.053189276885481314,0.042462442071416154,0.033063300514708634,0.02499648343255436,0.018237677462403866,0.012734636425560643,0.008408670269461785,0.0051565846205997926,0.002853037028407725,0.0013532691854887084,0.0004961682810265867,0.00010760528099439118,3.993417446349596e-6,-3.993417446349501e-6,-0.00010760528099439032,-0.0004961682810265885,-0.0013532691854887045,-0.0028530370284077186,-0.005156584620599764,-0.008408670269461743,-0.01273463642556059,-0.01823767746240384,-0.02499648343255433,-0.03306330051470853,-0.04246244207141612,-0.053189276885481265,-0.06520971335344802,-0.07846019031271527,-0.0928481768956201,-0.1082531754730547,-0.12452821350647998,-0.1415018021037875,-0.15898033140109138,-0.1767508656933096,-0.19458429462786794,-0.21223879086505443,-0.22946351949131683,-0.24600254023121035,-0.26159884020877483,-0.27599843271363106,-0.2889544561687605,-0.30023120729681163,-0.3096080433438648,-0.3168830901308131,-0.3218766956329119,-0.32443457269124193,-0.3244305792737956,-0.3217690903519175,-0.3163869218497865,-0.30825477415837627,-0.29737817026840424,-0.28379787154816116,-0.26758976244416927,-0.24886420378321414,-0.22776486276880653,-0.20446703605876265,-0.17917549035034608,-0.1521218525564518,-0.12356158880782851,-0.0937706180476437,-0.06304161179107254,-0.031680036610860225,3.216245299353273e-16],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,0.03173325912716963,0.06346651825433926,0.09519977738150888,0.12693303650867852,0.15866629563584814,0.19039955476301776,0.22213281389018738,0.25386607301735703,0.28559933214452665,0.3173325912716963,0.34906585039886584,0.3807991095260355,0.4125323686532052,0.44426562778037476,0.4759988869075444,0.5077321460347141,0.5394654051618837,0.5711986642890533,0.6029319234162229,0.6346651825433925,0.6663984416705622,0.6981317007977317,0.7298649599249014,0.761598219052071,0.7933314781792408,0.8250647373064104,0.8567979964335799,0.8885312555607495,0.9202645146879193,0.9519977738150888,0.9837310329422584,1.0154642920694281,1.0471975511965976,1.0789308103237674,1.1106640694509369,1.1423973285781066,1.1741305877052763,1.2058638468324459,1.2375971059596154,1.269330365086785,1.3010636242139546,1.3327968833411243,1.3645301424682938,1.3962634015954634,1.4279966607226333,1.4597299198498028,1.4914631789769726,1.523196438104142,1.5549296972313116,1.5866629563584815,1.618396215485651,1.6501294746128208,1.6818627337399903,1.7135959928671598,1.7453292519943295,1.777062511121499,1.8087957702486686,1.8405290293758385,1.872262288503008,1.9039955476301775,1.9357288067573473,1.9674620658845168,1.9991953250116867,2.0309285841388562,2.0626618432660258,2.0943951023931953,2.126128361520365,2.1578616206475347,2.1895948797747042,2.2213281389018737,2.2530613980290437,2.284794657156213,2.3165279162833827,2.3482611754105527,2.379994434537722,2.4117276936648917,2.443460952792061,2.4751942119192307,2.5069274710464007,2.53866073017357,2.5703939893007397,2.602127248427909,2.633860507555079,2.6655937666822487,2.697327025809418,2.7290602849365877,2.760793544063757,2.7925268031909267,2.824260062318097,2.8559933214452666,2.887726580572436,2.9194598396996057,2.951193098826775,2.982926357953945,3.0146596170811146,3.046392876208284,3.0781261353354537,3.109859394462623,3.1415926535897936],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[-0.2,0.0,0.2],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["-0.2","0.0","0.2"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,1.0,2.0,3.0],"domain":[0.0658209390492855,0.9934383202099738],"ticktext":["0","1","2","3"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+
+---
+
+Consider $\int_1^e \log(x)/x dx$. There isn't really an "inside" function here, but instead just a tricky $\log(x)$. If we let $u=\log(x)$, what happens? We get $du = 1/x \cdot dx$, which we see present in the original. So with this, we have:
+$$~
+\int_1^e \frac{\log(x)}{x} dx = \int_{u(1)}^{u(e)} u du = \frac{u^2}{2}\big|_0^1 = \frac{1}{2}.
+~$$
+
+##### Example: Transformations
+
+We say that the area intrinsically discussed in the definite integral $A=\int_a^b f(x-c) dx$ is unaffected by shifts, in that $A = \int_{a-c}^{b-c} f(x) dx$. What about more general transformations? For example: if $g(x) = (1/h) \cdot f((x-c)/h)$ for values $c$ and $h$ what is the integral over $a$ to $b$ in terms of the function $f(x)$?
+
+If $A = \int_a^b (1/h) \cdot f((x-c)/h) dx$ then we let $u = (x-c)/h$. With this, $du = 1/h \cdot dx$. This allows a straight substitution:
+$$~
+A = \int_a^b \frac{1}{h} f(\frac{x-c}{h}) dx = \int_{(a-c)/h}^{(b-c)/h} f(u) du.
+~$$
+
+So the answer is: the area under the transformed function over $a$ to $b$ is the area of the function over the transformed region.
+
+For example, consider the "hat" function $f(x) = 1 - \lvert x \rvert $ when $-1 \leq x \leq 1$ and $0$ otherwise. The area under $f$ is just $1$ – the graph forms a triangle with base of length $2$ and height $1$. If we take any values of $c$ and $h$, what do we find for the area under the curve of the transformed function?
+
+Let $u(x) = (x-c)/h$ and $g(x) = h f(u(x))$. Then, as $du = 1/h dx$
+$$~
+\begin{align}
+\int_{c-h}^{c+h} g(x) dx
+&= \int_{c-h}^{c+h} h f(u(x)) dx\\
+&= \int_{u(c-h)}^{u(c+h)} f(u) du\\
+&= \int_{-1}^1 f(u) du\\
+&= 1.
+\end{align}
+~$$
+
+So the area of this transformed function is still $1$. The shifting by $c$ we know doesn't effect the area, the scaling by $h$ inside of $f$ does, but is balanced out by the multiplication by $h$ outside of $f$.
+
+##### Example: Speed versus velocity
+
+The "velocity" of an object includes a sense of direction in addition to the sense of magnitude. The "speed" just includes the sense of magnitude. Speed is always non-negative, whereas velocity is a signed quantity.
+
+As mentioned previously, position is the integral of velocity, as expressed precisely through this equation:
+$$~
+x(t) = \int_0^t v(u) du - x(0).
+~$$
+
+What is the integral of speed?
+
+If $v(t)$ is the velocity, the $s(t) = \lvert v(t) \rvert$ is the speed. If integrating either $s(t)$ or $v(t)$, the  integrals would agree when $v(t) \geq 0$. However,  when $v(t) \leq 0$, the position back tracks so $x(t)$ decreases, where the integral of $s(t)$ would only increase.
+
+This integral
+$$~
+td(t) = \int_0^t s(u) du = \int_0^t \lvert v(u) \rvert du,
+~$$
+
+Gives the *total distance* traveled.
+
+To illustrate with a simple example, if a car drives East for one hour at 60 miles per hour, then heads back West for an hour at 60 miles per hour, the car's position after one hour is $x(2) = x(0)$, with a change in position $x(2) - x(0) = 0$. Whereas, the total distance traveled is $120$ miles. (Gas is paid on total distance, not change in position!). What are the formulas for speed and velocity? Clearly $s(t) = 60$, a constant, whereas here $v(t) = 60$ for $0 \leq t \leq 1$ and $-60$ for $1 < t \leq 2$.
+
+Suppose $v(t)$ is given by $v(t) = (t-2)^3/3 - 4(t-2)/3$. If $x(0)=0$ Find the position after 3 time units and the total distance traveled.
+
+We let $u(t) = t - 2$ so $du=dt$. The position is given by
+$$~
+\int_0^3  ((t-2)^3/3 - 4(t-2)/3) dt = \int_{u(0)}^{u(3)} (u^3/3 - 4/3 u) du =
+(\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{-2}^1 = \frac{3}{4}.
+~$$
+
+The speed is similar, but we have to work harder:
+$$~
+\int_0^3 \lvert v(t) \rvert dt = \int_0^3  \lvert ((t-2)^3/3 - 4(t-2)/3) \rvert dt  =
+\int_{-2}^1 \lvert u^3/3 - 4u/3 \rvert du.
+~$$
+
+But $u^3/3 - 4u/3 = (1/3) \cdot u(u-1)(u+2)$, so between $-2$ and $0$ it is positive and between $0$ and $1$ negative, so this integral is:
+$$~
+\int_{-2}^0 (u^3/3 - 4u/3 ) du + \int_{0}^1 -(u^3/3 - 4u/3) du =
+(\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{-2}^0 - (\frac{u^4}{12} - \frac{4}{3}\frac{u^2}{2}) \big|_{0}^1 = \frac{4}{3} - -\frac{7}{12} = \frac{23}{12}.
+~$$
+
+## SymPy and substitution
+
+The `integrate` function in `SymPy` can handle most problems which involve substitution. Here are a few examples:
+
+  * This integral, $\int_0^2 4x/\sqrt{x^2 +1}dx$, involves a substitution for $x^2 + 1$:
+
+```{r eval=FALSE}
+using SymPy
+x,t = symbols("x, t", real=true)
+f(x) = 4x / sqrt(x^2 + 1)
+integrate(f(x), x, 0, 2)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+  * This integral, $\int_e^{e^2} 1/(x\log(x)) dx$ involves a substitution of $u=\log(x)$. Here we see the answer:
+
+```{r eval=FALSE}
+f(x) = 1/(x*log(x))
+integrate(f(x), x, E, E^2)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+(We used `E` – and not `e` – to avoid a conversion to floating point.)
+
+The antiderivative is interesting here:
+
+```{r eval=FALSE}
+integrate(f(x), x)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+The answer is an *iterated* logarithm.
+
+### Failures...
+
+Not every integral problem lends itself to solution by substitution. For example, we can use substitution to evaluate the integral of $xe^{-x^2}$, but for $e^{-x^2}$ or $x^2e^{-x^2}$. The first has no familiar antiderivative, the second is done by a different technique.
+
+Even when substitution can be used, `SymPy` may not be able to algorithmically identify it. The algorithm used can determine if expressions involving rational functions, radicals, logarithms, and exponential functions is integrable. Missing from this list are absolute values, so something as simple as
+
+```{r eval=FALSE}
+integrate(abs(x), x, -2, 2)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+is not found.
+
+For such problems, we know how to help `SymPy` out– we can break the integral into pieces where we know the sign of the expression.
+
+For substitution problems, we can also help out. For example, find an antiderivative for
+$$~
+\int(1 + \log(x)) \sqrt{1 + (x\log(x))^2} dx
+~$$
+
+A quick attempt with `SymPy` turns up nothing:
+
+```{r eval=FALSE}
+f(x) = (1 + log(x)) * sqrt(1 + (x*log(x))^2 )
+integrate(f(x), x)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+But were we to try $u=x\log(x)$, we'd see that this simplifies to $\int \sqrt{1 + u^2} du$, which has some hope of having an antiderivative.
+
+We can help `SymPy` out by substitution:
+
+```{r eval=FALSE}
+u(x) = x * log(x)
+w, dw = symbols("w, dw")
+ex = subs(f(x), u(x), w) |> subs(diff(u(x),x), dw)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+This verifies the above. Can it be integrated in `w`? The "`dw`" is only for familiarity, `SymPy` doesn't use this, so we set it to 1 then integrate:
+
+```{r eval=FALSE}
+ex = subs(ex, dw, 1)
+ex1 = integrate(ex, w)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+Finally, we put back in the `u(x)` to get an antiderivative.
+
+```{r eval=FALSE}
+subs(ex1, w, u(x))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+<div class="alert alert-info" role="alert">
+<div class="markdown"><p>Lest it be thought this is an issue with <code>SymPy</code>, but not other systems, this example was <a href="http://faculty.uml.edu/jpropp/142/Integration.pdf">borrowed</a> from an  illustration for helping Mathematica.</p>
+</div> 
+</div>
+
+## Trigonometric substitution
+
+Wait, in the last example an antiderivative for $\sqrt{1 + u^2}$ was found. But how? We haven't discussed this yet.
+
+This can be found using *trigonometric* substitution. In this example, we know that $1 + \tan(\theta)^2$ simplifies to $\sec(\theta)^2$, so we might *try* a substitution of $\tan(u)=x$. This would simplify $\sqrt{1 + x^2}$ to $\sqrt{1 + \tan(u)^2} = \sqrt{\sec(u)^2}$ which is $\lvert \sec(u) \rvert$. What of $du$? The chain rule gives $\sec(u)^2du = dx$. In short we get:
+$$~
+\int \sqrt{1 + x^2} dx = \int \sec(u)^2 \lvert \sec(u) \rvert du = \int \sec(u)^3 du
+~$$
+
+This leaves still the question of integrating $\sec(u)^3$, which we aren't (yet) prepared to discuss, but we see that this type of substitution can re-express an integral in a new way that may pay off.
+
+##### Examples
+
+Let's see some examples where a trigonometric substitution is all that is needed.
+
+Consider $\int 1/(1+x^2) dx$. This is an antiderivative of some function, but if that isn't observed, we might notice the $1+x^2$ and try to simplify that. First, an attempt a $u$-substitution:
+
+Letting $u = 1+x^2$ we get $du = 2xdx$ which gives $\int 1/u (2x) du$. We aren't able to address the "$2x$" part successfully, so this attempt is for naught. Now we try the trigonometric substitution taking advantage of $1+\tan(x)^2 = \sec(x)^2$. Letting $\tan(u) = x$ yields $\sec(u)^2 du = dx$ and we get:
+$$~
+\int \frac{1}{1+x^2} dx = \int \frac{1}{1 + \tan(u)^2} \sec(u)^2 du = \int 1 du = u.
+~$$
+
+But $\tan(u) = x$, so in terms of $x$, an antiderivative is just $\tan^{-1}(x)$, or the arctangent. Here we verify with `SymPy`:
+
+```{r eval=FALSE}
+integrate(1/(1+x^2), x)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+---
+
+The expression $1-x^2$ can be attacked by the substitution $\sin(u) =x$ as then $1-x^2 = 1-\cos(u)^2 = \sin(u)^2$. Here we see this substitution being used successfully:
+$$~
+\int \frac{1}{\sqrt{9 - x^2}} dx = \int \frac{1}{\sqrt{9 - (3\sin(u))^2}} \cdot 3\cos(u) du =
+\int \frac{1}{3\sqrt{1 - \sin(u)^2}}\cdot3\cos(u) du = \int du = u = \sin^{-1}(x/3).
+~$$
+
+---
+
+The expression $x^2 - 1$ is a bit different, this lends itself to $\sec(u) = x$ for a substitution, for $\sec(u)^2 - 1 = \tan(u)^2$. For example, we try $\sec(u) = x$ to integrate:
+$$~
+\int \frac{1}{\sqrt{x^2 - 1}} dx = \int \frac{1}{\sqrt{\sec(u)^2 - 1}} \cdot \sec(u)\tan(u) du =
+\int \frac{1}{\tan{u}}\sec(u)\tan(u) du = \int \sec(u) du.
+~$$
+
+This doesn't seem that helpful, but the antiderivative to $\sec(u)$ is $\log\lvert (\sec(u) + \tan(u))\rvert$, so we can proceed to get:
+$$~
+\int \frac{1}{\sqrt{x^2 - 1}} dx = \int \sec(u) du = \log\lvert (\sec(u) + \tan(u))\rvert = \log\lvert x + \sqrt{x^2-1} \rvert.
+~$$
+
+---
+
+The equation of an ellipse is $x^2/a^2 + y^2/b^2 = 1$. Suppose $a,b>0$. The area under the function $b \sqrt{1 - x^2/a^2}$ between $-a$ and $a$ will then be half the area of the ellipse. Find the area enclosed by the ellipse.
+
+We need to compute:
+$$~
+2\int_{-a}^a b \sqrt{1 - x^2/a^2} dx =
+4 b \int_0^a\sqrt{1 - x^2/a^2} dx.
+~$$
+
+Letting $\sin(u) = x/a$ gives $a\cos(u)du = dx$ and an antiderivative is found with:
+$$~
+4 b \int_0^a \sqrt{1 - x^2/a^2} dx = 4b \int_0^{\pi/2} \sqrt{1-u^2} a \cos(u) du
+= 4ab \int_0^{\pi/2} \cos(u)^2 du
+~$$
+
+The identify $\cos(u)^2 = (1 +  \cos(2u))/2$ makes this tractable:
+$$~
+4ab \int \cos(u)^2 du
+= 4ab\int_0^{\pi/2}(\frac{1}{2} + \frac{\cos(2u)}{2}) du
+= 4ab(\frac{1}{2}u + \frac{\sin(2u)}{4})\big|_0^{\pi/2} =
+4ab (\pi/4 + 0) = \pi ab.
+~$$
+
+Keeping in mind that that a circle with radius $a$ is an ellipse with $b=a$, we see that this gives the correct answer for a circle.
+
+## Questions
+
+###### Question
+
+For $\int \sin(x) \cos(x) dx$, let $u=\sin(x)$. What is the resulting substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="Qxb5m6Kh" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_Qxb5m6Kh" value="1"><div class="markdown">$\int u du$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_Qxb5m6Kh" value="2"><div class="markdown">$\int u \cos(x) du$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_Qxb5m6Kh" value="3"><div class="markdown">$\int u (1 - u^2) du$
+</div>
+</label>
+</div>
+
+
+
+<div id="Qxb5m6Kh_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_Qxb5m6Kh']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#Qxb5m6Kh_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#Qxb5m6Kh_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+For $\int \tan(x)^4 \sec(x)2 dx$ what $u$-substitution makes this easy?
+
+----
+
+<form name="WeaveQuestion" data-id="mBEmcPK2" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_mBEmcPK2" value="1"><div class="markdown">$u=\tan(x)^4$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_mBEmcPK2" value="2"><div class="markdown">$u=\sec(x)^2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_mBEmcPK2" value="3"><div class="markdown">$u=\tan(x)$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_mBEmcPK2" value="4"><div class="markdown">$u=\sec(x)$
+</div>
+</label>
+</div>
+
+
+
+<div id="mBEmcPK2_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_mBEmcPK2']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#mBEmcPK2_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#mBEmcPK2_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+For $\int x \sqrt{x^2 - 1} dx$ what $u$ substitution makes this easy?
+
+----
+
+<form name="WeaveQuestion" data-id="fZIWBC83" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_fZIWBC83" value="1"><div class="markdown">$u=x^2 - 1$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_fZIWBC83" value="2"><div class="markdown">$u=x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_fZIWBC83" value="3"><div class="markdown">$u=x^2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_fZIWBC83" value="4"><div class="markdown">$u=\sqrt{x^2 - 1}$
+</div>
+</label>
+</div>
+
+
+
+<div id="fZIWBC83_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_fZIWBC83']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#fZIWBC83_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#fZIWBC83_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+For $\int x^2(1-x)^2 dx$ will the substitution $u=1-x$ prove effective?
+
+----
+
+<form name="WeaveQuestion" data-id="6A8ARPY1" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_6A8ARPY1" value="1"><div class="markdown"><p>Yes</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_6A8ARPY1" value="2"><div class="markdown"><p>No</p>
+</div>
+</label>
+</div>
+
+
+
+<div id="6A8ARPY1_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_6A8ARPY1']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#6A8ARPY1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#6A8ARPY1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+What about expanding the factored polynomial to get a fourth degree polynomial, will this prove effective?
+
+----
+
+<form name="WeaveQuestion" data-id="5cZ3Me8E" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_5cZ3Me8E" value="1"><div class="markdown"><p>Yes</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_5cZ3Me8E" value="2"><div class="markdown"><p>No</p>
+</div>
+</label>
+</div>
+
+
+
+<div id="5cZ3Me8E_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_5cZ3Me8E']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#5cZ3Me8E_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#5cZ3Me8E_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+For  $\int (\log(x))^3/x dx$ the substitution $u=\log(x)$ reduces this to what?
+
+----
+
+<form name="WeaveQuestion" data-id="VXZgyZ9j" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VXZgyZ9j" value="1"><div class="markdown">$\int u du$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VXZgyZ9j" value="2"><div class="markdown">$\int u^3/x du$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VXZgyZ9j" value="3"><div class="markdown">$\int u^3 du$
+</div>
+</label>
+</div>
+
+
+
+<div id="VXZgyZ9j_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_VXZgyZ9j']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#VXZgyZ9j_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#VXZgyZ9j_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+For $\int \tan(x) dx$ what substitution will prove effective?
+
+----
+
+<form name="WeaveQuestion" data-id="afCwLC2i" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_afCwLC2i" value="1"><div class="markdown">$u=\tan(x)$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_afCwLC2i" value="2"><div class="markdown">$u=\sin(x)$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_afCwLC2i" value="3"><div class="markdown">$u=\cos(x)$
+</div>
+</label>
+</div>
+
+
+
+<div id="afCwLC2i_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_afCwLC2i']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#afCwLC2i_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#afCwLC2i_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+Integrating $\int_0^1 x \sqrt{1 - x^2} dx$ can be done by using the $u$-substitution $u=1-x^2$. This yields an integral
+$$~
+\int_a^b \frac{-\sqrt{u}}{2} du.
+~$$
+
+What are $a$ and $b$?
+
+----
+
+<form name="WeaveQuestion" data-id="VldVIpn1" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VldVIpn1" value="1"><div class="markdown">$a=0,~ b=0$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VldVIpn1" value="2"><div class="markdown">$a=0,~ b=1$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VldVIpn1" value="3"><div class="markdown">$a=1,~ b=0$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_VldVIpn1" value="4"><div class="markdown">$a=1,~ b=1$
+</div>
+</label>
+</div>
+
+
+
+<div id="VldVIpn1_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_VldVIpn1']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#VldVIpn1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#VldVIpn1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int \sqrt{1 - x^2} dx$ lends itself to what substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="hcmwLolH" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_hcmwLolH" value="1"><div class="markdown">$\sin(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_hcmwLolH" value="2"><div class="markdown">$\sec(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_hcmwLolH" value="3"><div class="markdown">$\tan(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_hcmwLolH" value="4"><div class="markdown">$u = 1 - x^2$
+</div>
+</label>
+</div>
+
+
+
+<div id="hcmwLolH_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_hcmwLolH']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#hcmwLolH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#hcmwLolH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int x/(1+x^2) dx$ lends itself to what substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="U921xykw" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_U921xykw" value="1"><div class="markdown">$u = 1 + x^2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_U921xykw" value="2"><div class="markdown">$\sin(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_U921xykw" value="3"><div class="markdown">$\tan(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_U921xykw" value="4"><div class="markdown">$\sec(u) = x$
+</div>
+</label>
+</div>
+
+
+
+<div id="U921xykw_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_U921xykw']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#U921xykw_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#U921xykw_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int dx / \sqrt{1 - x^2}$ lends itself to what substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="HCljCrBw" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_HCljCrBw" value="1"><div class="markdown">$\sin(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_HCljCrBw" value="2"><div class="markdown">$u = 1 - x^2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_HCljCrBw" value="3"><div class="markdown">$\sec(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_HCljCrBw" value="4"><div class="markdown">$\tan(u) = x$
+</div>
+</label>
+</div>
+
+
+
+<div id="HCljCrBw_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_HCljCrBw']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#HCljCrBw_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#HCljCrBw_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int dx / \sqrt{x^2 - 16}$ lends itself to what substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="I7urQSek" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_I7urQSek" value="1"><div class="markdown">$4\sec(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_I7urQSek" value="2"><div class="markdown">$4\sin(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_I7urQSek" value="3"><div class="markdown">$\sin(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_I7urQSek" value="4"><div class="markdown">$\sec(u) = x$
+</div>
+</label>
+</div>
+
+
+
+<div id="I7urQSek_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_I7urQSek']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#I7urQSek_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#I7urQSek_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int dx / (a^2 + x^2)$ lends itself to what substitution?
+
+----
+
+<form name="WeaveQuestion" data-id="1L1PCpsg" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_1L1PCpsg" value="1"><div class="markdown">$\tan(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_1L1PCpsg" value="2"><div class="markdown">$\sec(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_1L1PCpsg" value="3"><div class="markdown">$\tan(u) = x$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_1L1PCpsg" value="4"><div class="markdown">$a\sec(u) = x$
+</div>
+</label>
+</div>
+
+
+
+<div id="1L1PCpsg_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_1L1PCpsg']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#1L1PCpsg_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#1L1PCpsg_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+The integral $\int_{1/2}^1 \sqrt{1 - x^2}dx$ can be approached with the substitution $\sin(u) = x$ giving:
+$$~
+\int_a^b \cos(u)^2 du.
+~$$
+
+What are $a$ and $b$?
+
+----
+
+<form name="WeaveQuestion" data-id="nJZ6WcWe" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_nJZ6WcWe" value="1"><div class="markdown">$a=\pi/4,~ b=\pi/2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_nJZ6WcWe" value="2"><div class="markdown">$a=\pi/3,~ b=\pi/2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_nJZ6WcWe" value="3"><div class="markdown">$a=\pi/6,~ b=\pi/2$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_nJZ6WcWe" value="4"><div class="markdown">$a=1/2,~ b= 1$
+</div>
+</label>
+</div>
+
+
+
+<div id="nJZ6WcWe_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_nJZ6WcWe']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#nJZ6WcWe_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#nJZ6WcWe_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+###### Question
+
+How would we verify that $\log\lvert (sec(u) + tan(u))\rvert$ is an antiderivative for $\sec(u)$?
+
+----
+
+<form name="WeaveQuestion" data-id="5pNryFMG" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_5pNryFMG" value="1"><div class="markdown"><p>We could differentiate $\sec(u)$.</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_5pNryFMG" value="2"><div class="markdown"><p>We could differentiate $\log\lvert (sec(u) + tan(u))\rvert$ </p>
+</div>
+</label>
+</div>
+
+
+
+<div id="5pNryFMG_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_5pNryFMG']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#5pNryFMG_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#5pNryFMG_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+

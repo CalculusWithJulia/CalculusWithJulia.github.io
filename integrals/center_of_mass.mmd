@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
 ```
 
 ```
@@ -75,26 +75,25 @@ But what should the center of mass formula be?
 As with many formulas that will end up involving a derived integral, we start with a sum approximation. If the region is described as the area under the graph of $f(x)$ between $a$ and $b$, then we can form a Riemann sum approximation, that is a choice of $a = x_0 < x_1 < x_2 \cdots < x_n = b$ and points $c_1$, $\dots$, $c_n$. If all the rectangles are made up of a material of uniform density, say $\rho$, then the mass of each rectangle will be the area times $\rho$, or $\rho f(c_i) \cdot (x_i - x_{i-1})$, for $i = 1, \dots , n$.
 
 ```
-using Gadfly, Colors
 n = 21
 xs = linspace(-1, 1, n)
 cs = (xs[1:(end-1)] + xs[2:end]) / 2
-layers = Gadfly.Layer[]
+
+p = plot(legend=false);
+
 for i in 1:(n-1)
    xi, xi1 = xs[i], xs[i+1]
-   append!(layers, Gadfly.layer(x=[xi, xi1, xi1, xi], y=[0,0,1,1]*f(cs[i]), Gadfly.Geom.polygon(preserve_order=true),
-   Gadfly.Theme(default_color=colorant"orange")))
+   plot!(p, [xi, xi1, xi1, xi], [0,0,1,1]*f(cs[i]), linetype=:polygon, color=:red);
 end    
 
 for i in 1:(n-1)
-ci = cs[i]
-pt = (1 + round(Int, 10*sqrt(f(ci))))Gadfly.px
-append!(layers, Gadfly.layer(x=[ci], y=[.1], Gadfly.Geom.point, Gadfly.Theme(default_point_size=pt)))
+  ci = cs[i]
+  scatter!(p, [ci], [.1], markersize=12*f(cs[i]), color=:orange);
 end
+plot!(p, [-1,1], [0,0])
 
-p = Gadfly.plot(Gadfly.layer(x=[-1,0,1], y=[0,1,0], Gadfly.Geom.line),
-Gadfly.layer(x=[-1,1], y=[0,0], Gadfly.Geom.line),
-layers...)
+
+
 Outputonly(p)
 ```
 
@@ -153,7 +152,7 @@ plot([f,g], -3, 3)
 To find it, we need to find the intersection points, then integrate. We do so numerically.
 
 ```
-using Roots
+using Roots, QuadGK
 h(x) = f(x) - g(x)
 a,b = fzeros(h)  # h is a polynomial function, so specifying an interval is not needed
 top, _ = quadgk(x -> x*h(x), a, b)
@@ -230,20 +229,15 @@ This figure has constant slices of length $1$ for fixed values of $y$. If we wer
 
 ```
 u(i) = 1/2*(2k - log(e^(2(k-1)) - i))
-layers = Gadfly.Layer[]
+p = plot(legend=false);
 for i in 0:floor(phi(k))
   x = u(i)
-  l = Gadfly.layer(x = [x,x,x-1,x-1], y=[f(x),f(x)+1, f(x)+1, f(x)],
-  Gadfly.Geom.polygon(preserve_order=true),
-  Gadfly.Theme(default_color=colorant"orange"))
-  append!(layers, l)
+  plot!(p, [x,x,x-1,x-1], [f(x),f(x)+1, f(x)+1, f(x)], linetype=:polygon, color=:orange);
 end
 xs = linspace(0, e)
-p = Gadfly.plot(
-layers...,
-Gadfly.layer(x=xs, y=map(f,xs), Gadfly.Geom.line, Gadfly.Theme(line_width=3Gadfly.px)),
-Gadfly.layer(x=xs, y=map(g, xs), Gadfly.Geom.line, Gadfly.Theme(line_width=3Gadfly.px))
-)
+plot!(p, f, 0, e, linewidth=5);
+plot!(p, g, 0, 3, linewidth=5)
+
 Outputonly(p)
 ```
 
@@ -273,7 +267,7 @@ More generally, consider a right triangle with vertices $(0,0)$, $(0,a)$, and $(
 
 ```
 using SymPy
-a,b,x,y = symbols("a,b,x,y")
+@vars a b x y
 eqn = x/b + y/a - 1
 fy = solve(eqn, x)[1]
 integrate(y*fy, (y, 0, a)) / integrate(fy, (y, 0, a))
@@ -325,19 +319,24 @@ A disc of radius $2$ is centered at the origin, as a disc of radius $1$ is bored
 A picture shows that this could be complicated, especially for $y > 0$, as we need to describe the length of the red lines below for $-2 < y < 2$:
 
 ```
-ts = linspace(0, 2pi)
-p = Gadfly.plot(
-Gadfly.layer(x = 2*cos(ts), y = 2*sin(ts), Gadfly.Geom.line(preserve_order=true)),
-Gadfly.layer(x = 1*cos(ts), y = 1 + sin(ts),  Gadfly.Geom.polygon(preserve_order=true, fill=true)),
-Gadfly.layer(x=[-sqrt(3), sqrt(3)], y=[-1,-1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red")),
-Gadfly.layer(x=[-sqrt(3), -1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red")),
-Gadfly.layer(x=[sqrt(3), 1], y=[1,1], Gadfly.Geom.line, Gadfly.Theme(default_color=colorant"red"))
-)
+a,b = 0, 2pi
+ts = linspace(a, b)
+p = plot(t -> 2cos(t), t->2sin(t), a, b, legend=false);
+plot!(p, cos.(ts), 1 + sin.(ts), linetype=:polygon, color=:red);
+plot!(p, [-sqrt(3), sqrt(3)], [-1,-1], color=:orange);
+plot!(p, [-sqrt(3), -1],      [1,1],   color=:orange);
+plot!(p, [sqrt(3), 1],        [1,1],   color=:orange);
+
 Outputonly(p)
 ```
 
-We can see that cm$_x = 0$, by symmetry, but to compute cm$_y$ we need to find $f(y)$, which will depend on the value of $y$ between $-2$ and $2$. The outer circle is $x^2 + y^2 = 4$, the inner circle $x^2 + (y-1)^2 = 1$.
-When $y < 0$, $f(y)$ is the distance across the outer circle or, $2\sqrt{4 - y^2}$. When $y \geq 0$, $f(y)$ is *twice* the distance from the bigger circle to the smaller, of $2(\sqrt{4 - y^2} - \sqrt{1 - (y-1)^2})$.
+We can see that cm$_x = 0$, by symmetry, but to compute cm$_y$ we need
+to find $f(y)$, which will depend on the value of $y$ between $-2$ and
+$2$. The outer circle is $x^2 + y^2 = 4$, the inner circle $x^2 +
+(y-1)^2 = 1$.  When $y < 0$, $f(y)$ is the distance across the outer
+circle or, $2\sqrt{4 - y^2}$. When $y \geq 0$, $f(y)$ is *twice* the
+distance from the bigger circle to the smaller, of $2(\sqrt{4 - y^2} -
+\sqrt{1 - (y-1)^2})$.
 
 We use this to compute:
 
@@ -476,11 +475,11 @@ ds = [0.75, 0.835, 0.705, 0.955]
 rs = ds/2
 xs = rs[4] - rs
 ts = linspace(0,2pi)
-layers = Gadfly.Layer[]
+p = plot(legend=false);
 for i in 1:4
-append!(layers, Gadfly.layer(x=xs[i] + rs[i]*cos(ts), y=rs[i]*sin(ts), Gadfly.Geom.line(preserve_order=true)))
+  plot!(p, xs[i] + rs[i]*cos(ts), rs[i]*sin(ts));
 end
-p = Gadfly.plot(layers...)
+
 Outputonly(p)
 ```
 

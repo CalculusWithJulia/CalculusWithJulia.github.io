@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 
@@ -20,7 +20,7 @@ singularities in the function and infinite domains.
 ## Infinite domains
 
 Let $f(x)$ be a reasonable function, so reasonable that for any $a <
-b$ the function is Riemann integrable so that $\int_a^b f(x)dx$
+b$ the function is Riemann integrable, meaning $\int_a^b f(x)dx$
 exists.
 
 What needs to be the case so that we can discuss the limit over the entire real number line?
@@ -50,7 +50,7 @@ $$~
 \int_{-\infty}^a f(x) dx  = \lim_{M \rightarrow -\infty} \int_M^a f(x) dx.
 ~$$
 
-For the interval $(-\infty, \infty)$ we have need both these limits to exist:
+For the interval $(-\infty, \infty)$ we have need *both* these limits to exist, and then:
 
 
 $$~
@@ -114,7 +114,7 @@ so seeing if the limit exists is a bit of a problem. However, this function is i
 
 ```
 using SymPy
-x, M = symbols("x, M", real=true)
+@vars x M
 integrate(sinc(x), (x, 0, M))
 ```
 
@@ -127,6 +127,7 @@ limit(integrate(sinc(x), (x, 0, M)), M, oo)
 The `quadgk` function is able to accept `Inf` and `-Inf` as endpoints of the interval. For example, this will integrate $e^{-x^2/2}$ over the real line:
 
 ```
+using QuadGK
 f(x) = exp(-x^2/2)
 quadgk(f, -Inf, Inf)
 ```
@@ -143,7 +144,7 @@ Suppose $a < c$, we define $\int_a^c f(x) dx = \lim_{M \rightarrow c-} \int_a^c 
 
 ##### Examples
 
-* Consider $f(x) = 1/\sqrt{x}$ at $0$. Here $f(0)= \infty$, so the usual notion of a limit won't apply to $\int_0^1 f(x) dx$. However,
+* Consider the example of the initial illustration, $f(x) = 1/\sqrt{x}$ at $0$. Here $f(0)= \infty$, so the usual notion of a limit won't apply to $\int_0^1 f(x) dx$. However,
 
 $$~
 \lim_{M \rightarrow 0+} \int_M^1 \frac{1}{\sqrt{x}} dx 
@@ -262,9 +263,7 @@ is $0$, so $f(x) = 0$ if $x < 0$. What about for $x>0$? The derivative
 is $e^{-x}$, but is that the right answer? $F(x) = \int_{-\infty}^x
 f(u) du$, so we have to at least discuss if the $-\infty$ affects
 things. In this case, and in general the answer is *no*. For any $x$
-we can find $M < x$ so that:
-
-$F(x) = \int_{-\infty}^M f(u) du + \int_M^x f(u) du$. The first part
+we can find $M < x$ so that we have $F(x) = \int_{-\infty}^M f(u) du + \int_M^x f(u) du$. The first part
 is a constant, so will have derivative $0$, the second will have
 derivative $f(x)$, if the derivative exists (and it will exist at $x$
 if the derivative is continuous in a neighborhood of $x$).

@@ -2,7 +2,8 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
+using QuadGK
 ```
 
 ```
@@ -111,6 +112,7 @@ V = \int_0^h \pi r(x)^2 dx
 This is
 
 ```
+using QuadGK
 d0, d1, h = 2.5, 3.75, 4.75
 rad(x) = d0/2 + (d1/2 - d0/2)/h * x
 vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)
@@ -181,7 +183,7 @@ y/h)$. This gives the well-known volume of a cone:
 
 ```
 using SymPy
-r,h,x,y = symbols("r,h,x,y")
+@vars r h x y
 R = r*(1 - y/h)
 integrate(pi*R^2, (y, 0, h))
 ```
@@ -384,9 +386,10 @@ Consider a sphere with an interior cylinder bored out of it.  (The
 [Napkin](http://tinyurl.com/o237v83) ring problem.) The bore has
 height $h$ -- for larger radius spheres this means very wide bores.
 
-The following illustrates $R=5$ and $h=8$.
 
 ```nocode
+#The following illustrates $R=5$ and $h=8$.
+
 R =5; h1 = 2*4
 
 theta = asin(h1/2/R)
@@ -394,18 +397,22 @@ thetas = linspace(-theta, theta)
 ts = linspace(-pi, pi)
 y = h1/4
 
-p = Gadfly.plot(
-Gadfly.layer(x=R*cos(ts), y=R*sin(ts), Gadfly.Geom.line(preserve_order=true)),
-Gadfly.layer(x=[R*cos(theta), R*cos(theta)], y=[h1/2, -h1/2], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.colorant"orange")),
-Gadfly.layer(x=R*cos(thetas), y=R*sin(thetas),  Gadfly.Geom.line(preserve_order=true),
-   Gadfly.Theme(default_color=Gadfly.colorant"orange")),
-Gadfly.layer(x=[R*cos(theta), sqrt(R^2 - y^2)], y=[y, y], Gadfly.Geom.line(preserve_order=true),
-   Gadfly.Theme(default_color=Gadfly.colorant"orange")),
-Gadfly.layer(x=[0, R*cos(theta)], y=[0,0], Gadfly.Geom.line(preserve_order=true), Gadfly.Theme(default_color=Gadfly.colorant"red")),
-Gadfly.layer(x=[0, R*cos(theta)], y=[0,h1/2], Gadfly.Geom.line(preserve_order=true), Gadfly.Theme(default_color=Gadfly.colorant"red")),
-Gadfly.layer(x=[.45, R*cos(theta)-.6, 1.5], y=[2/3, h1/4, 1.5*tan(theta)], label=["sqrt(R^2-(h/2)^2)", "h/2", "R"],
-  Gadfly.Geom.label), Gadfly.Guide.xticks(ticks=[-5,0,5]),Gadfly.Guide.yticks(ticks=[-5,0,5])
- )
+p = plot!(legend=false);
+plot!(p, R*cos(ts), R*sin(ts));
+plot!(p, R*cos(thetas), R*sin(thetas), color=:orange);
+
+plot!(p, [R*cos(theta), R*cos(theta)], [h1/2, -h1/2], color=:orange);
+plot!(p, [R*cos(theta), sqrt(R^2 - y^2)], [y, y], color=:orange)
+
+plot!(p, [0, R*cos(theta)], [0,0], color=:red);
+plot!(p,[ 0, R*cos(theta)], [0,h1/2], color=:red);
+
+annotate!(p, [(.5, -2/3, "sqrt(R^2- (h/2)^2"),
+              (R*cos(theta)-.6, h1/4, "h/2"),
+              (1.5, 1.75*tan(theta), "R")])
+
+p
+
 ```
 
 

@@ -129,6 +129,10 @@ The derivative finds use outside of the traditional way of specifying a function
 
 - [Related Rates](derivatives/related_rates.html)
 
+The Taylor polynomial approximation of a function $f$ is a generalization of the tangent line approximation for $f$ at a point.
+
+- [Taylor polynomials](derivatives/taylor_series_polynomials.html)
+
 
 
 ## Integration

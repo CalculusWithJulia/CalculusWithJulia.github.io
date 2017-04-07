@@ -2,31 +2,46 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
-The fundamental theorem relates the derivative and an antiderivative via:
+The technique of $u$-[substitution](https://en.wikipedia.org/wiki/Integration_by_substitution) is derived from reversing the chain rule: $[f(g(x))]' = f'(g(x)) g'(x)$.
+
+Suppose that $g$ and $u'(x)$ are integrable functions. Then both these integrals are defined:
 
 $$~
-\int_a^b f(x) dx = F(b) - F(a).
+\int_a^b g(u(t)) \cdot u'(t) dt, \quad \text{and}\quad \int_{u(a)}^{u(b)} g(x) dx.
 ~$$
 
+We wish to show they are equal.
 
-If $F(x) = G(u(x))$, then the chain rule tells us that $f(x) = g(u(x)) u'(x)$, so we get:
+Let $G$ be an antiderivative of $g$, which exists as $g$ is assumed to be continuous. (By the Fundamental Theorem part I.) Consider the composition $G \circ u$. The chain rule gives:
 
 $$~
-\int_{u(a)}^{u(b)} g(x) dx = \int_a^b g(u(x)) u'(x) dx= G(u(x)) \big|_a^b = G(x) \big|_{u(a)}^{u(b)}.
+[G \circ u]'(t) = G'(u(t)) \cdot u'(t) = g(u(t)) \cdot u'(t).
 ~$$
+
+So,
+
+$$~
+\begin{align}
+\int_a^b g(u(t)) \cdot u'(t) dt &= \int_a^b (G \circ u)'(t) dt\\
+&= (G\circ u)(b) - (G\circ u)(a) \quad\text{(the FTC, part II}\\
+&= G(u(b)) - G(u(a)) \\
+&= \int_{u(a)}^{u(b)} g(x) dx. \quad\text{(the FTC part II}
+\end{align}
+~$$
+
 
 That is, this substitution formula applies:
 
 > $$~ \int_a^b g(u(x)) u'(x) dx = \int_{u(a)}^{u(b)} g(x) dx. ~$$
 
-We've seen a special case of this where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
+We have seen a special case of subsitution where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
 
 
 
-The main use of this is to take complicated things inside of the function $g$ out of the function (the $u(x)$) then account for the change.
+The main use of this is to take complicated things inside of the function $g$ out of the function (the $u(x)$) by renaming them, then account for the change of name.
 
 Some examples are in order.
 
@@ -77,7 +92,7 @@ $$~
 
 ----
 
-Consider now $\int_0^1 2x^2 \sqrt{1 + x^3} dx$. Here we see that the $1 + x^3$ makes the square root term complicated. If we call this $u$, the what is $du$? Clearly, $du = 3x^2 dx$, or $(1/3)du = x^2 dx$, so we can rewrite this as:
+Consider now $\int_0^1 2x^2 \sqrt{1 + x^3} dx$. Here we see that the $1 + x^3$ makes the square root term complicated. If we call this $u$, then what is $du$? Clearly, $du = 3x^2 dx$, or $(1/3)du = x^2 dx$, so we can rewrite this as:
 
 $$~
 \int_0^1 2x^2 \sqrt{1 + x^3} dx = \int_{u(0)}^{u(1)} 2 \sqrt{u} (1/3) du = 2/3 \cdot \frac{u^{3/2}}{3/2} \big|_1^2 =
@@ -95,7 +110,7 @@ $$~
 
 Changing limits leaves the two endpoints the same, which means the
 total area after substitution is $0$. A graph of this function shows
-that around $\pi/2$ we can see the function has symmetry about $\pi/2$, so the answer of $0$ is supported by the plot:
+that about $\pi/2$ the function has odd-like symmetry, so the answer of $0$ is supported by the plot:
 
 
 ```
@@ -291,20 +306,21 @@ We can help `SymPy` out by substitution:
 ```
 u(x) = x * log(x)
 w, dw = symbols("w, dw")
-ex = subs(f(x), u(x), w) |> subs(diff(u(x),x), dw)
+ex = f(x)
+ex = ex(u(x) => w, diff(u(x),x) => dw)
 ```
 
 This verifies the above. Can it be integrated in `w`? The "`dw`" is only for familiarity, `SymPy` doesn't use this, so we set it to 1 then integrate:
 
 ```
-ex = subs(ex, dw, 1)
+ex = ex(dw => 1)
 ex1 = integrate(ex, w)
 ```
 
 Finally, we put back in the `u(x)` to get an antiderivative.
 
 ```
-subs(ex1, w, u(x))
+ex1(w => u(x))
 ```
 
 ```
@@ -369,7 +385,7 @@ The expression $x^2 - 1$ is a bit different, this lends itself to $\sec(u) = x$ 
 
 $$~
 \int \frac{1}{\sqrt{x^2 - 1}} dx = \int \frac{1}{\sqrt{\sec(u)^2 - 1}} \cdot \sec(u)\tan(u) du =
-\int \frac{1}{\tan{u}}\sec(u)\tan(u) du = \int \sec(u) du.
+\int \frac{1}{\tan(u)\sec(u)\tan(u) du = \int \sec(u) du.
 ~$$
 
 

@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 The derivative of $f(x)$ has the interpretation as the slope of the
@@ -22,7 +22,7 @@ representing the tangent line.
 
 ```
 using Roots
-tl(f, c) = x -> f(c) + D(f)(c) * (x - c)
+tangent(f, c) = x -> f(c) + D(f)(c) * (x - c)
 ```
 
 (Recall, the `->` indicates that an anonymous function is being generated.)
@@ -33,7 +33,7 @@ To illustrate the tangent line, we can make some graphs:
 ```
 using Plots
 f(x) = x^2
-plot([f, tl(f, -1), tl(f, 2)], -3, 3)
+plot([f, tangent(f, -1), tangent(f, 2)], -3, 3)
 ```
 
 The graph shows that near the point, the line and function are close,
@@ -56,21 +56,21 @@ There are several approximations that are well known in physics:
 
 ```
 f(x) = sin(x)
-plot([f, tl(f, 0)], -pi/2, pi/2)
+plot([f, tangent(f, 0)], -pi/2, pi/2)
 ```
 
 * $\log(1 + x) \approx x$ at $x=0$:
 
 ```
 f(x) = log(1 + x)
-plot([f, tl(f, 0)], -1/2, 1/2)
+plot([f, tangent(f, 0)], -1/2, 1/2)
 ```
 
 * $1/(1-x) \approx x$ at $x=0$:
 
 ```
 f(x) = 1/(1-x)
-plot([f, tl(f, 0)], -1/2, 1/2)
+plot([f, tangent(f, 0)], -1/2, 1/2)
 ```
 
 In each of these three cases, a more complicated non-linear function
@@ -79,17 +79,17 @@ function.
 
 ## Numeric approximations
 
-```
+```nocode
 f(x) = sin(x)
-xs =linspace(-1/4, pi/2)
-p = Gadfly.plot(
-      Gadfly.layer(x=xs, y=map(f, xs), Gadfly.Geom.line),
-      Gadfly.layer(x=xs, y=xs, Gadfly.Geom.line),
-      Gadfly.layer(x=[0,1,1], y = [0, 0, 1], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("brown"))),
-      Gadfly.layer(x=[0,1,1], y = [0, 0, sin(1)], Gadfly.Geom.line, Gadfly.Theme(default_color=Gadfly.color("gray"))),
-      Gadfly.layer(x=[1/2,1, 1/2-1/8],  y=[0, sin(1)/2, 1], label=["Δx", "Δy", "m=dy/dx"], Gadfly.Geom.label)
-      )
-Outputonly(p)	  
+a, b = -1/4, pi/2
+
+p = plot(f, a, b, legend=false);
+plot!(p, x->x);
+plot!(p, [0,1,1], [0, 0, 1], color=:brown);
+plot!(p, [0,1,1], [0, 0, sin(1)], color=:green);
+annotate!(p, collect(zip([1/2,1+.05, 1/2-1/8], [.05, sin(1)/2, .75], ["Δx", "Δy", "m=dy/dx"])));
+p
+
 ```
 
 The plot shows the tangent line with slope $dy/dx$ and the actual
@@ -154,9 +154,34 @@ abs(50 - 60/70*60) / (60/70*60) * 100
 
 That's about $3$ percent. Not bad considering we could have done all the above in our head.
 
+##### Example
 
+A 10cm by 10cm by 10cm cube will contain 1 liter (1000cm$^3$). In
+manufacturing such a cube, the side lengths are actually $10.1$
+cm. What will be the volume in liters? Compute this with a linear
+approximation to $(10.1)^3$.
 
-###### Example from physics
+Here $f(x) = x^3$ and we are asked to approximate $f(10.1)$. Letting $c=10$, we have:
+
+$$~
+f(c + \Delta) \approx f(c) + f'(c) \cdot \Delta = 1000 + f'(c) \cdot (0.1)
+~$$
+
+Computing the derivative can be done easily, we get for our answer:
+
+```
+fp(x) = 3*x^2
+c, Delta = 10, 0.1
+1000 + fp(c) * Delta
+```
+
+This is a relative error as a percent of:
+
+```
+fp(c) * Delta / 1000 * 100
+```
+
+##### Example from physics
 
 A *simple* pendulum is comprised of a massless "bob" on a rigid "rod"
 of length $l$. The rod swings back and forth making an angle $\theta$
@@ -280,7 +305,7 @@ satisfies $0 < \xi < e < x$, so is in $[0,x]$.
 
 ```
 using SymPy
-x = symbols("x", real=true)
+@vars x
 series(exp(sin(x)),x,0, 2)
 ```
 
@@ -302,179 +327,83 @@ tangent line approximation valid for functions having a second
 derivative:
 
 $$~
-f(x) = f(c) + f'(c)(x-x) + \mathcal{O}(x^2).
+f(x) = f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2).
 ~$$
 
-##### Example
+##### Example: the algebra of tangent line approximations
 
+Suppose $f(x)$ and $g(x)$ are represented by their tangent lines about $c$, respectively:
+
+$$~
+f(x) = f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2), \quad
+g(x) = g(c) + g'(c)(x-c) + \mathcal{O}((x-c)^2).
+~$$
+
+Consider the sum, after rearranging we have:
+
+$$~
+\begin{align}
+f(x) + g(x) &=  f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2) + g(c) + g'(c)(x-c) + \mathcal{O}((x-c)^2)\\
+&= (f(c) + g(c)) + (f'(c)+g'(c))(x-c) + \mathcal{O}((x-c)^2).
+\end{align}
+~$$
+
+The two big "Oh" terms become just one as the sum of a constant times $(x-c)^2$ plus a constant time $(x-c)^2$ is just some other constant times $(x-c)^2$. What we can read off from this is the term multiplying $(x-c)$ is just the derivative of $f(x) + g(x)$ (from the sum rule), so this too is a tangent line approximation.
+
+
+Is it a coincidence that s basic algebraic operation wit tangent lines approximations produces a tangent line approximation? Let's try multiplication:
+
+$$~
+\begin{align}
+f(x) \cdot g(x) &=  [f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2)] \cdot [g(c) + g'(c)(x-c) + \mathcal{O}((x-c)^2)]\\
+&=[(f(c) + f'(c)(x-c)] \cdot  [g(c) + g'(c)(x-c)] + (f(c) + f'(c)(x-c) \cdot \mathcal{O}((x-c)^2)) + g(c) + g'(c)(x-c) \cdot \mathcal{O}((x-c)^2)) + [\mathcal{O}((x-c)^2))]^2\\
+&= [(f(c) + f'(c)(x-c)] \cdot  [g(c) + g'(c)(x-c)] + \mathcal{O}((x-c)^2)\\
+&= f(c) \cdot g(c) + [f'(c)\cdot g(c) + f(c)\cdot g'(c)] \cdot (x-c) + [f'(c)\cdot g'(c) \cdot (x-c)^2 + \mathcal{O}((x-c)^2)] \\
+&= f(c) \cdot g(c) + [f'(c)\cdot g(c) + f(c)\cdot g'(c)] \cdot (x-c) + \mathcal{O}((x-c)^2)
+\end{align}
+~$$
+
+The big "oh" notation just sweeps up many things including any products of it *and* the term $f'(c)\cdot g'(c) \cdot (x-c)^2$. Agin, we see from the product rule that this is just a tangent line approximation for $f(x) \cdot g(x)$.
+
+In conclusion, basic mathematical operations involving tangent lines can be computed just using the tangent lines when all the accuracy desired is at the tangent line level. This is even true for composition, though there the outer and inner functions may have different "$c$"s.
+
+```
+note("""
 The `D` operator of the `Roots` package for first derivatives essentially does
-nothing more than work with the tangent line expression. What is
-surprising is that if all we care about is the information contained
-in the tangent line expressions, then we can combine functions by
-adding, multiplying, dividing, and composing using just their tangent
-line expressions and not lose any information.
-
-
-
-Consider $\sin(x)$ and $\exp(x)$ written in terms of their tangent
-lines about $c=0$:
-
-```
-Sin = series(sin(x), x, 0, 2)
-Exp = series(exp(x), x, 0, 2)
-Sin, Exp
+nothing more than work with the tangent line expression, which for a given function `f` and value `c` is summarized by two numbers `[f(c), f'(c)]`.
+""")
 ```
 
-A series for their product (at $0$) is:
+Knowing this can simplify the task of finding tangent line approximations of compound expressions.
 
-```
-series(sin(x) * cos(x), x, 0, 2)
-```
-
-Which is the same as the product of their series (at $0$):
-
-```
-Sin * Exp |> simplify
-```
-
-This can be seen as some constant times $\mathcal{O}(x^2)$ will still be
-$\mathcal{O}(x^2)$, as will any term containing a power of $x$. This
-greatly simplifies the expression:
+For example, suppose we know that at $c=0$ we have these formula where $a \approx b$ is a shorthand for the more formal $a=b + \mathcal{O}(x^2)$:
 
 $$~
-(x + \mathcal{O}(x^2)) \cdot (1 + x + \mathcal{O}(x^2)) =
-x\cdot(1+x) + x \cdot  \mathcal{O}(x^2) + (1+x) \cdot \mathcal{O}(x^2) =
-x + x^2 +  x \cdot  \mathcal{O}(x^2) + (1+x) \cdot \mathcal{O}(x^2) =
-x + \mathcal{O}(x^2).
+\sin(x) \approx x, \quad e^x \approx 1 + x, \quad \text{and}\quad 1/(1+x) \approx 1 - x.
 ~$$
 
-The last equals sign might be surprising, but follows from properties
-of limits: $x^2$ is clearly big "oh" of $x^2$, and a constant of
-positive power of $x$ times $\mathcal{O}(x^2)$ will still be
-$\mathcal{O}(x^2)$. This "algebra" makes things easy: multiply the linear terms, then drop any $x^2$ parts.
+Then we can immediately see these tangent line approximations about $x=0$:
 
-
-
-To see another one, lets predict what the series would be for $\sin(x)^2$, using our "simplified" algebra rules:
 
 $$~
-(x + \mathcal{O}(x^2)) \cdot (x + \mathcal{O}(x^2)) = (x \cdot x) + \mathcal{O}(x^2) = \mathcal{O}(x^2).
+e^x \cdot \sin(x) \approx (1+x) \cdot x = x + x^2 \approx x,
 ~$$
 
-That is, the linear approximation is the flat line $y=0$ near $0$ for $\sin(x)^2$.
-
-We can check this with:
-
-```
-series(sin(x)^2, x, 0, 2)
-```
-
-(Basically, as $\sin(x) \approx x$ at $0$, $\sin(x)^2 \approx x^2$ which is $\mathcal{O}(x^2)$.)
-
-
-In general, we have the tangent line expansion about $c=0$ for the product of functions uses the following formula involving the tangent line approximation (at $c=0$) of each individual function:
+and
 
 $$~
-(a + bx + \mathcal{O}(x^2)) \cdot (c + dx + \mathcal{O}(x^2)) = (a + bx)\cdot(c + dx) + \mathcal{O}(x^2) =
-ac + (ad + bc)x + bdx^2 + \mathcal{O}(x^2) =
-ac + (ad + bc)x + \mathcal{O}(x^2).
+\frac{\sin(x)}{e^x} \approx \frac{x}{1 + x} \approx x \cdot(1-x) = x-x^2 \approx x.
 ~$$
 
 
-What about composition? The expression $\exp(\sin(x))$ around $0$
-would use the expansion of $\exp(x)$ at $\sin(0)$ and the expansion of
-$\sin(x)$ around $0$. In this case, both are around $0$ (though this
-need not be true in general). So we basically just substitute $x$ into
-$1 + x$ and keep the big "oh" term: that is, we should have this
-expression is no more than $1 + (x) + \mathcal{O}(x^2)$:
-
-```
-series(exp(sin(x)),x, 0, 2)
-```
-
-That is we just compose the two tangent line expressions -- provided they are taken about the correct values of $c$.
-
-Note that $\sin(\exp(x))$ will not have the series $(1+x) +
-\mathcal{O}(x^2)$, which comes from composing $x + \mathcal{O}(x^2)$
-with $1 + x + \mathcal{O}(x^2)$ as the first one is *not* the
-expansion of $\sin(x)$ about $\exp(0)$. Here we verify:
-
-```
-series(sin(exp(x)),x, 0, 2)
-```
-
-Finally, what about quotients? We can use the fact that $1/(c+d\cdot x) = 1/c
--d/c^2 x + \mathcal{O}(x^2)$ to see that if $c \neq 0$ we have in general:
+Since $\sin(0) = 0$, we can use these to find the tangent line approximation of
 
 $$~
-\frac{a + bx +  \mathcal{O}(x^2)}{c + dx +  \mathcal{O}(x^2)} = (a + bx) \cdot 1/c^2(c - d \cdot x) + \mathcal{O}(x^2)
-= a/c + (bc - ad)/c^2 \cdot x + \mathcal{O}(x^2).
+e^{\sin(x)} \approx e^x \approx 1 + x.
 ~$$
 
-In our specific case, lets verify for $\sin(x)/\exp(x)$:
 
-```
-series(sin(x)/exp(x), x, 0, 2)
-```
-
-And compare with this:
-
-```
-a,b = 0,1 # sin
-c,d = 1,1 # exp
-(a/c, (b*c - a*d)/c^2)
-```
-
-We recover the two coefficients, as expected.
-
-
-
-Can we get the information about the derivatives of combinations of
-functions from just the tangent line information of each function?
-The derivative at $f$ at $c$ is just the $x$ coefficient in the
-tangent line expansion at $c$ (recall we have $f(c) + f'(c)
-\cdot(x-c) + \mathcal{O}((x-c)^2))$. So it seems likely, but let's check.
-
-
-
-From the general expansions seen earlier for products and quotients,
-we see the product rule in $ad + bc$ and the quotient rule in the
-$(bc - ad)/c^2$. We can test with:
-
-```
-diff(exp(x) * sin(x), x) |> subs(x, 0)
-```
-
-and compare to a value computed just from the tangent line approximations
-
-```
-diff(Exp) * Sin + Exp * diff(Sin) |> simplify
-```
-
-As well, 
-
-```
-diff(sin(x)/exp(x), x) |> subs(x, 0)
-```
-
-Can be recovered from the approximations via the quotient rule. (We
-use that $1 / (1+x+\mathcal{O}(x^2))^2 = 1 - x +\mathcal{O}(x^2)$ by
-the work above.)
-
-```
-(diff(Sin) * Exp - Sin * diff(Exp)) * (1 - x) |> simplify
-```
-
-Finally for this example, the chain rule applied to $\exp(\sin(x))$ shows a derivative of $1$ at $0$:
-
-```
-diff(exp(sin(x)), x) |> subs(x, 0)
-```
-
-But from our expansion around $0$ for $\exp(\sin(x)) = 1 + x +
-\mathcal{O}(x^2)$, we can read off from the $x$ coefficient that this
-has derivative $1$ at $0$.
-
+Note that $\sin(\exp(x))$ is approximately $\sin(1+x)$ but not approximately $1+x$, as the expansion for $\sin$ about $1$ is not simply $x$.
 
 
 
@@ -568,8 +497,8 @@ Let $f(x) = \sqrt{x}$. Find the actual error in approximating $f(26)$ by the
 value of the tangent line at $(25, f(25))$ at $x=26$.
 
 ```
-tl(x) = 5 + x/10
-ans = tl(1) - sqrt(26)
+tangent(x) = 5 + x/10
+ans = tangent(1) - sqrt(26)
 numericq(ans)
 ```
 

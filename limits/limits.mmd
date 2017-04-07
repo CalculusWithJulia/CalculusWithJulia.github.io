@@ -1,13 +1,18 @@
+# (PART) Limits and continuity {-}
+
 # Limits
 
 ```nocode,noout
 using Plots
-gadfly()
+plotly()
 ```
 
 Consider the problem of finding the area under the graph of $f(x)=x^2$
 between $[0,1]$. There isn't a ready-made formula for the area of this
-shape, as there is for a triangle or a square. However, [Archimedes](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola) found a method to compute areas enclosed by a parabola and line segments that cross the parabola.
+shape, as there is for a triangle or a square. However,
+[Archimedes](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola)
+found a method to compute areas enclosed by a parabola and line
+segments that cross the parabola.
 
 
 {{{archimedes_parabola}}}
@@ -247,7 +252,7 @@ We can add these to $c$ and then evaluate:
 
 ```
 xs = c + hs
-ys = [f(x) for x in xs]
+ys = f.(xs)
 ```
 
 To visualize, we can put in a table using `[xs ys]` notation:
@@ -262,7 +267,7 @@ Since limits are defined by the expression $0 < \lvert x-c\rvert < \delta$, we s
 
 ```
 xs = c - hs
-ys = [f(x) for x in xs]
+ys = f.(xs)
 [xs ys]
 ```
 
@@ -313,9 +318,10 @@ We can see that it is indeterminate of the form $0/0$:
 
 ```
 f(x) = (1 - cos(x)) / x^2
+f(0)
 ```
 
-What is the value of $L$, if it exists. A quick attempt numerically yields:
+What is the value of $L$, if it exists? A quick attempt numerically yields:
 
 ```
 c = 0
@@ -358,7 +364,7 @@ For example, the limit at $0$ of $(1-\cos(x))/x^2$ is easily handled:
 
 ```
 using SymPy
-x = symbols("x", real=true)
+@vars x real=true
 f(x) = (1 - cos(x)) / x^2
 limit(f(x), x, 0)		# f(x) is a symbolic expression when x is
 ```
@@ -395,7 +401,7 @@ limit(f, 0)
 Finally, for the third we define a new variable and proceed:
 
 ```
-rho = symbols("rho", real=true)
+@vars rho real=true
 limit( (x^(1-rho) - 1) / (1 - rho), rho, 1)
 ```
 
@@ -458,8 +464,7 @@ rules = [L"\lim_{x \rightarrow c} (a \cdot f(x) + b \cdot g(x)) = a \cdot
   L"\lim_{x \rightarrow c} f(x) \cdot g(x) = \lim_{x \rightarrow c}
   f(x) \cdot \lim_{x \rightarrow c} g(x)",
   L"$\lim_{x \rightarrow c} f(x) / g(x) = \lim_{x \rightarrow c} f(x) /
-  \lim_{x \rightarrow c} g(x)$ -- provided$\lim_{x \rightarrow c}
-  g(x) \neq 0$",
+  \lim_{x \rightarrow c} g(x)$ -- provided $\lim_{x \rightarrow c} g(x) \neq 0$",
   L"$\lim_{x \rightarrow c} (f \circ g)(x) = \lim_{x \rightarrow L}
   f(x)$, where $\lim_{x \rightarrow c}g(x) = L$"]
 descr = [""" This says that limits involving sums, differences or scalar

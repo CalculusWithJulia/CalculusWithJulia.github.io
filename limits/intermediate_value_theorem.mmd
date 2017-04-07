@@ -1,14 +1,16 @@
-# Intermediate Value Theorem
+# Implications of continuity
 
 ```nocode,noout
 using Plots, Roots
-backend(:gadfly)
+plotly()
 ```
+
 
 Continuity for functions is a valued property which carries
 implications. In this section we discuss two: the intermediate value
 theorem and the extreme value theorem.
 
+## Intermediate Value Theorem
 
 > The *intermediate value theorem*: If $f$ is continuous on $[a,b]$
 >  with, say, $f(a) < f(b)$, then for any $y$ with $f(a) < y < f(b)$
@@ -28,31 +30,8 @@ requires the completeness property of the real numbers).  But it can be shown th
 \rightarrow c-} f(x) =f(c) \leq y$ and $\lim_{y \rightarrow c+}f(x)
 =f(c) \geq y$, which forces $f(c) = y$.
 
-----
 
-To discuss the extreme value theorem, we define an *absolute maximum*
-of $f(x)$ over an interval $I$ to be a value $f(c)$, $c$ in $I$, where
-$f(x) \leq f(c)$ for any $x$ in $I$. Similarly, an *absolute minimum* of
-$f(x)$ over an interval $I$ can be defined.
-
-The extreme value theorem discusses an assumption that ensures such a value exists.
-
-> The *extreme value theorem*: If $f(x)$ is continuous in a closed
->  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
->  minimum over $[a,b]$.
-
-(By continuous over $[a,b]$ we mean continuous on $(a,b)$ and right
-continuous at $a$ and left continuous at $b$.)
-
-The assumption that $[a,b]$ includes its endpoints (it is closed)  is crucial to make a
-guarantee. There are functions which are continuous on open intervals
-for which this is not true. For example, $f(x) = 1/x$ on $(0,1)$. This
-will have no smallest value or largest value, as defined above.
-
-The extreme value theorem is an important theoretical tool for
-investigating maxima and minima of functions.
-
-## Bolzano and the bisection method
+### Bolzano and the bisection method
 
 Suppose we have a continuous function $f(x)$ on $[a,b]$ with $f(a) <
 0$ and $f(b) > 0$. Then as $f(a) < 0 < f(b)$, the intermediate value
@@ -66,8 +45,8 @@ It also gives us an algorithm -- the *bisection method* to locate the value $c$.
 {{{bisection_graph}}}
 
 
-Let's call $[a,b]$ a *bracket* if $f(x)$ is continuous on $[a,b]$ and $f(a)$ and $f(b)$ have different signs.
-We remark that $f(a) \cdot f(b) < 0$, as they have different signs.
+Let's call $[a,b]$ a *bracketing* interval if $f(a)$ and $f(b)$ have different signs.
+We remark that this implies $f(a) \cdot f(b) < 0$, as they have different signs.
 
 Then we can narrow down where a zero is in $[a,b]$ by following this recipe:
 
@@ -81,22 +60,23 @@ Then we can narrow down where a zero is in $[a,b]$ by following this recipe:
 
 At each step we split the interval in half or find a root.
 
-For the real numbers this algorithm never stops, but we could stop
+For the real numbers this algorithm never stops unless a zero is found.
+However,  we could stop
 when we have a zero or the length of the resulting interval is smaller
-than some agreed upon value. With floating-point numbers we can stop
-when the length of the interval is as small as possible, as at some
-level there are no floating point values between $a$ and $b$.
+than some agreed upon value. With floating-point numbers it makes sense to consider the same (though this can be made more precise).
 
-We can write a relatively simple program to implement this:
+We can write a relatively simple program to implement this algorithm:
 
 ```
 function bisection(f, a, b)
   if f(a) == 0 return(a) end
   if f(b) == 0 return(b) end
-  if f(a) * f(b) > 0 error("[a,b] is not a bracket") end
+  if f(a) * f(b) > 0 error("[a,b] is not a bracketing interval") end
 
+  tol = 1e-14  # small number
   c = a + (b - a)/2
-  while a < c < b
+  
+  while abs(b-a) > tol
     if f(c) == 0 return(c) end
     if f(a) * f(c) < 0
        a, b = a, c
@@ -104,6 +84,7 @@ function bisection(f, a, b)
        a, b = c, b
     end
     c = a + (b - a)/2
+    
   end
   c
 end
@@ -111,9 +92,7 @@ end
 
 This function uses a `while` loop to repeat the process of subdividing
 $[a,b]$. A `while` loop will repeat until the condition is no longer `true`.
-That it stops is a consequence that we expect $a$ and $b$ to
-be floating point values.
-
+The above will stop for reasonably sized floating point values (within $(-100, 100)$, say).
 The value $c$ returned *need not* be a zero. Let's see:
 
 ```
@@ -126,13 +105,15 @@ This value of $c$ is a floating-point approximation to $\pi$, but is not a zero:
 sin(c)
 ```
 
-However, it should be that $c$ is a zero, or is such that the
-interval, $[a,b]$ it split has $f(a)\cdot f(b) < 0$. Hence there must be a
-sign change between $a$, $c$, and $b$.
+(Even $\pi$ is not a "zero$ due to floating point issues.)
+
 
 ### The fzero function.
 
-The `Roots` package has a function `fzero` that implements the bisection method when called as `fzero(f, a, b)` (or `fzero(f, [a,b])`) where $[a,b]$ is a bracket. Its use is identical to `bisection` above. We will use it in the following:
+The `Roots` package has a function `fzero` that implements the
+bisection method when called as `fzero(f, a, b)` (or `fzero(f,
+[a,b])`) where $[a,b]$ is a bracket. Its use is identical to
+`bisection` above. We will use it in the following:
 
 ```
 using Roots
@@ -144,6 +125,12 @@ alert("""
 Notice, the call `fzero(sin, 3,4)` again fits the template `action(function, args...)` that we see repeatedly.
 """)
 ```
+
+
+This function utilizes some facts about floating point values to
+guarantee that the answer will be a zero or the product of the
+function value at the floating point values just to the left and right
+will be negative. No specification of a tolerance is needed.
 
 ### Examples
 
@@ -160,7 +147,7 @@ We see as before that $f(c)$ is not quite $0$. (But you can check that `f(nextfl
 
 ##### Example
 
-The function $f(x) = e^x - x^4$ has a zero between 5 and 10, as this graph shows:
+The function $f(x) = e^x - x^4$ has a zero between $5$ and $10$, as this graph shows:
 
 ```
 using Plots
@@ -193,13 +180,6 @@ It appears (and a plot over $[0,1]$ verifies) that there is one zero between $-2
 fzero(f, -2, -1)
 ```
 
-Of course, as discussed previously, for *polynomial* functions, the
-`fzeros` function of the `Roots` package returns the real roots, as we
-can see here:
-
-```
-fzeros(f)
-```
 
 
 
@@ -368,6 +348,107 @@ day indeed.
 ```
 plot([j, u -> u <= x1 ? y(u) : NaN] , 0, 1250)
 ```
+
+### The fzeros function
+
+The bisection method suggests a means to search for all zeros within
+an interval: split it into many small intervals and for each that is a
+bracketing interval find a zero. This simple description has three
+flaws: it might miss values where the function doesn't't actually
+cross the $x$ axis; it might miss values where the function just dips
+to the other side; and it might miss multiple values in the same small
+interval.
+
+Still, with some engineering, this can be a useful approach, save the
+caveats. It is implemented in the `fzeros` function. The function is
+called like `fzero`, as in `fzeros(f, a, b)` but here the interval
+$[a,b]$ is not necessarily a bracketing interval.
+
+To see, we have:
+
+```
+f(x) = sin(10*pi*x)
+fzeros(f, 0, 1)
+```
+
+Or for a polynomial:
+
+```
+f(x) = x^5 - x^4 + x^3 - x^2 + 1
+fzeros(f, -10, 10)
+```
+
+(Here $-10$ and $10$ were arbitrarily chosen. Cauchy's method could be used to be more systematic.)
+
+The output of `fzeros` is a vector of values. To check that each value
+is an approximate zero can be done with the "." syntax:
+
+```
+f(x) = e^x - x^5
+zs = fzeros(f, -15, 15)
+f.(zs)
+```
+
+
+## Extreme value theorem
+
+To discuss the extreme value theorem, we define an *absolute maximum*
+of $f(x)$ over an interval $I$ to be a value $f(c)$, $c$ in $I$, where
+$f(x) \leq f(c)$ for any $x$ in $I$. Similarly, an *absolute minimum* of
+$f(x)$ over an interval $I$ can be defined.
+
+The extreme value theorem discusses an assumption that ensures such a value exists.
+
+> The *extreme value theorem*: If $f(x)$ is continuous in a closed
+>  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
+>  minimum over $[a,b]$.
+
+(By continuous over $[a,b]$ we mean continuous on $(a,b)$ and right
+continuous at $a$ and left continuous at $b$.)
+
+The assumption that $[a,b]$ includes its endpoints (it is closed)  is crucial to make a
+guarantee. There are functions which are continuous on open intervals
+for which this is not true. For example, $f(x) = 1/x$ on $(0,1)$. This
+will have no smallest value or largest value, as defined above.
+
+The extreme value theorem is an important theoretical tool for
+investigating maxima and minima of functions.
+
+
+### Examples
+
+The function $f(x) = \sqrt{1-x^2}$ is continuous on the interval
+$[-1,1]$ (in the sense above). It then has an absolute maximum, we can
+see to be $1$ occuring at an interior point $0$. The absolute minimum
+is $0$, it occurs at each endpoint.
+
+----
+
+The function $f(x) = x \cdot e^{-x}$ on the closed interval $[0, 5]$ is continuous. Hence it has an absolute maximum, which a graph shows to be $0.4$. It has an absolute minimum, clearly the value $0$ occuring at the endpoint.
+
+```
+f(x) = x * exp(-x)
+plot(f, 0, 5)
+```
+
+----
+
+The tangent function does not have a *guarantee* of absolute maximum
+or minimum over $(-\pi/2, \pi/2)$, as it is not *continous* at the
+endpoints. In fact, it doesn't -- it has vertical asymptotes at each.
+
+
+---- 
+
+The function $f(x) = x^{2/3}$ over the interval $[-2,2]$ has cusp at $0$. However, it is continuous on this closed interval, so must have an absolute maximum and absolute minimum. They can be seen from the graph to occur at the endpoints and the cusp at $x=0$, respectively:
+
+```
+f(x) = (x^2)^(1/3)
+plot(f, -2, 2)
+```
+
+(The definition `x^(2/3)` fails, can you see why?)
+
 
 ## Questions
 
@@ -575,6 +656,7 @@ radioq(choices, 2, keep_order=true)
 The extreme value theorem has two assumptions: a continuous function
 and a *closed* interval. Which of the following examples fails to
 satisfy the consequence of the  extreme value theorem because the interval is not closed?
+(The consequence -- the existence of an absolute maximum and minimum -- can happen even if the theorem does not apply.)
 
 ```
 choices = [
@@ -591,7 +673,7 @@ radioq(choices, ans, keep_order=true)
 
 The extreme value theorem has two assumptions: a continuous function
 and a *closed* interval. Which of the following examples fails to
-satisfy the consequence of the  extreme value theorem because the interval is not continuous?
+satisfy the consequence of the  extreme value theorem because the function is not continuous?
 
 ```
 choices = [
@@ -609,7 +691,7 @@ radioq(choices, ans, keep_order=true)
 
 The extreme value theorem has two assumptions: a continuous function
 and a *closed* interval. Which of the following examples fails to
-satisfy the consequence of the  extreme value theorem because the interval is not continuous?
+satisfy the consequence of the  extreme value theorem because the function is not continuous?
 
 ```
 choices = [
@@ -699,5 +781,5 @@ The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibaration
 
 ```
 val = maximum(fzeros(x -> cos(x) * cosh(x) - 1, 0, 6pi))
-numeric(val)
+numericq(val)
 ```

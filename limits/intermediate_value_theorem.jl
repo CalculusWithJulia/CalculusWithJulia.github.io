@@ -1,10 +1,11 @@
 module intermediate_value_theorem
 
-using Gadfly, Reel
+using Plots; pyplot(); fig_size=(400, 400)
 using WeavePynb, LaTeXStrings
 
-## Illustrate intermediate value theorem
-function IVT_graph(n,_)
+
+
+function IVT_graph(n)
     f(x) = sin(pi*x) + 9x/10
     a,b = [0,3]
 
@@ -13,19 +14,24 @@ function IVT_graph(n,_)
 
     ## cheat -- pick an x, then find a y
     Δ = .2
-    x = linspace(a + Δ,b - Δ,6)[convert(Int, n) + 2]
+    x = linspace(a + Δ,b - Δ,6)[n]
     y = f(x)
-    
-    plot(layer(x=xs, y=map(f,xs), Geom.line),
-         layer(x=[0,x,x], y=[f(x),f(x),0], Geom.line, Theme(default_color=colorant"orange", line_width=3px))
-         )
+
+    plt = plot(f, a, b, legend=false, size=fig_size)
+    plot!(plt, [0,x,x], [f(x),f(x),0], color=:orange, linewidth=3)
+
+    plot
 
 end
 
-film = roll(IVT_graph, fps=1, duration=6)
-film.fps=1
+n = 6
+anim = @animate for i=1:n
+    IVT_graph(i)
+end
+
 imgfile = tempname() * ".gif"
-write(imgfile, film)
+gif(anim, imgfile, fps = 1)
+
 
 caption = L"""
 
@@ -38,14 +44,19 @@ with $f(x)=y$.
 IVT = gif_to_data(imgfile, caption)
 
 
+## -----------------
+
+
 ## Illustrate bisection method
 
-function bisecting_graph(n,_)
+function bisecting_graph(n)
     f(x) = x^2 - 2
     a,b = [0,2]
 
+    err = 2.0^(1-n)
+    title = "b - a = $err"
     xs = linspace(a,b)
-    l = layer(x=xs, y=map(f,xs), Geom.line)
+    plt = plot(f, a, b, legend=false, size=fig_size, title=title)
     
     if n >= 1
         for i in 1:n
@@ -57,17 +68,22 @@ function bisecting_graph(n,_)
             end
         end
     end
-    plot(l,
-         layer(x=[a,b],y=[0,0], Geom.line, Theme(default_color=colorant"orange", line_width=3px)),
-         layer(x=[a,b],y=[f(a), f(b)], Geom.point, Theme(default_color=colorant"orange"))
-         )
+    plot!(plt, [a,b],[0,0], color=:orange, linewidth=3)
+    scatter!(plt, [a,b], [f(a), f(b)], color=:orange, markersize=5, markershape=:circle)
+
+    plt
 
 end
 
-film = roll(bisecting_graph, fps=1, duration=9)
-film.fps=1
+
+n = 9
+anim = @animate for i=1:n
+    bisecting_graph(i-1)
+end
+
 imgfile = tempname() * ".gif"
-write(imgfile, film)
+gif(anim, imgfile, fps = 1)
+
 
 caption = L"""
 
@@ -87,6 +103,98 @@ imgfile = "cannonball.jpg"
 cannonball_img = gif_to_data(imgfile, """
 Trajectories of potential cannonball fires with air-resistance included. (http://ej.iop.org/images/0143-0807/33/1/149/Full/ejp405251f1_online.jpg)
                              """)
+
+
+
+
+
+# using Gadfly, Reel
+# using WeavePynb, LaTeXStrings
+
+# ## Illustrate intermediate value theorem
+# function IVT_graph(n,_)
+#     f(x) = sin(pi*x) + 9x/10
+#     a,b = [0,3]
+
+#     xs = linspace(a,b)
+
+
+#     ## cheat -- pick an x, then find a y
+#     Δ = .2
+#     x = linspace(a + Δ,b - Δ,6)[convert(Int, n) + 2]
+#     y = f(x)
+    
+#     plot(layer(x=xs, y=map(f,xs), Geom.line),
+#          layer(x=[0,x,x], y=[f(x),f(x),0], Geom.line, Theme(default_color=colorant"orange", line_width=3px))
+#          )
+
+# end
+
+# film = roll(IVT_graph, fps=1, duration=6)
+# film.fps=1
+# imgfile = tempname() * ".gif"
+# write(imgfile, film)
+
+# caption = L"""
+
+# Illustration of intermediate value theorem. The theorem implies that any randomly chosen $y$
+# value between $f(a)$ and $f(b)$ will have  at least one $x$ in $[a,b]$
+# with $f(x)=y$.
+
+# """
+
+# IVT = gif_to_data(imgfile, caption)
+
+
+# ## Illustrate bisection method
+
+# function bisecting_graph(n,_)
+#     f(x) = x^2 - 2
+#     a,b = [0,2]
+
+#     xs = linspace(a,b)
+#     l = layer(x=xs, y=map(f,xs), Geom.line)
+    
+#     if n >= 1
+#         for i in 1:n
+#             c = (a+b)/2
+#             if f(a) * f(c) < 0
+#                 a,b=a,c
+#             else
+#                 a,b=c,b
+#             end
+#         end
+#     end
+#     plot(l,
+#          layer(x=[a,b],y=[0,0], Geom.line, Theme(default_color=colorant"orange", line_width=3px)),
+#          layer(x=[a,b],y=[f(a), f(b)], Geom.point, Theme(default_color=colorant"orange"))
+#          )
+
+# end
+
+# film = roll(bisecting_graph, fps=1, duration=9)
+# film.fps=1
+# imgfile = tempname() * ".gif"
+# write(imgfile, film)
+
+# caption = L"""
+
+# Illustration of the bisection method to find a zero of a function. At
+# each step the interval has $f(a)$ and $f(b)$ having opposite signs so
+# that the intermediate value theorem guaratees a zero.
+
+# """
+
+# bisection_graph = gif_to_data(imgfile, caption)
+
+
+# ## Include cannonball figure
+
+# ## http://ej.iop.org/images/0143-0807/33/1/149/Full/ejp405251f1_online.jpg
+# imgfile = "cannonball.jpg"
+# cannonball_img = gif_to_data(imgfile, """
+# Trajectories of potential cannonball fires with air-resistance included. (http://ej.iop.org/images/0143-0807/33/1/149/Full/ejp405251f1_online.jpg)
+#                              """)
 
 
 

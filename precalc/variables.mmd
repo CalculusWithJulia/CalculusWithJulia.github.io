@@ -1,16 +1,25 @@
 # Variables
 
-{{{ calculator_image }}}
+## Assignment
+
+```
+using WeavePynb
+img = "calculator.png"
+calculator_image = gif_to_data(img, "Screenshot of a calculator provided by the Google search engine.")
+WeavePynb.HTMLoutput(calculator_image)
+```
+
 
 The Google calculator has a button `Ans` to refer to the answer to the
 previous evaluation. This is a form of memory. The last answer is
 stored in a specific place in memory for retrieval when `Ans` is
 used. In some calculators, more advanced memory features are
-possible. For some, it is possible to push values to stack of values for them to
-be referred to at a later time. This proves useful for complicated
-expressions, say, as complicated values can be broken into smaller
-problems and then recombined. This strategy is a good one, though the
-memory buttons can make its implementation a bit cumbersome.
+possible. For some, it is possible to push values onto a stack of
+values for them to be referred to at a later time. This proves useful
+for complicated expressions, say, as the expression can be broken into
+smaller intermediate steps to be computed. These values can then be
+appropriately combined. This strategy is a good one, though the memory
+buttons can make its implementation a bit cumbersome.
 
 With `Julia`, as with other programming languages, it is very easy to
 refer to past evaluations. This is done by *assignment* whereby a
@@ -56,7 +65,7 @@ More importantly than displaying a value, is the use of variables to
 build up more complicated expressions. For example, to compute
 
 $$~
-\frac{1 + 2\cdot3^4}{5 - 6/7}
+\frac{1 + 2 \cdot 3^4}{5 - 6/7}
 ~$$
 
 we might break it into the grouped pieces implied by the mathematical notation:
@@ -67,6 +76,8 @@ bottom = 5 - 6/7
 top/bottom
 ```
 
+### Examples
+
 ##### Example
 
 Imagine we have the following complicated expression related to the trajectory of a [projectile](http://www.researchgate.net/publication/230963032_On_the_trajectories_of_projectiles_depicted_in_early_ballistic_woodcuts) with wind resistance:
@@ -75,7 +86,10 @@ $$~
 	\left(\frac{g}{k v_0\cos(\theta)} + \tan(\theta) \right) x + \frac{g}{k^2}\ln\left(1 - \frac{k}{v_0\cos(\theta)} x \right)
 ~$$
 
-Here $g$ is the gravitational constant $9.8$ and $v_0$, $\theta$ and $k$ parameters, which we take to be $200$, $45$ degrees and $1/2$ respectively. With these values, the above expression can be computed when $x=100$:
+Here $g$ is the gravitational constant $9.8$ and $v_0$, $\theta$ and
+$k$ parameters, which we take to be $200$, $45$ degrees, and $1/2$
+respectively. With these values, the above expression can be computed
+when $x=100$:
 
 ```
 g = 9.8
@@ -105,12 +119,14 @@ This looks nearly identical to the mathematical expression, but we inserted `*` 
 ```
 
 ### Numeric literals
-
+   
 `Julia` conveniently allows for numeric
 [literals](http://julia.readthedocs.org/en/latest/manual/integers-and-floating-point-numbers/#numeric-literal-coefficients)
 to imply multiplication. That is, numeric coefficients need not have a
 multiplication sign. (Of course, we can't write `xy` to mean `x * y`,
-as it could also mean the variable `xy`.)
+as it could also mean the variable `xy`. As well, we can't use `x2` to
+mean `x*2`, as `x2` is a valid variable name, unlike `2x`, as that
+begins with a number.)
 
 The precedence is not that of multiplication but higher. It is the same as unary minus. This makes one of the following values different:
 
@@ -121,8 +137,9 @@ x = 2
 
 With the middle one the multiplication happens after the division due
 to the left-to-right associativity order for these operations with the
-same precedence.  Multiplying by a fraction as a
-coefficient, using `*` is a good practice.
+same precedence. To avoid subtle bugs, it is advised to be explicit
+with multiplication by using `*` except in the simplest of
+expressions, such as polynomials.
 
 
 
@@ -179,30 +196,33 @@ The binding of a value to a variable name happens within some
 context. For our simple illustrations, we are assigning values, as
 though they were typed at the command line. This stores the binding in
 the `Main` module. `Julia` looks for variables in this module when it
-encounters an expression and the value is substituted. There are ways
-to assign values within different scopes, such as within the body of a
-function, which we will discuss later.
+encounters an expression and the value is substituted. Other uses, such as when variables are defined within a function, involve different contexts which may not be
+visible within the `Main` module.
 
 ```
-alert("""
+note("""
 The `whos` function will list the variables currently defined in the
 main workspace. There is no mechanism to delete a single variable,
 however, the `workspace` function will clear all the values.
 """)
 ```
 
-> **Shooting oneselves in the foot.** `Julia` allows us to locally
-> redefine variables that are built in, such as the value for `pi` or
-> the function object assigned to `sin`. For example, this is a
-> perfectly valid command `sin=3`. However, it will overwrite the
-> typical value of `sin` so that `sin(3)` will be an error. The
-> binding to `sin` occurs in the `Main` module. This shadows that
-> value of `sin` bound in the `Base` module. Even if redefined in
-> `Main`, the value in base can be used by fully qualifying the name,
-> as in `Base.sin(pi)`. This uses the convention
-> `module_name.variable_name` to look up a binding in a module. As
-> well, the session can be started again from scratch through the issuing of the command
-> `workspace()`.
+```
+alert("""
+**Shooting oneselves in the foot.** `Julia` allows us to locally
+redefine variables that are built in, such as the value for `pi` or
+the function object assigned to `sin`. For example, this is a
+perfectly valid command `sin=3`. However, it will overwrite the
+typical value of `sin` so that `sin(3)` will be an error. The
+binding to `sin` occurs in the `Main` module. This shadows that
+value of `sin` bound in the `Base` module. Even if redefined in
+`Main`, the value in base can be used by fully qualifying the name,
+as in `Base.sin(pi)`. This uses the convention
+`module_name.variable_name` to look up a binding in a module. As
+well, the session can be started again from scratch through the issuing of the command
+`workspace()`.
+""")
+```
 
 ## Variable names
 
@@ -242,7 +262,7 @@ alert("""
 
 There is even support for tab-completion of
 [emojis](https://github.com/JuliaLang/julia/blob/master/base/emoji_symbols.jl)
-such as `:snowman:[tab]` or `:koala:[tab]`
+such as `\:snowman:[tab]` or `\:koala:[tab]`
 
 """)
 ```
@@ -270,7 +290,12 @@ For convenience, `Julia` allows the definition of more than one variable at a ti
 a,b,c = 1,2,3
 ```
 
-This sets `a=1`, `b=2`, and `c=3`, as suggested. This construct relies on *tuple destructuring*. The expression on the right hand side forms a tuple of values. A tuple is a container for different types of values, and in this case the tuple has 3 values. When the same number of variables match on the left hand side as those in the container on the right, the names are assigned one by one.
+This sets `a=1`, `b=2`, and `c=3`, as suggested. This construct relies
+on *tuple destructuring*. The expression on the right hand side forms
+a tuple of values. A tuple is a container for different types of
+values, and in this case the tuple has 3 values. When the same number
+of variables match on the left-hand side as those in the container on
+the right, the names are assigned one by one.
 
 The value on the right hand side is evaluated, then the assignment occurs. The following exploits this to swap the values assigned to `a` and `b`:
 
@@ -370,7 +395,7 @@ numericq(ans)
 
 ###### Question
 
-Using variables to record the top and the bottom of the expression, compute the following if $x=3$
+Using variables to record the top and the bottom of the expression, compute the following for $x=3$:
 
 $$~
 y = \frac{x^2 - 2x - 8}{x^2 - 9x - 20}.
@@ -421,9 +446,9 @@ What key sequence will produce this assignment
 
 ```
 choices=[
-q"\delta[tab] = 1/10",
+q"\\delta[tab] = 1/10",
 q"delta[tab] = 1/10",
-q"$\delta$ = 1/10"]
+q"$\\delta$ = 1/10"]
 ans = 1
 radioq(choices, ans)
 ```

@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Calculus With Julia</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta name="description" content="Calculus With Julia">
+  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Calculus With Julia" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Calculus With Julia" />
+  
+  
+  
+
+<meta name="author" content="John Verzani">
+
+
+<meta name="date" content="2017-01-10">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="vectors.html">
+<link rel="next" href="functions-1.html">
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link
+  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html"><i class="fa fa-check"></i><b>1</b> Replacing the calculator with a computer</a><ul>
+<li class="chapter" data-level="1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#operations"><i class="fa fa-check"></i><b>1.1</b> Operations</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples"><i class="fa fa-check"></i><b>1.1.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#order-of-operations"><i class="fa fa-check"></i><b>1.2</b> Order of operations</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-1"><i class="fa fa-check"></i><b>1.2.1</b> Examples</a></li>
+<li class="chapter" data-level="1.2.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#two-ways-to-write-division-and-they-are-not-the-same"><i class="fa fa-check"></i><b>1.2.2</b> Two ways to write division – and they are not the same</a></li>
+<li class="chapter" data-level="1.2.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#infix-notation"><i class="fa fa-check"></i><b>1.2.3</b> Infix notation</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#constants"><i class="fa fa-check"></i><b>1.3</b> Constants</a></li>
+<li class="chapter" data-level="1.4" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#functions"><i class="fa fa-check"></i><b>1.4</b> Functions</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-2"><i class="fa fa-check"></i><b>1.4.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#errors"><i class="fa fa-check"></i><b>1.5</b> Errors</a></li>
+<li class="chapter" data-level="1.6" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#questions"><i class="fa fa-check"></i><b>1.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>2</b> Variables</a><ul>
+<li class="chapter" data-level="2.1" data-path="variables.html"><a href="variables.html#assignment"><i class="fa fa-check"></i><b>2.1</b> Assignment</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="variables.html"><a href="variables.html#examples-3"><i class="fa fa-check"></i><b>2.1.1</b> Examples</a></li>
+<li class="chapter" data-level="2.1.2" data-path="variables.html"><a href="variables.html#numeric-literals"><i class="fa fa-check"></i><b>2.1.2</b> Numeric literals</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="variables.html"><a href="variables.html#where-math-and-computer-notations-diverge"><i class="fa fa-check"></i><b>2.2</b> Where math and computer notations diverge</a></li>
+<li class="chapter" data-level="2.3" data-path="variables.html"><a href="variables.html#context"><i class="fa fa-check"></i><b>2.3</b> Context</a></li>
+<li class="chapter" data-level="2.4" data-path="variables.html"><a href="variables.html#variable-names"><i class="fa fa-check"></i><b>2.4</b> Variable names</a></li>
+<li class="chapter" data-level="2.5" data-path="variables.html"><a href="variables.html#constant-variables"><i class="fa fa-check"></i><b>2.5</b> Constant variables</a></li>
+<li class="chapter" data-level="2.6" data-path="variables.html"><a href="variables.html#tuple-assignment"><i class="fa fa-check"></i><b>2.6</b> Tuple assignment</a></li>
+<li class="chapter" data-level="2.7" data-path="variables.html"><a href="variables.html#questions-1"><i class="fa fa-check"></i><b>2.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html"><i class="fa fa-check"></i><b>3</b> Inequalities, Logical expressions</a><ul>
+<li class="chapter" data-level="3.1" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#boolean-values"><i class="fa fa-check"></i><b>3.1</b> Boolean values</a></li>
+<li class="chapter" data-level="3.2" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#algebra-of-inequalities"><i class="fa fa-check"></i><b>3.2</b> Algebra of inequalities</a></li>
+<li class="chapter" data-level="3.3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#some-examples"><i class="fa fa-check"></i><b>3.3</b> Some examples</a></li>
+<li class="chapter" data-level="3.4" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#chaining-combining-expressions-absolute-values"><i class="fa fa-check"></i><b>3.4</b> Chaining, combining expressions: absolute values</a></li>
+<li class="chapter" data-level="3.5" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#precedence"><i class="fa fa-check"></i><b>3.5</b> Precedence</a></li>
+<li class="chapter" data-level="3.6" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#arithmetic-with"><i class="fa fa-check"></i><b>3.6</b> Arithmetic with</a></li>
+<li class="chapter" data-level="3.7" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#questions-2"><i class="fa fa-check"></i><b>3.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="number-systems.html"><a href="number-systems.html"><i class="fa fa-check"></i><b>4</b> Number systems</a><ul>
+<li class="chapter" data-level="4.1" data-path="number-systems.html"><a href="number-systems.html#closure"><i class="fa fa-check"></i><b>4.1</b> Closure</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="number-systems.html"><a href="number-systems.html#powers"><i class="fa fa-check"></i><b>4.1.1</b> Powers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="number-systems.html"><a href="number-systems.html#julia-and-number-systems"><i class="fa fa-check"></i><b>4.2</b> Julia and number systems</a></li>
+<li class="chapter" data-level="4.3" data-path="number-systems.html"><a href="number-systems.html#integers"><i class="fa fa-check"></i><b>4.3</b> Integers</a></li>
+<li class="chapter" data-level="4.4" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers"><i class="fa fa-check"></i><b>4.4</b> Floating point numbers</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="number-systems.html"><a href="number-systems.html#scientific-notation"><i class="fa fa-check"></i><b>4.4.1</b> Scientific notation</a></li>
+<li class="chapter" data-level="4.4.2" data-path="number-systems.html"><a href="number-systems.html#special-values-inf--inf-nan"><i class="fa fa-check"></i><b>4.4.2</b> Special values: Inf, -Inf, NaN</a></li>
+<li class="chapter" data-level="4.4.3" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers-and-real-numbers"><i class="fa fa-check"></i><b>4.4.3</b> Floating point numbers and real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="number-systems.html"><a href="number-systems.html#rational-numbers"><i class="fa fa-check"></i><b>4.5</b> Rational numbers</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="number-systems.html"><a href="number-systems.html#different-types-of-real-numbers"><i class="fa fa-check"></i><b>4.5.1</b> Different types of real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="number-systems.html"><a href="number-systems.html#complex-numbers"><i class="fa fa-check"></i><b>4.6</b> Complex numbers</a></li>
+<li class="chapter" data-level="4.7" data-path="number-systems.html"><a href="number-systems.html#and-why-you-neednt-worry-too-much"><i class="fa fa-check"></i><b>4.7</b> And why you needn’t worry too much</a></li>
+<li class="chapter" data-level="4.8" data-path="number-systems.html"><a href="number-systems.html#questions-3"><i class="fa fa-check"></i><b>4.8</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="vectors.html"><a href="vectors.html"><i class="fa fa-check"></i><b>5</b> Vectors</a><ul>
+<li class="chapter" data-level="5.1" data-path="vectors.html"><a href="vectors.html#vectors-in-julia"><i class="fa fa-check"></i><b>5.1</b> Vectors in Julia</a></li>
+<li class="chapter" data-level="5.2" data-path="vectors.html"><a href="vectors.html#higher-dimensional-vectors"><i class="fa fa-check"></i><b>5.2</b> Higher dimensional vectors</a></li>
+<li class="chapter" data-level="5.3" data-path="vectors.html"><a href="vectors.html#indexing"><i class="fa fa-check"></i><b>5.3</b> Indexing</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="vectors.html"><a href="vectors.html#assignment-and-indexing"><i class="fa fa-check"></i><b>5.3.1</b> Assignment and indexing</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="vectors.html"><a href="vectors.html#some-functions-useful-when-working-with-vectors."><i class="fa fa-check"></i><b>5.4</b> Some functions useful when working with vectors.</a></li>
+<li class="chapter" data-level="5.5" data-path="vectors.html"><a href="vectors.html#questions-4"><i class="fa fa-check"></i><b>5.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html"><i class="fa fa-check"></i><b>6</b> Ranges and Sets</a><ul>
+<li class="chapter" data-level="6.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-and-modifying-arithmetic-progressions"><i class="fa fa-check"></i><b>6.1</b> Filtering and modifying arithmetic progressions</a></li>
+<li class="chapter" data-level="6.2" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#comprehensions"><i class="fa fa-check"></i><b>6.2</b> Comprehensions</a></li>
+<li class="chapter" data-level="6.3" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#generators"><i class="fa fa-check"></i><b>6.3</b> Generators</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-generated-expressions"><i class="fa fa-check"></i><b>6.3.1</b> Filtering generated expressions</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#random-numbers"><i class="fa fa-check"></i><b>6.4</b> Random numbers</a></li>
+<li class="chapter" data-level="6.5" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#questions-5"><i class="fa fa-check"></i><b>6.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="functions-1.html"><a href="functions-1.html"><i class="fa fa-check"></i><b>7</b> Functions</a><ul>
+<li class="chapter" data-level="7.1" data-path="functions-1.html"><a href="functions-1.html#defining-simple-mathematical-functions"><i class="fa fa-check"></i><b>7.1</b> Defining simple mathematical functions</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="functions-1.html"><a href="functions-1.html#the-domain-of-a-function"><i class="fa fa-check"></i><b>7.1.1</b> The domain of a function</a></li>
+<li class="chapter" data-level="7.1.2" data-path="functions-1.html"><a href="functions-1.html#equations-functions-calling-a-function"><i class="fa fa-check"></i><b>7.1.2</b> Equations, functions, calling a function</a></li>
+<li class="chapter" data-level="7.1.3" data-path="functions-1.html"><a href="functions-1.html#cases"><i class="fa fa-check"></i><b>7.1.3</b> Cases</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="functions-1.html"><a href="functions-1.html#functions-defined-with-the-function-keyword"><i class="fa fa-check"></i><b>7.2</b> Functions defined with the “function” keyword</a></li>
+<li class="chapter" data-level="7.3" data-path="functions-1.html"><a href="functions-1.html#parameters-function-context-scope-keyword-arguments"><i class="fa fa-check"></i><b>7.3</b> Parameters, function context (scope), keyword arguments</a></li>
+<li class="chapter" data-level="7.4" data-path="functions-1.html"><a href="functions-1.html#multiple-dispatch"><i class="fa fa-check"></i><b>7.4</b> Multiple dispatch</a></li>
+<li class="chapter" data-level="7.5" data-path="functions-1.html"><a href="functions-1.html#anonymous-functions"><i class="fa fa-check"></i><b>7.5</b> Anonymous functions</a></li>
+<li class="chapter" data-level="7.6" data-path="functions-1.html"><a href="functions-1.html#questions-6"><i class="fa fa-check"></i><b>7.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html"><i class="fa fa-check"></i><b>8</b> The Graph of a Function</a><ul>
+<li class="chapter" data-level="8.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#graphing-a-function-with-julia"><i class="fa fa-check"></i><b>8.1</b> Graphing a function with Julia</a></li>
+<li class="chapter" data-level="8.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#the-details-of-graph-making"><i class="fa fa-check"></i><b>8.2</b> The details of graph making</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-x-values"><i class="fa fa-check"></i><b>8.2.1</b> Creating <span class="math inline">\(x\)</span> values</a></li>
+<li class="chapter" data-level="8.2.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-y-values"><i class="fa fa-check"></i><b>8.2.2</b> Creating <span class="math inline">\(y\)</span> values</a></li>
+<li class="chapter" data-level="8.2.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#plotting-points-and-connecting-them"><i class="fa fa-check"></i><b>8.2.3</b> Plotting points and connecting them</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#layers"><i class="fa fa-check"></i><b>8.3</b> Layers</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#adding-layers-explicitly"><i class="fa fa-check"></i><b>8.3.1</b> Adding layers explicitly</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#parametric-graphs"><i class="fa fa-check"></i><b>8.4</b> Parametric graphs</a></li>
+<li class="chapter" data-level="8.5" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#questions-7"><i class="fa fa-check"></i><b>8.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="function-manipulations.html"><a href="function-manipulations.html"><i class="fa fa-check"></i><b>9</b> Function manipulations</a><ul>
+<li class="chapter" data-level="9.1" data-path="function-manipulations.html"><a href="function-manipulations.html#the-algebra-of-functions"><i class="fa fa-check"></i><b>9.1</b> The algebra of functions</a></li>
+<li class="chapter" data-level="9.2" data-path="function-manipulations.html"><a href="function-manipulations.html#composition-of-functions"><i class="fa fa-check"></i><b>9.2</b> Composition of functions</a></li>
+<li class="chapter" data-level="9.3" data-path="function-manipulations.html"><a href="function-manipulations.html#shifting-and-scaling-graphs"><i class="fa fa-check"></i><b>9.3</b> Shifting and scaling graphs</a></li>
+<li class="chapter" data-level="9.4" data-path="function-manipulations.html"><a href="function-manipulations.html#operators"><i class="fa fa-check"></i><b>9.4</b> Operators</a></li>
+<li class="chapter" data-level="9.5" data-path="function-manipulations.html"><a href="function-manipulations.html#questions-8"><i class="fa fa-check"></i><b>9.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="polynomials.html"><a href="polynomials.html"><i class="fa fa-check"></i><b>10</b> Polynomials</a><ul>
+<li class="chapter" data-level="10.1" data-path="polynomials.html"><a href="polynomials.html#linear-polynomials"><i class="fa fa-check"></i><b>10.1</b> Linear polynomials</a></li>
+<li class="chapter" data-level="10.2" data-path="polynomials.html"><a href="polynomials.html#symbolic-math-in-julia"><i class="fa fa-check"></i><b>10.2</b> Symbolic math in Julia</a></li>
+<li class="chapter" data-level="10.3" data-path="polynomials.html"><a href="polynomials.html#substitution-subs-replace"><i class="fa fa-check"></i><b>10.3</b> Substitution: subs, replace</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="polynomials.html"><a href="polynomials.html#conversion-of-symbolic-numbers-to-julia-numbers"><i class="fa fa-check"></i><b>10.3.1</b> Conversion of symbolic numbers to Julia numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="polynomials.html"><a href="polynomials.html#graphical-properties-of-polynomials"><i class="fa fa-check"></i><b>10.4</b> Graphical properties of polynomials</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="polynomials.html"><a href="polynomials.html#leading-term-dominates"><i class="fa fa-check"></i><b>10.4.1</b> Leading term dominates</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="polynomials.html"><a href="polynomials.html#factoring-polynomials"><i class="fa fa-check"></i><b>10.5</b> Factoring polynomials</a><ul>
+<li class="chapter" data-level="10.5.1" data-path="polynomials.html"><a href="polynomials.html#polynomial-functions-and-polynomials."><i class="fa fa-check"></i><b>10.5.1</b> Polynomial functions and polynomials.</a></li>
+</ul></li>
+<li class="chapter" data-level="10.6" data-path="polynomials.html"><a href="polynomials.html#questions-9"><i class="fa fa-check"></i><b>10.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html"><i class="fa fa-check"></i><b>11</b> Roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.0.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#polynomial-division"><i class="fa fa-check"></i><b>11.0.1</b> Polynomial Division</a></li>
+<li class="chapter" data-level="11.0.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-rational-root-test"><i class="fa fa-check"></i><b>11.0.2</b> The rational root test</a></li>
+<li class="chapter" data-level="11.0.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#fundamental-theorem-of-algebra"><i class="fa fa-check"></i><b>11.0.3</b> Fundamental theorem of algebra</a></li>
+<li class="chapter" data-level="11.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#finding-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.1</b> Finding roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#numerically-finding-roots"><i class="fa fa-check"></i><b>11.1.1</b> Numerically finding roots</a></li>
+<li class="chapter" data-level="11.1.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-solveset-function"><i class="fa fa-check"></i><b>11.1.2</b> The solveset function</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#do-numeric-methods-matter-when-you-can-just-graph"><i class="fa fa-check"></i><b>11.2</b> Do numeric methods matter when you can just graph?</a></li>
+<li class="chapter" data-level="11.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#some-facts-about-the-real-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.3</b> Some facts about the real roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#descartes-rule-of-signs"><i class="fa fa-check"></i><b>11.3.1</b> Descartes’ rule of signs</a></li>
+<li class="chapter" data-level="11.3.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#cauchys-bound-on-the-magnitude-of-the-real-roots."><i class="fa fa-check"></i><b>11.3.2</b> Cauchy’s bound on the magnitude of the real roots.</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#questions-10"><i class="fa fa-check"></i><b>11.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="rational-functions.html"><a href="rational-functions.html"><i class="fa fa-check"></i><b>12</b> Rational functions</a><ul>
+<li class="chapter" data-level="12.1" data-path="rational-functions.html"><a href="rational-functions.html#rational-functions-1"><i class="fa fa-check"></i><b>12.1</b> Rational functions</a></li>
+<li class="chapter" data-level="12.2" data-path="rational-functions.html"><a href="rational-functions.html#asymptotes"><i class="fa fa-check"></i><b>12.2</b> Asymptotes</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="rational-functions.html"><a href="rational-functions.html#behaviour-as-x-rightarrow-infty-or-x-rightarrow--infty."><i class="fa fa-check"></i><b>12.2.1</b> Behaviour as <span class="math inline">\(x \rightarrow \infty\)</span> or <span class="math inline">\(x \rightarrow -\infty\)</span>.</a></li>
+<li class="chapter" data-level="12.2.2" data-path="rational-functions.html"><a href="rational-functions.html#vertical-asymptotes"><i class="fa fa-check"></i><b>12.2.2</b> Vertical asymptotes</a></li>
+<li class="chapter" data-level="12.2.3" data-path="rational-functions.html"><a href="rational-functions.html#sign-charts"><i class="fa fa-check"></i><b>12.2.3</b> sign charts</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="rational-functions.html"><a href="rational-functions.html#pade-approximate"><i class="fa fa-check"></i><b>12.3</b> Pade approximate</a></li>
+<li class="chapter" data-level="12.4" data-path="rational-functions.html"><a href="rational-functions.html#questions-11"><i class="fa fa-check"></i><b>12.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html"><i class="fa fa-check"></i><b>13</b> Trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-6-basic-trigonometric-functions"><i class="fa fa-check"></i><b>13.1</b> The 6 basic trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-trigonometric-functions-in-julia"><i class="fa fa-check"></i><b>13.1.1</b> The trigonometric functions in Julia</a></li>
+<li class="chapter" data-level="13.1.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#basic-properties"><i class="fa fa-check"></i><b>13.1.2</b> Basic properties</a></li>
+<li class="chapter" data-level="13.1.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#functions-using-degrees"><i class="fa fa-check"></i><b>13.1.3</b> Functions using degrees</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-sum-and-difference-formulas"><i class="fa fa-check"></i><b>13.2</b> The sum-and-difference formulas</a></li>
+<li class="chapter" data-level="13.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#inverse-trigonometric-functions"><i class="fa fa-check"></i><b>13.3</b> Inverse trigonometric functions</a><ul>
+<li class="chapter" data-level="13.3.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#implications-of-a-restricted-domain"><i class="fa fa-check"></i><b>13.3.1</b> Implications of a restricted domain</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#hyperbolic-trigonometric-functions"><i class="fa fa-check"></i><b>13.4</b> Hyperbolic trigonometric functions</a></li>
+<li class="chapter" data-level="13.5" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#questions-12"><i class="fa fa-check"></i><b>13.5</b> Questions</a></li>
+</ul></li>
+<li class="part"><span><b>I Single Variable Calculus</b></span></li>
+<li class="chapter" data-level="14" data-path="limits.html"><a href="limits.html"><i class="fa fa-check"></i><b>14</b> Limits</a><ul>
+<li class="chapter" data-level="14.0.1" data-path="limits.html"><a href="limits.html#indeterminate-forms"><i class="fa fa-check"></i><b>14.0.1</b> Indeterminate forms</a></li>
+<li class="chapter" data-level="14.1" data-path="limits.html"><a href="limits.html#graphical-approaches-to-limits"><i class="fa fa-check"></i><b>14.1</b> Graphical approaches to limits</a></li>
+<li class="chapter" data-level="14.2" data-path="limits.html"><a href="limits.html#numerical-approaches-to-limits"><i class="fa fa-check"></i><b>14.2</b> Numerical approaches to limits</a><ul>
+<li class="chapter" data-level="14.2.1" data-path="limits.html"><a href="limits.html#issues-with-the-numeric-approach"><i class="fa fa-check"></i><b>14.2.1</b> Issues with the numeric approach</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="limits.html"><a href="limits.html#symbolic-approach-to-limits"><i class="fa fa-check"></i><b>14.3</b> Symbolic approach to limits</a></li>
+<li class="chapter" data-level="14.4" data-path="limits.html"><a href="limits.html#rules-for-limits"><i class="fa fa-check"></i><b>14.4</b> Rules for limits</a></li>
+<li class="chapter" data-level="14.5" data-path="limits.html"><a href="limits.html#limits-from-the-definition"><i class="fa fa-check"></i><b>14.5</b> Limits from the definition</a></li>
+<li class="chapter" data-level="14.6" data-path="limits.html"><a href="limits.html#questions-13"><i class="fa fa-check"></i><b>14.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html"><i class="fa fa-check"></i><b>15</b> Limits, issues, extensions of the concept</a><ul>
+<li class="chapter" data-level="15.1" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#right-and-left-limits"><i class="fa fa-check"></i><b>15.1</b> Right and left limits</a></li>
+<li class="chapter" data-level="15.2" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-at-infinity"><i class="fa fa-check"></i><b>15.2</b> Limits at infinity</a></li>
+<li class="chapter" data-level="15.3" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-infinity"><i class="fa fa-check"></i><b>15.3</b> Limits of infinity</a></li>
+<li class="chapter" data-level="15.4" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-sequences"><i class="fa fa-check"></i><b>15.4</b> Limits of sequences</a></li>
+<li class="chapter" data-level="15.5" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#summary"><i class="fa fa-check"></i><b>15.5</b> Summary</a></li>
+<li class="chapter" data-level="15.6" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#questions-14"><i class="fa fa-check"></i><b>15.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="continuity.html"><a href="continuity.html"><i class="fa fa-check"></i><b>16</b> Continuity</a><ul>
+<li class="chapter" data-level="16.1" data-path="continuity.html"><a href="continuity.html#rules-for-continuity"><i class="fa fa-check"></i><b>16.1</b> Rules for continuity</a></li>
+<li class="chapter" data-level="16.2" data-path="continuity.html"><a href="continuity.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html"><i class="fa fa-check"></i><b>17</b> Implications of continuity</a><ul>
+<li class="chapter" data-level="17.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#intermediate-value-theorem"><i class="fa fa-check"></i><b>17.1</b> Intermediate Value Theorem</a><ul>
+<li class="chapter" data-level="17.1.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#bolzano-and-the-bisection-method"><i class="fa fa-check"></i><b>17.1.1</b> Bolzano and the bisection method</a></li>
+<li class="chapter" data-level="17.1.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzero-function."><i class="fa fa-check"></i><b>17.1.2</b> The fzero function.</a></li>
+<li class="chapter" data-level="17.1.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-8"><i class="fa fa-check"></i><b>17.1.3</b> Examples</a></li>
+<li class="chapter" data-level="17.1.4" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzeros-function"><i class="fa fa-check"></i><b>17.1.4</b> The fzeros function</a></li>
+</ul></li>
+<li class="chapter" data-level="17.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#extreme-value-theorem"><i class="fa fa-check"></i><b>17.2</b> Extreme value theorem</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-9"><i class="fa fa-check"></i><b>17.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#questions-16"><i class="fa fa-check"></i><b>17.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="derivatives.html"><a href="derivatives.html"><i class="fa fa-check"></i><b>18</b> Derivatives</a><ul>
+<li class="chapter" data-level="18.1" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-secant-line"><i class="fa fa-check"></i><b>18.1</b> The slope of the secant line</a></li>
+<li class="chapter" data-level="18.2" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-tangent-line"><i class="fa fa-check"></i><b>18.2</b> The slope of the tangent line</a></li>
+<li class="chapter" data-level="18.3" data-path="derivatives.html"><a href="derivatives.html#the-derivative"><i class="fa fa-check"></i><b>18.3</b> The derivative</a><ul>
+<li class="chapter" data-level="18.3.1" data-path="derivatives.html"><a href="derivatives.html#some-basic-derivatives"><i class="fa fa-check"></i><b>18.3.1</b> Some basic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.4" data-path="derivatives.html"><a href="derivatives.html#rules-of-derivatives"><i class="fa fa-check"></i><b>18.4</b> Rules of derivatives</a><ul>
+<li class="chapter" data-level="18.4.1" data-path="derivatives.html"><a href="derivatives.html#sum-rule"><i class="fa fa-check"></i><b>18.4.1</b> Sum rule</a></li>
+<li class="chapter" data-level="18.4.2" data-path="derivatives.html"><a href="derivatives.html#product-rule"><i class="fa fa-check"></i><b>18.4.2</b> Product rule</a></li>
+<li class="chapter" data-level="18.4.3" data-path="derivatives.html"><a href="derivatives.html#quotient-rule"><i class="fa fa-check"></i><b>18.4.3</b> Quotient rule</a></li>
+<li class="chapter" data-level="18.4.4" data-path="derivatives.html"><a href="derivatives.html#chain-rule"><i class="fa fa-check"></i><b>18.4.4</b> Chain rule</a></li>
+</ul></li>
+<li class="chapter" data-level="18.5" data-path="derivatives.html"><a href="derivatives.html#higher-order-derivatives"><i class="fa fa-check"></i><b>18.5</b> Higher-order derivatives</a></li>
+<li class="chapter" data-level="18.6" data-path="derivatives.html"><a href="derivatives.html#numeric-derivatives"><i class="fa fa-check"></i><b>18.6</b> Numeric derivatives</a><ul>
+<li class="chapter" data-level="18.6.1" data-path="derivatives.html"><a href="derivatives.html#approximate-derivatives"><i class="fa fa-check"></i><b>18.6.1</b> Approximate derivatives</a></li>
+<li class="chapter" data-level="18.6.2" data-path="derivatives.html"><a href="derivatives.html#automatic-derivatives"><i class="fa fa-check"></i><b>18.6.2</b> Automatic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.7" data-path="derivatives.html"><a href="derivatives.html#questions-17"><i class="fa fa-check"></i><b>18.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><i class="fa fa-check"></i><b>19</b> The Mean Value Theorem and other facts about some functions.</a><ul>
+<li class="chapter" data-level="19.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#differentiable-is-more-restrictive-than-continuous."><i class="fa fa-check"></i><b>19.1</b> Differentiable is more restrictive than continuous.</a></li>
+<li class="chapter" data-level="19.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#derivatives-and-maxima."><i class="fa fa-check"></i><b>19.2</b> Derivatives and maxima.</a></li>
+<li class="chapter" data-level="19.3" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#rolles-theorem"><i class="fa fa-check"></i><b>19.3</b> Rolle’s Theorem</a></li>
+<li class="chapter" data-level="19.4" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-mean-value-theorem"><i class="fa fa-check"></i><b>19.4</b> The Mean Value Theorem</a><ul>
+<li class="chapter" data-level="19.4.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.1</b> The Cauchy mean value theorem</a></li>
+<li class="chapter" data-level="19.4.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#visualizing-the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.2</b> Visualizing the Cauchy mean value theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="19.5" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#questions-18"><i class="fa fa-check"></i><b>19.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="optimization.html"><a href="optimization.html"><i class="fa fa-check"></i><b>20</b> Optimization</a><ul>
+<li class="chapter" data-level="20.1" data-path="optimization.html"><a href="optimization.html#fixed-perimeter-and-area"><i class="fa fa-check"></i><b>20.1</b> Fixed perimeter and area</a><ul>
+<li class="chapter" data-level="20.1.1" data-path="optimization.html"><a href="optimization.html#exploiting-polymorphism"><i class="fa fa-check"></i><b>20.1.1</b> Exploiting polymorphism</a></li>
+<li class="chapter" data-level="20.1.2" data-path="optimization.html"><a href="optimization.html#norman-windows"><i class="fa fa-check"></i><b>20.1.2</b> Norman Windows</a></li>
+<li class="chapter" data-level="20.1.3" data-path="optimization.html"><a href="optimization.html#using-fzero-to-locate-critical-points."><i class="fa fa-check"></i><b>20.1.3</b> Using fzero to locate critical points.</a></li>
+<li class="chapter" data-level="20.1.4" data-path="optimization.html"><a href="optimization.html#a-symbolic-approach"><i class="fa fa-check"></i><b>20.1.4</b> A symbolic approach</a></li>
+</ul></li>
+<li class="chapter" data-level="20.2" data-path="optimization.html"><a href="optimization.html#trigonometry"><i class="fa fa-check"></i><b>20.2</b> Trigonometry</a></li>
+<li class="chapter" data-level="20.3" data-path="optimization.html"><a href="optimization.html#rate-times-time"><i class="fa fa-check"></i><b>20.3</b> Rate times time</a></li>
+<li class="chapter" data-level="20.4" data-path="optimization.html"><a href="optimization.html#unbounded-domains"><i class="fa fa-check"></i><b>20.4</b> Unbounded domains</a><ul>
+<li class="chapter" data-level="20.4.1" data-path="optimization.html"><a href="optimization.html#minimize-surface-area-of-a-can"><i class="fa fa-check"></i><b>20.4.1</b> Minimize surface area of a can</a></li>
+</ul></li>
+<li class="chapter" data-level="20.5" data-path="optimization.html"><a href="optimization.html#questions-19"><i class="fa fa-check"></i><b>20.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="curve-sketching.html"><a href="curve-sketching.html"><i class="fa fa-check"></i><b>21</b> Curve Sketching</a><ul>
+<li class="chapter" data-level="21.1" data-path="curve-sketching.html"><a href="curve-sketching.html#positive-and-increasing-on-an-interval"><i class="fa fa-check"></i><b>21.1</b> Positive and increasing on an interval</a></li>
+<li class="chapter" data-level="21.2" data-path="curve-sketching.html"><a href="curve-sketching.html#the-derivative-and-increasing-and-decreasing"><i class="fa fa-check"></i><b>21.2</b> The derivative and increasing and decreasing</a><ul>
+<li class="chapter" data-level="21.2.1" data-path="curve-sketching.html"><a href="curve-sketching.html#first-derivative-test"><i class="fa fa-check"></i><b>21.2.1</b> First derivative test</a></li>
+</ul></li>
+<li class="chapter" data-level="21.3" data-path="curve-sketching.html"><a href="curve-sketching.html#concavity"><i class="fa fa-check"></i><b>21.3</b> Concavity</a><ul>
+<li class="chapter" data-level="21.3.1" data-path="curve-sketching.html"><a href="curve-sketching.html#second-derivative-test"><i class="fa fa-check"></i><b>21.3.1</b> Second derivative test</a></li>
+<li class="chapter" data-level="21.3.2" data-path="curve-sketching.html"><a href="curve-sketching.html#inflection-points"><i class="fa fa-check"></i><b>21.3.2</b> Inflection points</a></li>
+</ul></li>
+<li class="chapter" data-level="21.4" data-path="curve-sketching.html"><a href="curve-sketching.html#questions-20"><i class="fa fa-check"></i><b>21.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="linearization.html"><a href="linearization.html"><i class="fa fa-check"></i><b>22</b> Linearization</a><ul>
+<li class="chapter" data-level="22.1" data-path="linearization.html"><a href="linearization.html#numeric-approximations"><i class="fa fa-check"></i><b>22.1</b> Numeric approximations</a></li>
+<li class="chapter" data-level="22.2" data-path="linearization.html"><a href="linearization.html#the-actual-error"><i class="fa fa-check"></i><b>22.2</b> The actual error</a><ul>
+<li class="chapter" data-level="22.2.1" data-path="linearization.html"><a href="linearization.html#why-is-the-remainder-term-as-it-is"><i class="fa fa-check"></i><b>22.2.1</b> Why is the remainder term as it is?</a></li>
+<li class="chapter" data-level="22.2.2" data-path="linearization.html"><a href="linearization.html#the-big-and-small-oh"><i class="fa fa-check"></i><b>22.2.2</b> The big (and small) “oh”</a></li>
+</ul></li>
+<li class="chapter" data-level="22.3" data-path="linearization.html"><a href="linearization.html#questions-21"><i class="fa fa-check"></i><b>22.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="newtons-method.html"><a href="newtons-method.html"><i class="fa fa-check"></i><b>23</b> Newton’s method</a><ul>
+<li class="chapter" data-level="23.1" data-path="newtons-method.html"><a href="newtons-method.html#newtons-generalization"><i class="fa fa-check"></i><b>23.1</b> Newton’s generalization</a></li>
+<li class="chapter" data-level="23.2" data-path="newtons-method.html"><a href="newtons-method.html#examples-11"><i class="fa fa-check"></i><b>23.2</b> Examples</a></li>
+<li class="chapter" data-level="23.3" data-path="newtons-method.html"><a href="newtons-method.html#a-function"><i class="fa fa-check"></i><b>23.3</b> A function</a><ul>
+<li class="chapter" data-level="23.3.1" data-path="newtons-method.html"><a href="newtons-method.html#functions-in-the-roots-package"><i class="fa fa-check"></i><b>23.3.1</b> Functions in the Roots package</a></li>
+</ul></li>
+<li class="chapter" data-level="23.4" data-path="newtons-method.html"><a href="newtons-method.html#convergence"><i class="fa fa-check"></i><b>23.4</b> Convergence</a><ul>
+<li class="chapter" data-level="23.4.1" data-path="newtons-method.html"><a href="newtons-method.html#poor-initial-step"><i class="fa fa-check"></i><b>23.4.1</b> Poor initial step</a></li>
+<li class="chapter" data-level="23.4.2" data-path="newtons-method.html"><a href="newtons-method.html#the-second-derivative-is-too-big"><i class="fa fa-check"></i><b>23.4.2</b> The second derivative is too big</a></li>
+<li class="chapter" data-level="23.4.3" data-path="newtons-method.html"><a href="newtons-method.html#the-tangent-line-at-some-x_i-is-flat"><i class="fa fa-check"></i><b>23.4.3</b> The tangent line at some <span class="math inline">\(x_i\)</span> is flat</a></li>
+</ul></li>
+<li class="chapter" data-level="23.5" data-path="newtons-method.html"><a href="newtons-method.html#questions-22"><i class="fa fa-check"></i><b>23.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html"><i class="fa fa-check"></i><b>24</b> L’Hopitals Rule</a><ul>
+<li class="chapter" data-level="24.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#why"><i class="fa fa-check"></i><b>24.1</b> Why?</a><ul>
+<li class="chapter" data-level="24.1.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#lhopitals-picture"><i class="fa fa-check"></i><b>24.1.1</b> L’Hopital’s picture</a></li>
+</ul></li>
+<li class="chapter" data-level="24.2" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#generalizations"><i class="fa fa-check"></i><b>24.2</b> Generalizations</a></li>
+<li class="chapter" data-level="24.3" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#questions-23"><i class="fa fa-check"></i><b>24.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html"><i class="fa fa-check"></i><b>25</b> Implicit Differentiation</a><ul>
+<li class="chapter" data-level="25.1" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#graphs-of-equations"><i class="fa fa-check"></i><b>25.1</b> Graphs of equations</a></li>
+<li class="chapter" data-level="25.2" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#tangent-lines-implicit-differentiation"><i class="fa fa-check"></i><b>25.2</b> Tangent lines, implicit differentiation</a></li>
+<li class="chapter" data-level="25.3" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#using-sympy-for-computation"><i class="fa fa-check"></i><b>25.3</b> Using SymPy for computation</a></li>
+<li class="chapter" data-level="25.4" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#higher-order-derivatives-1"><i class="fa fa-check"></i><b>25.4</b> Higher order derivatives</a></li>
+<li class="chapter" data-level="25.5" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#inverse-functions"><i class="fa fa-check"></i><b>25.5</b> Inverse functions</a></li>
+<li class="chapter" data-level="25.6" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#example-from-physics-1"><i class="fa fa-check"></i><b>25.6</b> Example from physics</a></li>
+<li class="chapter" data-level="25.7" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#questions-24"><i class="fa fa-check"></i><b>25.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="related-rates.html"><a href="related-rates.html"><i class="fa fa-check"></i><b>26</b> Related rates</a><ul>
+<li class="chapter" data-level="26.1" data-path="related-rates.html"><a href="related-rates.html#examples-16"><i class="fa fa-check"></i><b>26.1</b> Examples</a></li>
+<li class="chapter" data-level="26.2" data-path="related-rates.html"><a href="related-rates.html#questions-25"><i class="fa fa-check"></i><b>26.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="differential-equations.html"><a href="differential-equations.html"><i class="fa fa-check"></i><b>27</b> Differential Equations</a><ul>
+<li class="chapter" data-level="27.1" data-path="differential-equations.html"><a href="differential-equations.html#what-to-say"><i class="fa fa-check"></i><b>27.1</b> What to say?</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html"><i class="fa fa-check"></i><b>28</b> Area under a curve</a><ul>
+<li class="chapter" data-level="28.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#approximating-areas"><i class="fa fa-check"></i><b>28.1</b> Approximating areas</a><ul>
+<li class="chapter" data-level="28.1.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#adding-rectangles"><i class="fa fa-check"></i><b>28.1.1</b> Adding rectangles</a></li>
+<li class="chapter" data-level="28.1.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#other-sums"><i class="fa fa-check"></i><b>28.1.2</b> Other sums</a></li>
+<li class="chapter" data-level="28.1.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-immediate-consequences"><i class="fa fa-check"></i><b>28.1.3</b> Some immediate consequences</a></li>
+<li class="chapter" data-level="28.1.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-known-integrals"><i class="fa fa-check"></i><b>28.1.4</b> Some known integrals</a></li>
+<li class="chapter" data-level="28.1.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-other-consequences"><i class="fa fa-check"></i><b>28.1.5</b> Some other consequences</a></li>
+</ul></li>
+<li class="chapter" data-level="28.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#numeric-integration"><i class="fa fa-check"></i><b>28.2</b> Numeric integration</a></li>
+<li class="chapter" data-level="28.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#negative-area"><i class="fa fa-check"></i><b>28.3</b> “Negative” area</a></li>
+<li class="chapter" data-level="28.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#error-estimate"><i class="fa fa-check"></i><b>28.4</b> Error estimate</a></li>
+<li class="chapter" data-level="28.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#gauss-quadrature"><i class="fa fa-check"></i><b>28.5</b> Gauss quadrature</a><ul>
+<li class="chapter" data-level="28.5.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#the-quadgk-function"><i class="fa fa-check"></i><b>28.5.1</b> The quadgk function</a></li>
+</ul></li>
+<li class="chapter" data-level="28.6" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#questions-26"><i class="fa fa-check"></i><b>28.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html"><i class="fa fa-check"></i><b>29</b> Fundamental Theorem or Calculus</a><ul>
+<li class="chapter" data-level="29.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#using-the-fundamental-theorem-of-calculus-to-evaluate-definite-integrals"><i class="fa fa-check"></i><b>29.1</b> Using the Fundamental Theorem of Calculus to evaluate definite integrals</a><ul>
+<li class="chapter" data-level="29.1.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#an-alternate-notation-for-fb---fa"><i class="fa fa-check"></i><b>29.1.1</b> An alternate notation for <span class="math inline">\(F(b) - F(a)\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="29.2" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-indefinite-integral"><i class="fa fa-check"></i><b>29.2</b> The indefinite integral</a></li>
+<li class="chapter" data-level="29.3" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#rules-of-integration"><i class="fa fa-check"></i><b>29.3</b> Rules of integration</a></li>
+<li class="chapter" data-level="29.4" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-derivative-of-the-integral"><i class="fa fa-check"></i><b>29.4</b> The derivative of the integral</a></li>
+<li class="chapter" data-level="29.5" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#questions-27"><i class="fa fa-check"></i><b>29.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="substitution.html"><a href="substitution.html"><i class="fa fa-check"></i><b>30</b> Substitution</a><ul>
+<li class="chapter" data-level="30.0.1" data-path="substitution.html"><a href="substitution.html#u-substitution"><i class="fa fa-check"></i><b>30.0.1</b> “u” substitution</a></li>
+<li class="chapter" data-level="30.1" data-path="substitution.html"><a href="substitution.html#sympy-and-substitution"><i class="fa fa-check"></i><b>30.1</b> SymPy and substitution</a><ul>
+<li class="chapter" data-level="30.1.1" data-path="substitution.html"><a href="substitution.html#failures"><i class="fa fa-check"></i><b>30.1.1</b> Failures…</a></li>
+</ul></li>
+<li class="chapter" data-level="30.2" data-path="substitution.html"><a href="substitution.html#trigonometric-substitution"><i class="fa fa-check"></i><b>30.2</b> Trigonometric substitution</a></li>
+<li class="chapter" data-level="30.3" data-path="substitution.html"><a href="substitution.html#questions-28"><i class="fa fa-check"></i><b>30.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="integration-by-parts.html"><a href="integration-by-parts.html"><i class="fa fa-check"></i><b>31</b> Integration By Parts</a><ul>
+<li class="chapter" data-level="31.1" data-path="integration-by-parts.html"><a href="integration-by-parts.html#examples-19"><i class="fa fa-check"></i><b>31.1</b> Examples</a></li>
+<li class="chapter" data-level="31.2" data-path="integration-by-parts.html"><a href="integration-by-parts.html#questions-29"><i class="fa fa-check"></i><b>31.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html"><i class="fa fa-check"></i><b>32</b> Partial Fractions</a><ul>
+<li class="chapter" data-level="32.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.1</b> Partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.1.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#sketch-of-proof"><i class="fa fa-check"></i><b>32.1.1</b> Sketch of proof</a></li>
+</ul></li>
+<li class="chapter" data-level="32.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#integrating-the-terms-in-a-partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.2</b> Integrating the terms in a partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.2.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#linear-factors"><i class="fa fa-check"></i><b>32.2.1</b> Linear factors</a></li>
+<li class="chapter" data-level="32.2.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#quadratic-factors"><i class="fa fa-check"></i><b>32.2.2</b> Quadratic factors</a></li>
+</ul></li>
+<li class="chapter" data-level="32.3" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#examples-20"><i class="fa fa-check"></i><b>32.3</b> Examples</a></li>
+<li class="chapter" data-level="32.4" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#questions-30"><i class="fa fa-check"></i><b>32.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="improper-integrals.html"><a href="improper-integrals.html"><i class="fa fa-check"></i><b>33</b> Improper Integrals</a><ul>
+<li class="chapter" data-level="33.1" data-path="improper-integrals.html"><a href="improper-integrals.html#infinite-domains"><i class="fa fa-check"></i><b>33.1</b> Infinite domains</a><ul>
+<li class="chapter" data-level="33.1.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integrals"><i class="fa fa-check"></i><b>33.1.1</b> Numeric integrals</a></li>
+</ul></li>
+<li class="chapter" data-level="33.2" data-path="improper-integrals.html"><a href="improper-integrals.html#singularities"><i class="fa fa-check"></i><b>33.2</b> Singularities</a><ul>
+<li class="chapter" data-level="33.2.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integration-1"><i class="fa fa-check"></i><b>33.2.1</b> Numeric integration</a></li>
+</ul></li>
+<li class="chapter" data-level="33.3" data-path="improper-integrals.html"><a href="improper-integrals.html#probability-applications"><i class="fa fa-check"></i><b>33.3</b> Probability applications</a></li>
+<li class="chapter" data-level="33.4" data-path="improper-integrals.html"><a href="improper-integrals.html#questions-31"><i class="fa fa-check"></i><b>33.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="34" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><i class="fa fa-check"></i><b>34</b> Average of a function and the Mean Value Theorem for integrals</a><ul>
+<li class="chapter" data-level="34.1" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#examples-23"><i class="fa fa-check"></i><b>34.1</b> Examples</a></li>
+<li class="chapter" data-level="34.2" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#the-mean-value-theorem-for-integrals"><i class="fa fa-check"></i><b>34.2</b> The Mean Value Theorem for Integrals</a></li>
+<li class="chapter" data-level="34.3" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#questions-32"><i class="fa fa-check"></i><b>34.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html"><i class="fa fa-check"></i><b>35</b> Area between two curves</a><ul>
+<li class="chapter" data-level="35.1" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#examples-24"><i class="fa fa-check"></i><b>35.1</b> Examples</a></li>
+<li class="chapter" data-level="35.2" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#questions-33"><i class="fa fa-check"></i><b>35.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="center-of-mass.html"><a href="center-of-mass.html"><i class="fa fa-check"></i><b>36</b> Center of Mass</a><ul>
+<li class="chapter" data-level="36.1" data-path="center-of-mass.html"><a href="center-of-mass.html#center-of-mass-of-figures"><i class="fa fa-check"></i><b>36.1</b> Center of mass of figures</a></li>
+<li class="chapter" data-level="36.2" data-path="center-of-mass.html"><a href="center-of-mass.html#the-y-direction."><i class="fa fa-check"></i><b>36.2</b> The <span class="math inline">\(y\)</span> direction.</a></li>
+<li class="chapter" data-level="36.3" data-path="center-of-mass.html"><a href="center-of-mass.html#questions-34"><i class="fa fa-check"></i><b>36.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html"><i class="fa fa-check"></i><b>37</b> Volumes by slicing</a><ul>
+<li class="chapter" data-level="37.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-of-revolution"><i class="fa fa-check"></i><b>37.1</b> Solids of revolution</a><ul>
+<li class="chapter" data-level="37.1.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#the-washer-method"><i class="fa fa-check"></i><b>37.1.1</b> The washer method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.2" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-with-known-cross-section"><i class="fa fa-check"></i><b>37.2</b> Solids with known cross section</a><ul>
+<li class="chapter" data-level="37.2.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#cavalieris-method"><i class="fa fa-check"></i><b>37.2.1</b> Cavalieri’s method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.3" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#pappus-theorem-2nd"><i class="fa fa-check"></i><b>37.3</b> Pappus theorem (2nd)</a></li>
+<li class="chapter" data-level="37.4" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#questions-35"><i class="fa fa-check"></i><b>37.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="arc-length.html"><a href="arc-length.html"><i class="fa fa-check"></i><b>38</b> Arc length</a><ul>
+<li class="chapter" data-level="38.1" data-path="arc-length.html"><a href="arc-length.html#arc-length-formula"><i class="fa fa-check"></i><b>38.1</b> Arc length formula</a></li>
+<li class="chapter" data-level="38.2" data-path="arc-length.html"><a href="arc-length.html#examples-26"><i class="fa fa-check"></i><b>38.2</b> Examples</a></li>
+<li class="chapter" data-level="38.3" data-path="arc-length.html"><a href="arc-length.html#questions-36"><i class="fa fa-check"></i><b>38.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="surface-area.html"><a href="surface-area.html"><i class="fa fa-check"></i><b>39</b> Surface Area</a><ul>
+<li class="chapter" data-level="39.1" data-path="surface-area.html"><a href="surface-area.html#examples-27"><i class="fa fa-check"></i><b>39.1</b> Examples</a></li>
+<li class="chapter" data-level="39.2" data-path="surface-area.html"><a href="surface-area.html#theorem-of-pappus"><i class="fa fa-check"></i><b>39.2</b> Theorem of Pappus</a></li>
+<li class="chapter" data-level="39.3" data-path="surface-area.html"><a href="surface-area.html#questions-37"><i class="fa fa-check"></i><b>39.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="40" data-path="odes.html"><a href="odes.html"><i class="fa fa-check"></i><b>40</b> ODEs</a><ul>
+<li class="chapter" data-level="40.1" data-path="odes.html"><a href="odes.html#motion-with-constant-acceleration"><i class="fa fa-check"></i><b>40.1</b> Motion with constant acceleration</a></li>
+<li class="chapter" data-level="40.2" data-path="odes.html"><a href="odes.html#first-order-initial-value-problems"><i class="fa fa-check"></i><b>40.2</b> First-order initial-value problems</a><ul>
+<li class="chapter" data-level="40.2.1" data-path="odes.html"><a href="odes.html#examples-28"><i class="fa fa-check"></i><b>40.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="40.3" data-path="odes.html"><a href="odes.html#separable-equations"><i class="fa fa-check"></i><b>40.3</b> Separable equations</a></li>
+<li class="chapter" data-level="40.4" data-path="odes.html"><a href="odes.html#symbolic-solutions"><i class="fa fa-check"></i><b>40.4</b> Symbolic solutions</a></li>
+<li class="chapter" data-level="40.5" data-path="odes.html"><a href="odes.html#visualizing-a-first-order-initial-value-problem"><i class="fa fa-check"></i><b>40.5</b> Visualizing a first-order initial value problem</a></li>
+<li class="chapter" data-level="40.6" data-path="odes.html"><a href="odes.html#questions-45"><i class="fa fa-check"></i><b>40.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="41" data-path="eulers-method.html"><a href="eulers-method.html"><i class="fa fa-check"></i><b>41</b> Euler’s method</a><ul>
+<li class="chapter" data-level="41.1" data-path="eulers-method.html"><a href="eulers-method.html#the-euler-method"><i class="fa fa-check"></i><b>41.1</b> The Euler method</a></li>
+<li class="chapter" data-level="41.2" data-path="eulers-method.html"><a href="eulers-method.html#examples-29"><i class="fa fa-check"></i><b>41.2</b> Examples</a></li>
+<li class="chapter" data-level="41.3" data-path="eulers-method.html"><a href="eulers-method.html#questions-46"><i class="fa fa-check"></i><b>41.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="42" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html"><i class="fa fa-check"></i><b>42</b> Parametrized curves in two dimensions</a><ul>
+<li class="chapter" data-level="42.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vectors-vector-valued-functions"><i class="fa fa-check"></i><b>42.1</b> Vectors, vector-valued functions</a><ul>
+<li class="chapter" data-level="42.1.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vector-valued-functions"><i class="fa fa-check"></i><b>42.1.1</b> Vector-valued functions</a></li>
+<li class="chapter" data-level="42.1.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#limits-continuity"><i class="fa fa-check"></i><b>42.1.2</b> Limits, continuity</a></li>
+</ul></li>
+<li class="chapter" data-level="42.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#derivative"><i class="fa fa-check"></i><b>42.2</b> Derivative</a><ul>
+<li class="chapter" data-level="42.2.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-tangent-line"><i class="fa fa-check"></i><b>42.2.1</b> The tangent line</a></li>
+<li class="chapter" data-level="42.2.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-second-derivative"><i class="fa fa-check"></i><b>42.2.2</b> The second derivative</a></li>
+</ul></li>
+<li class="chapter" data-level="42.3" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#line-integrals"><i class="fa fa-check"></i><b>42.3</b> Line integrals</a><ul>
+<li class="chapter" data-level="42.3.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#examples-30"><i class="fa fa-check"></i><b>42.3.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="42.4" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#questions-47"><i class="fa fa-check"></i><b>42.4</b> Questions</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Calculus With Julia</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ranges-and-sets" class="section level1">
+<h1><span class="header-section-number">6</span> Ranges and Sets</h1>
+<p>Sequences of numbers are prevalent in math. A simple one is just counting by ones: <span class="math display">\[~
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, \dots
+~\]</span></p>
+<p>Or counting by sevens: <span class="math display">\[~
+7, 14, 21, 28, 35, 42, 49, \dots
+~\]</span></p>
+<p>More challenging for humans is <a href="http://www.psychpage.com/learning/library/assess/mse.htm">counting backwards</a> by 7: <span class="math display">\[~
+100, 93, 86, 79, \dots
+~\]</span></p>
+<p>These are examples of <a href="http://en.wikipedia.org/wiki/Arithmetic_progression">arithmetic sequences</a>. The form of the first <span class="math inline">\(n+1\)</span> terms in such a sequence is: <span class="math display">\[~
+a_0, a_0 + h, a_0 + 2h, a_0 + 3h, \dots, a_0 + nh
+~\]</span></p>
+<p>The formula for the <span class="math inline">\(a_n\)</span>th term can be written in terms of <span class="math inline">\(a_0\)</span>, or any other <span class="math inline">\(0 &lt; m \leq n\)</span> with <span class="math inline">\(a_n = a_m + (n-m)\cdot h\)</span>.</p>
+<p>A typical question might be: The first term of an arithmetic sequence is equal to 200 and the common difference is equal to -10. Find the value of <span class="math inline">\(a_{20}\)</span>. We could find this using <span class="math inline">\(a_n = a_0 + n\cdot h\)</span>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a0, h, n =<span class="st"> </span><span class="dv">200</span>, -<span class="dv">10</span>, <span class="dv">20</span>
+a0 +<span class="st"> </span>n *<span class="st"> </span>h</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 0</code></pre></div>
+<p>More complicated questions involve solving for an unknown first, as with: an arithmetic sequence has a common difference equal to 10 and its 6th term is equal to 52. Find its 15th term, <span class="math inline">\(a_{15}\)</span>. Here we have to answer: <span class="math inline">\(a_0 + 15 \cdot 10\)</span>, but to find <span class="math inline">\(a_0\)</span>, we use <span class="math inline">\(52 = a_0 + 6\cdot(10)\)</span>. This yields <span class="math inline">\(a_0=-8\)</span>, and so:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a0, h, n =<span class="st"> </span>-<span class="dv">8</span>, <span class="dv">10</span>, <span class="dv">15</span>
+a0 +<span class="st"> </span>n *<span class="st"> </span>h</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 142</code></pre></div>
+<p>Rather than express sequences by the <span class="math inline">\(a_0\)</span>, <span class="math inline">\(h\)</span>, and <span class="math inline">\(n\)</span>, <code>Julia</code> uses the starting point (<code>a</code>), the difference (<code>h</code>) and a <em>suggested</em> stopping value (<code>b</code>). That is, we need three values to specify these ranges of numbers: a <code>start</code>, a <code>step</code>, and an <code>endof</code>. <code>Julia</code> gives a convenient syntax for this: <code>a:h:b</code>. When the difference is just <span class="math inline">\(1\)</span>, all numbers between the start and end are specified by <code>a:b</code>, as in</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">10</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1:10</code></pre></div>
+<p>But wait, nothing printed? This is because <code>1:10</code> is efficiently stored. Basically, only the current state and a means to generate the next value are kept. To expand the values, you have to ask for them to be <code>collect</code>ed (though this typically isn’t needed):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">collect</span>(<span class="dv">1</span>:<span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 10-element Array{Int64,1}:
+##   1
+##   2
+##   3
+##   4
+##   5
+##   6
+##   7
+##   8
+##   9
+##  10</code></pre></div>
+<p>When a non-default step size is needed, it goes in the middle, as in <code>a:h:b</code>. For example, counting by sevens from 1 to 50 is achieved by:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">collect</span>(<span class="dv">1</span>:<span class="dv">7</span>:<span class="dv">50</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 8-element Array{Int64,1}:
+##   1
+##   8
+##  15
+##  22
+##  29
+##  36
+##  43
+##  50</code></pre></div>
+<p>Or counting down from 100:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">collect</span>(<span class="dv">100</span>:-<span class="dv">7</span>:<span class="dv">1</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 15-element Array{Int64,1}:
+##  100
+##   93
+##   86
+##   79
+##   72
+##   65
+##   58
+##   51
+##   44
+##   37
+##   30
+##   23
+##   16
+##    9
+##    2</code></pre></div>
+In this last example, we said end with 1, but it ended with 2. The ending value in the range is a suggestion to go up to, but not exceed.
+<div class="alert alert-info" role="alert">
+<div class="markdown">
+<p>
+The <code>linspace</code> function is related to the colon operation. It generates <code>n</code> values evenly spaced between <code>a</code> and <code>b</code> with the call <code>linspace(a, b, n)</code>. The <code>n</code> is optional, defaulting to <span class="math inline">\(100\)</span>. Specifying the number of numbers is more convenient in some cases, than specifying the step size. On particular case arises when generating points to produce a graph of a function.
+</p>
+</div>
+</div>
+<div id="filtering-and-modifying-arithmetic-progressions" class="section level2">
+<h2><span class="header-section-number">6.1</span> Filtering and modifying arithmetic progressions</h2>
+<p>Within <code>Julia</code>, there are other, specific, ways to achieve a different step size. We don’t pursue them, but rather concentrate on some more general styles to modify a sequence to produce a new sequence.</p>
+<p>For example, another way to get the values between 0 and 100 that are multiples of 7 is to start with all 101 values and throw out those that don’t match. To check if a number is divisible by <span class="math inline">\(7\)</span>, we could use the <code>rem</code> function. It gives the remainder upon division. Multiples of <code>7</code> match <code>rem(m, 7) == 0</code>. Checking for divisibility by seven is unusual enough there is nothing built in for that, but checking for division by <span class="math inline">\(2\)</span> is common, and for that, there is a built-in function <code>iseven</code>.</p>
+<p>The act of throwing out elements of a collection based on some condition is called <em>filtering</em>. The <code>filter</code> function does this in <code>Julia</code>. The basic syntax being <code>filter(predicate_function, collection)</code>. The “<code>predicate_function</code>” is one that returns either <code>true</code> or <code>false</code>, such as <code>iseven</code>. The output of <code>filter</code> consists of the new collection of values – those where the predicate returns <code>true</code>.</p>
+<p>To see it used, lets start with the numbers between <code>0</code> and <code>100</code> (inclusive) and filter out those that are even:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(iseven, <span class="dv">0</span>:<span class="dv">100</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 51-element Array{Int64,1}:
+##    0
+##    2
+##    4
+##    6
+##    8
+##   10
+##   12
+##   14
+##   16
+##   18
+##    ⋮
+##   84
+##   86
+##   88
+##   90
+##   92
+##   94
+##   96
+##   98
+##  100</code></pre></div>
+<p>To get the numbers between 1 and 100 that are divisible by <span class="math inline">\(7\)</span> requires us to write a function akin to <code>iseven</code>, which isn’t hard (e.g., <code>is_seven(x)=x%7==0</code>), but isn’t something we continue with just yet.</p>
+<p>For another example, here is an inefficient way to list the prime numbers between 100 and 200 using the <code>isprime</code> function from the <code>Primes</code> package (which may need installation):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using Primes
+<span class="kw">filter</span>(isprime, <span class="dv">100</span>:<span class="dv">200</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 21-element Array{Int64,1}:
+##  101
+##  103
+##  107
+##  109
+##  113
+##  127
+##  131
+##  137
+##  139
+##  149
+##    ⋮
+##  163
+##  167
+##  173
+##  179
+##  181
+##  191
+##  193
+##  197
+##  199</code></pre></div>
+<p>(The <code>primes</code> function will list all primes less than its argument <code>n</code> in a much more efficient manner.)</p>
+<p>Illustrating <code>filter</code> at this point is mainly a motivation to illustrate that we can start with a regular set of numbers and then modify or filter them. The function takes on more value once we discuss how to write predicate functions.</p>
+</div>
+<div id="comprehensions" class="section level2">
+<h2><span class="header-section-number">6.2</span> Comprehensions</h2>
+<p>Let’s return to the case of even numbers between 0 and 100. We have many ways to describe this set:</p>
+<ul>
+<li>The collection of numbers <span class="math inline">\(0, 2, 4, 6 \dots, 100\)</span>, or the arithmetic sequence with step size 2, which is returned by <code>0:2:100</code>.</li>
+<li>The numbers between 0 and 100 that are even, that is <code>filter(iseven, 0:100)</code>.</li>
+<li>The set of numbers <span class="math inline">\(\{2k: k=0, \dots, 50\}\)</span>.</li>
+</ul>
+<p>While <code>Julia</code> has a special type for dealing with sets, we will use a vector for such a set. (Unlike a set, vectors can have repeated values, but as vectors are more widely used, we demonstrate them.) Vectors are constructed using square brackets: <code>[]</code> (a special syntax for <a href="http://docs.julialang.org/en/latest/manual/arrays/#concatenation">concatenation</a>). Square brackets are used in many different contexts within <code>Julia</code>, in this case we use them to create a <em>collection</em>. If we separate single values in our collection by commas (or semicolons), we will create a vector:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x =<span class="st"> </span>[<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 6-element Array{Int64,1}:
+##   0
+##   2
+##   4
+##   6
+##   8
+##  10</code></pre></div>
+<p>That is of course only part of the set of even numbers we want. Creating more might be tedious were we to type them all out, as above. In such cases, it is best to <em>generate</em> the values.</p>
+<p>For this simple case, a range can be used, but more generally a <a href="http://julia.readthedocs.org/en/latest/manual/arrays/#comprehensions">comprehension</a> provides this ability using a construct that closely mirrors a set definition, such as <span class="math inline">\(\{2k: k=0, \dots, 50\}\)</span>. The simplest use of a comprehension takes this form:</p>
+<p><code>[expr for variable in collection]</code></p>
+<p>The expression typically involves the variable specified after the keyword <code>for</code>. The collection can be a range, a vector, or many other items that are <em>iterable</em>. Here is how the mathematical set <span class="math inline">\(\{2k: k=0, \dots, 50\}\)</span> may be generated by a comprehension:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[2k for k in <span class="dv">0</span>:<span class="dv">50</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 51-element Array{Int64,1}:
+##    0
+##    2
+##    4
+##    6
+##    8
+##   10
+##   12
+##   14
+##   16
+##   18
+##    ⋮
+##   84
+##   86
+##   88
+##   90
+##   92
+##   94
+##   96
+##   98
+##  100</code></pre></div>
+<p>The expression is <code>2k</code>, the variable <code>k</code> and the collection is the range of values, <code>0:50</code>. The syntax is basically identical to how the math expression is typically read aloud.</p>
+<p>For some other examples, here is how we can create the first 50 numbers divisible by 7:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[7k for k in <span class="dv">1</span>:<span class="dv">50</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 50-element Array{Int64,1}:
+##    7
+##   14
+##   21
+##   28
+##   35
+##   42
+##   49
+##   56
+##   63
+##   70
+##    ⋮
+##  294
+##  301
+##  308
+##  315
+##  322
+##  329
+##  336
+##  343
+##  350</code></pre></div>
+<p>Here is how we can square the numbers between 1 and 10:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[x^<span class="dv">2</span> for x in <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 10-element Array{Int64,1}:
+##    1
+##    4
+##    9
+##   16
+##   25
+##   36
+##   49
+##   64
+##   81
+##  100</code></pre></div>
+<p>To generate other progressions, such as powers of 2, we could do:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[<span class="dv">2</span>^i for i in <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 10-element Array{Int64,1}:
+##     2
+##     4
+##     8
+##    16
+##    32
+##    64
+##   128
+##   256
+##   512
+##  1024</code></pre></div>
+<p>To get decreasing powers takes a bit of care, as <code>2^(-i)</code> is an error for positive <code>i</code>s, but <code>1/2^i</code> is not. (This is because powers with integers are expected to return integers, but division by integers is not.) Here then are decreasing powers of 2:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[<span class="dv">1</span>/<span class="dv">2</span>^i for i in <span class="dv">1</span>:<span class="dv">10</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 10-element Array{Float64,1}:
+##  0.5        
+##  0.25       
+##  0.125      
+##  0.0625     
+##  0.03125    
+##  0.015625   
+##  0.0078125  
+##  0.00390625 
+##  0.00195313 
+##  0.000976563</code></pre></div>
+<p>Sometimes, the comprehension does not produce the type of output that may be expected. This is related to <code>Julia</code>’s more limited abilities to infer types at the command line. If the output type is important, the extra prefix of <code>T[]</code> can be used, where <code>T</code> is the desired type. We will see that this will be needed at times with symbolic math.</p>
+</div>
+<div id="generators" class="section level2">
+<h2><span class="header-section-number">6.3</span> Generators</h2>
+<p>A typical pattern would be to generate a collection of numbers and then apply a function to them. For example, here is one way to sum the powers of <code>2</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>([<span class="dv">2</span>^i for i in <span class="dv">1</span>:<span class="dv">10</span>])</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 2046</code></pre></div>
+<p>Conceptually this is easy to understand, but computationally it is a bit inefficient. The generator syntax allows this type of task to be done more efficiently. To use this syntax, we just need to drop the <code>[]</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="dv">2</span>^i for i in <span class="dv">1</span>:<span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 2046</code></pre></div>
+<div id="filtering-generated-expressions" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Filtering generated expressions</h3>
+<p>Both comprehensions and generators allow for filtering through the keyword <code>if</code>. The following shows <em>one</em> way to add the prime numbers in <span class="math inline">\([1,100]\)</span>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(p for p in <span class="dv">1</span>:<span class="dv">100</span> if <span class="kw">isprime</span>(p))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1060</code></pre></div>
+<p>The value on the other side of <code>if</code> should be either <code>true</code> or <code>false</code> for a given <code>p</code>. The <code>isprime</code> function is a predicate function and returns a logical value. In this example, we use the fact that <code>rem(k, 7)</code> returns the remainder found from dividing <code>k</code> by <code>7</code>, and so is <code>0</code> when <code>k</code> is a multiple of <code>7</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(k for k in <span class="dv">1</span>:<span class="dv">100</span> if <span class="kw">rem</span>(k,<span class="dv">7</span>) ==<span class="st"> </span><span class="dv">0</span>)  ## add multiples of 7</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 735</code></pre></div>
+<div id="example-15" class="section level4">
+<h4><span class="header-section-number">6.3.1.1</span> Example</h4>
+<p>This example of Stefan Karpinski comes from a <a href="http://julialang.org/blog/2016/10/julia-0.5-highlights">blog</a> post highlighting changes to the <code>Julia</code> language with version <code>v&quot;0.5.0&quot;</code>. It involves making change. First, a simple question: using pennies, nickels, dimes, and quarters how many different ways can we generate one dollar? Clearly 100 pennies, or 20 nickels, or 10 dimes, or 4 quarters will do this, so the answer is atleast four, but how much more than four?</p>
+<p>Well, we can use a comprehension to enumerate the possibilities. First, we either have 0,1,2,3, or 4 quarters, or 0, 25 cents, 50 cents, 75 cents, or a dollar’s worth. If we have, say, 1 quarter, then we need to make up 75 cents with the rest. If we had 3 dimes, then we need to make up 45 cents out of nickels and pennies, if we then had 6 nickels, we know we must need 15 pennies.</p>
+<p>The following expression shows how this can be done through enumeration. Here <code>q</code> is the amount contributed by quarters, <code>d</code> the amount from dimes, <code>n</code> the amount from nickels, and <code>p</code> the amount from pennies. <code>q</code> ranges over 0, 25, 50, 75, 100<code>or</code>0:25:100`, etc. If we know that the sum of quarters, dimes, nickels contributes a certain amount, then the number of pennies must round things up to 100.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[(q, d, n, p) for q =<span class="st"> </span><span class="dv">0</span>:<span class="dv">25</span>:<span class="dv">100</span> for d =<span class="st"> </span><span class="dv">0</span>:<span class="dv">10</span>:(<span class="dv">100</span> -<span class="st"> </span>q) for n =<span class="st"> </span><span class="dv">0</span>:<span class="dv">5</span>:(<span class="dv">100</span> -<span class="st"> </span>q -<span class="st"> </span>d) for p =<span class="st"> </span>(<span class="dv">100</span> -<span class="st"> </span>q -<span class="st"> </span>d -<span class="st"> </span>n)]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 242-element Array{NTuple{4,Int64},1}:
+##  (0,0,0,100) 
+##  (0,0,5,95)  
+##  (0,0,10,90) 
+##  (0,0,15,85) 
+##  (0,0,20,80) 
+##  (0,0,25,75) 
+##  (0,0,30,70) 
+##  (0,0,35,65) 
+##  (0,0,40,60) 
+##  (0,0,45,55) 
+##  ⋮           
+##  (75,0,20,5) 
+##  (75,0,25,0) 
+##  (75,10,0,15)
+##  (75,10,5,10)
+##  (75,10,10,5)
+##  (75,10,15,0)
+##  (75,20,0,5) 
+##  (75,20,5,0) 
+##  (100,0,0,0) </code></pre></div>
+<p>We see 242 cases, each distinct. The expression reads naturally. It introduces the use of multiple <code>for</code> statements, each subsequent one depending on the value of the previous (working left to right). Now suppose we want to ensure that the amount of pennies is less than the amount from nickels, etc. We could use <code>filter</code> somehow to do this for our last answer, but using <code>if</code> allows for filtering while the events are generating. Here our condition is simply expressed: <code>q &gt; d &gt; n &gt; p</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">[(q, d, n, p) for q =<span class="st"> </span><span class="dv">0</span>:<span class="dv">25</span>:<span class="dv">100</span> for d =<span class="st"> </span><span class="dv">0</span>:<span class="dv">10</span>:(<span class="dv">100</span> -<span class="st"> </span>q) for n =<span class="st"> </span><span class="dv">0</span>:<span class="dv">5</span>:(<span class="dv">100</span> -<span class="st"> </span>q -<span class="st"> </span>d) for p =<span class="st"> </span>(<span class="dv">100</span> -<span class="st"> </span>q -<span class="st"> </span>d -<span class="st"> </span>n) if q &gt;<span class="st"> </span>d &gt;<span class="st"> </span>n &gt;<span class="st"> </span>p]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 4-element Array{NTuple{4,Int64},1}:
+##  (50,30,15,5)
+##  (50,30,20,0)
+##  (50,40,10,0)
+##  (75,20,5,0) </code></pre></div>
+</div>
+</div>
+</div>
+<div id="random-numbers" class="section level2">
+<h2><span class="header-section-number">6.4</span> Random numbers</h2>
+<p>This section discusses structured sets of numbers. On the opposite end of the spectrum are random numbers. <code>Julia</code> makes them easy to generate, especially random numbers chosen uniformly for <span class="math inline">\((0,1)\)</span>.</p>
+<ul>
+<li>The <code>rand()</code> function returns a randomly chosen number in <span class="math inline">\((0,1)\)</span>.</li>
+<li>The <code>rand(n)</code> function returns <code>n</code> randomly chosen numbers in <span class="math inline">\((0,1)\)</span>.</li>
+</ul>
+<p>To illustrate, this will return a single number</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rand</span>()</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 0.43059521649877475</code></pre></div>
+<p>This call will return a vector of 10 such random numbers:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rand</span>(<span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 10-element Array{Float64,1}:
+##  0.6512   
+##  0.163846 
+##  0.874036 
+##  0.897959 
+##  0.0844439
+##  0.543438 
+##  0.364127 
+##  0.818569 
+##  0.903872 
+##  0.809599 </code></pre></div>
+Easy to use. The only common source of confusion is the subtle distinction between <code>rand()</code> and <code>rand(1)</code>, as the latter is a vector of 1 random number and the former just 1 random number.
+<div class="alert alert-success" role="alert">
+<div class="markdown">
+<p>
+The documentation for <code>rand</code> shows that the value is in <span class="math inline">\([0,1)\)</span>, but in practice <span class="math inline">\(0\)</span> doesn’t come up with any frequency – about 1 out of every <span class="math inline">\(10^{19}\)</span> numbers – so we say <span class="math inline">\((0,1)\)</span>.
+</p>
+</div>
+</div>
+</div>
+<div id="questions-5" class="section level2">
+<h2><span class="header-section-number">6.5</span> Questions</h2>
+<div id="question-63" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.1</span> Question</h6>
+<p>Which of these will produce the odd numbers between 1 and 99?</p>
+<hr />
+<form name="WeaveQuestion" data-id="Ibdy4yb5" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_Ibdy4yb5" value="1">
+<div class="markdown">
+<p>
+<code>1:2:99</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_Ibdy4yb5" value="2">
+<div class="markdown">
+<p>
+<code>1:99</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_Ibdy4yb5" value="3">
+<div class="markdown">
+<p>
+<code>1:3:99</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="Ibdy4yb5_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_Ibdy4yb5']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#Ibdy4yb5_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#Ibdy4yb5_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-64" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.2</span> Question</h6>
+<p>Which of these will produce the countdown numbers 10, 9, 8, …, 3, 2, 1?</p>
+<hr />
+<form name="WeaveQuestion" data-id="ffqifwS3" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_ffqifwS3" value="1">
+<div class="markdown">
+<p>
+<code>10:9:8:…:1</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_ffqifwS3" value="2">
+<div class="markdown">
+<p>
+<code>10:1:-1</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_ffqifwS3" value="3">
+<div class="markdown">
+<p>
+<code>10:-1:1</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_ffqifwS3" value="4">
+<div class="markdown">
+<p>
+<code>10:1</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="ffqifwS3_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_ffqifwS3']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#ffqifwS3_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#ffqifwS3_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-65" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.3</span> Question</h6>
+<p>Which of these will create the sequence <span class="math inline">\(2, 9, 16, 23, \dots, 72\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="8iMcYmJZ" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_8iMcYmJZ" value="1">
+<div class="markdown">
+<p>
+<code>2:72</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8iMcYmJZ" value="2">
+<div class="markdown">
+<p>
+<code>72:-7:2</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8iMcYmJZ" value="3">
+<div class="markdown">
+<p>
+<code>2:9:72</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8iMcYmJZ" value="4">
+<div class="markdown">
+<p>
+<code>2:7:72</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="8iMcYmJZ_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_8iMcYmJZ']").on("change", function() {
+correct = this.value == 4;
+
+if(correct) {
+$("#8iMcYmJZ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#8iMcYmJZ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-66" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.4</span> Question</h6>
+<p>How many numbers are in the sequence produced by <code>0:19:1000</code>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="QkdcHESF" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="QkdcHESF" type="number" class="form-control"></p>
+</div>
+<div id="QkdcHESF_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#QkdcHESF').on('change', function() {
+correct = Math.abs(this.value - 53) <= 0;
+
+if(correct) {
+$('#QkdcHESF_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#QkdcHESF_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-67" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.5</span> Question</h6>
+<p>Create the sequence <span class="math inline">\(10, 100, 1000, \dots, 1,000,000\)</span> using a list comprehension. Which of these works?</p>
+<hr />
+<form name="WeaveQuestion" data-id="eGVoHGZi" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_eGVoHGZi" value="1">
+<div class="markdown">
+<p>
+<code>[i^10 for i in [1:6]]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_eGVoHGZi" value="2">
+<div class="markdown">
+<p>
+<code>[10^i for i in [10, 100, 1000]]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_eGVoHGZi" value="3">
+<div class="markdown">
+<p>
+<code>[10^i for i in 1:6]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="eGVoHGZi_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_eGVoHGZi']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#eGVoHGZi_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#eGVoHGZi_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-68" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.6</span> Question</h6>
+<p>Create the sequence <span class="math inline">\(0.1, 0.01, 0.001, \dots, 0.0000001\)</span> using a list comprehension. Which of these will work:</p>
+<hr />
+<form name="WeaveQuestion" data-id="obYO8G4a" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_obYO8G4a" value="1">
+<div class="markdown">
+<p>
+<code>[(1/10)^i for i in 1:7]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_obYO8G4a" value="2">
+<div class="markdown">
+<p>
+<code>[10^-i for i in 1:7]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_obYO8G4a" value="3">
+<div class="markdown">
+<p>
+<code>[i^(1/10) for i in 1:7]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="obYO8G4a_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_obYO8G4a']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#obYO8G4a_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#obYO8G4a_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-69" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.7</span> Question</h6>
+<p>Evaluate the expression <span class="math inline">\(x^3 - 2x + 3\)</span> for each of the values -5, -4, <span class="math inline">\(\dots\)</span>, 4, 5 using a comprehension. Which of these will work?</p>
+<hr />
+<form name="WeaveQuestion" data-id="CpF8kUxy" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_CpF8kUxy" value="1">
+<div class="markdown">
+<p>
+<code>[x^3 - 2x + 3 for i in -5:5]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_CpF8kUxy" value="2">
+<div class="markdown">
+<p>
+<code>[x^3 - 2x + 3 for x in -5:5]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_CpF8kUxy" value="3">
+<div class="markdown">
+<p>
+<code>[x^3 - 2x + 3 for x in -(5:5)]</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="CpF8kUxy_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_CpF8kUxy']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#CpF8kUxy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#CpF8kUxy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-70" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.8</span> Question</h6>
+<p>How many prime numbers are there between 1100 and 1200? (Use <code>filter</code> and <code>isprime</code>)</p>
+<hr />
+<form name="WeaveQuestion" data-id="jkVsVkjX" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="jkVsVkjX" type="number" class="form-control"></p>
+</div>
+<div id="jkVsVkjX_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#jkVsVkjX').on('change', function() {
+correct = Math.abs(this.value - 12) <= 0;
+
+if(correct) {
+$('#jkVsVkjX_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#jkVsVkjX_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-71" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.9</span> Question</h6>
+<p>Which has more prime numbers the range <code>1000:2000</code> or the range <code>11000:12000</code>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="WQ1h2Pn2" data-controltype="radio">
+<div class="form-group">
+<div class="radio inline">
+<label> <input type="radio" name="radio_WQ1h2Pn2" value="1">
+<div class="markdown">
+<p>
+<code>1000:2000</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio inline">
+<label> <input type="radio" name="radio_WQ1h2Pn2" value="2">
+<div class="markdown">
+<p>
+<code>11000:12000</code>
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="WQ1h2Pn2_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_WQ1h2Pn2']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#WQ1h2Pn2_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#WQ1h2Pn2_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-72" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.10</span> Question</h6>
+<p>We can easily add an arithmetic progression with the <code>sum</code> function. For example, <code>sum(1:100)</code> will add the numbers <span class="math inline">\(1, 2, ..., 100\)</span>.</p>
+<p>What is the sum of the odd numbers between 0 and 100?</p>
+<hr />
+<form name="WeaveQuestion" data-id="APeO7jGO" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="APeO7jGO" type="number" class="form-control"></p>
+</div>
+<div id="APeO7jGO_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#APeO7jGO').on('change', function() {
+correct = Math.abs(this.value - 2500) <= 0;
+
+if(correct) {
+$('#APeO7jGO_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#APeO7jGO_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-73" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.11</span> Question</h6>
+<p>The sum of the arithmetic progression :a, a+h, , a+nh $ has a simple formula. Using a few cases, can you tell if this is the correct one: <span class="math display">\[~
+(n+1)\cdot a + h \cdot n(n+1)/2
+~\]</span></p>
+<hr />
+<form name="WeaveQuestion" data-id="aCPEwVNT" data-controltype="radio">
+<div class="form-group">
+<div class="radio inline">
+<label> <input type="radio" name="radio_aCPEwVNT" value="1">
+<div class="markdown">
+<p>
+Yes, this is true
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio inline">
+<label> <input type="radio" name="radio_aCPEwVNT" value="2">
+<div class="markdown">
+<p>
+No, this is false
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="aCPEwVNT_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_aCPEwVNT']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#aCPEwVNT_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#aCPEwVNT_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-74" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.12</span> Question</h6>
+<p>A <em>geometric progression</em> is of the form <span class="math inline">\(a^0, a^1, a^2, \dots, a^n\)</span>. These are easily generated by comprehensions of the form <code>[a^i for i in 0:n]</code>. Find the sum of the geometric progression <span class="math inline">\(1, 2^1, 2^2, \dots, 2^{10}\)</span>.</p>
+<hr />
+<form name="WeaveQuestion" data-id="3n4EsTMX" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="3n4EsTMX" type="number" class="form-control"></p>
+</div>
+<div id="3n4EsTMX_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#3n4EsTMX').on('change', function() {
+correct = Math.abs(this.value - 2047) <= 0;
+
+if(correct) {
+$('#3n4EsTMX_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#3n4EsTMX_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+<p>Is your answer of the form <span class="math inline">\((1 - a^{n+1}) / (1-a)\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="8stfp5Gr" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_8stfp5Gr" value="1">
+<div class="markdown">
+<p>
+Yes
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8stfp5Gr" value="2">
+<div class="markdown">
+<p>
+No
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="8stfp5Gr_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_8stfp5Gr']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#8stfp5Gr_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#8stfp5Gr_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-75" class="section level6">
+<h6><span class="header-section-number">6.5.0.0.0.13</span> Question</h6>
+<p>The <a href="http://en.wikipedia.org/wiki/Arithmetic_progression">product</a> of the terms in arithmetic progression has a known formula. The product can be found by an expression of the form <code>prod(a:h:b)</code>. Find the product of the terms in the sequence <span class="math inline">\(1,3,5,\dots,19\)</span>.</p>
+<hr />
+<form name="WeaveQuestion" data-id="BBDSwM9B" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="BBDSwM9B" type="number" class="form-control"></p>
+</div>
+<div id="BBDSwM9B_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#BBDSwM9B').on('change', function() {
+correct = Math.abs(this.value - 654729075) <= 0;
+
+if(correct) {
+$('#BBDSwM9B_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#BBDSwM9B_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="vectors.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="functions-1.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,8 +1,8 @@
 # Polar Coordinates and Curves
 
 ```nocode, noout
-using Plots
-gadfly()
+using Plots, QuadGK
+plotly()
 ```
 
 The description of the $x$-$y$ plane via Cartesian coordinates is not
@@ -18,8 +18,8 @@ $$~
 x = r \cos(\theta),~ y = r \sin(\theta).
 ~$$
 
-Each point $(x,y)$ corresponds to several possible values of $(r,
-\theta)$, as any integer multiple of $2\pi$ added to $\theta$ will
+Each point $(x,y)$ corresponds to several possible values of
+$(r,\theta)$, as any integer multiple of $2\pi$ added to $\theta$ will
 describe the same point. Except for the origin, there is only one pair
 when we restrict to $r > 0$ and $0 \leq \theta < 2\pi$.
 
@@ -51,25 +51,24 @@ This figure illustrates:
 
 ```
 using Plots
-p = plot([-5,5], [0,0],  color=:gray, legend=false)
-plot!([0,0],  [-5,5], color=:gray)
+p = plot([-5,5], [0,0],  color=:blue, legend=false)
+plot!([0,0],  [-5,5], color=:blue)
 plot!([-3,0], [4,0])
 scatter!([-3], [4])
-annotate!([(-3+0.25, 4, "(-3,4) Cartesian or (5, 2.21...) polar")])
+annotate!([(-3+0.25, 4.1, "(-3,4) Cartesian or (5, 2.21...) polar")])
 Outputonly(p)
 ``` 
 
 
 The case where $r < 0$ is handled by going 180 degrees in the opposite direction, in other
-words the point $(r, \theta)$ can be described as well by $(-r,
-\theta + \pi)$.
+words the point $(r, \theta)$ can be described as well by $(-r,\theta+\pi)$.
 
 ## Parameterizing curves using polar coordinates
 
 If $r=r(\theta)$, then the parameterized curve $(r(\theta), \theta)$
 is just the set of points generated as $\theta$ ranges over some set
 of values. There are many examples of parameterized curves that
-simplify what might be complicated presentation in Cartesian coordinates.
+simplify what might be a complicated presentation in Cartesian coordinates.
 
 For example, a circle has the form $x^2 + y^2 = R^2$. Whereas
 parameterized by polar coordinates it is just $r(\theta) = R$, or a
@@ -262,7 +261,7 @@ For our specific values, the answer can be computed with:
 
 ```
 ex = integrate(r(theta)^2, (theta, PI/6, PI/2)) / 2
-subs(ex, (a,1), (b,1))
+ex(a => 1, b=>1)
 ```
 
 
@@ -274,12 +273,16 @@ like the cardiod, but contains an extra loop. When $a=1$ and $b=1$ we
 have this graph.
 
 ```
-ts = vcat(linspace(0, pi/2+pi/6), linspace(3pi/2 - pi/6, pi/2 + pi/6), linspace(3pi/2 - pi/6, 2pi))
+#ts = vcat(linspace(0, pi/2+pi/6), linspace(3pi/2 - pi/6, pi/2 + pi/6), linspace(3pi/2 - pi/6, 2pi))
 a,b = 1,1
 r(theta) = b + 2a*cos(theta)
-p = Gadfly.plot(x=[r(t)*cos(t) for t in ts], y=[r(t)*sin(t) for t in ts],
-         Gadfly.Geom.polygon(fill=true, preserve_order=true),
-         Gadfly.Theme(default_color=colorant"orange"))
+p = plot(t->r(t)*cos(t), t->r(t)*sin(t), 0, pi/2 + pi/6,  legend=false, color=:blue)
+plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, pi/2 + pi/6, color=:orange)
+plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, 2pi, color=:blue)
+
+##p = Gadfly.plot(x=[r(t)*cos(t) for t in ts], y=[r(t)*sin(t) for t in ts],
+#         Gadfly.Geom.polygon(fill=true, preserve_order=true),
+#         Gadfly.Theme(default_color=colorant"orange"))
 Outputonly(p)
 ```
 
@@ -295,14 +298,14 @@ $\cos(\theta) = -1/2$. This is $\pi/2 + \pi/6$ and $3\pi/2 -
 a,b = symbols("a,b")
 r(theta) =  b + 2a*cos(theta)
 ex = integrate(r(theta)^2 / 2, (theta, PI/2 + PI/6, 3PI/2 - PI/6))
-inner = subs(ex, (a,1), (b,1))
+inner = ex(a=>1, b=>1)
 ```
 
 The outer area (including the inner loop) is the integral from $0$ to $\pi/2 + \pi/6$ plus that from $3\pi/2 - \pi/6$ to $2\pi$. These areas are equal, so we double the first:
 
 ```
 ex = 2 * integrate(r(theta)^2 / 2, (theta, 0, PI/2 + PI/6))
-outer = subs(ex, (a,1), (b,1))
+outer = ex(a=>1, b=>1)
 ```
 
 The answer is the difference:
@@ -365,16 +368,16 @@ The integrand is integrable
 
 ```
 r(theta) = 2*(1 + cos(theta))
-sqrt(diff(r(theta), theta)^2 + r(theta)^2) |> simplify
+ds = sqrt(diff(r(theta), theta)^2 + r(theta)^2) |> simplify
 ```
 
 with antiderivative $4\sqrt{2\cos(\theta) + 2} \cdot \tan(\theta/2)$,
 but `SymPy` isn't able to find it. Instead we give a numeric answer:
 
 ```
-using Roots
+using Roots, QuadGK
 Base.ctranspose(f::Function) = D(f)
-quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
+QuadGK.quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
 ```
 
 ##### Example
@@ -390,7 +393,8 @@ With $a=1$ and $b=\pi/4$, find the arc length traced out from $\theta=0$ to $\th
 ```
 a, b= 1, PI/4
 r(theta) = a * exp(theta * cot(b))
-integrate(sqrt(diff(r(theta), theta)^2 + r(theta)^2), (theta, 0, 1))
+ds = sqrt(diff(r(theta), theta)^2 + r(theta)^2)
+integrate(ds, (theta, 0, 1))
 ```
 
 
@@ -425,13 +429,13 @@ Numerically then we have:
 
 ```
 using Roots
-dinner = 1.75
-douter = 5.25
+dinner = 1 + 5/8
+douter = 5 + 1/4
 r(b,t) = dinner/2 + b*t
 rp(b,t) = b
 integrand(b,t) = sqrt((r(b,t))^2 + rp(b,t)^2)  # sqrt(r^2 + r'^2)
 n(b) = (douter - dinner)/2/(2*pi*b)
-b = fzero(b -> quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, 1/100000, 1/100)
+b = fzero(b -> QuadGK.quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, 1/100000, 1/100)
 ```
 
 This gives a value in inches, in millimeters this is about a $.02mm$ thickness per sheet:
@@ -608,7 +612,7 @@ Find the area of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curve
 
 ```
 r(theta) = sqrt(cos(2theta) * sec(theta)^4)
-val, _ = quadgk(t -> r(t)^2/2, -pi/4, pi/4)
+val, _ = QuadGK.quadgk(t -> r(t)^2/2, -pi/4, pi/4)
 numericq(val)
 ```
 
@@ -622,7 +626,7 @@ $-\pi/4$ and $\pi/4$. What is the answer (numerically)?
 ```
 using Roots
 r(theta) = sqrt(cos(2theta))
-val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
+val, _ = QuadGK.quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)
 ```
 
@@ -632,8 +636,8 @@ numericq(val)
 Find the arc length of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curves/Eight.html) curve traced out by $r(\theta) = \cos(2\theta)\sec(\theta)^4$ from $-\pi/4$ to $\pi/4$. Do this numerically.
 
 ```
-r(theta) = sqrt{cos(2theta) * sec(theta)^4}
-val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
+r(theta) = sqrt(cos(2theta) * sec(theta)^4)
+val, _ = QuadGK.quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)
 ```
 

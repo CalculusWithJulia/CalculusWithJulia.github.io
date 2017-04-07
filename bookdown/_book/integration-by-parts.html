@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Calculus With Julia</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta name="description" content="Calculus With Julia">
+  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Calculus With Julia" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Calculus With Julia" />
+  
+  
+  
+
+<meta name="author" content="John Verzani">
+
+
+<meta name="date" content="2017-01-10">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="substitution.html">
+<link rel="next" href="partial-fractions-1.html">
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link
+  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html"><i class="fa fa-check"></i><b>1</b> Replacing the calculator with a computer</a><ul>
+<li class="chapter" data-level="1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#operations"><i class="fa fa-check"></i><b>1.1</b> Operations</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples"><i class="fa fa-check"></i><b>1.1.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#order-of-operations"><i class="fa fa-check"></i><b>1.2</b> Order of operations</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-1"><i class="fa fa-check"></i><b>1.2.1</b> Examples</a></li>
+<li class="chapter" data-level="1.2.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#two-ways-to-write-division-and-they-are-not-the-same"><i class="fa fa-check"></i><b>1.2.2</b> Two ways to write division – and they are not the same</a></li>
+<li class="chapter" data-level="1.2.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#infix-notation"><i class="fa fa-check"></i><b>1.2.3</b> Infix notation</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#constants"><i class="fa fa-check"></i><b>1.3</b> Constants</a></li>
+<li class="chapter" data-level="1.4" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#functions"><i class="fa fa-check"></i><b>1.4</b> Functions</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-2"><i class="fa fa-check"></i><b>1.4.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#errors"><i class="fa fa-check"></i><b>1.5</b> Errors</a></li>
+<li class="chapter" data-level="1.6" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#questions"><i class="fa fa-check"></i><b>1.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>2</b> Variables</a><ul>
+<li class="chapter" data-level="2.1" data-path="variables.html"><a href="variables.html#assignment"><i class="fa fa-check"></i><b>2.1</b> Assignment</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="variables.html"><a href="variables.html#examples-3"><i class="fa fa-check"></i><b>2.1.1</b> Examples</a></li>
+<li class="chapter" data-level="2.1.2" data-path="variables.html"><a href="variables.html#numeric-literals"><i class="fa fa-check"></i><b>2.1.2</b> Numeric literals</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="variables.html"><a href="variables.html#where-math-and-computer-notations-diverge"><i class="fa fa-check"></i><b>2.2</b> Where math and computer notations diverge</a></li>
+<li class="chapter" data-level="2.3" data-path="variables.html"><a href="variables.html#context"><i class="fa fa-check"></i><b>2.3</b> Context</a></li>
+<li class="chapter" data-level="2.4" data-path="variables.html"><a href="variables.html#variable-names"><i class="fa fa-check"></i><b>2.4</b> Variable names</a></li>
+<li class="chapter" data-level="2.5" data-path="variables.html"><a href="variables.html#constant-variables"><i class="fa fa-check"></i><b>2.5</b> Constant variables</a></li>
+<li class="chapter" data-level="2.6" data-path="variables.html"><a href="variables.html#tuple-assignment"><i class="fa fa-check"></i><b>2.6</b> Tuple assignment</a></li>
+<li class="chapter" data-level="2.7" data-path="variables.html"><a href="variables.html#questions-1"><i class="fa fa-check"></i><b>2.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html"><i class="fa fa-check"></i><b>3</b> Inequalities, Logical expressions</a><ul>
+<li class="chapter" data-level="3.1" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#boolean-values"><i class="fa fa-check"></i><b>3.1</b> Boolean values</a></li>
+<li class="chapter" data-level="3.2" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#algebra-of-inequalities"><i class="fa fa-check"></i><b>3.2</b> Algebra of inequalities</a></li>
+<li class="chapter" data-level="3.3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#some-examples"><i class="fa fa-check"></i><b>3.3</b> Some examples</a></li>
+<li class="chapter" data-level="3.4" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#chaining-combining-expressions-absolute-values"><i class="fa fa-check"></i><b>3.4</b> Chaining, combining expressions: absolute values</a></li>
+<li class="chapter" data-level="3.5" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#precedence"><i class="fa fa-check"></i><b>3.5</b> Precedence</a></li>
+<li class="chapter" data-level="3.6" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#arithmetic-with"><i class="fa fa-check"></i><b>3.6</b> Arithmetic with</a></li>
+<li class="chapter" data-level="3.7" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#questions-2"><i class="fa fa-check"></i><b>3.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="number-systems.html"><a href="number-systems.html"><i class="fa fa-check"></i><b>4</b> Number systems</a><ul>
+<li class="chapter" data-level="4.1" data-path="number-systems.html"><a href="number-systems.html#closure"><i class="fa fa-check"></i><b>4.1</b> Closure</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="number-systems.html"><a href="number-systems.html#powers"><i class="fa fa-check"></i><b>4.1.1</b> Powers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="number-systems.html"><a href="number-systems.html#julia-and-number-systems"><i class="fa fa-check"></i><b>4.2</b> Julia and number systems</a></li>
+<li class="chapter" data-level="4.3" data-path="number-systems.html"><a href="number-systems.html#integers"><i class="fa fa-check"></i><b>4.3</b> Integers</a></li>
+<li class="chapter" data-level="4.4" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers"><i class="fa fa-check"></i><b>4.4</b> Floating point numbers</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="number-systems.html"><a href="number-systems.html#scientific-notation"><i class="fa fa-check"></i><b>4.4.1</b> Scientific notation</a></li>
+<li class="chapter" data-level="4.4.2" data-path="number-systems.html"><a href="number-systems.html#special-values-inf--inf-nan"><i class="fa fa-check"></i><b>4.4.2</b> Special values: Inf, -Inf, NaN</a></li>
+<li class="chapter" data-level="4.4.3" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers-and-real-numbers"><i class="fa fa-check"></i><b>4.4.3</b> Floating point numbers and real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="number-systems.html"><a href="number-systems.html#rational-numbers"><i class="fa fa-check"></i><b>4.5</b> Rational numbers</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="number-systems.html"><a href="number-systems.html#different-types-of-real-numbers"><i class="fa fa-check"></i><b>4.5.1</b> Different types of real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="number-systems.html"><a href="number-systems.html#complex-numbers"><i class="fa fa-check"></i><b>4.6</b> Complex numbers</a></li>
+<li class="chapter" data-level="4.7" data-path="number-systems.html"><a href="number-systems.html#and-why-you-neednt-worry-too-much"><i class="fa fa-check"></i><b>4.7</b> And why you needn’t worry too much</a></li>
+<li class="chapter" data-level="4.8" data-path="number-systems.html"><a href="number-systems.html#questions-3"><i class="fa fa-check"></i><b>4.8</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="vectors.html"><a href="vectors.html"><i class="fa fa-check"></i><b>5</b> Vectors</a><ul>
+<li class="chapter" data-level="5.1" data-path="vectors.html"><a href="vectors.html#vectors-in-julia"><i class="fa fa-check"></i><b>5.1</b> Vectors in Julia</a></li>
+<li class="chapter" data-level="5.2" data-path="vectors.html"><a href="vectors.html#higher-dimensional-vectors"><i class="fa fa-check"></i><b>5.2</b> Higher dimensional vectors</a></li>
+<li class="chapter" data-level="5.3" data-path="vectors.html"><a href="vectors.html#indexing"><i class="fa fa-check"></i><b>5.3</b> Indexing</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="vectors.html"><a href="vectors.html#assignment-and-indexing"><i class="fa fa-check"></i><b>5.3.1</b> Assignment and indexing</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="vectors.html"><a href="vectors.html#some-functions-useful-when-working-with-vectors."><i class="fa fa-check"></i><b>5.4</b> Some functions useful when working with vectors.</a></li>
+<li class="chapter" data-level="5.5" data-path="vectors.html"><a href="vectors.html#questions-4"><i class="fa fa-check"></i><b>5.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html"><i class="fa fa-check"></i><b>6</b> Ranges and Sets</a><ul>
+<li class="chapter" data-level="6.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-and-modifying-arithmetic-progressions"><i class="fa fa-check"></i><b>6.1</b> Filtering and modifying arithmetic progressions</a></li>
+<li class="chapter" data-level="6.2" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#comprehensions"><i class="fa fa-check"></i><b>6.2</b> Comprehensions</a></li>
+<li class="chapter" data-level="6.3" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#generators"><i class="fa fa-check"></i><b>6.3</b> Generators</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-generated-expressions"><i class="fa fa-check"></i><b>6.3.1</b> Filtering generated expressions</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#random-numbers"><i class="fa fa-check"></i><b>6.4</b> Random numbers</a></li>
+<li class="chapter" data-level="6.5" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#questions-5"><i class="fa fa-check"></i><b>6.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="functions-1.html"><a href="functions-1.html"><i class="fa fa-check"></i><b>7</b> Functions</a><ul>
+<li class="chapter" data-level="7.1" data-path="functions-1.html"><a href="functions-1.html#defining-simple-mathematical-functions"><i class="fa fa-check"></i><b>7.1</b> Defining simple mathematical functions</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="functions-1.html"><a href="functions-1.html#the-domain-of-a-function"><i class="fa fa-check"></i><b>7.1.1</b> The domain of a function</a></li>
+<li class="chapter" data-level="7.1.2" data-path="functions-1.html"><a href="functions-1.html#equations-functions-calling-a-function"><i class="fa fa-check"></i><b>7.1.2</b> Equations, functions, calling a function</a></li>
+<li class="chapter" data-level="7.1.3" data-path="functions-1.html"><a href="functions-1.html#cases"><i class="fa fa-check"></i><b>7.1.3</b> Cases</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="functions-1.html"><a href="functions-1.html#functions-defined-with-the-function-keyword"><i class="fa fa-check"></i><b>7.2</b> Functions defined with the “function” keyword</a></li>
+<li class="chapter" data-level="7.3" data-path="functions-1.html"><a href="functions-1.html#parameters-function-context-scope-keyword-arguments"><i class="fa fa-check"></i><b>7.3</b> Parameters, function context (scope), keyword arguments</a></li>
+<li class="chapter" data-level="7.4" data-path="functions-1.html"><a href="functions-1.html#multiple-dispatch"><i class="fa fa-check"></i><b>7.4</b> Multiple dispatch</a></li>
+<li class="chapter" data-level="7.5" data-path="functions-1.html"><a href="functions-1.html#anonymous-functions"><i class="fa fa-check"></i><b>7.5</b> Anonymous functions</a></li>
+<li class="chapter" data-level="7.6" data-path="functions-1.html"><a href="functions-1.html#questions-6"><i class="fa fa-check"></i><b>7.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html"><i class="fa fa-check"></i><b>8</b> The Graph of a Function</a><ul>
+<li class="chapter" data-level="8.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#graphing-a-function-with-julia"><i class="fa fa-check"></i><b>8.1</b> Graphing a function with Julia</a></li>
+<li class="chapter" data-level="8.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#the-details-of-graph-making"><i class="fa fa-check"></i><b>8.2</b> The details of graph making</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-x-values"><i class="fa fa-check"></i><b>8.2.1</b> Creating <span class="math inline">\(x\)</span> values</a></li>
+<li class="chapter" data-level="8.2.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-y-values"><i class="fa fa-check"></i><b>8.2.2</b> Creating <span class="math inline">\(y\)</span> values</a></li>
+<li class="chapter" data-level="8.2.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#plotting-points-and-connecting-them"><i class="fa fa-check"></i><b>8.2.3</b> Plotting points and connecting them</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#layers"><i class="fa fa-check"></i><b>8.3</b> Layers</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#adding-layers-explicitly"><i class="fa fa-check"></i><b>8.3.1</b> Adding layers explicitly</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#parametric-graphs"><i class="fa fa-check"></i><b>8.4</b> Parametric graphs</a></li>
+<li class="chapter" data-level="8.5" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#questions-7"><i class="fa fa-check"></i><b>8.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="function-manipulations.html"><a href="function-manipulations.html"><i class="fa fa-check"></i><b>9</b> Function manipulations</a><ul>
+<li class="chapter" data-level="9.1" data-path="function-manipulations.html"><a href="function-manipulations.html#the-algebra-of-functions"><i class="fa fa-check"></i><b>9.1</b> The algebra of functions</a></li>
+<li class="chapter" data-level="9.2" data-path="function-manipulations.html"><a href="function-manipulations.html#composition-of-functions"><i class="fa fa-check"></i><b>9.2</b> Composition of functions</a></li>
+<li class="chapter" data-level="9.3" data-path="function-manipulations.html"><a href="function-manipulations.html#shifting-and-scaling-graphs"><i class="fa fa-check"></i><b>9.3</b> Shifting and scaling graphs</a></li>
+<li class="chapter" data-level="9.4" data-path="function-manipulations.html"><a href="function-manipulations.html#operators"><i class="fa fa-check"></i><b>9.4</b> Operators</a></li>
+<li class="chapter" data-level="9.5" data-path="function-manipulations.html"><a href="function-manipulations.html#questions-8"><i class="fa fa-check"></i><b>9.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="polynomials.html"><a href="polynomials.html"><i class="fa fa-check"></i><b>10</b> Polynomials</a><ul>
+<li class="chapter" data-level="10.1" data-path="polynomials.html"><a href="polynomials.html#linear-polynomials"><i class="fa fa-check"></i><b>10.1</b> Linear polynomials</a></li>
+<li class="chapter" data-level="10.2" data-path="polynomials.html"><a href="polynomials.html#symbolic-math-in-julia"><i class="fa fa-check"></i><b>10.2</b> Symbolic math in Julia</a></li>
+<li class="chapter" data-level="10.3" data-path="polynomials.html"><a href="polynomials.html#substitution-subs-replace"><i class="fa fa-check"></i><b>10.3</b> Substitution: subs, replace</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="polynomials.html"><a href="polynomials.html#conversion-of-symbolic-numbers-to-julia-numbers"><i class="fa fa-check"></i><b>10.3.1</b> Conversion of symbolic numbers to Julia numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="polynomials.html"><a href="polynomials.html#graphical-properties-of-polynomials"><i class="fa fa-check"></i><b>10.4</b> Graphical properties of polynomials</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="polynomials.html"><a href="polynomials.html#leading-term-dominates"><i class="fa fa-check"></i><b>10.4.1</b> Leading term dominates</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="polynomials.html"><a href="polynomials.html#factoring-polynomials"><i class="fa fa-check"></i><b>10.5</b> Factoring polynomials</a><ul>
+<li class="chapter" data-level="10.5.1" data-path="polynomials.html"><a href="polynomials.html#polynomial-functions-and-polynomials."><i class="fa fa-check"></i><b>10.5.1</b> Polynomial functions and polynomials.</a></li>
+</ul></li>
+<li class="chapter" data-level="10.6" data-path="polynomials.html"><a href="polynomials.html#questions-9"><i class="fa fa-check"></i><b>10.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html"><i class="fa fa-check"></i><b>11</b> Roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.0.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#polynomial-division"><i class="fa fa-check"></i><b>11.0.1</b> Polynomial Division</a></li>
+<li class="chapter" data-level="11.0.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-rational-root-test"><i class="fa fa-check"></i><b>11.0.2</b> The rational root test</a></li>
+<li class="chapter" data-level="11.0.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#fundamental-theorem-of-algebra"><i class="fa fa-check"></i><b>11.0.3</b> Fundamental theorem of algebra</a></li>
+<li class="chapter" data-level="11.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#finding-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.1</b> Finding roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#numerically-finding-roots"><i class="fa fa-check"></i><b>11.1.1</b> Numerically finding roots</a></li>
+<li class="chapter" data-level="11.1.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-solveset-function"><i class="fa fa-check"></i><b>11.1.2</b> The solveset function</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#do-numeric-methods-matter-when-you-can-just-graph"><i class="fa fa-check"></i><b>11.2</b> Do numeric methods matter when you can just graph?</a></li>
+<li class="chapter" data-level="11.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#some-facts-about-the-real-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.3</b> Some facts about the real roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#descartes-rule-of-signs"><i class="fa fa-check"></i><b>11.3.1</b> Descartes’ rule of signs</a></li>
+<li class="chapter" data-level="11.3.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#cauchys-bound-on-the-magnitude-of-the-real-roots."><i class="fa fa-check"></i><b>11.3.2</b> Cauchy’s bound on the magnitude of the real roots.</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#questions-10"><i class="fa fa-check"></i><b>11.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="rational-functions.html"><a href="rational-functions.html"><i class="fa fa-check"></i><b>12</b> Rational functions</a><ul>
+<li class="chapter" data-level="12.1" data-path="rational-functions.html"><a href="rational-functions.html#rational-functions-1"><i class="fa fa-check"></i><b>12.1</b> Rational functions</a></li>
+<li class="chapter" data-level="12.2" data-path="rational-functions.html"><a href="rational-functions.html#asymptotes"><i class="fa fa-check"></i><b>12.2</b> Asymptotes</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="rational-functions.html"><a href="rational-functions.html#behaviour-as-x-rightarrow-infty-or-x-rightarrow--infty."><i class="fa fa-check"></i><b>12.2.1</b> Behaviour as <span class="math inline">\(x \rightarrow \infty\)</span> or <span class="math inline">\(x \rightarrow -\infty\)</span>.</a></li>
+<li class="chapter" data-level="12.2.2" data-path="rational-functions.html"><a href="rational-functions.html#vertical-asymptotes"><i class="fa fa-check"></i><b>12.2.2</b> Vertical asymptotes</a></li>
+<li class="chapter" data-level="12.2.3" data-path="rational-functions.html"><a href="rational-functions.html#sign-charts"><i class="fa fa-check"></i><b>12.2.3</b> sign charts</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="rational-functions.html"><a href="rational-functions.html#pade-approximate"><i class="fa fa-check"></i><b>12.3</b> Pade approximate</a></li>
+<li class="chapter" data-level="12.4" data-path="rational-functions.html"><a href="rational-functions.html#questions-11"><i class="fa fa-check"></i><b>12.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html"><i class="fa fa-check"></i><b>13</b> Trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-6-basic-trigonometric-functions"><i class="fa fa-check"></i><b>13.1</b> The 6 basic trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-trigonometric-functions-in-julia"><i class="fa fa-check"></i><b>13.1.1</b> The trigonometric functions in Julia</a></li>
+<li class="chapter" data-level="13.1.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#basic-properties"><i class="fa fa-check"></i><b>13.1.2</b> Basic properties</a></li>
+<li class="chapter" data-level="13.1.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#functions-using-degrees"><i class="fa fa-check"></i><b>13.1.3</b> Functions using degrees</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-sum-and-difference-formulas"><i class="fa fa-check"></i><b>13.2</b> The sum-and-difference formulas</a></li>
+<li class="chapter" data-level="13.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#inverse-trigonometric-functions"><i class="fa fa-check"></i><b>13.3</b> Inverse trigonometric functions</a><ul>
+<li class="chapter" data-level="13.3.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#implications-of-a-restricted-domain"><i class="fa fa-check"></i><b>13.3.1</b> Implications of a restricted domain</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#hyperbolic-trigonometric-functions"><i class="fa fa-check"></i><b>13.4</b> Hyperbolic trigonometric functions</a></li>
+<li class="chapter" data-level="13.5" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#questions-12"><i class="fa fa-check"></i><b>13.5</b> Questions</a></li>
+</ul></li>
+<li class="part"><span><b>I Single Variable Calculus</b></span></li>
+<li class="chapter" data-level="14" data-path="limits.html"><a href="limits.html"><i class="fa fa-check"></i><b>14</b> Limits</a><ul>
+<li class="chapter" data-level="14.0.1" data-path="limits.html"><a href="limits.html#indeterminate-forms"><i class="fa fa-check"></i><b>14.0.1</b> Indeterminate forms</a></li>
+<li class="chapter" data-level="14.1" data-path="limits.html"><a href="limits.html#graphical-approaches-to-limits"><i class="fa fa-check"></i><b>14.1</b> Graphical approaches to limits</a></li>
+<li class="chapter" data-level="14.2" data-path="limits.html"><a href="limits.html#numerical-approaches-to-limits"><i class="fa fa-check"></i><b>14.2</b> Numerical approaches to limits</a><ul>
+<li class="chapter" data-level="14.2.1" data-path="limits.html"><a href="limits.html#issues-with-the-numeric-approach"><i class="fa fa-check"></i><b>14.2.1</b> Issues with the numeric approach</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="limits.html"><a href="limits.html#symbolic-approach-to-limits"><i class="fa fa-check"></i><b>14.3</b> Symbolic approach to limits</a></li>
+<li class="chapter" data-level="14.4" data-path="limits.html"><a href="limits.html#rules-for-limits"><i class="fa fa-check"></i><b>14.4</b> Rules for limits</a></li>
+<li class="chapter" data-level="14.5" data-path="limits.html"><a href="limits.html#limits-from-the-definition"><i class="fa fa-check"></i><b>14.5</b> Limits from the definition</a></li>
+<li class="chapter" data-level="14.6" data-path="limits.html"><a href="limits.html#questions-13"><i class="fa fa-check"></i><b>14.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html"><i class="fa fa-check"></i><b>15</b> Limits, issues, extensions of the concept</a><ul>
+<li class="chapter" data-level="15.1" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#right-and-left-limits"><i class="fa fa-check"></i><b>15.1</b> Right and left limits</a></li>
+<li class="chapter" data-level="15.2" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-at-infinity"><i class="fa fa-check"></i><b>15.2</b> Limits at infinity</a></li>
+<li class="chapter" data-level="15.3" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-infinity"><i class="fa fa-check"></i><b>15.3</b> Limits of infinity</a></li>
+<li class="chapter" data-level="15.4" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-sequences"><i class="fa fa-check"></i><b>15.4</b> Limits of sequences</a></li>
+<li class="chapter" data-level="15.5" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#summary"><i class="fa fa-check"></i><b>15.5</b> Summary</a></li>
+<li class="chapter" data-level="15.6" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#questions-14"><i class="fa fa-check"></i><b>15.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="continuity.html"><a href="continuity.html"><i class="fa fa-check"></i><b>16</b> Continuity</a><ul>
+<li class="chapter" data-level="16.1" data-path="continuity.html"><a href="continuity.html#rules-for-continuity"><i class="fa fa-check"></i><b>16.1</b> Rules for continuity</a></li>
+<li class="chapter" data-level="16.2" data-path="continuity.html"><a href="continuity.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html"><i class="fa fa-check"></i><b>17</b> Implications of continuity</a><ul>
+<li class="chapter" data-level="17.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#intermediate-value-theorem"><i class="fa fa-check"></i><b>17.1</b> Intermediate Value Theorem</a><ul>
+<li class="chapter" data-level="17.1.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#bolzano-and-the-bisection-method"><i class="fa fa-check"></i><b>17.1.1</b> Bolzano and the bisection method</a></li>
+<li class="chapter" data-level="17.1.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzero-function."><i class="fa fa-check"></i><b>17.1.2</b> The fzero function.</a></li>
+<li class="chapter" data-level="17.1.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-8"><i class="fa fa-check"></i><b>17.1.3</b> Examples</a></li>
+<li class="chapter" data-level="17.1.4" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzeros-function"><i class="fa fa-check"></i><b>17.1.4</b> The fzeros function</a></li>
+</ul></li>
+<li class="chapter" data-level="17.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#extreme-value-theorem"><i class="fa fa-check"></i><b>17.2</b> Extreme value theorem</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-9"><i class="fa fa-check"></i><b>17.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#questions-16"><i class="fa fa-check"></i><b>17.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="derivatives.html"><a href="derivatives.html"><i class="fa fa-check"></i><b>18</b> Derivatives</a><ul>
+<li class="chapter" data-level="18.1" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-secant-line"><i class="fa fa-check"></i><b>18.1</b> The slope of the secant line</a></li>
+<li class="chapter" data-level="18.2" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-tangent-line"><i class="fa fa-check"></i><b>18.2</b> The slope of the tangent line</a></li>
+<li class="chapter" data-level="18.3" data-path="derivatives.html"><a href="derivatives.html#the-derivative"><i class="fa fa-check"></i><b>18.3</b> The derivative</a><ul>
+<li class="chapter" data-level="18.3.1" data-path="derivatives.html"><a href="derivatives.html#some-basic-derivatives"><i class="fa fa-check"></i><b>18.3.1</b> Some basic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.4" data-path="derivatives.html"><a href="derivatives.html#rules-of-derivatives"><i class="fa fa-check"></i><b>18.4</b> Rules of derivatives</a><ul>
+<li class="chapter" data-level="18.4.1" data-path="derivatives.html"><a href="derivatives.html#sum-rule"><i class="fa fa-check"></i><b>18.4.1</b> Sum rule</a></li>
+<li class="chapter" data-level="18.4.2" data-path="derivatives.html"><a href="derivatives.html#product-rule"><i class="fa fa-check"></i><b>18.4.2</b> Product rule</a></li>
+<li class="chapter" data-level="18.4.3" data-path="derivatives.html"><a href="derivatives.html#quotient-rule"><i class="fa fa-check"></i><b>18.4.3</b> Quotient rule</a></li>
+<li class="chapter" data-level="18.4.4" data-path="derivatives.html"><a href="derivatives.html#chain-rule"><i class="fa fa-check"></i><b>18.4.4</b> Chain rule</a></li>
+</ul></li>
+<li class="chapter" data-level="18.5" data-path="derivatives.html"><a href="derivatives.html#higher-order-derivatives"><i class="fa fa-check"></i><b>18.5</b> Higher-order derivatives</a></li>
+<li class="chapter" data-level="18.6" data-path="derivatives.html"><a href="derivatives.html#numeric-derivatives"><i class="fa fa-check"></i><b>18.6</b> Numeric derivatives</a><ul>
+<li class="chapter" data-level="18.6.1" data-path="derivatives.html"><a href="derivatives.html#approximate-derivatives"><i class="fa fa-check"></i><b>18.6.1</b> Approximate derivatives</a></li>
+<li class="chapter" data-level="18.6.2" data-path="derivatives.html"><a href="derivatives.html#automatic-derivatives"><i class="fa fa-check"></i><b>18.6.2</b> Automatic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.7" data-path="derivatives.html"><a href="derivatives.html#questions-17"><i class="fa fa-check"></i><b>18.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><i class="fa fa-check"></i><b>19</b> The Mean Value Theorem and other facts about some functions.</a><ul>
+<li class="chapter" data-level="19.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#differentiable-is-more-restrictive-than-continuous."><i class="fa fa-check"></i><b>19.1</b> Differentiable is more restrictive than continuous.</a></li>
+<li class="chapter" data-level="19.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#derivatives-and-maxima."><i class="fa fa-check"></i><b>19.2</b> Derivatives and maxima.</a></li>
+<li class="chapter" data-level="19.3" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#rolles-theorem"><i class="fa fa-check"></i><b>19.3</b> Rolle’s Theorem</a></li>
+<li class="chapter" data-level="19.4" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-mean-value-theorem"><i class="fa fa-check"></i><b>19.4</b> The Mean Value Theorem</a><ul>
+<li class="chapter" data-level="19.4.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.1</b> The Cauchy mean value theorem</a></li>
+<li class="chapter" data-level="19.4.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#visualizing-the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.2</b> Visualizing the Cauchy mean value theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="19.5" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#questions-18"><i class="fa fa-check"></i><b>19.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="optimization.html"><a href="optimization.html"><i class="fa fa-check"></i><b>20</b> Optimization</a><ul>
+<li class="chapter" data-level="20.1" data-path="optimization.html"><a href="optimization.html#fixed-perimeter-and-area"><i class="fa fa-check"></i><b>20.1</b> Fixed perimeter and area</a><ul>
+<li class="chapter" data-level="20.1.1" data-path="optimization.html"><a href="optimization.html#exploiting-polymorphism"><i class="fa fa-check"></i><b>20.1.1</b> Exploiting polymorphism</a></li>
+<li class="chapter" data-level="20.1.2" data-path="optimization.html"><a href="optimization.html#norman-windows"><i class="fa fa-check"></i><b>20.1.2</b> Norman Windows</a></li>
+<li class="chapter" data-level="20.1.3" data-path="optimization.html"><a href="optimization.html#using-fzero-to-locate-critical-points."><i class="fa fa-check"></i><b>20.1.3</b> Using fzero to locate critical points.</a></li>
+<li class="chapter" data-level="20.1.4" data-path="optimization.html"><a href="optimization.html#a-symbolic-approach"><i class="fa fa-check"></i><b>20.1.4</b> A symbolic approach</a></li>
+</ul></li>
+<li class="chapter" data-level="20.2" data-path="optimization.html"><a href="optimization.html#trigonometry"><i class="fa fa-check"></i><b>20.2</b> Trigonometry</a></li>
+<li class="chapter" data-level="20.3" data-path="optimization.html"><a href="optimization.html#rate-times-time"><i class="fa fa-check"></i><b>20.3</b> Rate times time</a></li>
+<li class="chapter" data-level="20.4" data-path="optimization.html"><a href="optimization.html#unbounded-domains"><i class="fa fa-check"></i><b>20.4</b> Unbounded domains</a><ul>
+<li class="chapter" data-level="20.4.1" data-path="optimization.html"><a href="optimization.html#minimize-surface-area-of-a-can"><i class="fa fa-check"></i><b>20.4.1</b> Minimize surface area of a can</a></li>
+</ul></li>
+<li class="chapter" data-level="20.5" data-path="optimization.html"><a href="optimization.html#questions-19"><i class="fa fa-check"></i><b>20.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="curve-sketching.html"><a href="curve-sketching.html"><i class="fa fa-check"></i><b>21</b> Curve Sketching</a><ul>
+<li class="chapter" data-level="21.1" data-path="curve-sketching.html"><a href="curve-sketching.html#positive-and-increasing-on-an-interval"><i class="fa fa-check"></i><b>21.1</b> Positive and increasing on an interval</a></li>
+<li class="chapter" data-level="21.2" data-path="curve-sketching.html"><a href="curve-sketching.html#the-derivative-and-increasing-and-decreasing"><i class="fa fa-check"></i><b>21.2</b> The derivative and increasing and decreasing</a><ul>
+<li class="chapter" data-level="21.2.1" data-path="curve-sketching.html"><a href="curve-sketching.html#first-derivative-test"><i class="fa fa-check"></i><b>21.2.1</b> First derivative test</a></li>
+</ul></li>
+<li class="chapter" data-level="21.3" data-path="curve-sketching.html"><a href="curve-sketching.html#concavity"><i class="fa fa-check"></i><b>21.3</b> Concavity</a><ul>
+<li class="chapter" data-level="21.3.1" data-path="curve-sketching.html"><a href="curve-sketching.html#second-derivative-test"><i class="fa fa-check"></i><b>21.3.1</b> Second derivative test</a></li>
+<li class="chapter" data-level="21.3.2" data-path="curve-sketching.html"><a href="curve-sketching.html#inflection-points"><i class="fa fa-check"></i><b>21.3.2</b> Inflection points</a></li>
+</ul></li>
+<li class="chapter" data-level="21.4" data-path="curve-sketching.html"><a href="curve-sketching.html#questions-20"><i class="fa fa-check"></i><b>21.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="linearization.html"><a href="linearization.html"><i class="fa fa-check"></i><b>22</b> Linearization</a><ul>
+<li class="chapter" data-level="22.1" data-path="linearization.html"><a href="linearization.html#numeric-approximations"><i class="fa fa-check"></i><b>22.1</b> Numeric approximations</a></li>
+<li class="chapter" data-level="22.2" data-path="linearization.html"><a href="linearization.html#the-actual-error"><i class="fa fa-check"></i><b>22.2</b> The actual error</a><ul>
+<li class="chapter" data-level="22.2.1" data-path="linearization.html"><a href="linearization.html#why-is-the-remainder-term-as-it-is"><i class="fa fa-check"></i><b>22.2.1</b> Why is the remainder term as it is?</a></li>
+<li class="chapter" data-level="22.2.2" data-path="linearization.html"><a href="linearization.html#the-big-and-small-oh"><i class="fa fa-check"></i><b>22.2.2</b> The big (and small) “oh”</a></li>
+</ul></li>
+<li class="chapter" data-level="22.3" data-path="linearization.html"><a href="linearization.html#questions-21"><i class="fa fa-check"></i><b>22.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="newtons-method.html"><a href="newtons-method.html"><i class="fa fa-check"></i><b>23</b> Newton’s method</a><ul>
+<li class="chapter" data-level="23.1" data-path="newtons-method.html"><a href="newtons-method.html#newtons-generalization"><i class="fa fa-check"></i><b>23.1</b> Newton’s generalization</a></li>
+<li class="chapter" data-level="23.2" data-path="newtons-method.html"><a href="newtons-method.html#examples-11"><i class="fa fa-check"></i><b>23.2</b> Examples</a></li>
+<li class="chapter" data-level="23.3" data-path="newtons-method.html"><a href="newtons-method.html#a-function"><i class="fa fa-check"></i><b>23.3</b> A function</a><ul>
+<li class="chapter" data-level="23.3.1" data-path="newtons-method.html"><a href="newtons-method.html#functions-in-the-roots-package"><i class="fa fa-check"></i><b>23.3.1</b> Functions in the Roots package</a></li>
+</ul></li>
+<li class="chapter" data-level="23.4" data-path="newtons-method.html"><a href="newtons-method.html#convergence"><i class="fa fa-check"></i><b>23.4</b> Convergence</a><ul>
+<li class="chapter" data-level="23.4.1" data-path="newtons-method.html"><a href="newtons-method.html#poor-initial-step"><i class="fa fa-check"></i><b>23.4.1</b> Poor initial step</a></li>
+<li class="chapter" data-level="23.4.2" data-path="newtons-method.html"><a href="newtons-method.html#the-second-derivative-is-too-big"><i class="fa fa-check"></i><b>23.4.2</b> The second derivative is too big</a></li>
+<li class="chapter" data-level="23.4.3" data-path="newtons-method.html"><a href="newtons-method.html#the-tangent-line-at-some-x_i-is-flat"><i class="fa fa-check"></i><b>23.4.3</b> The tangent line at some <span class="math inline">\(x_i\)</span> is flat</a></li>
+</ul></li>
+<li class="chapter" data-level="23.5" data-path="newtons-method.html"><a href="newtons-method.html#questions-22"><i class="fa fa-check"></i><b>23.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html"><i class="fa fa-check"></i><b>24</b> L’Hopitals Rule</a><ul>
+<li class="chapter" data-level="24.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#why"><i class="fa fa-check"></i><b>24.1</b> Why?</a><ul>
+<li class="chapter" data-level="24.1.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#lhopitals-picture"><i class="fa fa-check"></i><b>24.1.1</b> L’Hopital’s picture</a></li>
+</ul></li>
+<li class="chapter" data-level="24.2" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#generalizations"><i class="fa fa-check"></i><b>24.2</b> Generalizations</a></li>
+<li class="chapter" data-level="24.3" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#questions-23"><i class="fa fa-check"></i><b>24.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html"><i class="fa fa-check"></i><b>25</b> Implicit Differentiation</a><ul>
+<li class="chapter" data-level="25.1" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#graphs-of-equations"><i class="fa fa-check"></i><b>25.1</b> Graphs of equations</a></li>
+<li class="chapter" data-level="25.2" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#tangent-lines-implicit-differentiation"><i class="fa fa-check"></i><b>25.2</b> Tangent lines, implicit differentiation</a></li>
+<li class="chapter" data-level="25.3" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#using-sympy-for-computation"><i class="fa fa-check"></i><b>25.3</b> Using SymPy for computation</a></li>
+<li class="chapter" data-level="25.4" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#higher-order-derivatives-1"><i class="fa fa-check"></i><b>25.4</b> Higher order derivatives</a></li>
+<li class="chapter" data-level="25.5" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#inverse-functions"><i class="fa fa-check"></i><b>25.5</b> Inverse functions</a></li>
+<li class="chapter" data-level="25.6" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#example-from-physics-1"><i class="fa fa-check"></i><b>25.6</b> Example from physics</a></li>
+<li class="chapter" data-level="25.7" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#questions-24"><i class="fa fa-check"></i><b>25.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="related-rates.html"><a href="related-rates.html"><i class="fa fa-check"></i><b>26</b> Related rates</a><ul>
+<li class="chapter" data-level="26.1" data-path="related-rates.html"><a href="related-rates.html#examples-16"><i class="fa fa-check"></i><b>26.1</b> Examples</a></li>
+<li class="chapter" data-level="26.2" data-path="related-rates.html"><a href="related-rates.html#questions-25"><i class="fa fa-check"></i><b>26.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="differential-equations.html"><a href="differential-equations.html"><i class="fa fa-check"></i><b>27</b> Differential Equations</a><ul>
+<li class="chapter" data-level="27.1" data-path="differential-equations.html"><a href="differential-equations.html#what-to-say"><i class="fa fa-check"></i><b>27.1</b> What to say?</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html"><i class="fa fa-check"></i><b>28</b> Area under a curve</a><ul>
+<li class="chapter" data-level="28.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#approximating-areas"><i class="fa fa-check"></i><b>28.1</b> Approximating areas</a><ul>
+<li class="chapter" data-level="28.1.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#adding-rectangles"><i class="fa fa-check"></i><b>28.1.1</b> Adding rectangles</a></li>
+<li class="chapter" data-level="28.1.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#other-sums"><i class="fa fa-check"></i><b>28.1.2</b> Other sums</a></li>
+<li class="chapter" data-level="28.1.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-immediate-consequences"><i class="fa fa-check"></i><b>28.1.3</b> Some immediate consequences</a></li>
+<li class="chapter" data-level="28.1.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-known-integrals"><i class="fa fa-check"></i><b>28.1.4</b> Some known integrals</a></li>
+<li class="chapter" data-level="28.1.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-other-consequences"><i class="fa fa-check"></i><b>28.1.5</b> Some other consequences</a></li>
+</ul></li>
+<li class="chapter" data-level="28.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#numeric-integration"><i class="fa fa-check"></i><b>28.2</b> Numeric integration</a></li>
+<li class="chapter" data-level="28.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#negative-area"><i class="fa fa-check"></i><b>28.3</b> “Negative” area</a></li>
+<li class="chapter" data-level="28.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#error-estimate"><i class="fa fa-check"></i><b>28.4</b> Error estimate</a></li>
+<li class="chapter" data-level="28.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#gauss-quadrature"><i class="fa fa-check"></i><b>28.5</b> Gauss quadrature</a><ul>
+<li class="chapter" data-level="28.5.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#the-quadgk-function"><i class="fa fa-check"></i><b>28.5.1</b> The quadgk function</a></li>
+</ul></li>
+<li class="chapter" data-level="28.6" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#questions-26"><i class="fa fa-check"></i><b>28.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html"><i class="fa fa-check"></i><b>29</b> Fundamental Theorem or Calculus</a><ul>
+<li class="chapter" data-level="29.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#using-the-fundamental-theorem-of-calculus-to-evaluate-definite-integrals"><i class="fa fa-check"></i><b>29.1</b> Using the Fundamental Theorem of Calculus to evaluate definite integrals</a><ul>
+<li class="chapter" data-level="29.1.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#an-alternate-notation-for-fb---fa"><i class="fa fa-check"></i><b>29.1.1</b> An alternate notation for <span class="math inline">\(F(b) - F(a)\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="29.2" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-indefinite-integral"><i class="fa fa-check"></i><b>29.2</b> The indefinite integral</a></li>
+<li class="chapter" data-level="29.3" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#rules-of-integration"><i class="fa fa-check"></i><b>29.3</b> Rules of integration</a></li>
+<li class="chapter" data-level="29.4" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-derivative-of-the-integral"><i class="fa fa-check"></i><b>29.4</b> The derivative of the integral</a></li>
+<li class="chapter" data-level="29.5" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#questions-27"><i class="fa fa-check"></i><b>29.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="substitution.html"><a href="substitution.html"><i class="fa fa-check"></i><b>30</b> Substitution</a><ul>
+<li class="chapter" data-level="30.0.1" data-path="substitution.html"><a href="substitution.html#u-substitution"><i class="fa fa-check"></i><b>30.0.1</b> “u” substitution</a></li>
+<li class="chapter" data-level="30.1" data-path="substitution.html"><a href="substitution.html#sympy-and-substitution"><i class="fa fa-check"></i><b>30.1</b> SymPy and substitution</a><ul>
+<li class="chapter" data-level="30.1.1" data-path="substitution.html"><a href="substitution.html#failures"><i class="fa fa-check"></i><b>30.1.1</b> Failures…</a></li>
+</ul></li>
+<li class="chapter" data-level="30.2" data-path="substitution.html"><a href="substitution.html#trigonometric-substitution"><i class="fa fa-check"></i><b>30.2</b> Trigonometric substitution</a></li>
+<li class="chapter" data-level="30.3" data-path="substitution.html"><a href="substitution.html#questions-28"><i class="fa fa-check"></i><b>30.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="integration-by-parts.html"><a href="integration-by-parts.html"><i class="fa fa-check"></i><b>31</b> Integration By Parts</a><ul>
+<li class="chapter" data-level="31.1" data-path="integration-by-parts.html"><a href="integration-by-parts.html#examples-19"><i class="fa fa-check"></i><b>31.1</b> Examples</a></li>
+<li class="chapter" data-level="31.2" data-path="integration-by-parts.html"><a href="integration-by-parts.html#questions-29"><i class="fa fa-check"></i><b>31.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html"><i class="fa fa-check"></i><b>32</b> Partial Fractions</a><ul>
+<li class="chapter" data-level="32.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.1</b> Partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.1.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#sketch-of-proof"><i class="fa fa-check"></i><b>32.1.1</b> Sketch of proof</a></li>
+</ul></li>
+<li class="chapter" data-level="32.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#integrating-the-terms-in-a-partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.2</b> Integrating the terms in a partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.2.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#linear-factors"><i class="fa fa-check"></i><b>32.2.1</b> Linear factors</a></li>
+<li class="chapter" data-level="32.2.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#quadratic-factors"><i class="fa fa-check"></i><b>32.2.2</b> Quadratic factors</a></li>
+</ul></li>
+<li class="chapter" data-level="32.3" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#examples-20"><i class="fa fa-check"></i><b>32.3</b> Examples</a></li>
+<li class="chapter" data-level="32.4" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#questions-30"><i class="fa fa-check"></i><b>32.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="improper-integrals.html"><a href="improper-integrals.html"><i class="fa fa-check"></i><b>33</b> Improper Integrals</a><ul>
+<li class="chapter" data-level="33.1" data-path="improper-integrals.html"><a href="improper-integrals.html#infinite-domains"><i class="fa fa-check"></i><b>33.1</b> Infinite domains</a><ul>
+<li class="chapter" data-level="33.1.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integrals"><i class="fa fa-check"></i><b>33.1.1</b> Numeric integrals</a></li>
+</ul></li>
+<li class="chapter" data-level="33.2" data-path="improper-integrals.html"><a href="improper-integrals.html#singularities"><i class="fa fa-check"></i><b>33.2</b> Singularities</a><ul>
+<li class="chapter" data-level="33.2.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integration-1"><i class="fa fa-check"></i><b>33.2.1</b> Numeric integration</a></li>
+</ul></li>
+<li class="chapter" data-level="33.3" data-path="improper-integrals.html"><a href="improper-integrals.html#probability-applications"><i class="fa fa-check"></i><b>33.3</b> Probability applications</a></li>
+<li class="chapter" data-level="33.4" data-path="improper-integrals.html"><a href="improper-integrals.html#questions-31"><i class="fa fa-check"></i><b>33.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="34" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><i class="fa fa-check"></i><b>34</b> Average of a function and the Mean Value Theorem for integrals</a><ul>
+<li class="chapter" data-level="34.1" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#examples-23"><i class="fa fa-check"></i><b>34.1</b> Examples</a></li>
+<li class="chapter" data-level="34.2" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#the-mean-value-theorem-for-integrals"><i class="fa fa-check"></i><b>34.2</b> The Mean Value Theorem for Integrals</a></li>
+<li class="chapter" data-level="34.3" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#questions-32"><i class="fa fa-check"></i><b>34.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html"><i class="fa fa-check"></i><b>35</b> Area between two curves</a><ul>
+<li class="chapter" data-level="35.1" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#examples-24"><i class="fa fa-check"></i><b>35.1</b> Examples</a></li>
+<li class="chapter" data-level="35.2" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#questions-33"><i class="fa fa-check"></i><b>35.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="center-of-mass.html"><a href="center-of-mass.html"><i class="fa fa-check"></i><b>36</b> Center of Mass</a><ul>
+<li class="chapter" data-level="36.1" data-path="center-of-mass.html"><a href="center-of-mass.html#center-of-mass-of-figures"><i class="fa fa-check"></i><b>36.1</b> Center of mass of figures</a></li>
+<li class="chapter" data-level="36.2" data-path="center-of-mass.html"><a href="center-of-mass.html#the-y-direction."><i class="fa fa-check"></i><b>36.2</b> The <span class="math inline">\(y\)</span> direction.</a></li>
+<li class="chapter" data-level="36.3" data-path="center-of-mass.html"><a href="center-of-mass.html#questions-34"><i class="fa fa-check"></i><b>36.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html"><i class="fa fa-check"></i><b>37</b> Volumes by slicing</a><ul>
+<li class="chapter" data-level="37.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-of-revolution"><i class="fa fa-check"></i><b>37.1</b> Solids of revolution</a><ul>
+<li class="chapter" data-level="37.1.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#the-washer-method"><i class="fa fa-check"></i><b>37.1.1</b> The washer method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.2" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-with-known-cross-section"><i class="fa fa-check"></i><b>37.2</b> Solids with known cross section</a><ul>
+<li class="chapter" data-level="37.2.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#cavalieris-method"><i class="fa fa-check"></i><b>37.2.1</b> Cavalieri’s method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.3" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#pappus-theorem-2nd"><i class="fa fa-check"></i><b>37.3</b> Pappus theorem (2nd)</a></li>
+<li class="chapter" data-level="37.4" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#questions-35"><i class="fa fa-check"></i><b>37.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="arc-length.html"><a href="arc-length.html"><i class="fa fa-check"></i><b>38</b> Arc length</a><ul>
+<li class="chapter" data-level="38.1" data-path="arc-length.html"><a href="arc-length.html#arc-length-formula"><i class="fa fa-check"></i><b>38.1</b> Arc length formula</a></li>
+<li class="chapter" data-level="38.2" data-path="arc-length.html"><a href="arc-length.html#examples-26"><i class="fa fa-check"></i><b>38.2</b> Examples</a></li>
+<li class="chapter" data-level="38.3" data-path="arc-length.html"><a href="arc-length.html#questions-36"><i class="fa fa-check"></i><b>38.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="surface-area.html"><a href="surface-area.html"><i class="fa fa-check"></i><b>39</b> Surface Area</a><ul>
+<li class="chapter" data-level="39.1" data-path="surface-area.html"><a href="surface-area.html#examples-27"><i class="fa fa-check"></i><b>39.1</b> Examples</a></li>
+<li class="chapter" data-level="39.2" data-path="surface-area.html"><a href="surface-area.html#theorem-of-pappus"><i class="fa fa-check"></i><b>39.2</b> Theorem of Pappus</a></li>
+<li class="chapter" data-level="39.3" data-path="surface-area.html"><a href="surface-area.html#questions-37"><i class="fa fa-check"></i><b>39.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="40" data-path="odes.html"><a href="odes.html"><i class="fa fa-check"></i><b>40</b> ODEs</a><ul>
+<li class="chapter" data-level="40.1" data-path="odes.html"><a href="odes.html#motion-with-constant-acceleration"><i class="fa fa-check"></i><b>40.1</b> Motion with constant acceleration</a></li>
+<li class="chapter" data-level="40.2" data-path="odes.html"><a href="odes.html#first-order-initial-value-problems"><i class="fa fa-check"></i><b>40.2</b> First-order initial-value problems</a><ul>
+<li class="chapter" data-level="40.2.1" data-path="odes.html"><a href="odes.html#examples-28"><i class="fa fa-check"></i><b>40.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="40.3" data-path="odes.html"><a href="odes.html#separable-equations"><i class="fa fa-check"></i><b>40.3</b> Separable equations</a></li>
+<li class="chapter" data-level="40.4" data-path="odes.html"><a href="odes.html#symbolic-solutions"><i class="fa fa-check"></i><b>40.4</b> Symbolic solutions</a></li>
+<li class="chapter" data-level="40.5" data-path="odes.html"><a href="odes.html#visualizing-a-first-order-initial-value-problem"><i class="fa fa-check"></i><b>40.5</b> Visualizing a first-order initial value problem</a></li>
+<li class="chapter" data-level="40.6" data-path="odes.html"><a href="odes.html#questions-45"><i class="fa fa-check"></i><b>40.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="41" data-path="eulers-method.html"><a href="eulers-method.html"><i class="fa fa-check"></i><b>41</b> Euler’s method</a><ul>
+<li class="chapter" data-level="41.1" data-path="eulers-method.html"><a href="eulers-method.html#the-euler-method"><i class="fa fa-check"></i><b>41.1</b> The Euler method</a></li>
+<li class="chapter" data-level="41.2" data-path="eulers-method.html"><a href="eulers-method.html#examples-29"><i class="fa fa-check"></i><b>41.2</b> Examples</a></li>
+<li class="chapter" data-level="41.3" data-path="eulers-method.html"><a href="eulers-method.html#questions-46"><i class="fa fa-check"></i><b>41.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="42" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html"><i class="fa fa-check"></i><b>42</b> Parametrized curves in two dimensions</a><ul>
+<li class="chapter" data-level="42.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vectors-vector-valued-functions"><i class="fa fa-check"></i><b>42.1</b> Vectors, vector-valued functions</a><ul>
+<li class="chapter" data-level="42.1.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vector-valued-functions"><i class="fa fa-check"></i><b>42.1.1</b> Vector-valued functions</a></li>
+<li class="chapter" data-level="42.1.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#limits-continuity"><i class="fa fa-check"></i><b>42.1.2</b> Limits, continuity</a></li>
+</ul></li>
+<li class="chapter" data-level="42.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#derivative"><i class="fa fa-check"></i><b>42.2</b> Derivative</a><ul>
+<li class="chapter" data-level="42.2.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-tangent-line"><i class="fa fa-check"></i><b>42.2.1</b> The tangent line</a></li>
+<li class="chapter" data-level="42.2.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-second-derivative"><i class="fa fa-check"></i><b>42.2.2</b> The second derivative</a></li>
+</ul></li>
+<li class="chapter" data-level="42.3" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#line-integrals"><i class="fa fa-check"></i><b>42.3</b> Line integrals</a><ul>
+<li class="chapter" data-level="42.3.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#examples-30"><i class="fa fa-check"></i><b>42.3.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="42.4" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#questions-47"><i class="fa fa-check"></i><b>42.4</b> Questions</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Calculus With Julia</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="integration-by-parts" class="section level1">
+<h1><span class="header-section-number">31</span> Integration By Parts</h1>
+<p>So far we have seen that the <em>derivative</em> rules lead to <em>integration rules</em>. In particular:</p>
+<ul>
+<li><p><span class="math display">\[
+[au(x) + bv(x)]&#39; = au&#39;(x) + bv&#39;(x)
+\]</span></p>
+<p>gives rise to an integration</p></li>
+</ul>
+<p>rule: <span class="math inline">\(\int (au(x) + bv(x))dx = a\int u(x)dx + b\int v(x))dx\)</span>. (That is the linearity of the derivative means the integral has linearity.)</p>
+<ul>
+<li><p><span class="math display">\[
+[f(g(x))]&#39; = f&#39;(g(x)) g&#39;(x)
+\]</span></p>
+<p>gives <span class="math inline">\(\int_a^b f(g(x)) g&#39;(x) dx = \int_{g(a)}^{g(b)} f(x) dx\)</span>. That is, substitution reverses the chain rule.</p></li>
+</ul>
+<p>Now we turn our attention to the implications of the <em>product rule</em>: <span class="math inline">\([uv]&#39; = u&#39;v + uv&#39;\)</span>. The resulting technique is called integration by parts.</p>
+<p>First, we have: <span class="math display">\[~
+u(x)\cdot v(x)\big|_a^b = \int_a^b [u(x) v(x)]&#39; dx = \int_a^b u&#39;(x) \cdot v(x) dx + \int_a^b u(x) \cdot v&#39;(x) dx.
+~\]</span></p>
+<p>This is re-expressed as <span class="math display">\[~
+\int_a^b u(x) \cdot v&#39;(x) dx = u(x) \cdot v(x)\big|_a^b -  \int_a^b v(x) \cdot u&#39;(x) dx,
+~\]</span></p>
+<p>Or, more informally, as <span class="math inline">\(\int udv = uv - \int v du\)</span>.</p>
+<div class="well well-sm">
+<figure>
+<img src="data:image/gif;base64,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2FwQ9cPpJ58+vEc3nguRfQF8qLkI4jOt5JuLip6KiRDNzp4zezwAtDW3um0ntsVn3TUr3Z8xRJRfX66h1pNaqyFIz/r57DPDS0o08BkrN0JkR0D1o34exGcaN9FSjIaK/6/X8rKU2TH9HkNE+fXlGopgT1F8uq259bHW5tZ5rVNaDww6JlExmDV39ji1ek7eAQF8prG5UN1FoJn3X4roXwDs2u8xRJRfH64hsVImwNMw0gzFz0WwoKWlZcegoxIVvQA+00r+togKOgD94ERGC+wQyeGh/o4hovz6cg3NmjvraQBPb3751hnNrY8O6i4/GsAdAUYlKnpBfKaV/MyFqLwAyFgAmDF5xqcBNOYgHePHj4/MmDqj5uPGhJeaaGDpy3XWNqVt2hnNrdcBmxacKeBAzZMhxiYqGkF/ppV8c7Fy/cpnAV15RnPr85EK87JRXDf7ztlrqgdXV0esef3jxoSdnWig6Mt1NtgOvlcF+7WdfPqiiu6KLCBP/XTuT18POztRMeBnWkjaprbtdv7UqUO2dAwR5deXa+jsE1o+c3bz2UODykRUqviZRkRERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERJtJ2AGIqPRMOHLCFKg9IhIpb71n4T1/A4CJR4y/HIru+x5ecHHY+Yhoy5iwAxBR6emp6HkIkANtrvd6AJh45NcnKXAeYB4OOxsRbTnOXBBRKCYe8fWjFLIQKtMgeqUobuSsBVFxiIQdgIhK0/LXXvrT5/caPRyCmQCWr9qwekomk7Fh5yKiLcfbIkQUGhVdCQAQrF66dGlvyHGIaCvhzAURhWLSEcftpzB3QPQyqJw8es/P/2X5n5enws5FRFuOMxdEFLhx48ZVWZg7ATww/7e/vAiQq2D02vHjxsfDzkZEW47NBREFrsoOvhLAzr253BkAsFbXXgJFF3KYO3PmTP6/REREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREtK36X1PPqNPc9NICAAAAAElFTkSuQmCC"/>
+<figcaption>
+<div class="markdown">
+<p>
+Illustration of integration by parts of the integral <span class="math inline">\((uv)&#39;\)</span> over <span class="math inline">\([a,b]\)</span> <a href="http://en.wikipedia.org/wiki/Integration_by_parts#Visualization">original</a>. The figure is a parametric plot of <span class="math inline">\((u,v)\)</span> with the points <span class="math inline">\((u(a), v(a))\)</span> and <span class="math inline">\((u(b), v(b))\)</span> marked. The difference <span class="math inline">\(u(b)v(b) - u(a)v(a) = u(x) \big|_a^b\)</span> is illustrated as the difference of two rectangular regions. This area breaks into two pieces, <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, partitioned through the curve. If <span class="math inline">\(u\)</span> is increasing and the curve is parameterized by <span class="math inline">\(t \rightarrow u^{-1}(t)\)</span>, then <span class="math inline">\(A=\int_{u^{-1}(a)}^{u^{-1}(b)} v(u^{-1}(t))dt\)</span>. A <span class="math inline">\(u\)</span>-substitution with <span class="math inline">\(t = u(x)\)</span> changes this into the integral <span class="math inline">\(\int_a^b v(x) u&#39;(x) dx\)</span>. Similarly, for increasing <span class="math inline">\(v\)</span>, it can be seen that <span class="math inline">\(B=\int_a^b u(x) v&#39;(x) dx\)</span>. Combining gives the integration by parts formula.
+</p>
+</div>
+</figcaption>
+</figure>
+</div>
+<p>This can sometimes be confusingly written as: <span class="math display">\[~
+\int f(x) g&#39;(x) dx = f(x)g(x) - \int f&#39;(x) g(x) dx.
+~\]</span></p>
+<p>(The confusion coming from the fact that the indefinite integrals are only defined up to a constant.)</p>
+<p>How does this help? It allows us to differentiate parts of an integral in hopes it makes the result easier to integrate.</p>
+<p>An illustration can clarify.</p>
+<p>Consider the integral <span class="math inline">\(\int_0^\pi x\sin(x) dx\)</span>. If we let <span class="math inline">\(u=x\)</span> and <span class="math inline">\(dv=\sin(x) dx\)</span>, the <span class="math inline">\(du = 1dx\)</span> and <span class="math inline">\(v=-\cos(x)\)</span>. The above then says: <span class="math display">\[~
+\begin{align}
+\int_0^\pi x\sin(x) dx &amp;= \int_0^\pi u dv\\
+&amp;= uv\big|_0^\pi - \int_0^\pi v du\\
+&amp;= x \cdot (-\cos(x)) \big|_0^\pi - \int_0^\pi (-\cos(x)) dx\\
+&amp;= \pi (-\cos(\pi)) - 0(-\cos(0)) + \int_0^\pi \cos(x) dx\\
+&amp;= \pi + \sin(x)\big|_0^\pi\\
+&amp;= \pi.
+\end{align}
+~\]</span></p>
+<p>The technique means one part is differentiated and one part integrated. The art is to break the integrand up into a piece that gets easier through differentiation and a piece that doesn’t get much harder through integration.</p>
+<div id="examples-19" class="section level2">
+<h2><span class="header-section-number">31.1</span> Examples</h2>
+<p>Consider <span class="math inline">\(\int_1^2 x \log(x) dx\)</span>. We might try differentiating the <span class="math inline">\(\log(x)\)</span> term, so we set <span class="math inline">\(u=\log(x)\)</span> and <span class="math inline">\(dv=xdx\)</span>. Then we get <span class="math inline">\(du = 1/x dx\)</span> and <span class="math inline">\(v = x^2/2\)</span>. Putting together gives: <span class="math display">\[~
+\begin{align}
+\int_1^2 x \log(x) dx
+&amp;= (\log(x) \cdot \frac{x^2}{2}) \big|_1^2 - \int_1^2 \frac{x^2}{2} \frac{1}{x} dx\\
+&amp;= (2\log(2) - 0) - (\frac{x^2}{4})\big|_1^2\\
+&amp;= 2\log(2) - (1 - \frac{1}{4}) \\
+&amp;= 2\log(2) - \frac{3}{4}.
+\end{align}
+~\]</span></p>
+<div id="example-70" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.1</span> Example</h5>
+<p>This related problem uses the same idea, though perhaps harder to see at first glance, as <span class="math inline">\(dv=dx\)</span> seems too trivial. <span class="math display">\[~
+\begin{align}
+\int \log(x) dx
+&amp;= \int u dv\\
+&amp;= uv - \int v du\\
+&amp;= (\log(x) \cdot x) - \int x \cdot \frac{1}{x} dx\\
+&amp;= x \log(x) - \int dx\\
+&amp;= x \log(x) - x
+\end{align}
+~\]</span></p>
+<p>Were this a definite integral problem, we would have written: <span class="math display">\[~
+\int_a^b \log(x) dx = (x\log(x))\big|_a^b - \int_a^b dx = (x\log(x) - x)\big|_a^b.
+~\]</span></p>
+</div>
+<div id="example-71" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.2</span> Example</h5>
+<p>Sometimes integration by parts is used two or more times. Here we let <span class="math inline">\(u=x^2\)</span> and <span class="math inline">\(dv = e^x dx\)</span>: <span class="math display">\[~
+\int_a^b x^2 e^x dx = (x^2 \cdot e^x)\big|_a^b - \int_a^b 2x e^x dx.
+~\]</span></p>
+<p>But we can do <span class="math inline">\(\int_a^b x e^xdx\)</span> the same way: <span class="math display">\[~
+\int_a^b x e^x = (x\cdot e^x)\big|_a^b - \int_a^b 1 \cdot e^xdx = (xe^x - e^x)\big|_a^b.
+~\]</span></p>
+<p>Combining gives the answer: <span class="math display">\[~
+\int_a^b x^2 e^x dx
+= (x^2 \cdot e^x)\big|_a^b - 2( (xe^x - e^x)\big|_a^b ) =
+e^x(x^2  - 2x - 1) \big|_a^b.
+~\]</span></p>
+<p>In fact, it isn’t hard to see that an integral of <span class="math inline">\(x^m e^x\)</span>, <span class="math inline">\(m\)</span> a positive integer, can be handled in this manner. For example, when <span class="math inline">\(m=10\)</span>, <code>SymPy</code> gives:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using SymPy
+x =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;x&quot;</span>)
+<span class="kw">integrate</span>(x^<span class="dv">10</span> *<span class="st"> </span><span class="kw">exp</span>(x), x)</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+<p>The general answer is <span class="math inline">\(\int x^n e^xdx = p(x) e^x\)</span>, where <span class="math inline">\(p(x)\)</span> is a polynomial of degree <span class="math inline">\(n\)</span>.</p>
+</div>
+<div id="example-72" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.3</span> Example</h5>
+<p>The same technique is attempted for this integral, but ends differently. First in the following we let <span class="math inline">\(u=\sin(x)\)</span> and <span class="math inline">\(dv=e^x dx\)</span>: <span class="math display">\[~
+\int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx.
+~\]</span></p>
+<p>Now we let <span class="math inline">\(u = \cos(x)\)</span> and again <span class="math inline">\(dv=e^x dx\)</span>: <span class="math display">\[~
+\int e^x \sin(x)dx = \sin(x) e^x - \int \cos(x) e^x dx = \sin(x)e^x - \cos(x)e^x - \int (-\sin(x))e^x dx.
+~\]</span></p>
+<p>But simplifying this gives: <span class="math display">\[~
+\int e^x \sin(x)dx = - \int e^x \sin(x)dx +  e^x(\sin(x) - \cos(x)).
+~\]</span></p>
+<p>Solving for the “unknown” <span class="math inline">\(\int e^x \sin(x) dx\)</span> gives: <span class="math display">\[~
+\int e^x \sin(x) dx = \frac{1}{2} e^x (\sin(x) - \cos(x)).
+~\]</span></p>
+</div>
+<div id="example-73" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.4</span> Example</h5>
+<p>Positive integer powers of trigonometric functions can be addressed by this technique. Consider <span class="math inline">\(\int \cos(x)^n dx\)</span>. We let <span class="math inline">\(u=\cos(x)^{n-1}\)</span> and <span class="math inline">\(dv=\cos(x) dx\)</span>. Then <span class="math inline">\(du = (n-1)\cos(x)^{n-2}(-\sin(x))dx\)</span> and <span class="math inline">\(v=\sin(x)\)</span>. So, <span class="math display">\[~
+\begin{align}
+\int \cos(x)^n dx &amp;= \cos(x)^{n-1} \cdot (\sin(x)) - \int (\sin(x)) ((n-1)\sin(x) \cos(x)^{n-2}) dx \\
+&amp;= \sin(x) \cos(x)^{n-1} + (n-1)\int \sin^2(x) \cos(x)^{n-1} dx\\
+&amp;= \sin(x) \cos(x)^{n-1} + (n-1)\int (1 - \cos(x)^2) \cos(x)^{n-2} dx\\
+&amp;= \sin(x) \cos(x)^{n-1} + (n-1)\int \cos(x)^{n-2}dx - (n-1)\int \cos(x)^n dx.
+\end{align}
+~\]</span></p>
+<p>We can then solve for the unknown (<span class="math inline">\(\int \cos(x)^{n}dx\)</span>) to get this <em>reduction formula</em>: <span class="math display">\[~
+\int \cos(x)^n dx = \frac{1}{n}\sin(x) \cos(x)^{n-1} + \frac{n-1}{n}\int \cos(x)^{n-2}dx.
+~\]</span></p>
+<p>This is called a reduction formula as it reduces the problem from an integral with a power of <span class="math inline">\(n\)</span> to one with a power of <span class="math inline">\(n - 2\)</span>, so could be repeated until the remaining indefinite integral required knowing either <span class="math inline">\(\int \cos(x) dx\)</span> (which is <span class="math inline">\(-\sin(x)\)</span>) or <span class="math inline">\(\int \cos(x)^2 dx\)</span>, which by a double angle formula application, is <span class="math inline">\(x/2 - \sin(2x)/4\)</span>.</p>
+<p><code>SymPy</code> is quite able to do this repeated bookkeeping. For example with <span class="math inline">\(n=10\)</span>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">integrate</span>(<span class="kw">cos</span>(x)^<span class="dv">10</span>, x)</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+</div>
+<div id="example-74" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.5</span> Example</h5>
+<p>The visual interpretation of integration by parts breaks area into two pieces, the one labeled “B” looks like it would be labeled “A” for an inverse function for <span class="math inline">\(f\)</span>. Indeed, integration by parts gives a means to possibly find antiderivatives for inverse functions.</p>
+<p>Let <span class="math inline">\(uv = x f^{-1}(x)\)</span>. Then we have <span class="math inline">\([uv]&#39; = u&#39;v + uv&#39; = f^{-1}(x) + x [f^{-1}(x)]&#39;\)</span>. So, <span class="math display">\[~
+\begin{align}
+\int f^{-1}(x) dx
+&amp;= xf^{-1}(x) - \int x [f^{-1}(x)]&#39; dx\\
+&amp;= xf^{-1}(x) - \int f(u) du.\\
+\end{align}
+~\]</span></p>
+<p>The last line follows from the <span class="math inline">\(u\)</span>-substitution <span class="math inline">\(u=f^{-1}(x)\)</span> for then <span class="math inline">\(du = [f^{-1}(x)]&#39; dx\)</span> and <span class="math inline">\(x=f(u)\)</span>.</p>
+<p>We use this to find an antiderivative for <span class="math inline">\(\sin^{-1}(x)\)</span>: <span class="math display">\[~
+\int \sin^{-1}(x) = x \sin^{-1}(x) - \int \sin(u) du =  x \sin^{-1}(x) + \cos(u) = x \sin^{-1}(x) + \cos(\sin^{-1}(x)).
+~\]</span></p>
+<p>Using right triangles to simplify, the last value <span class="math inline">\(\cos(\sin^{-1}(x))\)</span> can otherwise be written as <span class="math inline">\(\sqrt{1 - x^2}\)</span>.</p>
+</div>
+<div id="example-75" class="section level5">
+<h5><span class="header-section-number">31.1.0.0.6</span> Example</h5>
+<p>The <a href="http://en.wikipedia.org/wiki/Trapezoidal_rule">trapezoid</a> rule is an approximation to the definite integral like a Riemann sum, only instead of approximating the area above <span class="math inline">\([x_i, x_i + h]\)</span> by a rectangle with height <span class="math inline">\(f(c_i)\)</span> (for some <span class="math inline">\(c_i\)</span>), it uses a trapezoid formed by the left and right endpoints. That is this area is used in the estimation: <span class="math inline">\((1/2)\cdot (f(x_i) + f(x_i+h)) \cdot h\)</span>.</p>
+<p>Even though we suggest just using <code>quadgk</code> for numeric integration, estimating the error in this approximation is still of some theoretical interest. Recall, just using <em>either</em> <span class="math inline">\(x_i\)</span> or <span class="math inline">\(x_{i-1}\)</span> for <span class="math inline">\(c_i\)</span> gives an error that is “like” <span class="math inline">\(1/n\)</span>, as <span class="math inline">\(n\)</span> gets large, though the exact rate depends on the function and the length of the interval.</p>
+<p>This <a href="http://www.math.ucsd.edu/~ebender/20B/77_Trap.pdf">proof</a> for the error estimate is involved, but is reproduced here, as it nicely integrates many of the theoretical concepts of integration discussed so far.</p>
+<p>First, for convenience, we consider the interval <span class="math inline">\(x_i\)</span> to <span class="math inline">\(x_i+h\)</span>. The actual answer over this is just <span class="math inline">\(\int_{x_i}^{x_i+h}f(x) dx\)</span>. By a <span class="math inline">\(u\)</span>-substitution with <span class="math inline">\(u=x-x_i\)</span> this becomes <span class="math inline">\(\int_0^h f(t + x_i) dt\)</span>. For analyzing this we integrate once by parts using <span class="math inline">\(u=f(t+x_i)\)</span> and <span class="math inline">\(dv=dt\)</span>. But instead of letting <span class="math inline">\(v=t\)</span>, we choose to add – as is our prerogative – a constant of integration <span class="math inline">\(A\)</span>, so <span class="math inline">\(v=t+A\)</span>: <span class="math display">\[~
+\int_0^h f(t + x_i) dt = (t+A)f(t+x_i)\big|_0^h - \int_0^h (t + A) f&#39;(t + x_i) dt.
+~\]</span></p>
+<p>We choose <span class="math inline">\(A\)</span> to be <span class="math inline">\(-h/2\)</span>, for then the term <span class="math inline">\((t+A)f(t+x_i)\big|_0^h\)</span> becomes <span class="math inline">\((1/2)(f(x_i+h) + f(x_i)) \cdot h\)</span>, or the trapezoid approximation. This means, the error over this interval – actual minus estimate – satisfies: <span class="math display">\[~
+\text{error}_i = \int_{x_i}^{x_i+h}f(x) dx - \frac{f(x_i+h) -f(x_i)}{2} \cdot h  = - \int_0^h (t + A) f&#39;(t + x_i) dt.
+~\]</span></p>
+<p>For this, we <em>again</em> integrate by parts with <span class="math inline">\(u=f&#39;(t+x_i)\)</span> and <span class="math inline">\(dv=(t+A)dt\)</span>. Again we add a constant of integration to get <span class="math inline">\(v=(t+A)^2/2 + B\)</span>, and our error becomes: <span class="math display">\[~
+\text{error}_i = -(\frac{(t+A)^2}{2} + B)f&#39;(t+x_i)\big|_0^h + \int_0^h (\frac{(t+A)^2}{2} + B) \cdot f&#39;&#39;(t+x_i) dt.
+~\]</span></p>
+<p>With <span class="math inline">\(A=-h/2\)</span>, <span class="math inline">\(B\)</span> is chosen to be <span class="math inline">\(-h^2/8\)</span> which causes the first term to vanish and the absolute error to simplify to: <span class="math display">\[~
+\lvert \text{error}_i  \rvert = \lvert \int_0^h \left(\frac{(t-h/2)^2}{2} - \frac{h^2}{8}\right) \cdot f&#39;&#39;(t + x_i) dt \rvert.
+~\]</span></p>
+<p>Now, we assume the <span class="math inline">\(\lvert f&#39;&#39;(t)\rvert\)</span> is bounded by <span class="math inline">\(K\)</span> for any <span class="math inline">\(a \leq t \leq b\)</span>. This will be true, for example, if the second derivative is assumed to exist and be continous. Using this fact about definite integrals <span class="math inline">\(\lvert \int_a^b g dx\rvert \leq \int_a^b \lvert g \rvert dx\)</span> we have: <span class="math display">\[~
+\lvert \text{error}_i  \rvert \leq K \int_0^h \lvert (\frac{(t-h/2)^2}{2} - \frac{h^2}{8}) \rvert dt.
+~\]</span></p>
+<p>But what is the function in the integrand? Clearly it is a quadratic in <span class="math inline">\(t\)</span>. Expanding gives <span class="math inline">\(1/2 \cdot (t^2 - ht)\)</span>. This is negative over <span class="math inline">\([0,h]\)</span> (and <span class="math inline">\(0\)</span> at these endpoints, so the integral above is just: <span class="math display">\[~
+\frac{1}{2}\int_0^h (ht - t^2)dt = \frac{1}{2} (\frac{ht^2}{2} - \frac{t^3}{3})\big|_0^h = \frac{h^3}{12}
+~\]</span></p>
+<p>This gives the bound: <span class="math inline">\(\vert \text{error}_i \rvert \leq K h^3/12\)</span>. The <em>total</em> error may be less, but is not more than the value found by adding up the error over each of the <span class="math inline">\(n\)</span> intervals. As our bound does not depend on the <span class="math inline">\(i\)</span>, we have this sum satisfies: <span class="math display">\[~
+\lvert \text{error}\rvert \leq n \cdot \frac{Kh^3}{12} = \frac{K(b-a)^3}{12}\frac{1}{n^2}.
+~\]</span></p>
+<p>So the error is like <span class="math inline">\(1/n^2\)</span>, in contrast to the <span class="math inline">\(1/n\)</span> error of the Riemann sums. One way to see this, for the Riemann sum it takes twice as many terms to half an error estimate, but for the trapezoid rule only <span class="math inline">\(\sqrt{2}\)</span> as many, and for Simpson’s rule, only <span class="math inline">\(2^{1/4}\)</span> as many.</p>
+</div>
+</div>
+<div id="questions-29" class="section level2">
+<h2><span class="header-section-number">31.2</span> Questions</h2>
+<div id="question-356" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.1</span> Question</h6>
+<p>In the integral of <span class="math inline">\(\int \log(x) dx\)</span> we let <span class="math inline">\(u=\log(x)\)</span> and <span class="math inline">\(dv=dx\)</span>. What are <span class="math inline">\(du\)</span> and <span class="math inline">\(v\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="uStbudE0" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_uStbudE0" value="1">
+<div class="markdown">
+<p><span class="math inline">\(du=1/x dx\quad v = x^2/2\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_uStbudE0" value="2">
+<div class="markdown">
+<p><span class="math inline">\(du=1/x dx \quad v = x\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_uStbudE0" value="3">
+<div class="markdown">
+<p><span class="math inline">\(du=x\log(x) dx\quad v = 1\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="uStbudE0_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_uStbudE0']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#uStbudE0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#uStbudE0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-357" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.2</span> Question</h6>
+<p>In the integral <span class="math inline">\(\int \sec(x)^3 dx\)</span> we let <span class="math inline">\(u=\sec(x)\)</span> and <span class="math inline">\(dv = \sec(x)^2 dx\)</span>. What are <span class="math inline">\(du\)</span> and <span class="math inline">\(v\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="pNRhwmhO" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_pNRhwmhO" value="1">
+<div class="markdown">
+<p><span class="math inline">\(du=\tan(x) dx \quad v=\sec(x)\tan(x)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_pNRhwmhO" value="2">
+<div class="markdown">
+<p><span class="math inline">\(du=\sec(x)\tan(x)dx \quad v=\tan(x)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_pNRhwmhO" value="3">
+<div class="markdown">
+<p><span class="math inline">\(du=\csc(x) dx \quad v=\sec(x)^3 / 3\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="pNRhwmhO_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_pNRhwmhO']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#pNRhwmhO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#pNRhwmhO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-358" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.3</span> Question</h6>
+<p>In the integral <span class="math inline">\(\int e^{-x} \cos(x)dx\)</span> we let <span class="math inline">\(u=e^{-x}\)</span> and <span class="math inline">\(dv=\cos(x) dx\)</span>. What are <span class="math inline">\(du\)</span> and <span class="math inline">\(v\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="jQTRypsS" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_jQTRypsS" value="1">
+<div class="markdown">
+<p><span class="math inline">\(du=\sin(x)dx \quad v=-e^{-x}\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_jQTRypsS" value="2">
+<div class="markdown">
+<p><span class="math inline">\(du=-e^{-x} dx \quad v=\sin(x)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_jQTRypsS" value="3">
+<div class="markdown">
+<p><span class="math inline">\(du=-e^{-x} dx \quad v=-\sin(x)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="jQTRypsS_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_jQTRypsS']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#jQTRypsS_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#jQTRypsS_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-359" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.4</span> Question</h6>
+<p>Find the value of <span class="math inline">\(\int_1^4 x \log(x) dx\)</span>. You can integrate by parts.</p>
+<hr />
+<form name="WeaveQuestion" data-id="LhazmMvr" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="LhazmMvr" type="number" class="form-control"></p>
+</div>
+<div id="LhazmMvr_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#LhazmMvr').on('change', function() {
+correct = Math.abs(this.value - 7.340354888959126) <= 0.001;
+
+if(correct) {
+$('#LhazmMvr_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#LhazmMvr_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-360" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.5</span> Question</h6>
+<p>Find the value of <span class="math inline">\(\int_0^{\pi/2} x\cos(2x) dx\)</span>. You can integrate by parts.</p>
+<hr />
+<form name="WeaveQuestion" data-id="mxoW4lTi" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="mxoW4lTi" type="number" class="form-control"></p>
+</div>
+<div id="mxoW4lTi_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#mxoW4lTi').on('change', function() {
+correct = Math.abs(this.value - -0.49999999999999983) <= 0.001;
+
+if(correct) {
+$('#mxoW4lTi_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#mxoW4lTi_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-361" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.6</span> Question</h6>
+<p>Find the value of <span class="math inline">\(\int_1^e (\log(x))^2 dx\)</span>. You can integrate by parts.</p>
+<hr />
+<form name="WeaveQuestion" data-id="or2rAlgz" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="or2rAlgz" type="number" class="form-control"></p>
+</div>
+<div id="or2rAlgz_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#or2rAlgz').on('change', function() {
+correct = Math.abs(this.value - 0.7182818284590451) <= 0.001;
+
+if(correct) {
+$('#or2rAlgz_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#or2rAlgz_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-362" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.7</span> Question</h6>
+<p>Integration by parts can be used to provide “reduction” formulas, where an antiderivative is written in terms of another antiderivative with a lower power. Which is the proper reduction formula for <span class="math inline">\(\int (\log(x))^n dx\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="Grworyol" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_Grworyol" value="1">
+<div class="markdown">
+<p><span class="math inline">\(x(\log(x))^n - \int (\log(x))^{n-1} dx\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_Grworyol" value="2">
+<div class="markdown">
+<p><span class="math inline">\(x(\log(x))^n - n \int (\log(x))^{n-1} dx\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_Grworyol" value="3">
+<div class="markdown">
+<p><span class="math inline">\(\int (\log(x))^{n+1}/(n+1) dx\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="Grworyol_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_Grworyol']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#Grworyol_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#Grworyol_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-363" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.8</span> Question</h6>
+<p>The <a href="http://en.wikipedia.org/wiki/Integration_by_parts">Wikipedia</a> page has a rule of thumb with an acronym LIATE to indicate what is a good candidate to be “<span class="math inline">\(u\)</span>”: <strong>L</strong>og function, <strong>I</strong>nverse functions, <strong>A</strong>lgebraic functions (<span class="math inline">\(x^n\)</span>), <strong>T</strong>rigonmetric functions, and <strong>E</strong>xponential functions.</p>
+<p>Consider the integral <span class="math inline">\(\int x \cos(x) dx\)</span>. Which letter should be tried first?</p>
+<hr />
+<form name="WeaveQuestion" data-id="fIDRPRZz" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_fIDRPRZz" value="1">
+<div class="markdown">
+<p>
+L
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_fIDRPRZz" value="2">
+<div class="markdown">
+<p>
+I
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_fIDRPRZz" value="3">
+<div class="markdown">
+<p>
+A
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_fIDRPRZz" value="4">
+<div class="markdown">
+<p>
+T
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_fIDRPRZz" value="5">
+<div class="markdown">
+<p>
+E
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="fIDRPRZz_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_fIDRPRZz']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#fIDRPRZz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#fIDRPRZz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<hr />
+<p>Consider the integral <span class="math inline">\(\int x^2\log(x) dx\)</span>. Which letter should be tried first?</p>
+<hr />
+<form name="WeaveQuestion" data-id="8w5VMxHq" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_8w5VMxHq" value="1">
+<div class="markdown">
+<p>
+L
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8w5VMxHq" value="2">
+<div class="markdown">
+<p>
+I
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8w5VMxHq" value="3">
+<div class="markdown">
+<p>
+A
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8w5VMxHq" value="4">
+<div class="markdown">
+<p>
+T
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_8w5VMxHq" value="5">
+<div class="markdown">
+<p>
+E
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="8w5VMxHq_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_8w5VMxHq']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#8w5VMxHq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#8w5VMxHq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<hr />
+<p>Consider the integral <span class="math inline">\(\int x^2 \sin^{-1}(x) dx\)</span>. Which letter should be tried first?</p>
+<hr />
+<form name="WeaveQuestion" data-id="xCxdEbtW" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_xCxdEbtW" value="1">
+<div class="markdown">
+<p>
+L
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_xCxdEbtW" value="2">
+<div class="markdown">
+<p>
+I
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_xCxdEbtW" value="3">
+<div class="markdown">
+<p>
+A
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_xCxdEbtW" value="4">
+<div class="markdown">
+<p>
+T
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_xCxdEbtW" value="5">
+<div class="markdown">
+<p>
+E
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="xCxdEbtW_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_xCxdEbtW']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#xCxdEbtW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#xCxdEbtW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<hr />
+<p>Consider the integral <span class="math inline">\(\int e^x \sin(x) dx\)</span>. Which letter should be tried first?</p>
+<hr />
+<form name="WeaveQuestion" data-id="bT6PUgXz" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_bT6PUgXz" value="1">
+<div class="markdown">
+<p>
+L
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_bT6PUgXz" value="2">
+<div class="markdown">
+<p>
+I
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_bT6PUgXz" value="3">
+<div class="markdown">
+<p>
+A
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_bT6PUgXz" value="4">
+<div class="markdown">
+<p>
+T
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_bT6PUgXz" value="5">
+<div class="markdown">
+<p>
+E
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="bT6PUgXz_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_bT6PUgXz']").on("change", function() {
+correct = this.value == 4;
+
+if(correct) {
+$("#bT6PUgXz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#bT6PUgXz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-364" class="section level6">
+<h6><span class="header-section-number">31.2.0.0.0.9</span> Question</h6>
+<p>Find an antiderivative for <span class="math inline">\(\cos^{-1}(x)\)</span> using the integration by parts formula.</p>
+<hr />
+<form name="WeaveQuestion" data-id="dC6BxMA4" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_dC6BxMA4" value="1">
+<div class="markdown">
+<p><span class="math inline">\(x^2/2 \cos^{-1}(x) - x\sqrt{1-x^2}/4 - \cos^{-1}(x)/4\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_dC6BxMA4" value="2">
+<div class="markdown">
+<p><span class="math inline">\(x\cos^{-1}(x)-\sqrt{1 - x^2}\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_dC6BxMA4" value="3">
+<div class="markdown">
+<p><span class="math inline">\(-\sin^{-1}(x)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="dC6BxMA4_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_dC6BxMA4']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#dC6BxMA4_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#dC6BxMA4_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="substitution.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="partial-fractions-1.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

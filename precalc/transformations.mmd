@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 Thinking of functions as objects themselves that can be manipulated --
@@ -27,6 +27,7 @@ powers. These aren't defined in base `Julia`, though they could be if
 desired, by a commands such as:
 
 ```
+import Base: +
 f::Function + g::Function = x -> f(x) + g(x)
 ```
 
@@ -40,7 +41,7 @@ Doing this works, but is kind of limiting, as functions in mathematics and
 Julia can be much more varied than just the univariate functions we
 have defined addition for. We won't pursue this further.
 
-## Composition of function
+## Composition of functions
 
 As seen, just like with numbers, it can make sense to define addition,
 subtraction, multiplication and division of functions. Unlike numbers though,
@@ -95,19 +96,24 @@ $$~
 (f \circ g)(x) = (e^x - x)^2 + 2(e^x - x) - 1.
 ~$$
 
-
-> The real value of composition is to break down more complicated things into a sequence of easier steps. This is good mathematics, but also good practice more generally. For example, when we approach a problem with the computer, we generally use a smallish set of functions and piece them together (that is, compose them) to find a solution.
+```
+note("""
+ The real value of composition is to break down more complicated things into a sequence of easier steps. This is good mathematics, but also good practice more generally. For example, when we approach a problem with the computer, we generally use a smallish set of functions and piece them together (that is, compose them) to find a solution.
+""")
+```
 
 Here we look at a few compositions:
 
 
-* $h(x) = \sqrt{1 - x^2}$ can be seen as $f\circ g$ with $f(x) = \sqrt{x}$ and $g(x) = 1-x^2$.
+* The function $h(x) = \sqrt{1 - x^2}$ can be seen as $f\circ g$ with $f(x) = \sqrt{x}$ and $g(x) = 1-x^2$.
 
-* $h(x) = \sin(x/3 + x^2)$ can be viewed as $f\circ g$ with $f(x) = \sin(x)$ and $g(x) = x/3 + x^2$.
+* The function $h(x) = \sin(x/3 + x^2)$ can be viewed as $f\circ g$ with $f(x) = \sin(x)$ and $g(x) = x/3 + x^2$.
 
-* $h(x) = e^{-1/2 \cdot x^2}$  can be viewed as $f\circ g$ with $f(x) = e^{-x}$ and $g(x) = (1/2) \cdot x^2$.
+* The function $h(x) = e^{-1/2 \cdot x^2}$  can be viewed as $f\circ g$ with $f(x) = e^{-x}$ and $g(x) = (1/2) \cdot x^2$.
 
-Decomposing a function into a composition of functions is not unique, other compositions could have been given above.
+Decomposing a function into a composition of functions is not unique,
+other compositions could have been given above. For example, the last
+function is also $f(x) = e{-x/2}$ composed with $g(x) = x^2$.
 
 
 ## Shifting and scaling graphs
@@ -120,8 +126,8 @@ expect bounded, oscillatory behaviour with the details of how large
 and how fast the oscillations are to depend on the specifics of
 function. Similarly, both these functions $f(x) = 2^x$ and $g(x)=e^x$
 behave like exponential growth, the difference being only in the rate
-of growth. So these members from a whole family of functions are qualitatively
-similar, but quantitatively different.
+of growth. There are families of functions that are qualitatively
+similar, but quantitatively different. 
 
 There is a set of operations of functions, which does not really
 change the type of function. Rather, it basically moves and stretches
@@ -192,7 +198,7 @@ h(x) = \frac{1}{a}f(\frac{x - b}{a}).
 We can view this as a composition of "compress" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:
 
 ```
-a = 2; b = 4
+a = 2; b = 5
 h(x) = stretch(over(compress(f, 1/a), b), 1/a)(x)
 plot([f, h], -1, 12)
 ```

@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Calculus With Julia</title>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta name="description" content="Calculus With Julia">
+  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Calculus With Julia" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Calculus With Julia" />
+  
+  
+  
+
+<meta name="author" content="John Verzani">
+
+
+<meta name="date" content="2017-01-10">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="lhopitals-rule.html">
+<link rel="next" href="related-rates.html">
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link
+  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+</head>
+
+<body>
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html"><i class="fa fa-check"></i><b>1</b> Replacing the calculator with a computer</a><ul>
+<li class="chapter" data-level="1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#operations"><i class="fa fa-check"></i><b>1.1</b> Operations</a><ul>
+<li class="chapter" data-level="1.1.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples"><i class="fa fa-check"></i><b>1.1.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#order-of-operations"><i class="fa fa-check"></i><b>1.2</b> Order of operations</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-1"><i class="fa fa-check"></i><b>1.2.1</b> Examples</a></li>
+<li class="chapter" data-level="1.2.2" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#two-ways-to-write-division-and-they-are-not-the-same"><i class="fa fa-check"></i><b>1.2.2</b> Two ways to write division – and they are not the same</a></li>
+<li class="chapter" data-level="1.2.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#infix-notation"><i class="fa fa-check"></i><b>1.2.3</b> Infix notation</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#constants"><i class="fa fa-check"></i><b>1.3</b> Constants</a></li>
+<li class="chapter" data-level="1.4" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#functions"><i class="fa fa-check"></i><b>1.4</b> Functions</a><ul>
+<li class="chapter" data-level="1.4.1" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#examples-2"><i class="fa fa-check"></i><b>1.4.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#errors"><i class="fa fa-check"></i><b>1.5</b> Errors</a></li>
+<li class="chapter" data-level="1.6" data-path="replacing-the-calculator-with-a-computer.html"><a href="replacing-the-calculator-with-a-computer.html#questions"><i class="fa fa-check"></i><b>1.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="variables.html"><a href="variables.html"><i class="fa fa-check"></i><b>2</b> Variables</a><ul>
+<li class="chapter" data-level="2.1" data-path="variables.html"><a href="variables.html#assignment"><i class="fa fa-check"></i><b>2.1</b> Assignment</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="variables.html"><a href="variables.html#examples-3"><i class="fa fa-check"></i><b>2.1.1</b> Examples</a></li>
+<li class="chapter" data-level="2.1.2" data-path="variables.html"><a href="variables.html#numeric-literals"><i class="fa fa-check"></i><b>2.1.2</b> Numeric literals</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="variables.html"><a href="variables.html#where-math-and-computer-notations-diverge"><i class="fa fa-check"></i><b>2.2</b> Where math and computer notations diverge</a></li>
+<li class="chapter" data-level="2.3" data-path="variables.html"><a href="variables.html#context"><i class="fa fa-check"></i><b>2.3</b> Context</a></li>
+<li class="chapter" data-level="2.4" data-path="variables.html"><a href="variables.html#variable-names"><i class="fa fa-check"></i><b>2.4</b> Variable names</a></li>
+<li class="chapter" data-level="2.5" data-path="variables.html"><a href="variables.html#constant-variables"><i class="fa fa-check"></i><b>2.5</b> Constant variables</a></li>
+<li class="chapter" data-level="2.6" data-path="variables.html"><a href="variables.html#tuple-assignment"><i class="fa fa-check"></i><b>2.6</b> Tuple assignment</a></li>
+<li class="chapter" data-level="2.7" data-path="variables.html"><a href="variables.html#questions-1"><i class="fa fa-check"></i><b>2.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html"><i class="fa fa-check"></i><b>3</b> Inequalities, Logical expressions</a><ul>
+<li class="chapter" data-level="3.1" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#boolean-values"><i class="fa fa-check"></i><b>3.1</b> Boolean values</a></li>
+<li class="chapter" data-level="3.2" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#algebra-of-inequalities"><i class="fa fa-check"></i><b>3.2</b> Algebra of inequalities</a></li>
+<li class="chapter" data-level="3.3" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#some-examples"><i class="fa fa-check"></i><b>3.3</b> Some examples</a></li>
+<li class="chapter" data-level="3.4" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#chaining-combining-expressions-absolute-values"><i class="fa fa-check"></i><b>3.4</b> Chaining, combining expressions: absolute values</a></li>
+<li class="chapter" data-level="3.5" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#precedence"><i class="fa fa-check"></i><b>3.5</b> Precedence</a></li>
+<li class="chapter" data-level="3.6" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#arithmetic-with"><i class="fa fa-check"></i><b>3.6</b> Arithmetic with</a></li>
+<li class="chapter" data-level="3.7" data-path="inequalities-logical-expressions.html"><a href="inequalities-logical-expressions.html#questions-2"><i class="fa fa-check"></i><b>3.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="number-systems.html"><a href="number-systems.html"><i class="fa fa-check"></i><b>4</b> Number systems</a><ul>
+<li class="chapter" data-level="4.1" data-path="number-systems.html"><a href="number-systems.html#closure"><i class="fa fa-check"></i><b>4.1</b> Closure</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="number-systems.html"><a href="number-systems.html#powers"><i class="fa fa-check"></i><b>4.1.1</b> Powers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="number-systems.html"><a href="number-systems.html#julia-and-number-systems"><i class="fa fa-check"></i><b>4.2</b> Julia and number systems</a></li>
+<li class="chapter" data-level="4.3" data-path="number-systems.html"><a href="number-systems.html#integers"><i class="fa fa-check"></i><b>4.3</b> Integers</a></li>
+<li class="chapter" data-level="4.4" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers"><i class="fa fa-check"></i><b>4.4</b> Floating point numbers</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="number-systems.html"><a href="number-systems.html#scientific-notation"><i class="fa fa-check"></i><b>4.4.1</b> Scientific notation</a></li>
+<li class="chapter" data-level="4.4.2" data-path="number-systems.html"><a href="number-systems.html#special-values-inf--inf-nan"><i class="fa fa-check"></i><b>4.4.2</b> Special values: Inf, -Inf, NaN</a></li>
+<li class="chapter" data-level="4.4.3" data-path="number-systems.html"><a href="number-systems.html#floating-point-numbers-and-real-numbers"><i class="fa fa-check"></i><b>4.4.3</b> Floating point numbers and real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="number-systems.html"><a href="number-systems.html#rational-numbers"><i class="fa fa-check"></i><b>4.5</b> Rational numbers</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="number-systems.html"><a href="number-systems.html#different-types-of-real-numbers"><i class="fa fa-check"></i><b>4.5.1</b> Different types of real numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="number-systems.html"><a href="number-systems.html#complex-numbers"><i class="fa fa-check"></i><b>4.6</b> Complex numbers</a></li>
+<li class="chapter" data-level="4.7" data-path="number-systems.html"><a href="number-systems.html#and-why-you-neednt-worry-too-much"><i class="fa fa-check"></i><b>4.7</b> And why you needn’t worry too much</a></li>
+<li class="chapter" data-level="4.8" data-path="number-systems.html"><a href="number-systems.html#questions-3"><i class="fa fa-check"></i><b>4.8</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="vectors.html"><a href="vectors.html"><i class="fa fa-check"></i><b>5</b> Vectors</a><ul>
+<li class="chapter" data-level="5.1" data-path="vectors.html"><a href="vectors.html#vectors-in-julia"><i class="fa fa-check"></i><b>5.1</b> Vectors in Julia</a></li>
+<li class="chapter" data-level="5.2" data-path="vectors.html"><a href="vectors.html#higher-dimensional-vectors"><i class="fa fa-check"></i><b>5.2</b> Higher dimensional vectors</a></li>
+<li class="chapter" data-level="5.3" data-path="vectors.html"><a href="vectors.html#indexing"><i class="fa fa-check"></i><b>5.3</b> Indexing</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="vectors.html"><a href="vectors.html#assignment-and-indexing"><i class="fa fa-check"></i><b>5.3.1</b> Assignment and indexing</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="vectors.html"><a href="vectors.html#some-functions-useful-when-working-with-vectors."><i class="fa fa-check"></i><b>5.4</b> Some functions useful when working with vectors.</a></li>
+<li class="chapter" data-level="5.5" data-path="vectors.html"><a href="vectors.html#questions-4"><i class="fa fa-check"></i><b>5.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html"><i class="fa fa-check"></i><b>6</b> Ranges and Sets</a><ul>
+<li class="chapter" data-level="6.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-and-modifying-arithmetic-progressions"><i class="fa fa-check"></i><b>6.1</b> Filtering and modifying arithmetic progressions</a></li>
+<li class="chapter" data-level="6.2" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#comprehensions"><i class="fa fa-check"></i><b>6.2</b> Comprehensions</a></li>
+<li class="chapter" data-level="6.3" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#generators"><i class="fa fa-check"></i><b>6.3</b> Generators</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#filtering-generated-expressions"><i class="fa fa-check"></i><b>6.3.1</b> Filtering generated expressions</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#random-numbers"><i class="fa fa-check"></i><b>6.4</b> Random numbers</a></li>
+<li class="chapter" data-level="6.5" data-path="ranges-and-sets.html"><a href="ranges-and-sets.html#questions-5"><i class="fa fa-check"></i><b>6.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="functions-1.html"><a href="functions-1.html"><i class="fa fa-check"></i><b>7</b> Functions</a><ul>
+<li class="chapter" data-level="7.1" data-path="functions-1.html"><a href="functions-1.html#defining-simple-mathematical-functions"><i class="fa fa-check"></i><b>7.1</b> Defining simple mathematical functions</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="functions-1.html"><a href="functions-1.html#the-domain-of-a-function"><i class="fa fa-check"></i><b>7.1.1</b> The domain of a function</a></li>
+<li class="chapter" data-level="7.1.2" data-path="functions-1.html"><a href="functions-1.html#equations-functions-calling-a-function"><i class="fa fa-check"></i><b>7.1.2</b> Equations, functions, calling a function</a></li>
+<li class="chapter" data-level="7.1.3" data-path="functions-1.html"><a href="functions-1.html#cases"><i class="fa fa-check"></i><b>7.1.3</b> Cases</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="functions-1.html"><a href="functions-1.html#functions-defined-with-the-function-keyword"><i class="fa fa-check"></i><b>7.2</b> Functions defined with the “function” keyword</a></li>
+<li class="chapter" data-level="7.3" data-path="functions-1.html"><a href="functions-1.html#parameters-function-context-scope-keyword-arguments"><i class="fa fa-check"></i><b>7.3</b> Parameters, function context (scope), keyword arguments</a></li>
+<li class="chapter" data-level="7.4" data-path="functions-1.html"><a href="functions-1.html#multiple-dispatch"><i class="fa fa-check"></i><b>7.4</b> Multiple dispatch</a></li>
+<li class="chapter" data-level="7.5" data-path="functions-1.html"><a href="functions-1.html#anonymous-functions"><i class="fa fa-check"></i><b>7.5</b> Anonymous functions</a></li>
+<li class="chapter" data-level="7.6" data-path="functions-1.html"><a href="functions-1.html#questions-6"><i class="fa fa-check"></i><b>7.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html"><i class="fa fa-check"></i><b>8</b> The Graph of a Function</a><ul>
+<li class="chapter" data-level="8.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#graphing-a-function-with-julia"><i class="fa fa-check"></i><b>8.1</b> Graphing a function with Julia</a></li>
+<li class="chapter" data-level="8.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#the-details-of-graph-making"><i class="fa fa-check"></i><b>8.2</b> The details of graph making</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-x-values"><i class="fa fa-check"></i><b>8.2.1</b> Creating <span class="math inline">\(x\)</span> values</a></li>
+<li class="chapter" data-level="8.2.2" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#creating-y-values"><i class="fa fa-check"></i><b>8.2.2</b> Creating <span class="math inline">\(y\)</span> values</a></li>
+<li class="chapter" data-level="8.2.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#plotting-points-and-connecting-them"><i class="fa fa-check"></i><b>8.2.3</b> Plotting points and connecting them</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#layers"><i class="fa fa-check"></i><b>8.3</b> Layers</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#adding-layers-explicitly"><i class="fa fa-check"></i><b>8.3.1</b> Adding layers explicitly</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#parametric-graphs"><i class="fa fa-check"></i><b>8.4</b> Parametric graphs</a></li>
+<li class="chapter" data-level="8.5" data-path="the-graph-of-a-function.html"><a href="the-graph-of-a-function.html#questions-7"><i class="fa fa-check"></i><b>8.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="function-manipulations.html"><a href="function-manipulations.html"><i class="fa fa-check"></i><b>9</b> Function manipulations</a><ul>
+<li class="chapter" data-level="9.1" data-path="function-manipulations.html"><a href="function-manipulations.html#the-algebra-of-functions"><i class="fa fa-check"></i><b>9.1</b> The algebra of functions</a></li>
+<li class="chapter" data-level="9.2" data-path="function-manipulations.html"><a href="function-manipulations.html#composition-of-functions"><i class="fa fa-check"></i><b>9.2</b> Composition of functions</a></li>
+<li class="chapter" data-level="9.3" data-path="function-manipulations.html"><a href="function-manipulations.html#shifting-and-scaling-graphs"><i class="fa fa-check"></i><b>9.3</b> Shifting and scaling graphs</a></li>
+<li class="chapter" data-level="9.4" data-path="function-manipulations.html"><a href="function-manipulations.html#operators"><i class="fa fa-check"></i><b>9.4</b> Operators</a></li>
+<li class="chapter" data-level="9.5" data-path="function-manipulations.html"><a href="function-manipulations.html#questions-8"><i class="fa fa-check"></i><b>9.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="polynomials.html"><a href="polynomials.html"><i class="fa fa-check"></i><b>10</b> Polynomials</a><ul>
+<li class="chapter" data-level="10.1" data-path="polynomials.html"><a href="polynomials.html#linear-polynomials"><i class="fa fa-check"></i><b>10.1</b> Linear polynomials</a></li>
+<li class="chapter" data-level="10.2" data-path="polynomials.html"><a href="polynomials.html#symbolic-math-in-julia"><i class="fa fa-check"></i><b>10.2</b> Symbolic math in Julia</a></li>
+<li class="chapter" data-level="10.3" data-path="polynomials.html"><a href="polynomials.html#substitution-subs-replace"><i class="fa fa-check"></i><b>10.3</b> Substitution: subs, replace</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="polynomials.html"><a href="polynomials.html#conversion-of-symbolic-numbers-to-julia-numbers"><i class="fa fa-check"></i><b>10.3.1</b> Conversion of symbolic numbers to Julia numbers</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="polynomials.html"><a href="polynomials.html#graphical-properties-of-polynomials"><i class="fa fa-check"></i><b>10.4</b> Graphical properties of polynomials</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="polynomials.html"><a href="polynomials.html#leading-term-dominates"><i class="fa fa-check"></i><b>10.4.1</b> Leading term dominates</a></li>
+</ul></li>
+<li class="chapter" data-level="10.5" data-path="polynomials.html"><a href="polynomials.html#factoring-polynomials"><i class="fa fa-check"></i><b>10.5</b> Factoring polynomials</a><ul>
+<li class="chapter" data-level="10.5.1" data-path="polynomials.html"><a href="polynomials.html#polynomial-functions-and-polynomials."><i class="fa fa-check"></i><b>10.5.1</b> Polynomial functions and polynomials.</a></li>
+</ul></li>
+<li class="chapter" data-level="10.6" data-path="polynomials.html"><a href="polynomials.html#questions-9"><i class="fa fa-check"></i><b>10.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html"><i class="fa fa-check"></i><b>11</b> Roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.0.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#polynomial-division"><i class="fa fa-check"></i><b>11.0.1</b> Polynomial Division</a></li>
+<li class="chapter" data-level="11.0.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-rational-root-test"><i class="fa fa-check"></i><b>11.0.2</b> The rational root test</a></li>
+<li class="chapter" data-level="11.0.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#fundamental-theorem-of-algebra"><i class="fa fa-check"></i><b>11.0.3</b> Fundamental theorem of algebra</a></li>
+<li class="chapter" data-level="11.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#finding-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.1</b> Finding roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#numerically-finding-roots"><i class="fa fa-check"></i><b>11.1.1</b> Numerically finding roots</a></li>
+<li class="chapter" data-level="11.1.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#the-solveset-function"><i class="fa fa-check"></i><b>11.1.2</b> The solveset function</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#do-numeric-methods-matter-when-you-can-just-graph"><i class="fa fa-check"></i><b>11.2</b> Do numeric methods matter when you can just graph?</a></li>
+<li class="chapter" data-level="11.3" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#some-facts-about-the-real-roots-of-a-polynomial"><i class="fa fa-check"></i><b>11.3</b> Some facts about the real roots of a polynomial</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#descartes-rule-of-signs"><i class="fa fa-check"></i><b>11.3.1</b> Descartes’ rule of signs</a></li>
+<li class="chapter" data-level="11.3.2" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#cauchys-bound-on-the-magnitude-of-the-real-roots."><i class="fa fa-check"></i><b>11.3.2</b> Cauchy’s bound on the magnitude of the real roots.</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="roots-of-a-polynomial.html"><a href="roots-of-a-polynomial.html#questions-10"><i class="fa fa-check"></i><b>11.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="rational-functions.html"><a href="rational-functions.html"><i class="fa fa-check"></i><b>12</b> Rational functions</a><ul>
+<li class="chapter" data-level="12.1" data-path="rational-functions.html"><a href="rational-functions.html#rational-functions-1"><i class="fa fa-check"></i><b>12.1</b> Rational functions</a></li>
+<li class="chapter" data-level="12.2" data-path="rational-functions.html"><a href="rational-functions.html#asymptotes"><i class="fa fa-check"></i><b>12.2</b> Asymptotes</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="rational-functions.html"><a href="rational-functions.html#behaviour-as-x-rightarrow-infty-or-x-rightarrow--infty."><i class="fa fa-check"></i><b>12.2.1</b> Behaviour as <span class="math inline">\(x \rightarrow \infty\)</span> or <span class="math inline">\(x \rightarrow -\infty\)</span>.</a></li>
+<li class="chapter" data-level="12.2.2" data-path="rational-functions.html"><a href="rational-functions.html#vertical-asymptotes"><i class="fa fa-check"></i><b>12.2.2</b> Vertical asymptotes</a></li>
+<li class="chapter" data-level="12.2.3" data-path="rational-functions.html"><a href="rational-functions.html#sign-charts"><i class="fa fa-check"></i><b>12.2.3</b> sign charts</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="rational-functions.html"><a href="rational-functions.html#pade-approximate"><i class="fa fa-check"></i><b>12.3</b> Pade approximate</a></li>
+<li class="chapter" data-level="12.4" data-path="rational-functions.html"><a href="rational-functions.html#questions-11"><i class="fa fa-check"></i><b>12.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html"><i class="fa fa-check"></i><b>13</b> Trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-6-basic-trigonometric-functions"><i class="fa fa-check"></i><b>13.1</b> The 6 basic trigonometric functions</a><ul>
+<li class="chapter" data-level="13.1.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-trigonometric-functions-in-julia"><i class="fa fa-check"></i><b>13.1.1</b> The trigonometric functions in Julia</a></li>
+<li class="chapter" data-level="13.1.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#basic-properties"><i class="fa fa-check"></i><b>13.1.2</b> Basic properties</a></li>
+<li class="chapter" data-level="13.1.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#functions-using-degrees"><i class="fa fa-check"></i><b>13.1.3</b> Functions using degrees</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#the-sum-and-difference-formulas"><i class="fa fa-check"></i><b>13.2</b> The sum-and-difference formulas</a></li>
+<li class="chapter" data-level="13.3" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#inverse-trigonometric-functions"><i class="fa fa-check"></i><b>13.3</b> Inverse trigonometric functions</a><ul>
+<li class="chapter" data-level="13.3.1" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#implications-of-a-restricted-domain"><i class="fa fa-check"></i><b>13.3.1</b> Implications of a restricted domain</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#hyperbolic-trigonometric-functions"><i class="fa fa-check"></i><b>13.4</b> Hyperbolic trigonometric functions</a></li>
+<li class="chapter" data-level="13.5" data-path="trigonometric-functions.html"><a href="trigonometric-functions.html#questions-12"><i class="fa fa-check"></i><b>13.5</b> Questions</a></li>
+</ul></li>
+<li class="part"><span><b>I Single Variable Calculus</b></span></li>
+<li class="chapter" data-level="14" data-path="limits.html"><a href="limits.html"><i class="fa fa-check"></i><b>14</b> Limits</a><ul>
+<li class="chapter" data-level="14.0.1" data-path="limits.html"><a href="limits.html#indeterminate-forms"><i class="fa fa-check"></i><b>14.0.1</b> Indeterminate forms</a></li>
+<li class="chapter" data-level="14.1" data-path="limits.html"><a href="limits.html#graphical-approaches-to-limits"><i class="fa fa-check"></i><b>14.1</b> Graphical approaches to limits</a></li>
+<li class="chapter" data-level="14.2" data-path="limits.html"><a href="limits.html#numerical-approaches-to-limits"><i class="fa fa-check"></i><b>14.2</b> Numerical approaches to limits</a><ul>
+<li class="chapter" data-level="14.2.1" data-path="limits.html"><a href="limits.html#issues-with-the-numeric-approach"><i class="fa fa-check"></i><b>14.2.1</b> Issues with the numeric approach</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="limits.html"><a href="limits.html#symbolic-approach-to-limits"><i class="fa fa-check"></i><b>14.3</b> Symbolic approach to limits</a></li>
+<li class="chapter" data-level="14.4" data-path="limits.html"><a href="limits.html#rules-for-limits"><i class="fa fa-check"></i><b>14.4</b> Rules for limits</a></li>
+<li class="chapter" data-level="14.5" data-path="limits.html"><a href="limits.html#limits-from-the-definition"><i class="fa fa-check"></i><b>14.5</b> Limits from the definition</a></li>
+<li class="chapter" data-level="14.6" data-path="limits.html"><a href="limits.html#questions-13"><i class="fa fa-check"></i><b>14.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html"><i class="fa fa-check"></i><b>15</b> Limits, issues, extensions of the concept</a><ul>
+<li class="chapter" data-level="15.1" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#right-and-left-limits"><i class="fa fa-check"></i><b>15.1</b> Right and left limits</a></li>
+<li class="chapter" data-level="15.2" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-at-infinity"><i class="fa fa-check"></i><b>15.2</b> Limits at infinity</a></li>
+<li class="chapter" data-level="15.3" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-infinity"><i class="fa fa-check"></i><b>15.3</b> Limits of infinity</a></li>
+<li class="chapter" data-level="15.4" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#limits-of-sequences"><i class="fa fa-check"></i><b>15.4</b> Limits of sequences</a></li>
+<li class="chapter" data-level="15.5" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#summary"><i class="fa fa-check"></i><b>15.5</b> Summary</a></li>
+<li class="chapter" data-level="15.6" data-path="limits-issues-extensions-of-the-concept.html"><a href="limits-issues-extensions-of-the-concept.html#questions-14"><i class="fa fa-check"></i><b>15.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="continuity.html"><a href="continuity.html"><i class="fa fa-check"></i><b>16</b> Continuity</a><ul>
+<li class="chapter" data-level="16.1" data-path="continuity.html"><a href="continuity.html#rules-for-continuity"><i class="fa fa-check"></i><b>16.1</b> Rules for continuity</a></li>
+<li class="chapter" data-level="16.2" data-path="continuity.html"><a href="continuity.html#questions-15"><i class="fa fa-check"></i><b>16.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html"><i class="fa fa-check"></i><b>17</b> Implications of continuity</a><ul>
+<li class="chapter" data-level="17.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#intermediate-value-theorem"><i class="fa fa-check"></i><b>17.1</b> Intermediate Value Theorem</a><ul>
+<li class="chapter" data-level="17.1.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#bolzano-and-the-bisection-method"><i class="fa fa-check"></i><b>17.1.1</b> Bolzano and the bisection method</a></li>
+<li class="chapter" data-level="17.1.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzero-function."><i class="fa fa-check"></i><b>17.1.2</b> The fzero function.</a></li>
+<li class="chapter" data-level="17.1.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-8"><i class="fa fa-check"></i><b>17.1.3</b> Examples</a></li>
+<li class="chapter" data-level="17.1.4" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#the-fzeros-function"><i class="fa fa-check"></i><b>17.1.4</b> The fzeros function</a></li>
+</ul></li>
+<li class="chapter" data-level="17.2" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#extreme-value-theorem"><i class="fa fa-check"></i><b>17.2</b> Extreme value theorem</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#examples-9"><i class="fa fa-check"></i><b>17.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="implications-of-continuity.html"><a href="implications-of-continuity.html#questions-16"><i class="fa fa-check"></i><b>17.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="derivatives.html"><a href="derivatives.html"><i class="fa fa-check"></i><b>18</b> Derivatives</a><ul>
+<li class="chapter" data-level="18.1" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-secant-line"><i class="fa fa-check"></i><b>18.1</b> The slope of the secant line</a></li>
+<li class="chapter" data-level="18.2" data-path="derivatives.html"><a href="derivatives.html#the-slope-of-the-tangent-line"><i class="fa fa-check"></i><b>18.2</b> The slope of the tangent line</a></li>
+<li class="chapter" data-level="18.3" data-path="derivatives.html"><a href="derivatives.html#the-derivative"><i class="fa fa-check"></i><b>18.3</b> The derivative</a><ul>
+<li class="chapter" data-level="18.3.1" data-path="derivatives.html"><a href="derivatives.html#some-basic-derivatives"><i class="fa fa-check"></i><b>18.3.1</b> Some basic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.4" data-path="derivatives.html"><a href="derivatives.html#rules-of-derivatives"><i class="fa fa-check"></i><b>18.4</b> Rules of derivatives</a><ul>
+<li class="chapter" data-level="18.4.1" data-path="derivatives.html"><a href="derivatives.html#sum-rule"><i class="fa fa-check"></i><b>18.4.1</b> Sum rule</a></li>
+<li class="chapter" data-level="18.4.2" data-path="derivatives.html"><a href="derivatives.html#product-rule"><i class="fa fa-check"></i><b>18.4.2</b> Product rule</a></li>
+<li class="chapter" data-level="18.4.3" data-path="derivatives.html"><a href="derivatives.html#quotient-rule"><i class="fa fa-check"></i><b>18.4.3</b> Quotient rule</a></li>
+<li class="chapter" data-level="18.4.4" data-path="derivatives.html"><a href="derivatives.html#chain-rule"><i class="fa fa-check"></i><b>18.4.4</b> Chain rule</a></li>
+</ul></li>
+<li class="chapter" data-level="18.5" data-path="derivatives.html"><a href="derivatives.html#higher-order-derivatives"><i class="fa fa-check"></i><b>18.5</b> Higher-order derivatives</a></li>
+<li class="chapter" data-level="18.6" data-path="derivatives.html"><a href="derivatives.html#numeric-derivatives"><i class="fa fa-check"></i><b>18.6</b> Numeric derivatives</a><ul>
+<li class="chapter" data-level="18.6.1" data-path="derivatives.html"><a href="derivatives.html#approximate-derivatives"><i class="fa fa-check"></i><b>18.6.1</b> Approximate derivatives</a></li>
+<li class="chapter" data-level="18.6.2" data-path="derivatives.html"><a href="derivatives.html#automatic-derivatives"><i class="fa fa-check"></i><b>18.6.2</b> Automatic derivatives</a></li>
+</ul></li>
+<li class="chapter" data-level="18.7" data-path="derivatives.html"><a href="derivatives.html#questions-17"><i class="fa fa-check"></i><b>18.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><i class="fa fa-check"></i><b>19</b> The Mean Value Theorem and other facts about some functions.</a><ul>
+<li class="chapter" data-level="19.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#differentiable-is-more-restrictive-than-continuous."><i class="fa fa-check"></i><b>19.1</b> Differentiable is more restrictive than continuous.</a></li>
+<li class="chapter" data-level="19.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#derivatives-and-maxima."><i class="fa fa-check"></i><b>19.2</b> Derivatives and maxima.</a></li>
+<li class="chapter" data-level="19.3" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#rolles-theorem"><i class="fa fa-check"></i><b>19.3</b> Rolle’s Theorem</a></li>
+<li class="chapter" data-level="19.4" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-mean-value-theorem"><i class="fa fa-check"></i><b>19.4</b> The Mean Value Theorem</a><ul>
+<li class="chapter" data-level="19.4.1" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.1</b> The Cauchy mean value theorem</a></li>
+<li class="chapter" data-level="19.4.2" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#visualizing-the-cauchy-mean-value-theorem"><i class="fa fa-check"></i><b>19.4.2</b> Visualizing the Cauchy mean value theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="19.5" data-path="the-mean-value-theorem-and-other-facts-about-some-functions-.html"><a href="the-mean-value-theorem-and-other-facts-about-some-functions-.html#questions-18"><i class="fa fa-check"></i><b>19.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="optimization.html"><a href="optimization.html"><i class="fa fa-check"></i><b>20</b> Optimization</a><ul>
+<li class="chapter" data-level="20.1" data-path="optimization.html"><a href="optimization.html#fixed-perimeter-and-area"><i class="fa fa-check"></i><b>20.1</b> Fixed perimeter and area</a><ul>
+<li class="chapter" data-level="20.1.1" data-path="optimization.html"><a href="optimization.html#exploiting-polymorphism"><i class="fa fa-check"></i><b>20.1.1</b> Exploiting polymorphism</a></li>
+<li class="chapter" data-level="20.1.2" data-path="optimization.html"><a href="optimization.html#norman-windows"><i class="fa fa-check"></i><b>20.1.2</b> Norman Windows</a></li>
+<li class="chapter" data-level="20.1.3" data-path="optimization.html"><a href="optimization.html#using-fzero-to-locate-critical-points."><i class="fa fa-check"></i><b>20.1.3</b> Using fzero to locate critical points.</a></li>
+<li class="chapter" data-level="20.1.4" data-path="optimization.html"><a href="optimization.html#a-symbolic-approach"><i class="fa fa-check"></i><b>20.1.4</b> A symbolic approach</a></li>
+</ul></li>
+<li class="chapter" data-level="20.2" data-path="optimization.html"><a href="optimization.html#trigonometry"><i class="fa fa-check"></i><b>20.2</b> Trigonometry</a></li>
+<li class="chapter" data-level="20.3" data-path="optimization.html"><a href="optimization.html#rate-times-time"><i class="fa fa-check"></i><b>20.3</b> Rate times time</a></li>
+<li class="chapter" data-level="20.4" data-path="optimization.html"><a href="optimization.html#unbounded-domains"><i class="fa fa-check"></i><b>20.4</b> Unbounded domains</a><ul>
+<li class="chapter" data-level="20.4.1" data-path="optimization.html"><a href="optimization.html#minimize-surface-area-of-a-can"><i class="fa fa-check"></i><b>20.4.1</b> Minimize surface area of a can</a></li>
+</ul></li>
+<li class="chapter" data-level="20.5" data-path="optimization.html"><a href="optimization.html#questions-19"><i class="fa fa-check"></i><b>20.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="curve-sketching.html"><a href="curve-sketching.html"><i class="fa fa-check"></i><b>21</b> Curve Sketching</a><ul>
+<li class="chapter" data-level="21.1" data-path="curve-sketching.html"><a href="curve-sketching.html#positive-and-increasing-on-an-interval"><i class="fa fa-check"></i><b>21.1</b> Positive and increasing on an interval</a></li>
+<li class="chapter" data-level="21.2" data-path="curve-sketching.html"><a href="curve-sketching.html#the-derivative-and-increasing-and-decreasing"><i class="fa fa-check"></i><b>21.2</b> The derivative and increasing and decreasing</a><ul>
+<li class="chapter" data-level="21.2.1" data-path="curve-sketching.html"><a href="curve-sketching.html#first-derivative-test"><i class="fa fa-check"></i><b>21.2.1</b> First derivative test</a></li>
+</ul></li>
+<li class="chapter" data-level="21.3" data-path="curve-sketching.html"><a href="curve-sketching.html#concavity"><i class="fa fa-check"></i><b>21.3</b> Concavity</a><ul>
+<li class="chapter" data-level="21.3.1" data-path="curve-sketching.html"><a href="curve-sketching.html#second-derivative-test"><i class="fa fa-check"></i><b>21.3.1</b> Second derivative test</a></li>
+<li class="chapter" data-level="21.3.2" data-path="curve-sketching.html"><a href="curve-sketching.html#inflection-points"><i class="fa fa-check"></i><b>21.3.2</b> Inflection points</a></li>
+</ul></li>
+<li class="chapter" data-level="21.4" data-path="curve-sketching.html"><a href="curve-sketching.html#questions-20"><i class="fa fa-check"></i><b>21.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="linearization.html"><a href="linearization.html"><i class="fa fa-check"></i><b>22</b> Linearization</a><ul>
+<li class="chapter" data-level="22.1" data-path="linearization.html"><a href="linearization.html#numeric-approximations"><i class="fa fa-check"></i><b>22.1</b> Numeric approximations</a></li>
+<li class="chapter" data-level="22.2" data-path="linearization.html"><a href="linearization.html#the-actual-error"><i class="fa fa-check"></i><b>22.2</b> The actual error</a><ul>
+<li class="chapter" data-level="22.2.1" data-path="linearization.html"><a href="linearization.html#why-is-the-remainder-term-as-it-is"><i class="fa fa-check"></i><b>22.2.1</b> Why is the remainder term as it is?</a></li>
+<li class="chapter" data-level="22.2.2" data-path="linearization.html"><a href="linearization.html#the-big-and-small-oh"><i class="fa fa-check"></i><b>22.2.2</b> The big (and small) “oh”</a></li>
+</ul></li>
+<li class="chapter" data-level="22.3" data-path="linearization.html"><a href="linearization.html#questions-21"><i class="fa fa-check"></i><b>22.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="newtons-method.html"><a href="newtons-method.html"><i class="fa fa-check"></i><b>23</b> Newton’s method</a><ul>
+<li class="chapter" data-level="23.1" data-path="newtons-method.html"><a href="newtons-method.html#newtons-generalization"><i class="fa fa-check"></i><b>23.1</b> Newton’s generalization</a></li>
+<li class="chapter" data-level="23.2" data-path="newtons-method.html"><a href="newtons-method.html#examples-11"><i class="fa fa-check"></i><b>23.2</b> Examples</a></li>
+<li class="chapter" data-level="23.3" data-path="newtons-method.html"><a href="newtons-method.html#a-function"><i class="fa fa-check"></i><b>23.3</b> A function</a><ul>
+<li class="chapter" data-level="23.3.1" data-path="newtons-method.html"><a href="newtons-method.html#functions-in-the-roots-package"><i class="fa fa-check"></i><b>23.3.1</b> Functions in the Roots package</a></li>
+</ul></li>
+<li class="chapter" data-level="23.4" data-path="newtons-method.html"><a href="newtons-method.html#convergence"><i class="fa fa-check"></i><b>23.4</b> Convergence</a><ul>
+<li class="chapter" data-level="23.4.1" data-path="newtons-method.html"><a href="newtons-method.html#poor-initial-step"><i class="fa fa-check"></i><b>23.4.1</b> Poor initial step</a></li>
+<li class="chapter" data-level="23.4.2" data-path="newtons-method.html"><a href="newtons-method.html#the-second-derivative-is-too-big"><i class="fa fa-check"></i><b>23.4.2</b> The second derivative is too big</a></li>
+<li class="chapter" data-level="23.4.3" data-path="newtons-method.html"><a href="newtons-method.html#the-tangent-line-at-some-x_i-is-flat"><i class="fa fa-check"></i><b>23.4.3</b> The tangent line at some <span class="math inline">\(x_i\)</span> is flat</a></li>
+</ul></li>
+<li class="chapter" data-level="23.5" data-path="newtons-method.html"><a href="newtons-method.html#questions-22"><i class="fa fa-check"></i><b>23.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html"><i class="fa fa-check"></i><b>24</b> L’Hopitals Rule</a><ul>
+<li class="chapter" data-level="24.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#why"><i class="fa fa-check"></i><b>24.1</b> Why?</a><ul>
+<li class="chapter" data-level="24.1.1" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#lhopitals-picture"><i class="fa fa-check"></i><b>24.1.1</b> L’Hopital’s picture</a></li>
+</ul></li>
+<li class="chapter" data-level="24.2" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#generalizations"><i class="fa fa-check"></i><b>24.2</b> Generalizations</a></li>
+<li class="chapter" data-level="24.3" data-path="lhopitals-rule.html"><a href="lhopitals-rule.html#questions-23"><i class="fa fa-check"></i><b>24.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html"><i class="fa fa-check"></i><b>25</b> Implicit Differentiation</a><ul>
+<li class="chapter" data-level="25.1" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#graphs-of-equations"><i class="fa fa-check"></i><b>25.1</b> Graphs of equations</a></li>
+<li class="chapter" data-level="25.2" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#tangent-lines-implicit-differentiation"><i class="fa fa-check"></i><b>25.2</b> Tangent lines, implicit differentiation</a></li>
+<li class="chapter" data-level="25.3" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#using-sympy-for-computation"><i class="fa fa-check"></i><b>25.3</b> Using SymPy for computation</a></li>
+<li class="chapter" data-level="25.4" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#higher-order-derivatives-1"><i class="fa fa-check"></i><b>25.4</b> Higher order derivatives</a></li>
+<li class="chapter" data-level="25.5" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#inverse-functions"><i class="fa fa-check"></i><b>25.5</b> Inverse functions</a></li>
+<li class="chapter" data-level="25.6" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#example-from-physics-1"><i class="fa fa-check"></i><b>25.6</b> Example from physics</a></li>
+<li class="chapter" data-level="25.7" data-path="implicit-differentiation.html"><a href="implicit-differentiation.html#questions-24"><i class="fa fa-check"></i><b>25.7</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="related-rates.html"><a href="related-rates.html"><i class="fa fa-check"></i><b>26</b> Related rates</a><ul>
+<li class="chapter" data-level="26.1" data-path="related-rates.html"><a href="related-rates.html#examples-16"><i class="fa fa-check"></i><b>26.1</b> Examples</a></li>
+<li class="chapter" data-level="26.2" data-path="related-rates.html"><a href="related-rates.html#questions-25"><i class="fa fa-check"></i><b>26.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="differential-equations.html"><a href="differential-equations.html"><i class="fa fa-check"></i><b>27</b> Differential Equations</a><ul>
+<li class="chapter" data-level="27.1" data-path="differential-equations.html"><a href="differential-equations.html#what-to-say"><i class="fa fa-check"></i><b>27.1</b> What to say?</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html"><i class="fa fa-check"></i><b>28</b> Area under a curve</a><ul>
+<li class="chapter" data-level="28.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#approximating-areas"><i class="fa fa-check"></i><b>28.1</b> Approximating areas</a><ul>
+<li class="chapter" data-level="28.1.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#adding-rectangles"><i class="fa fa-check"></i><b>28.1.1</b> Adding rectangles</a></li>
+<li class="chapter" data-level="28.1.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#other-sums"><i class="fa fa-check"></i><b>28.1.2</b> Other sums</a></li>
+<li class="chapter" data-level="28.1.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-immediate-consequences"><i class="fa fa-check"></i><b>28.1.3</b> Some immediate consequences</a></li>
+<li class="chapter" data-level="28.1.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-known-integrals"><i class="fa fa-check"></i><b>28.1.4</b> Some known integrals</a></li>
+<li class="chapter" data-level="28.1.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#some-other-consequences"><i class="fa fa-check"></i><b>28.1.5</b> Some other consequences</a></li>
+</ul></li>
+<li class="chapter" data-level="28.2" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#numeric-integration"><i class="fa fa-check"></i><b>28.2</b> Numeric integration</a></li>
+<li class="chapter" data-level="28.3" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#negative-area"><i class="fa fa-check"></i><b>28.3</b> “Negative” area</a></li>
+<li class="chapter" data-level="28.4" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#error-estimate"><i class="fa fa-check"></i><b>28.4</b> Error estimate</a></li>
+<li class="chapter" data-level="28.5" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#gauss-quadrature"><i class="fa fa-check"></i><b>28.5</b> Gauss quadrature</a><ul>
+<li class="chapter" data-level="28.5.1" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#the-quadgk-function"><i class="fa fa-check"></i><b>28.5.1</b> The quadgk function</a></li>
+</ul></li>
+<li class="chapter" data-level="28.6" data-path="area-under-a-curve.html"><a href="area-under-a-curve.html#questions-26"><i class="fa fa-check"></i><b>28.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html"><i class="fa fa-check"></i><b>29</b> Fundamental Theorem or Calculus</a><ul>
+<li class="chapter" data-level="29.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#using-the-fundamental-theorem-of-calculus-to-evaluate-definite-integrals"><i class="fa fa-check"></i><b>29.1</b> Using the Fundamental Theorem of Calculus to evaluate definite integrals</a><ul>
+<li class="chapter" data-level="29.1.1" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#an-alternate-notation-for-fb---fa"><i class="fa fa-check"></i><b>29.1.1</b> An alternate notation for <span class="math inline">\(F(b) - F(a)\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="29.2" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-indefinite-integral"><i class="fa fa-check"></i><b>29.2</b> The indefinite integral</a></li>
+<li class="chapter" data-level="29.3" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#rules-of-integration"><i class="fa fa-check"></i><b>29.3</b> Rules of integration</a></li>
+<li class="chapter" data-level="29.4" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#the-derivative-of-the-integral"><i class="fa fa-check"></i><b>29.4</b> The derivative of the integral</a></li>
+<li class="chapter" data-level="29.5" data-path="fundamental-theorem-or-calculus.html"><a href="fundamental-theorem-or-calculus.html#questions-27"><i class="fa fa-check"></i><b>29.5</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="substitution.html"><a href="substitution.html"><i class="fa fa-check"></i><b>30</b> Substitution</a><ul>
+<li class="chapter" data-level="30.0.1" data-path="substitution.html"><a href="substitution.html#u-substitution"><i class="fa fa-check"></i><b>30.0.1</b> “u” substitution</a></li>
+<li class="chapter" data-level="30.1" data-path="substitution.html"><a href="substitution.html#sympy-and-substitution"><i class="fa fa-check"></i><b>30.1</b> SymPy and substitution</a><ul>
+<li class="chapter" data-level="30.1.1" data-path="substitution.html"><a href="substitution.html#failures"><i class="fa fa-check"></i><b>30.1.1</b> Failures…</a></li>
+</ul></li>
+<li class="chapter" data-level="30.2" data-path="substitution.html"><a href="substitution.html#trigonometric-substitution"><i class="fa fa-check"></i><b>30.2</b> Trigonometric substitution</a></li>
+<li class="chapter" data-level="30.3" data-path="substitution.html"><a href="substitution.html#questions-28"><i class="fa fa-check"></i><b>30.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="integration-by-parts.html"><a href="integration-by-parts.html"><i class="fa fa-check"></i><b>31</b> Integration By Parts</a><ul>
+<li class="chapter" data-level="31.1" data-path="integration-by-parts.html"><a href="integration-by-parts.html#examples-19"><i class="fa fa-check"></i><b>31.1</b> Examples</a></li>
+<li class="chapter" data-level="31.2" data-path="integration-by-parts.html"><a href="integration-by-parts.html#questions-29"><i class="fa fa-check"></i><b>31.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html"><i class="fa fa-check"></i><b>32</b> Partial Fractions</a><ul>
+<li class="chapter" data-level="32.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.1</b> Partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.1.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#sketch-of-proof"><i class="fa fa-check"></i><b>32.1.1</b> Sketch of proof</a></li>
+</ul></li>
+<li class="chapter" data-level="32.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#integrating-the-terms-in-a-partial-fraction-decomposition"><i class="fa fa-check"></i><b>32.2</b> Integrating the terms in a partial fraction decomposition</a><ul>
+<li class="chapter" data-level="32.2.1" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#linear-factors"><i class="fa fa-check"></i><b>32.2.1</b> Linear factors</a></li>
+<li class="chapter" data-level="32.2.2" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#quadratic-factors"><i class="fa fa-check"></i><b>32.2.2</b> Quadratic factors</a></li>
+</ul></li>
+<li class="chapter" data-level="32.3" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#examples-20"><i class="fa fa-check"></i><b>32.3</b> Examples</a></li>
+<li class="chapter" data-level="32.4" data-path="partial-fractions-1.html"><a href="partial-fractions-1.html#questions-30"><i class="fa fa-check"></i><b>32.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="improper-integrals.html"><a href="improper-integrals.html"><i class="fa fa-check"></i><b>33</b> Improper Integrals</a><ul>
+<li class="chapter" data-level="33.1" data-path="improper-integrals.html"><a href="improper-integrals.html#infinite-domains"><i class="fa fa-check"></i><b>33.1</b> Infinite domains</a><ul>
+<li class="chapter" data-level="33.1.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integrals"><i class="fa fa-check"></i><b>33.1.1</b> Numeric integrals</a></li>
+</ul></li>
+<li class="chapter" data-level="33.2" data-path="improper-integrals.html"><a href="improper-integrals.html#singularities"><i class="fa fa-check"></i><b>33.2</b> Singularities</a><ul>
+<li class="chapter" data-level="33.2.1" data-path="improper-integrals.html"><a href="improper-integrals.html#numeric-integration-1"><i class="fa fa-check"></i><b>33.2.1</b> Numeric integration</a></li>
+</ul></li>
+<li class="chapter" data-level="33.3" data-path="improper-integrals.html"><a href="improper-integrals.html#probability-applications"><i class="fa fa-check"></i><b>33.3</b> Probability applications</a></li>
+<li class="chapter" data-level="33.4" data-path="improper-integrals.html"><a href="improper-integrals.html#questions-31"><i class="fa fa-check"></i><b>33.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="34" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><i class="fa fa-check"></i><b>34</b> Average of a function and the Mean Value Theorem for integrals</a><ul>
+<li class="chapter" data-level="34.1" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#examples-23"><i class="fa fa-check"></i><b>34.1</b> Examples</a></li>
+<li class="chapter" data-level="34.2" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#the-mean-value-theorem-for-integrals"><i class="fa fa-check"></i><b>34.2</b> The Mean Value Theorem for Integrals</a></li>
+<li class="chapter" data-level="34.3" data-path="average-of-a-function-and-the-mean-value-theorem-for-integrals.html"><a href="average-of-a-function-and-the-mean-value-theorem-for-integrals.html#questions-32"><i class="fa fa-check"></i><b>34.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html"><i class="fa fa-check"></i><b>35</b> Area between two curves</a><ul>
+<li class="chapter" data-level="35.1" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#examples-24"><i class="fa fa-check"></i><b>35.1</b> Examples</a></li>
+<li class="chapter" data-level="35.2" data-path="area-between-two-curves.html"><a href="area-between-two-curves.html#questions-33"><i class="fa fa-check"></i><b>35.2</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="center-of-mass.html"><a href="center-of-mass.html"><i class="fa fa-check"></i><b>36</b> Center of Mass</a><ul>
+<li class="chapter" data-level="36.1" data-path="center-of-mass.html"><a href="center-of-mass.html#center-of-mass-of-figures"><i class="fa fa-check"></i><b>36.1</b> Center of mass of figures</a></li>
+<li class="chapter" data-level="36.2" data-path="center-of-mass.html"><a href="center-of-mass.html#the-y-direction."><i class="fa fa-check"></i><b>36.2</b> The <span class="math inline">\(y\)</span> direction.</a></li>
+<li class="chapter" data-level="36.3" data-path="center-of-mass.html"><a href="center-of-mass.html#questions-34"><i class="fa fa-check"></i><b>36.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html"><i class="fa fa-check"></i><b>37</b> Volumes by slicing</a><ul>
+<li class="chapter" data-level="37.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-of-revolution"><i class="fa fa-check"></i><b>37.1</b> Solids of revolution</a><ul>
+<li class="chapter" data-level="37.1.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#the-washer-method"><i class="fa fa-check"></i><b>37.1.1</b> The washer method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.2" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#solids-with-known-cross-section"><i class="fa fa-check"></i><b>37.2</b> Solids with known cross section</a><ul>
+<li class="chapter" data-level="37.2.1" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#cavalieris-method"><i class="fa fa-check"></i><b>37.2.1</b> Cavalieri’s method</a></li>
+</ul></li>
+<li class="chapter" data-level="37.3" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#pappus-theorem-2nd"><i class="fa fa-check"></i><b>37.3</b> Pappus theorem (2nd)</a></li>
+<li class="chapter" data-level="37.4" data-path="volumes-by-slicing.html"><a href="volumes-by-slicing.html#questions-35"><i class="fa fa-check"></i><b>37.4</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="arc-length.html"><a href="arc-length.html"><i class="fa fa-check"></i><b>38</b> Arc length</a><ul>
+<li class="chapter" data-level="38.1" data-path="arc-length.html"><a href="arc-length.html#arc-length-formula"><i class="fa fa-check"></i><b>38.1</b> Arc length formula</a></li>
+<li class="chapter" data-level="38.2" data-path="arc-length.html"><a href="arc-length.html#examples-26"><i class="fa fa-check"></i><b>38.2</b> Examples</a></li>
+<li class="chapter" data-level="38.3" data-path="arc-length.html"><a href="arc-length.html#questions-36"><i class="fa fa-check"></i><b>38.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="surface-area.html"><a href="surface-area.html"><i class="fa fa-check"></i><b>39</b> Surface Area</a><ul>
+<li class="chapter" data-level="39.1" data-path="surface-area.html"><a href="surface-area.html#examples-27"><i class="fa fa-check"></i><b>39.1</b> Examples</a></li>
+<li class="chapter" data-level="39.2" data-path="surface-area.html"><a href="surface-area.html#theorem-of-pappus"><i class="fa fa-check"></i><b>39.2</b> Theorem of Pappus</a></li>
+<li class="chapter" data-level="39.3" data-path="surface-area.html"><a href="surface-area.html#questions-37"><i class="fa fa-check"></i><b>39.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="40" data-path="odes.html"><a href="odes.html"><i class="fa fa-check"></i><b>40</b> ODEs</a><ul>
+<li class="chapter" data-level="40.1" data-path="odes.html"><a href="odes.html#motion-with-constant-acceleration"><i class="fa fa-check"></i><b>40.1</b> Motion with constant acceleration</a></li>
+<li class="chapter" data-level="40.2" data-path="odes.html"><a href="odes.html#first-order-initial-value-problems"><i class="fa fa-check"></i><b>40.2</b> First-order initial-value problems</a><ul>
+<li class="chapter" data-level="40.2.1" data-path="odes.html"><a href="odes.html#examples-28"><i class="fa fa-check"></i><b>40.2.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="40.3" data-path="odes.html"><a href="odes.html#separable-equations"><i class="fa fa-check"></i><b>40.3</b> Separable equations</a></li>
+<li class="chapter" data-level="40.4" data-path="odes.html"><a href="odes.html#symbolic-solutions"><i class="fa fa-check"></i><b>40.4</b> Symbolic solutions</a></li>
+<li class="chapter" data-level="40.5" data-path="odes.html"><a href="odes.html#visualizing-a-first-order-initial-value-problem"><i class="fa fa-check"></i><b>40.5</b> Visualizing a first-order initial value problem</a></li>
+<li class="chapter" data-level="40.6" data-path="odes.html"><a href="odes.html#questions-45"><i class="fa fa-check"></i><b>40.6</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="41" data-path="eulers-method.html"><a href="eulers-method.html"><i class="fa fa-check"></i><b>41</b> Euler’s method</a><ul>
+<li class="chapter" data-level="41.1" data-path="eulers-method.html"><a href="eulers-method.html#the-euler-method"><i class="fa fa-check"></i><b>41.1</b> The Euler method</a></li>
+<li class="chapter" data-level="41.2" data-path="eulers-method.html"><a href="eulers-method.html#examples-29"><i class="fa fa-check"></i><b>41.2</b> Examples</a></li>
+<li class="chapter" data-level="41.3" data-path="eulers-method.html"><a href="eulers-method.html#questions-46"><i class="fa fa-check"></i><b>41.3</b> Questions</a></li>
+</ul></li>
+<li class="chapter" data-level="42" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html"><i class="fa fa-check"></i><b>42</b> Parametrized curves in two dimensions</a><ul>
+<li class="chapter" data-level="42.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vectors-vector-valued-functions"><i class="fa fa-check"></i><b>42.1</b> Vectors, vector-valued functions</a><ul>
+<li class="chapter" data-level="42.1.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#vector-valued-functions"><i class="fa fa-check"></i><b>42.1.1</b> Vector-valued functions</a></li>
+<li class="chapter" data-level="42.1.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#limits-continuity"><i class="fa fa-check"></i><b>42.1.2</b> Limits, continuity</a></li>
+</ul></li>
+<li class="chapter" data-level="42.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#derivative"><i class="fa fa-check"></i><b>42.2</b> Derivative</a><ul>
+<li class="chapter" data-level="42.2.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-tangent-line"><i class="fa fa-check"></i><b>42.2.1</b> The tangent line</a></li>
+<li class="chapter" data-level="42.2.2" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#the-second-derivative"><i class="fa fa-check"></i><b>42.2.2</b> The second derivative</a></li>
+</ul></li>
+<li class="chapter" data-level="42.3" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#line-integrals"><i class="fa fa-check"></i><b>42.3</b> Line integrals</a><ul>
+<li class="chapter" data-level="42.3.1" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#examples-30"><i class="fa fa-check"></i><b>42.3.1</b> Examples</a></li>
+</ul></li>
+<li class="chapter" data-level="42.4" data-path="parametrized-curves-in-two-dimensions.html"><a href="parametrized-curves-in-two-dimensions.html#questions-47"><i class="fa fa-check"></i><b>42.4</b> Questions</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Calculus With Julia</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="implicit-differentiation" class="section level1">
+<h1><span class="header-section-number">25</span> Implicit Differentiation</h1>
+<div id="graphs-of-equations" class="section level2">
+<h2><span class="header-section-number">25.1</span> Graphs of equations</h2>
+<p>An <strong>equation</strong> in <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> is an algebraic expression involving an equality with two (or more) variables. An example might be <span class="math inline">\(x^2 + y^2 = 1\)</span>.</p>
+<p>The <strong>solutions</strong> to an equation in the variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are all points <span class="math inline">\((x,y)\)</span> which satisfy the equation.</p>
+<p>The <strong>graph</strong> of an equation is just the set of solutions to the equation represented in the Cartesian plane.</p>
+<p>With this definition, the graph of a function <span class="math inline">\(f(x)\)</span> is just the graph of the equation <span class="math inline">\(y = f(x)\)</span>.</p>
+<p>In general, graphing an equation is more complicated than graphing a function. For a function, we know for a given value of <span class="math inline">\(x\)</span> what the corresponding value of <span class="math inline">\(f(x)\)</span> is through evaluation of the function. For equations, we may have 0, 1 or more <span class="math inline">\(y\)</span> values for a given <span class="math inline">\(x\)</span> and even more problematic is we may have no rule to find these values.</p>
+<p>The <code>ImplicitEquations</code> package provides an algorithm to plot equations. The easiest use is for an equation of the form <span class="math inline">\(F(x,y) = c\)</span>, for some constant <span class="math inline">\(c\)</span>.</p>
+<p>To plot such an equation, we just need to describe the function <span class="math inline">\(F\)</span> and provide a viewing window:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using Plots, ImplicitEquations
+<span class="kw">F</span>(x,y) =<span class="st"> </span>x^<span class="dv">2</span> +<span class="st"> </span>y^<span class="dv">2</span>
+<span class="kw">plot</span>(F ==<span class="st"> </span><span class="dv">4</span>, (-<span class="dv">5</span>, <span class="dv">5</span>), (-<span class="dv">5</span>, <span class="dv">5</span>))</code></pre></div>
+<div id="d962f82f-505c-455c-a9f7-a5b0680ad437" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('d962f82f-505c-455c-a9f7-a5b0680ad437');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>The graphs aren’t very pretty – they really plot pixels only – but you should see a circle of radius 2 within the viewing window <span class="math inline">\([-5,5] \times [-5,5]\)</span>. The equation to graph was represented by a function of two variables and the equality operator, <code>==</code> was used to specify what to draw.</p>
+<p>More complicated equations are possible. The <a href="http://www-groups.dcs.st-and.ac.uk/~history/Curves/Devils.html">Devils curve</a> has the form <span class="math display">\[~
+y^4 - x^4 + ay^2 + bx^2 = 0
+~\]</span></p>
+<p>Here we draw the curve for a particular choice of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>. The default viewing window of <span class="math inline">\([-5,5] \times [-5,5]\)</span> is used:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a,b =<span class="st"> </span>-<span class="dv">1</span>,<span class="dv">2</span>
+<span class="kw">F</span>(x,y) =<span class="st"> </span>y^<span class="dv">4</span> -<span class="st"> </span>x^<span class="dv">4</span> +<span class="st"> </span>a*y^<span class="dv">2</span> +<span class="st"> </span>b*x^<span class="dv">2</span>
+<span class="kw">plot</span>(F ==<span class="st"> </span><span class="dv">0</span>)</code></pre></div>
+<div id="5eea9cdf-417a-46f9-aff3-df48dd3fe0af" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('5eea9cdf-417a-46f9-aff3-df48dd3fe0af');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+</div>
+<div id="tangent-lines-implicit-differentiation" class="section level2">
+<h2><span class="header-section-number">25.2</span> Tangent lines, implicit differentiation</h2>
+<p>The graph <span class="math inline">\(x^2 + y^2 = 1\)</span> has tangent lines at all points except <span class="math inline">\((-1,0)\)</span> and <span class="math inline">\((0, 1)\)</span> and even there, one may call the vertical lines <span class="math inline">\(x=-1\)</span> and <span class="math inline">\(x=1\)</span> tangent lines. However, to recover the slope would need us to express <span class="math inline">\(y\)</span> as a function of <span class="math inline">\(x\)</span> and then differentiate that function. Of course, in this example, we would need two functions: <span class="math inline">\(f(x) = \sqrt{1-x^2}\)</span> and <span class="math inline">\(g(x) = - \sqrt{1-x^2}\)</span> to do this completely.</p>
+<p>In general though, we may not be able to solve for <span class="math inline">\(y\)</span> in terms of <span class="math inline">\(x\)</span>. What then?</p>
+<p>The idea is to <em>assume</em> that <span class="math inline">\(y\)</span> is representable by some function of <span class="math inline">\(x\)</span>. This makes sense, moving on the curve from <span class="math inline">\((x,y)\)</span> to some nearby point, means changing <span class="math inline">\(x\)</span> will cause some change in <span class="math inline">\(y\)</span>. With this assumption, asking what <span class="math inline">\(dy/dx\)</span> is has an obvious meaning – what is the slope at the tangent line at <span class="math inline">\((x,y)\)</span>. This can be investigated by differentiating both sides of the equation to derive a new equation.</p>
+<p>For example, starting with <span class="math inline">\(x^2 + y^2 = 1\)</span>, differentiating both sides in <span class="math inline">\(x\)</span> gives: <span class="math display">\[~
+2x + 2y\cdot \frac{dy}{dx} = 0.
+~\]</span></p>
+<p>The chain rules was used to find <span class="math inline">\(d/dx\)</span> of <span class="math inline">\(y^2\)</span>. From this we can solve for <span class="math inline">\(dy/dx\)</span>: <span class="math display">\[~
+dy/dx = -x/y
+~\]</span></p>
+<p>This says the slope of the tangent line depends on the point <span class="math inline">\((x,y)\)</span> through the formula <span class="math inline">\(-x/y\)</span>.</p>
+<p>As a check, we compare to what we would have found had we solved for <span class="math inline">\(y= \sqrt{1 - x^2}\)</span> (for <span class="math inline">\((x,y)\)</span> with <span class="math inline">\(y \geq 0\)</span>). We would have found: <span class="math inline">\(dy/dx = 1/2 \cdot 1/\sqrt{1 - x^2} \cdot -2x\)</span>. Which can be simplified to <span class="math inline">\(-x/y\)</span>. This should show that the method above – assuming <span class="math inline">\(y\)</span> is a function of <span class="math inline">\(x\)</span> and differentiating – is easier and more general.</p>
+<p>This method is called <em>implicit differentiation</em>, as we assume <span class="math inline">\(y\)</span> is implicitly defined in terms of <span class="math inline">\(x\)</span>, though we don’t have an explicit formula. According to the <a href="http://en.wikipedia.org/wiki/Implicit_function_theorem">Implicit Function Theorem</a> the above method will work provided the curve has sufficient smoothness near the point <span class="math inline">\((x,y)\)</span>.</p>
+<div id="examples-15" class="section level5">
+<h5><span class="header-section-number">25.2.0.0.1</span> Examples</h5>
+<p>Consider the <a href="http://www-history.mcs.st-and.ac.uk/Curves/Serpentine.html">serpentine</a> equation <span class="math display">\[~
+x^2y + a\cdot b \cdot y - a^2 \cdot x = 0, \quad a\cdot b &gt; 0.
+~\]</span></p>
+<p>For <span class="math inline">\(a = 2, b=1\)</span> we have the graph:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y; <span class="dt">a=</span><span class="dv">2</span>, <span class="dt">b=</span><span class="dv">1</span>) =<span class="st"> </span>x^<span class="dv">2</span>*y +<span class="st"> </span>a *<span class="st"> </span>b *<span class="st"> </span>y -<span class="st"> </span>a^<span class="dv">2</span> *<span class="st"> </span>x
+<span class="kw">plot</span>(F ==<span class="st"> </span><span class="dv">0</span>, (-<span class="dv">2</span>, <span class="dv">2</span>), (-<span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
+<div id="a3fbc3e7-06c2-4df9-9170-df64d45da578" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('a3fbc3e7-06c2-4df9-9170-df64d45da578');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>We can see that at each point in the viewing window the tangent line exists due to the smoothness of the curve. Moreover, at a point <span class="math inline">\((x,y)\)</span> the tangent will have slope <span class="math inline">\(dy/dx\)</span> satisfying: <span class="math display">\[~
+2xy + x^2 \frac{dy}{dx} + a\cdot b \frac{dy}{dx} - a^2 = 0.
+~\]</span></p>
+<p>Solving, yields: <span class="math display">\[~
+\frac{dy}{dx} = \frac{a^2 - 2xy}{ab + x^2}.
+~\]</span></p>
+<hr />
+<p>The <a href="http://www-history.mcs.st-and.ac.uk/Curves/Eight.html">eight</a> curve has representation <span class="math display">\[~
+x^4 = a^2(x^2-y^2), \quad a \neq 0.
+~\]</span></p>
+<p>A graph for <span class="math inline">\(a=3\)</span> shows why it has the name it does:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y; <span class="dt">a=</span><span class="dv">3</span>) =<span class="st"> </span>x^<span class="dv">4</span> -<span class="st"> </span>a^<span class="dv">2</span>*(x^<span class="dv">2</span> -<span class="st"> </span>y^<span class="dv">2</span>)
+<span class="kw">plot</span>(F==<span class="dv">0</span>, (-<span class="dv">3</span>, <span class="dv">3</span>), (-<span class="dv">2</span>, <span class="dv">2</span>))</code></pre></div>
+<div id="a968f1b5-4012-4755-a0ee-498faa547eb8" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('a968f1b5-4012-4755-a0ee-498faa547eb8');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>The tangent line at <span class="math inline">\((x,y)\)</span> will have slope, <span class="math inline">\(dy/dx\)</span> satisfying: <span class="math display">\[~
+4x^3 = a^2 \cdot (2x - 2y \frac{dy}{dx}).
+~\]</span></p>
+<p>Solving gives: <span class="math display">\[~
+\frac{dy}{dx} = -\frac{4x3 - a^2 \cdot 2x}{a^2 \cdot 2y}.
+~\]</span></p>
+<p>The point <span class="math inline">\((3,0)\)</span> can be seen to be a solution to the equation and should have a vertical tangent line. This also is reflected in the formula, as the denominator is <span class="math inline">\(a^2 2 y\)</span>, which is <span class="math inline">\(0\)</span> at this point, whereas the numerator is not.</p>
+</div>
+<div id="example-53" class="section level5">
+<h5><span class="header-section-number">25.2.0.0.2</span> Example</h5>
+<p>The quotient rule can be hard to remember, unlike the product rule. No reason to despair, the product rule plus implicit differentiation can be used to recover the quotient rule. Suppose <span class="math inline">\(y=f(x)/g(x)\)</span>, then we could also write <span class="math inline">\(y g(x) = f(x)\)</span>. Differentiating implicitly gives: <span class="math display">\[~
+\frac{dy}{dx} g(x) + y g&#39;(x) = f&#39;(x).
+~\]</span></p>
+<p>Solving for <span class="math inline">\(dy/dx\)</span> gives: <span class="math display">\[~
+\frac{dy}{dx} = \frac{f&#39;(x) - y g&#39;(x)}{g(x)}.
+~\]</span></p>
+<p>Not quite what we expect, perhaps, but substituting in <span class="math inline">\(f(x)/g(x)\)</span> for <span class="math inline">\(y\)</span> gives us the usual formula: <span class="math display">\[~
+\frac{dy}{dx} = \frac{f&#39;(x) - \frac{f(x)}{g(x)} g&#39;(x)}{g(x)} = \frac{f&#39;(x) g(x) - f(x) g&#39;(x)}{g(x)^2}.
+~\]</span></p>
+</div>
+<div id="example-graphing-a-tangent-line" class="section level5">
+<h5><span class="header-section-number">25.2.0.0.3</span> Example: Graphing a tangent line</h5>
+<p>Let’s see how to add a graph of a tangent line to the graph of an equation. Tangent lines are tangent at a point, so we need a point to discuss.</p>
+<p>Returning to the equation for a circle, <span class="math inline">\(x^2 + y^2 = 1\)</span>, let’s look at <span class="math inline">\((\sqrt{2}/2, - \sqrt{2}/2)\)</span>. The derivative is $ -y/x$, so the slope at this point is <span class="math inline">\(1\)</span>. The line itself has equation <span class="math inline">\(y = b + m \cdot (x-a)\)</span>. The following represents this in <code>Julia</code>&quot;</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y) =<span class="st"> </span>x^<span class="dv">2</span> +<span class="st"> </span>y^<span class="dv">2</span>
+
+a,b =<span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span>)/<span class="dv">2</span>, -<span class="kw">sqrt</span>(<span class="dv">2</span>)/<span class="dv">2</span>
+
+m =<span class="st"> </span>-a/b
+<span class="kw">tl</span>(x) =<span class="st"> </span>b +<span class="st"> </span>m *<span class="st"> </span>(x-a)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## tl (generic function with 1 method)</code></pre></div>
+<p>To graph this, we now define a function of two variables to represent the function <code>tl</code>. Basically, it is an algebraic equivalent of <code>y=tl(x)</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">G</span>(x,y) =<span class="st"> </span>y -<span class="st"> </span><span class="kw">tl</span>(x)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## G (generic function with 1 method)</code></pre></div>
+<p>Now we want to plot <em>both</em> <span class="math inline">\(F==1\)</span> and <span class="math inline">\(G==0\)</span>. The graph will be either the one of <span class="math inline">\(F\)</span> <em>or</em> the one of <span class="math inline">\(G\)</span>. As with other operations, <code>|</code> means “or” (though precedence rules require the parentheses):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>((F ==<span class="st"> </span><span class="dv">1</span>) |<span class="st">  </span>(G ==<span class="st"> </span><span class="dv">0</span>), (-<span class="dv">3</span>, <span class="dv">3</span>), (-<span class="dv">3</span>, <span class="dv">3</span>))</code></pre></div>
+<div id="d73e7fe9-a034-451a-95b6-161f38dc052c" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('d73e7fe9-a034-451a-95b6-161f38dc052c');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>We can see that combining terms with the logical operator <code>|</code> will request that both equations be rendered.</p>
+<p>Alternatively, we can add a line with <code>plot!</code>, as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(F ==<span class="st"> </span><span class="dv">1</span>, (-<span class="dv">3</span>, <span class="dv">3</span>), (-<span class="dv">3</span>, <span class="dv">3</span>))
+plot!(x -&gt;<span class="st"> </span>b +<span class="st"> </span>m*(x-a), -<span class="dv">3</span>, <span class="dv">3</span>)</code></pre></div>
+<div id="517f7374-96ca-411c-b9d6-51d6d3142065" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('517f7374-96ca-411c-b9d6-51d6d3142065');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[-4.414213562373095,-4.353607501767034,-4.293001441160974,-4.232395380554913,-4.171789319948853,-4.111183259342792,-4.050577198736732,-3.9899711381306706,-3.92936507752461,-3.8687590169185495,-3.808152956312489,-3.7475468957064284,-3.686940835100368,-3.626334774494307,-3.5657287138882463,-3.5051226532821858,-3.444516592676125,-3.3839105320700646,-3.323304471464004,-3.2626984108579435,-3.202092350251883,-3.1414862896458224,-3.080880229039762,-3.020274168433701,-2.9596681078276403,-2.89906204722158,-2.8384559866155192,-2.7778499260094587,-2.717243865403398,-2.6566378047973376,-2.596031744191277,-2.535425683585216,-2.4748196229791555,-2.414213562373095,-2.3536075017670344,-2.293001441160974,-2.2323953805549133,-2.1717893199488527,-2.111183259342792,-2.0505771987367316,-1.989971138130671,-1.92936507752461,-1.8687590169185495,-1.808152956312489,-1.7475468957064284,-1.6869408351003679,-1.6263347744943073,-1.5657287138882467,-1.5051226532821862,-1.4445165926761254,-1.3839105320700649,-1.323304471464004,-1.2626984108579435,-1.202092350251883,-1.1414862896458224,-1.0808802290397619,-1.0202741684337013,-0.9596681078276406,-0.89906204722158,-0.8384559866155193,-0.7778499260094588,-0.7172438654033981,-0.6566378047973376,-0.5960317441912769,-0.5354256835852164,-0.4748196229791557,-0.41421356237309515,-0.3536075017670346,-0.29300144116097404,-0.23239538055491327,-0.17178931994885271,-0.11118325934279216,-0.05057719873673161,0.010028861869329164,0.07063492247538972,0.13124098308145027,0.19184704368751082,0.2524531042935716,0.31305916489963204,0.3736652255056926,0.43427128611175314,0.49487734671781414,0.5554834073238747,0.6160894679299352,0.6766955285359958,0.7373015891420563,0.7979076497481169,0.8585137103541779,0.9191197709602384,0.979725831566299,1.0403318921723597,1.1009379527784202,1.1615440133844808,1.2221500739905413,1.2827561345966019,1.3433621952026629,1.4039682558087234,1.464574316414784,1.5251803770208445,1.585786437626905],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[-3.0,-2.9393939393939394,-2.878787878787879,-2.8181818181818183,-2.757575757575758,-2.696969696969697,-2.6363636363636362,-2.5757575757575757,-2.515151515151515,-2.4545454545454546,-2.393939393939394,-2.3333333333333335,-2.272727272727273,-2.212121212121212,-2.1515151515151514,-2.090909090909091,-2.0303030303030303,-1.9696969696969697,-1.9090909090909092,-1.8484848484848484,-1.7878787878787878,-1.7272727272727273,-1.6666666666666667,-1.606060606060606,-1.5454545454545454,-1.4848484848484849,-1.4242424242424243,-1.3636363636363635,-1.303030303030303,-1.2424242424242424,-1.1818181818181819,-1.121212121212121,-1.0606060606060606,-1.0,-0.9393939393939394,-0.8787878787878788,-0.8181818181818182,-0.7575757575757576,-0.696969696969697,-0.6363636363636364,-0.5757575757575758,-0.5151515151515151,-0.45454545454545453,-0.3939393939393939,-0.3333333333333333,-0.2727272727272727,-0.21212121212121213,-0.15151515151515152,-0.09090909090909091,-0.030303030303030304,0.030303030303030304,0.09090909090909091,0.15151515151515152,0.21212121212121213,0.2727272727272727,0.3333333333333333,0.3939393939393939,0.45454545454545453,0.5151515151515151,0.5757575757575758,0.6363636363636364,0.696969696969697,0.7575757575757576,0.8181818181818182,0.8787878787878788,0.9393939393939394,1.0,1.0606060606060606,1.121212121212121,1.1818181818181819,1.2424242424242424,1.303030303030303,1.3636363636363635,1.4242424242424243,1.4848484848484849,1.5454545454545454,1.606060606060606,1.6666666666666667,1.7272727272727273,1.7878787878787878,1.8484848484848484,1.9090909090909092,1.9696969696969697,2.0303030303030303,2.090909090909091,2.1515151515151514,2.212121212121212,2.272727272727273,2.3333333333333335,2.393939393939394,2.4545454545454546,2.515151515151515,2.5757575757575757,2.6363636363636362,2.696969696969697,2.757575757575758,2.8181818181818183,2.878787878787879,2.9393939393939394,3.0],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[-4.0,-2.0,0.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["-4","-2","0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"domain":[0.03619130941965587,0.9934383202099738],"ticktext":["-3","-2","-1","0","1","2","3"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+</div>
+</div>
+<div id="using-sympy-for-computation" class="section level2">
+<h2><span class="header-section-number">25.3</span> Using SymPy for computation</h2>
+<p><code>SymPy</code> can be used to do implicit differentiation. Let’s do so for the <a href="http://www-history.mcs.st-and.ac.uk/Curves/Trident.html">Trident of Newton</a>. This can be represented in Cartesian form as follows: <span class="math display">\[~
+xy = cx^3 + dx^2 + ex + h.
+~\]</span></p>
+<p>We represent it as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">c,d,e,h =<span class="st"> </span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>
+<span class="kw">F</span>(x,y) =<span class="st"> </span>x*y
+<span class="kw">G</span>(x,y) =<span class="st"> </span>c*x^<span class="dv">3</span> +<span class="st"> </span>d*x^<span class="dv">2</span> +<span class="st"> </span>e*x +<span class="st"> </span>h</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## G (generic function with 2 methods)</code></pre></div>
+<p>Now we approach this with SymPy.</p>
+<p>We define variable <code>x</code> and <code>y</code> <em>and</em> a symbolic function <span class="math inline">\(u\)</span>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using SymPy
+x, y =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;x, y&quot;</span>, <span class="dt">real=</span>true)
+u =<span class="st"> </span><span class="kw">SymFunction</span>(<span class="st">&quot;u&quot;</span>)        <span class="co"># otherwise: symbols(&quot;u&quot;, cls = SymFunction)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## </code></pre></div>
+<p>Defining a symbolic function is done through <code>SymFunction</code>. (This name is slightly modified from using SymPy under <code>Python</code>.) The object <code>u</code> is symbolic function, and <code>u(x)</code> a symbolic expression involving a function. This is what we use to refer to <code>y</code>.</p>
+<p>To define the equation <span class="math inline">\(xy=cx^3 + dx^2 + ex + h\)</span> we can either move everything to one side, or use SymPy’s <code>Eq</code> function, as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eqn =<span class="st"> </span><span class="kw">Eq</span>(<span class="kw">F</span>(x,y), <span class="kw">G</span>(x,y))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## UndefVarError(:Eq)
+## </code></pre></div>
+<p>As we assume <span class="math inline">\(y\)</span> is a function of <span class="math inline">\(x\)</span>, called <code>u(x)</code>, this substitution is just a renaming:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eqn1 =<span class="st"> </span><span class="kw">subs</span>(eqn, y, <span class="kw">u</span>(x))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## UndefVarError(:eqn)
+## </code></pre></div>
+<p>At this point, we differentiate both sides in <code>x</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eqn2 =<span class="st"> </span><span class="kw">diff</span>(eqn1, x)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## UndefVarError(:eqn1)
+## </code></pre></div>
+<p>The next step is solve for <span class="math inline">\(dy/dx\)</span> – the lone answer to the linear equation – which is done as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dydx =<span class="st"> </span><span class="kw">diff</span>(<span class="kw">u</span>(x), x)
+ex =<span class="st"> </span><span class="kw">solve</span>(eqn2, dydx)[<span class="dv">1</span>]</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## UndefVarError(:eqn2)
+## </code></pre></div>
+<p>As this represents an answer in terms of <code>u(x)</code>, we replace that term with the original variable:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dydx =<span class="st"> </span><span class="kw">subs</span>(ex, <span class="kw">u</span>(x), y)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## UndefVarError(:ex)
+## </code></pre></div>
+<p>If <code>x</code> and <code>y</code> are the variable names, this function will combine the steps above:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">function <span class="kw">dy_dx</span>(eqn)
+  u =<span class="st"> </span><span class="kw">SymFunction</span>(<span class="st">&quot;u&quot;</span>)
+  eqn1 =<span class="st"> </span><span class="kw">subs</span>(eqn, y, <span class="kw">u</span>(x))
+  eqn2 =<span class="st"> </span><span class="kw">solve</span>(<span class="kw">diff</span>(eqn1, x), <span class="kw">diff</span>(<span class="kw">u</span>(x), x))[<span class="dv">1</span>]
+  <span class="kw">subs</span>(eqn2, <span class="kw">u</span>(x), y)
+end</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## dy_dx (generic function with 1 method)</code></pre></div>
+<p>If we have a point on the curve, such as <span class="math inline">\((1,4)\)</span>, then we can draw a tangent line with these commands:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">H</span>(x,y) =<span class="st"> </span><span class="kw">F</span>(x,y) -<span class="st"> </span><span class="kw">G</span>(x,y)
+a,b =<span class="st"> </span><span class="dv">1</span>, <span class="dv">4</span>
+m =<span class="st"> </span><span class="kw">N</span>(<span class="kw">subs</span>(dydx, (x,a), (y,b)))
+<span class="kw">TL</span>(x,y) =<span class="st"> </span>y -<span class="st"> </span>(b +<span class="st"> </span>m *<span class="st"> </span>(x-a))
+<span class="kw">plot</span>((H ==<span class="st"> </span><span class="dv">0</span>) |<span class="st"> </span>(TL ==<span class="st"> </span><span class="dv">0</span>))</code></pre></div>
+<div id="f4ad5ec0-2760-4265-92ef-38caf4c85d81" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('f4ad5ec0-2760-4265-92ef-38caf4c85d81');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<div class="alert alert-info" role="alert">
+<div class="markdown">
+<p>
+<code>SymPy</code> has the <code>plot_implicit</code> function for plotting implicit equations, but this works with <code>PyPlot</code>, not <code>Gadfly</code>, so we use the <code>ImplicitEquations</code> package.
+</p>
+</div>
+</div>
+<div id="example-54" class="section level5">
+<h5><span class="header-section-number">25.3.0.0.1</span> Example</h5>
+<p>When we assume <span class="math inline">\(y\)</span> is a function of <span class="math inline">\(x\)</span>, it may not be feasible to actually find the function algebraically. However, in many cases one can found numerically. Suppose <span class="math inline">\(F(x,y) = c\)</span> describes the equation. Then for a fixed <span class="math inline">\(x\)</span>, <span class="math inline">\(y(x)\)</span> solves <span class="math inline">\(F(x,y(x))) - c = 0\)</span>, so <span class="math inline">\(y(x)\)</span> is a zero of a known function. As long as we can piece together which <span class="math inline">\(y\)</span> goes with which, we can find the function.</p>
+<p>For example, <a href="http://www-history.mcs.st-and.ac.uk/Curves/Foliumd.html">folium</a> of Descartes has the equation <span class="math display">\[~
+x^3 + y^3  = 3axy.
+~\]</span></p>
+<p>Setting <span class="math inline">\(a=1\)</span>, it has the graph:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a =<span class="st"> </span><span class="dv">1</span>
+<span class="kw">F</span>(x,y) =<span class="st"> </span>x^<span class="dv">3</span> +<span class="st"> </span>y^<span class="dv">3</span> -<span class="st"> </span><span class="dv">3</span>*a*x*y
+<span class="kw">plot</span>(F==<span class="dv">0</span>)</code></pre></div>
+<div id="968916c4-8988-44c6-a613-22c08dac65dd" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('968916c4-8988-44c6-a613-22c08dac65dd');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>We can solve for the lower curve, <span class="math inline">\(y\)</span>, as a function of <span class="math inline">\(x\)</span>, as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using Roots
+<span class="kw">y1</span>(x) =<span class="st"> </span><span class="kw">minimum</span>(<span class="kw">fzeros</span>(y-&gt;<span class="kw">F</span>(x,y), -<span class="dv">10</span>, <span class="dv">10</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## y1 (generic function with 1 method)</code></pre></div>
+<p>This gives the lower part of the curve, which we can plot with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(y1, -<span class="dv">5</span>, <span class="dv">5</span>)</code></pre></div>
+<div id="940e73a5-b3c1-450c-a29d-1a6d0f901877" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('940e73a5-b3c1-450c-a29d-1a6d0f901877');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[4.015825250383347,3.9155196558264733,3.8152613733683367,3.7150546555302464,3.6149042332631645,3.514815380414681,3.414793988265396,3.3148466519089856,3.2149807705939977,3.115204664560239,3.015527711403686,2.915960505609196,2.8165150456215184,2.717204953707512,2.618045734925627,2.519055082795731,2.4202532407898323,2.3216634305796133,2.2233123601148708,2.125230827093188,2.0274544362191396,1.9300244518039922,1.8329888106153165,1.736403323222726,1.6403330949843618,1.544854199572722,1.450055637415032,1.3560416068891818,1.262934105040982,1.1708758534745987,1.0800335094130804,0.9906010665223388,0.9028032699971393,0.8168987630374493,0.7331825506264272,0.6519872261555755,0.573682288673195,0.49867083531412737,0.42738301193518907,0.36026590788270874,0.2977701106573345,0.24033383372592723,0.18836623418325496,0.14223201406076988,0.1022394390784822,0.0686334359203332,0.04159456449551843,0.02124367935865287,0.007651294945622632,0.0008502493187132256,-0.38967390432362725,-0.6779939160733228,-0.880827874465762,-1.0500884551149134,-1.200769814842304,-1.3396496372797055,-1.470434749293721,-1.5953858809822876,-1.7159830242512648,-1.8332445111483486,-1.9478973996790496,-2.0604758509092855,-2.1713813951725283,-2.280921601345892,-2.3893358266732454,-2.4968128918520067,-2.6035035238303017,-2.7095293042672433,-2.81498922388916,-2.9199645602019366,-3.0245225584947595,-3.1287192443677974,-3.2326015966596713,-3.336209243124154,-3.439575795782486,-3.5427299113196757,-3.6456961396237744,-3.748495607630468,-3.8511465740847055,-3.953664882361893,-4.056064332215341,-4.158356986620462,-4.260553426340468,-4.362662962138559,-4.464693812490165,-4.566653253047616,-4.668547742863753,-4.770383031405131,-4.872164249616616,-4.973895987689916,-5.075582361703143,-5.177227070909807,-5.2788334471427705,-5.380404497545796,-5.481942941639938,-5.583451243564509,-5.6849316401952095,-5.786386165729235,-5.887816673234188,-5.989224853580525],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[-5.0,-4.898989898989899,-4.797979797979798,-4.696969696969697,-4.595959595959596,-4.494949494949495,-4.393939393939394,-4.292929292929293,-4.191919191919192,-4.090909090909091,-3.98989898989899,-3.888888888888889,-3.787878787878788,-3.686868686868687,-3.585858585858586,-3.484848484848485,-3.3838383838383836,-3.282828282828283,-3.1818181818181817,-3.080808080808081,-2.9797979797979797,-2.878787878787879,-2.7777777777777777,-2.676767676767677,-2.5757575757575757,-2.474747474747475,-2.3737373737373737,-2.272727272727273,-2.1717171717171717,-2.0707070707070705,-1.9696969696969697,-1.8686868686868687,-1.7676767676767677,-1.6666666666666667,-1.5656565656565657,-1.4646464646464648,-1.3636363636363635,-1.2626262626262625,-1.1616161616161615,-1.0606060606060606,-0.9595959595959596,-0.8585858585858586,-0.7575757575757576,-0.6565656565656566,-0.5555555555555556,-0.45454545454545453,-0.35353535353535354,-0.25252525252525254,-0.15151515151515152,-0.050505050505050504,0.050505050505050504,0.15151515151515152,0.25252525252525254,0.35353535353535354,0.45454545454545453,0.5555555555555556,0.6565656565656566,0.7575757575757576,0.8585858585858586,0.9595959595959596,1.0606060606060606,1.1616161616161615,1.2626262626262625,1.3636363636363635,1.4646464646464648,1.5656565656565657,1.6666666666666667,1.7676767676767677,1.8686868686868687,1.9696969696969697,2.0707070707070705,2.1717171717171717,2.272727272727273,2.3737373737373737,2.474747474747475,2.5757575757575757,2.676767676767677,2.7777777777777777,2.878787878787879,2.9797979797979797,3.080808080808081,3.1818181818181817,3.282828282828283,3.3838383838383836,3.484848484848485,3.585858585858586,3.686868686868687,3.787878787878788,3.888888888888889,3.98989898989899,4.090909090909091,4.191919191919192,4.292929292929293,4.393939393939394,4.494949494949495,4.595959595959596,4.696969696969697,4.797979797979798,4.898989898989899,5.0],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[-4.0,-2.0,0.0,2.0,4.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["-4","-2","0","2","4"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[-5.0,-2.5,0.0,2.5,5.0],"domain":[0.03619130941965587,0.9934383202099738],"ticktext":["-5.0","-2.5","0.0","2.5","5.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+<p>Though, in this case, the cubic equation would admit a closed-form solution, the approach illustrated applies more generally.</p>
+</div>
+</div>
+<div id="higher-order-derivatives-1" class="section level2">
+<h2><span class="header-section-number">25.4</span> Higher order derivatives</h2>
+<p>Implicit differentiation can be used to find <span class="math inline">\(d^2y/dx^2\)</span> or higher order derivatives. At each stage, the same technique is applied. The only “trick” is that some simplifications can be made.</p>
+<p>For example, consider <span class="math inline">\(x^3 - y^3=3\)</span>. To find <span class="math inline">\(d^2y/dx^2\)</span>, we first find <span class="math inline">\(dy/dx\)</span>: <span class="math display">\[~
+3x^2 - (3y^2 \frac{dy}{dx}) = 0.
+~\]</span></p>
+<p>We could solve for <span class="math inline">\(dy/dx\)</span> at this point – it always appears as a linear factor – to get: <span class="math display">\[~
+\frac{dy}{dx} = \frac{3x^2}{3y^2} = \frac{x^2}{y^2}.
+~\]</span></p>
+<p>However, we differentiate the first equation, as we generally try to avoid the quotient rule <span class="math display">\[~
+6x - (6y \frac{dy}{dx} \cdot \frac{dy}{dx} + 3y^2 \frac{d^2y}{dx^2}) = 0.
+~\]</span></p>
+<p>Again, if must be that <span class="math inline">\(d^2y/dx\)</span> appears as a linear factor, so we can solve for it: <span class="math display">\[~
+\frac{d^2y}{dx^2} = \frac{6x - 6y (\frac{dy}{dx})^2}{3y^2}.
+~\]</span></p>
+<p>One last substitution for <span class="math inline">\(dy/dx\)</span> gives: <span class="math display">\[~
+\frac{d^2y}{dx^2} = \frac{-6x + 6y (\frac{x^2}{y^2})^2}{3y^2} = -2\frac{x}{y^2} + 2\frac{x^4}{y^5} = 2\frac{x}{y^2}(1 - \frac{x^3}{y^3}) = 2\frac{x}{y^5}(y^3 - x^3) = 2 \frac{x}{y^5}(-3).
+~\]</span></p>
+<p>It isn’t so pretty, but that’s all it takes.</p>
+<p>To visualize, we plot implicitly and notice that:</p>
+<ul>
+<li>as we change quadrants from the third to the fourth to the first the concavity changes from down to up to down, as the sign of the second derivative changes from negative to positive to negative;</li>
+<li>and that at these inflection points, the “tangent” line is vertical when <span class="math inline">\(y=0\)</span> and flat when <span class="math inline">\(x=0\)</span>.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y) =<span class="st"> </span>x^<span class="dv">3</span> -<span class="st"> </span>y^<span class="dv">3</span>
+<span class="kw">plot</span>(F ==<span class="st"> </span><span class="dv">3</span>,  (-<span class="dv">3</span>, <span class="dv">3</span>), (-<span class="dv">3</span>, <span class="dv">3</span>))</code></pre></div>
+<div id="5d62cae5-cc71-4418-9bce-8903fcb4fbc0" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('5d62cae5-cc71-4418-9bce-8903fcb4fbc0');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>The same problem can be done symbolically. The steps are similar, though the last step (replacing <span class="math inline">\(x^3 - y^3\)</span>) isn’t done without explicitly asking.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x, y =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;x, y&quot;</span>)
+u =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;u&quot;</span>, <span class="dt">cls=</span>SymFunction)
+
+eqn =<span class="st"> </span><span class="kw">F</span>(x,y) -<span class="st"> </span><span class="dv">3</span>
+eqn1 =<span class="st"> </span><span class="kw">subs</span>(eqn, y, <span class="kw">u</span>(x))
+dydx =<span class="st"> </span><span class="kw">solve</span>(<span class="kw">diff</span>(eqn1,x), <span class="kw">diff</span>(<span class="kw">u</span>(x), x))[<span class="dv">1</span>]          <span class="co"># 1 soln</span>
+d2ydx2 =<span class="st"> </span><span class="kw">solve</span>(<span class="kw">diff</span>(eqn1, x, <span class="dv">2</span>), <span class="kw">diff</span>(<span class="kw">u</span>(x),x, <span class="dv">2</span>))[<span class="dv">1</span>]  <span class="co"># 1 soln</span>
+eqn2 =<span class="st"> </span><span class="kw">subs</span>(d2ydx2, (<span class="kw">diff</span>(<span class="kw">u</span>(x), x), dydx), (<span class="kw">u</span>(x), y))
+<span class="kw">simplify</span>(eqn2)</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+</div>
+<div id="inverse-functions" class="section level2">
+<h2><span class="header-section-number">25.5</span> Inverse functions</h2>
+<p>An <a href="http://en.wikipedia.org/wiki/Inverse_function">inverse</a> function for <span class="math inline">\(f(x)\)</span> is a function <span class="math inline">\(g(x)\)</span> satisfying: <span class="math inline">\(y = f(x)\)</span> if and only if <span class="math inline">\(g(y) = x\)</span> for all <span class="math inline">\(x\)</span> in the domain of <span class="math inline">\(f\)</span> and <span class="math inline">\(y\)</span> in the range of <span class="math inline">\(f\)</span>.</p>
+<p>This means that when defined, <span class="math inline">\(f(g(x)) = x\)</span> and <span class="math inline">\(g(f(x)) = x\)</span>.</p>
+<p>Not all functions will have an inverse function, only those functions which are one-to-one. Strictly increasing or decreasing functions will have inverse functions. We call these functions <em>monotonic</em>.</p>
+<p>The typical example is <span class="math inline">\(f(x) = x^2\)</span>. We “know” the inverse would be <span class="math inline">\(g(x) = \sqrt{x}\)</span>. But this isn’t quite right – the property won’t hold for both <span class="math inline">\(x &lt; 0\)</span> and <span class="math inline">\(x &gt; 0\)</span> simultaneously. The trick is to <em>redefine</em> the function by restricting the domain so that the function is monotonic on the domain. For the function <span class="math inline">\(f(x) = x^2\)</span>, we can choose to restrict <span class="math inline">\(x\)</span> to <span class="math inline">\(x \geq 0\)</span>. Then in fact <span class="math inline">\(g(x) = \sqrt{x}\)</span> is an inverse function.</p>
+It is conventional to employ the notation <span class="math inline">\(f^{-1}(x)\)</span> for the inverse function.
+<div class="alert alert-success" role="alert">
+<div class="markdown">
+<p>
+It is also common for people to confuse this notation with that of exponents, especially when used with trigonometric functions.
+</p>
+</div>
+</div>
+<p>The chain rule can be used to give the derivative of an inverse function when applied to <span class="math inline">\(f(f^{-1}(x)) = x\)</span>. Solving gives, <span class="math inline">\([f^{-1}(x)]&#39; = 1 / f&#39;(g(x))\)</span>.</p>
+<p>This is great – if we can remember the rules. If not, sometimes implicit differentiation can also help.</p>
+<p>Consider the inverse function for the tangent, which exists when the domain of the tangent function is restricted to <span class="math inline">\((-\pi/2, \pi/2)\)</span>. The function solves <span class="math inline">\(y = \tan^{-1}(x)\)</span> or <span class="math inline">\(\tan(y) = x\)</span>. Differentiating this yields: <span class="math display">\[~
+\sec(y)^2 \frac{dy}{dx} = 1.
+~\]</span></p>
+<p>But <span class="math inline">\(\sec(y)^2 = 1 + x^2\)</span>, as can be seen by right-triangle trigonometry. This yields the formula <span class="math inline">\([\tan^{-1}(x)]&#39; = 1(1 + x^2)\)</span>.</p>
+<div id="example-55" class="section level5">
+<h5><span class="header-section-number">25.5.0.0.1</span> Example</h5>
+<p>For a more complicated example, suppose we have a moving trajectory <span class="math inline">\((x(t), y(t))\)</span>. The angle it makes with the origin satisfies <span class="math display">\[~
+\tan(\theta(t)) = \frac{y(t)}{x(t)}.
+~\]</span></p>
+<p>Suppose <span class="math inline">\(\theta(t)\)</span> can be defined in terms of the inverse to some function, We can differentiate implicitly to find <span class="math inline">\(\theta&#39;(t)\)</span> in terms of derivatives of <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span>: <span class="math display">\[~
+\sec^2(\theta(t)) \cdot \theta&#39;(t) = \frac{y&#39;(t) x(t) - y(t) x&#39;(t)}{x(t))^2}.
+~\]</span></p>
+<p>Moving to the other side the secant term and replacing with <span class="math inline">\(1 + x(t)^2\)</span> gives an explicit, albeit complicated, expression for the derivative of <span class="math inline">\(\theta\)</span> in terms of the functions <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>: <span class="math display">\[~
+\theta&#39;(t) = (1 + x(t))^2 \cdot \frac{y&#39;(t) x(t) - y(t) x&#39;(t)}{x(t))^2}.
+~\]</span></p>
+</div>
+</div>
+<div id="example-from-physics-1" class="section level2">
+<h2><span class="header-section-number">25.6</span> Example from physics</h2>
+<p>Many problems are best done with implicit derivatives. A video showing such a problem along with how to do it analytically is <a href="http://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/unit-2-applications-of-differentiation/part-b-optimization-related-rates-and-newtons-method/session-32-ring-on-a-string/">here</a>.</p>
+<p>This video starts with a simple question:</p>
+<blockquote>
+<p>If you have a rope and heavy ring, where will the ring position itself due to gravity?</p>
+</blockquote>
+<p>Well, suppose you hold the rope in two places, which we can take to be <span class="math inline">\((0,0)\)</span> and <span class="math inline">\((a,b)\)</span>. Then let <span class="math inline">\((x,y)\)</span> be all the possible positions of the ring that hold the rope taught. Then we have this picture:</p>
+<script> \ ```{r echo=FALSE} \ plot.new() \ plot.window(xlim=c(0,1), ylim=c(-5, 1.1)) \ x <- seq(.1, .9, length=9) \ y <- c(-4.46262,-4.46866, -4.47268, -4.47469, -4.47468, -4.47267, -4.46864, -4.4626 , -4.45454) \ lines(c(0, x[3], 1), c(0, y[3], 1)) \ points(c(0,1), c(0,1), pch=16, cex=2) \ text(c(0,1), c(0,1), c("(0,0)", c("(a,b)")), pos=3)
+
+\ lines(c(0, x[3], x[3]), c(0, 0, y[3]), cex=2, col="gray") \ lines(c(1, x[3], x[3]), c(1, 1, y[3]), cex=2, col="gray") \ text(x[3]/2, 0, "x", pos=1) \ text(x[3], y[3]/2, "|y|", pos=2) \ text(x[3], (1 + y[3])/2, "b-y", pos=4) \ text((x[3] + 1)/2, 1, "a-x", pos=1)
+
+\ text(x[3], y[3], "0", cex=4, col="gold")
+
+\ ``` </script>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using WeavePynb
+<span class="kw">WeavePynb.HTMLoutput</span>(<span class="kw">gif_to_data</span>(<span class="st">&quot;extrema/extrema-ring-string.png&quot;</span>, <span class="st">&quot;&quot;&quot; </span>
+<span class="st">Ring on string figure.</span>
+<span class="st">&quot;&quot;&quot;</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## SystemError(&quot;opening file extrema/extrema-ring-string.png&quot;,2,nothing)
+## </code></pre></div>
+<p>Since the length of the rope does not change, we must have for any admissible <span class="math inline">\((x,y)\)</span> that: <span class="math display">\[~
+L = \sqrt{x^2 + y^2} + \sqrt{(a-x)^2 + (b-y)^2},
+~\]</span></p>
+<p>where these are the two hypotenuses in the figure, as computed through Pythagorean’s theorem.</p>
+<blockquote>
+<p>If we assume that the ring will minimize the value of y subject to this constraint, can we solve for y?</p>
+</blockquote>
+<p>We create a function to represent the equation:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x, y, a, b) =<span class="st"> </span><span class="kw">sqrt</span>(x^<span class="dv">2</span> +<span class="st"> </span>y^<span class="dv">2</span>) +<span class="st"> </span><span class="kw">sqrt</span>((a-x)^<span class="dv">2</span> +<span class="st"> </span>(b-y)^<span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## F (generic function with 9 methods)</code></pre></div>
+<p>To illustrate, we need specific values of <span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span>, and <span class="math inline">\(L\)</span>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a,b,L =<span class="st"> </span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">10</span>      <span class="co"># L &gt; sqrt{a^2 + b^2}</span>
+<span class="kw">F</span>(x, y) =<span class="st"> </span><span class="kw">F</span>(x, y, a, b) </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## F (generic function with 10 methods)</code></pre></div>
+<p>Our values <span class="math inline">\((x,y)\)</span> must satisfy <span class="math inline">\(f(x,y) = L\)</span>. Let’s graph:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(F ==<span class="st"> </span>L, (-<span class="dv">5</span>, <span class="dv">7</span>), (-<span class="dv">5</span>, <span class="dv">7</span>))</code></pre></div>
+<div id="69b34fdb-fc9c-4412-b572-d5a3059b7d37" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('69b34fdb-fc9c-4412-b572-d5a3059b7d37');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>The graph is an ellipse, though slightly tilted.</p>
+<p>Okay, now to find the lowest point. This will be when the derivative is <span class="math inline">\(0\)</span>. We solve by assuming <span class="math inline">\(y\)</span> is a function of <span class="math inline">\(x\)</span> called <code>u</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using SymPy
+a,b,L =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;a,b,L&quot;</span>, <span class="dt">real=</span>true)
+x,y =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;x,y&quot;</span>, <span class="dt">real=</span>true)
+u =<span class="st"> </span><span class="kw">symbols</span>(<span class="st">&quot;u&quot;</span>, <span class="dt">cls=</span>SymFunction)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## PyError (:PyObject_Call) &lt;type &#39;exceptions.TypeError&#39;&gt;
+## TypeError(&quot;&#39;PyCall.jlwrap&#39; object is not callable&quot;,)
+##   File &quot;/Users/verzani/.julia/v0.6/Conda/deps/usr/lib/python2.7/site-packages/sympy/core/symbol.py&quot;, line 491, in symbols
+##     symbol = cls(literal(name), **args)
+## 
+## </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y,a,b) =<span class="st"> </span><span class="kw">sqrt</span>(x^<span class="dv">2</span> +<span class="st"> </span>y^<span class="dv">2</span>) +<span class="st"> </span><span class="kw">sqrt</span>((a-x)^<span class="dv">2</span> +<span class="st"> </span>(b-y)^<span class="dv">2</span>)
+eqn =<span class="st"> </span><span class="kw">F</span>(x,y,a,b) -<span class="st"> </span>L</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dydx =<span class="st"> </span><span class="kw">subs</span>(eqn, y, <span class="kw">u</span>(x)) |<span class="er">&gt;</span><span class="st"> </span>ex -&gt;<span class="st"> </span><span class="kw">diff</span>(ex, x) |<span class="er">&gt;</span><span class="st"> </span>ex -&gt;<span class="st"> </span><span class="kw">solve</span>(ex, <span class="kw">diff</span>(<span class="kw">u</span>(x),x))[<span class="dv">1</span>] |<span class="er">&gt;</span><span class="st"> </span><span class="kw">subs</span>(<span class="kw">u</span>(x), y)</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+<p>We are looking for when the tangent line has 0 slope, or when <code>dydx</code> is 0:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cps =<span class="st"> </span><span class="kw">solve</span>(dydx, x)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## \begin{bmatrix}\frac{a y}{b}\\\frac{a y}{- b + 2 y}\end{bmatrix}</code></pre></div>
+<p>There are two answers, as we could guess from the graph, but we want the one for the smallest value of <span class="math inline">\(y\)</span>, which is the second.</p>
+<p>The values of <code>dydx</code> depend on any pair <code>(x,y)</code>, but our solution must also satisfy the equation. That is for our value of <code>x</code>, we need to find the corresponding <code>y</code>. This should be possible by substituting:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eqn1 =<span class="st"> </span><span class="kw">subs</span>(eqn, (x, cps[<span class="dv">2</span>]))</code></pre></div>
+<p>
+SymPy output issue for now…
+</p>
+<p>Then trying to solve with <code>solve(eqn1, y)</code>. This doesn’t work though, as <code>SymPy</code> can’t complete the problem.</p>
+<p>However, we can solve numerically if we fix numeric values for <code>a</code>, <code>b</code>, abd <code>L</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f</span>(w) =<span class="st"> </span><span class="kw">N</span>(<span class="kw">subs</span>(eqn1, (a,<span class="dv">3</span>), (b,<span class="dv">3</span>), (L,<span class="dv">10</span>), (y,w)))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## f (generic function with 1 method)</code></pre></div>
+<p>Then <code>f</code> will return a numeric value. We can use this function with the <code>fzero</code> function of the <code>Roots</code> package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">using Roots
+ystar =<span class="st"> </span><span class="kw">fzero</span>(f, -<span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## -3.269696007084728</code></pre></div>
+<p>Okay, now we need to put this value back into our expression for the <code>x</code> value and also substitute in for the parameters:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">xstar =<span class="st"> </span><span class="kw">N</span>(<span class="kw">subs</span>(cps[<span class="dv">2</span>], (y,ystar), (a,<span class="dv">3</span>), (b,<span class="dv">3</span>), (L,<span class="dv">3</span>)))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1.0282718234751367</code></pre></div>
+<p>Our minimum is at <code>(xstar, ystar)</code>, as this graphic shows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">F</span>(x,y) =<span class="st"> </span><span class="kw">F</span>(x,y, <span class="dv">3</span>, <span class="dv">3</span>)
+<span class="kw">tl</span>(x,y) =<span class="st"> </span>y -<span class="st"> </span>(ystar +<span class="st"> </span><span class="dv">0</span> *<span class="st"> </span>(x-<span class="st"> </span>xstar))
+<span class="kw">plot</span>((F ==<span class="st"> </span><span class="dv">10</span>) |<span class="st"> </span>(tl ==<span class="st"> </span><span class="dv">0</span>), (-<span class="dv">10</span>, <span class="dv">10</span>), (-<span class="dv">10</span>, <span class="dv">10</span>))</code></pre></div>
+<div id="abbae576-2486-4946-baed-27ba1e608981" style="width:600px;height:400px;">
+
+</div>
+<script>
+PLOT = document.getElementById('abbae576-2486-4946-baed-27ba1e608981');
+Plotly.plot(PLOT, [], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8,1.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0.0","0.2","0.4","0.6","0.8","1.0"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"height":400,"margin":{"r":0,"l":0,"b":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","hovermode":"none","paper_bgcolor":"rgba(255, 255, 255, 1.000)"});
+</script>
+<p>If you watch the video linked to above, you will see that the surprising fact here is the resting point is such that the angles formed by the rope are the same. Basically this makes the tension in both parts of the rope equal, so there is a static position (if not static, the ring would move and not end in the final position). We can verify this fact numerically by showing the arctangents of the two triangles are the same up to a sign (and slight round-off error):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a0, b0 =<span class="st"> </span><span class="dv">0</span>,<span class="dv">0</span>   <span class="co"># the foci of the ellipse are (0,0) and (3,3)</span>
+a1, b1 =<span class="st"> </span><span class="dv">3</span>, <span class="dv">3</span>
+<span class="kw">atan</span>((b0 -<span class="st"> </span>ystar)/(a0 -<span class="st"> </span>xstar)) +<span class="st"> </span><span class="kw">atan</span>((b1 -<span class="st"> </span>ystar)/(a1 -<span class="st"> </span>xstar)) <span class="co"># 0</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 0.0</code></pre></div>
+<p>Now, were we lucky and just happened to take <span class="math inline">\(a=3\)</span>, <span class="math inline">\(b = 3\)</span> in such a way to make this work? Well, no. But convince yourself by doing the above for different values of <span class="math inline">\(b\)</span>.</p>
+</div>
+<div id="questions-24" class="section level2">
+<h2><span class="header-section-number">25.7</span> Questions</h2>
+<div id="question-288" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.0.1</span> Question</h6>
+<p>Is <span class="math inline">\((1,1)\)</span> on the graph of <span class="math display">\[~
+x^2 - 2xy + y^2 = 1?
+~\]</span></p>
+<hr />
+<form name="WeaveQuestion" data-id="g2R7F4GR" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_g2R7F4GR" value="1">
+<div class="markdown">
+<p>
+Yes
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_g2R7F4GR" value="2">
+<div class="markdown">
+<p>
+No
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="g2R7F4GR_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_g2R7F4GR']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#g2R7F4GR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#g2R7F4GR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-289" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.0.2</span> Question</h6>
+<p>for the equation <span class="math display">\[~
+x^2y + 2y - 4 x = 0,
+~\]</span></p>
+<p>If <span class="math inline">\(x=4\)</span>, what is a value for <span class="math inline">\(y\)</span> such that <span class="math inline">\((x,y)\)</span> is a point on the graph of the equation?</p>
+<hr />
+<form name="WeaveQuestion" data-id="1nENZUYc" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="1nENZUYc" type="number" class="form-control"></p>
+</div>
+<div id="1nENZUYc_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#1nENZUYc').on('change', function() {
+correct = Math.abs(this.value - 0.8888888888888888) <= 0.001;
+
+if(correct) {
+$('#1nENZUYc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#1nENZUYc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-290" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.0.3</span> Question</h6>
+<p>For the equation <span class="math display">\[~
+(y-5)\cdot \cos(4\cdot \sqrt{(x-4)^2 + y^2)} =  x\cdot\sin(2\sqrt{x^2 + y^2})
+~\]</span></p>
+<p>is the point <span class="math inline">\((5,0)\)</span> a solution?</p>
+<hr />
+<form name="WeaveQuestion" data-id="pQBAvNlE" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_pQBAvNlE" value="1">
+<div class="markdown">
+<p>
+Yes
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_pQBAvNlE" value="2">
+<div class="markdown">
+<p>
+No
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="pQBAvNlE_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_pQBAvNlE']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#pQBAvNlE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#pQBAvNlE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-291" class="section level5">
+<h5><span class="header-section-number">25.7.0.0.1</span> Question</h5>
+<p>Let <span class="math inline">\((x/3)^2 + (y/2)^2 = 1\)</span>. Find the slope of the tangent line at the point <span class="math inline">\((3/\sqrt{2}, 2/\sqrt{2})\)</span>.</p>
+<hr />
+<form name="WeaveQuestion" data-id="rnVULMs9" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="rnVULMs9" type="number" class="form-control"></p>
+</div>
+<div id="rnVULMs9_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#rnVULMs9').on('change', function() {
+correct = Math.abs(this.value - -0.6666666666666666) <= 0.001;
+
+if(correct) {
+$('#rnVULMs9_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#rnVULMs9_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+<div id="question-292" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.1.1</span> Question</h6>
+<p>The <a href="http://www-history.mcs.st-and.ac.uk/Curves/Lame.html">lame</a> curves satisfy: <span class="math display">\[~
+(\frac{x}{a})^n + (\frac{y}{b})^n = 1.
+~\]</span></p>
+<p>An ellipse is when <span class="math inline">\(n=1\)</span>. Take <span class="math inline">\(n=3\)</span>, <span class="math inline">\(a=1\)</span>, and <span class="math inline">\(b=2\)</span>.</p>
+<p>Find a <em>positive</em> value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=1/2\)</span>.</p>
+<hr />
+<form name="WeaveQuestion" data-id="s37cDQGu" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="s37cDQGu" type="number" class="form-control"></p>
+</div>
+<div id="s37cDQGu_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#s37cDQGu').on('change', function() {
+correct = Math.abs(this.value - 1.9129311827723892) <= 0.001;
+
+if(correct) {
+$('#s37cDQGu_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#s37cDQGu_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+<p>What expression gives <span class="math inline">\(dy/dx\)</span>?</p>
+<hr />
+<form name="WeaveQuestion" data-id="7sPK4Gt1" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_7sPK4Gt1" value="1">
+<div class="markdown">
+<p><span class="math inline">\(-(x/a)^n / (y/b)^n\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_7sPK4Gt1" value="2">
+<div class="markdown">
+<p><span class="math inline">\(-n(x/a)^{n-1}(1/a) / (n(y/b)^{n-1}(1/b))\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_7sPK4Gt1" value="3">
+<div class="markdown">
+<p><span class="math inline">\(b \cdot (1 - (x/a)^n)^{1/n}\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="7sPK4Gt1_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_7sPK4Gt1']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#7sPK4Gt1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#7sPK4Gt1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-293" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.1.2</span> Question</h6>
+<p>Let <span class="math inline">\(y - x^2 = -\log(x)\)</span>. At the point <span class="math inline">\((1/2, 0.9431...)\)</span>, the graph has a tangent line. Find this line, then find its intersection point with the <span class="math inline">\(y\)</span> axes.</p>
+<p>This intersection is:</p>
+<hr />
+<form name="WeaveQuestion" data-id="Jn0TVyus" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="Jn0TVyus" type="number" class="form-control"></p>
+</div>
+<div id="Jn0TVyus_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#Jn0TVyus').on('change', function() {
+correct = Math.abs(this.value - 1.4431471805599454) <= 0.001;
+
+if(correct) {
+$('#Jn0TVyus_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#Jn0TVyus_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+</div>
+<div id="question-294" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.1.3</span> Question</h6>
+<p>The <a href="http://www-history.mcs.st-and.ac.uk/Curves/Witch.html">witch</a> of <a href="http://www.maa.org/publications/periodicals/convergence/mathematical-treasures-maria-agnesis-analytical-institutions">Agnesi</a> is the curve given by the equation <span class="math display">\[~
+y(x^2 + a^2) = a^3.
+~\]</span></p>
+<p>If <span class="math inline">\(a=1\)</span>, numerically find a a value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x=2\)</span>.</p>
+<hr />
+<form name="WeaveQuestion" data-id="n43EcEXJ" data-controltype="numeric">
+<div class="form-group">
+<div class="controls">
+<div class="input-group">
+<p><input id="n43EcEXJ" type="number" class="form-control"></p>
+</div>
+<div id="n43EcEXJ_message">
+
+</div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#n43EcEXJ').on('change', function() {
+correct = Math.abs(this.value - 0.2) <= 0.001;
+
+if(correct) {
+$('#n43EcEXJ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#n43EcEXJ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+<hr />
+<p>What expression yields <span class="math inline">\(dy/dx\)</span> for this curve:</p>
+<hr />
+<form name="WeaveQuestion" data-id="WvAkob5D" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_WvAkob5D" value="1">
+<div class="markdown">
+<p><span class="math inline">\(a^3/(x^2 + a^2)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_WvAkob5D" value="2">
+<div class="markdown">
+<p><span class="math inline">\(-2xy/(x^2 + a^2)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_WvAkob5D" value="3">
+<div class="markdown">
+<p><span class="math inline">\(2xy / (x^2 + a^2)\)</span></p>
+</div>
+<p></label></p>
+</div>
+<div id="WvAkob5D_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_WvAkob5D']").on("change", function() {
+correct = this.value == 2;
+
+if(correct) {
+$("#WvAkob5D_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#WvAkob5D_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+</div>
+<div id="question-295" class="section level6">
+<h6><span class="header-section-number">25.7.0.0.1.4</span> Question</h6>
+<p>For the equation of an ellipse: <span class="math display">\[~
+(\frac{x}{a})^2 + (\frac{y}{b})^2 = 1,
+~\]</span></p>
+<p>compute <span class="math inline">\(d^2y/dx^2\)</span>. Is this the answer? <span class="math display">\[~
+\frac{d^2y}{dx^2} = -\frac{b^2}{a^2\cdot y} - \frac{b^4\cdot x^2}{a^4\cdot y^3} = -\frac{1}{y}\frac{b^2}{a^2}(1 + \frac{b^2 x^2}{a^2 y^2}).
+~\]</span></p>
+<hr />
+<form name="WeaveQuestion" data-id="j0TfRD6D" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_j0TfRD6D" value="1">
+<div class="markdown">
+<p>
+Yes
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_j0TfRD6D" value="2">
+<div class="markdown">
+<p>
+No
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="j0TfRD6D_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_j0TfRD6D']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#j0TfRD6D_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#j0TfRD6D_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<p>If <span class="math inline">\(y&gt;0\)</span> is the sign positive or negative?</p>
+<hr />
+<form name="WeaveQuestion" data-id="hhTUZKTH" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_hhTUZKTH" value="1">
+<div class="markdown">
+<p>
+positive
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_hhTUZKTH" value="2">
+<div class="markdown">
+<p>
+negative
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_hhTUZKTH" value="3">
+<div class="markdown">
+<p>
+Can be both
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="hhTUZKTH_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_hhTUZKTH']").on("change", function() {
+correct = this.value == 1;
+
+if(correct) {
+$("#hhTUZKTH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#hhTUZKTH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<p>If <span class="math inline">\(x&gt;0\)</span> is the sign positive or negative?</p>
+<hr />
+<form name="WeaveQuestion" data-id="G19gIOHc" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_G19gIOHc" value="1">
+<div class="markdown">
+<p>
+positive
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_G19gIOHc" value="2">
+<div class="markdown">
+<p>
+negative
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_G19gIOHc" value="3">
+<div class="markdown">
+<p>
+Can be both
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="G19gIOHc_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_G19gIOHc']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#G19gIOHc_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#G19gIOHc_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+<p>When <span class="math inline">\(x&gt;0\)</span>, the graph of the equation is…</p>
+<hr />
+<form name="WeaveQuestion" data-id="wN5Umaor" data-controltype="radio">
+<div class="form-group">
+<div class="radio">
+<label> <input type="radio" name="radio_wN5Umaor" value="1">
+<div class="markdown">
+<p>
+concave up
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_wN5Umaor" value="2">
+<div class="markdown">
+<p>
+concave down
+</p>
+</div>
+<p></label></p>
+</div>
+<div class="radio">
+<label> <input type="radio" name="radio_wN5Umaor" value="3">
+<div class="markdown">
+<p>
+both concave up and down
+</p>
+</div>
+<p></label></p>
+</div>
+<div id="wN5Umaor_message">
+
+</div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_wN5Umaor']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#wN5Umaor_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#wN5Umaor_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+<hr />
+
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="lhopitals-rule.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="related-rates.html" class="navigation navigation-next " aria-label="Next page""><i class="fa fa-angle-right"></i></a>
+
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

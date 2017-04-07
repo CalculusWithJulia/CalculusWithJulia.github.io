@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 Related rates problems involve two (or more) unknown quantities that
@@ -98,7 +98,7 @@ Now to answer the question, when the width is 8, we must have that $t$ is:
 
 ```
 using Roots
-Base.ctranspose(f::Function) = D(F)         # so f' works in place of D(f)
+Base.ctranspose(f::Function) = D(f)         # so f' works in place of D(f)
 tstar = fzero(x -> w(x) - 8, [0, 4])		# or solve by hand to get 3/2
 ```
 
@@ -136,7 +136,7 @@ How can this relationship be summarized? Well, let's go back to what we know, th
 
 ```
 using SymPy
-t = symbols("t", real=true)
+@vars t
 diff(A(t), t)
 ```
 
@@ -226,8 +226,8 @@ have fairly explicit function for $x$ and $y$, we will use `SymPy` to
 do this.
 
 ```
-t = symbols("t", real=true)
-theta = symbols("theta", cls=SymFunction)
+@vars t
+theta = SymFunction("theta")
 
 v0 = 5
 x(t) = 50t
@@ -243,7 +243,7 @@ dtheta = solve(diff(eqn, t), thetap)[1]
 We could proceed directly by evaluating:
 
 ```
-d2theta = subs(diff(dtheta, t), thetap, dtheta)
+d2theta = diff(dtheta, t)(thetap => dtheta)
 ```
 
 That is not so tractable, however.
@@ -255,7 +255,7 @@ be $100 - x(t)$ divided by the length of the hypotenuse. So we can
 substitute:
 
 ```
-dtheta = subs(dtheta, cos(theta(t))^2, (100 -x(t))^2/(y(t)^2 + (100-x(t))^2))
+dtheta = dtheta(cos(theta(t))^2 => (100 -x(t))^2/(y(t)^2 + (100-x(t))^2))
 ```
 
 

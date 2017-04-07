@@ -1,8 +1,8 @@
 # Parametrized curves in two dimensions
 
 ```nocode, noout
-using Plots
-backend(:gadfly)
+using Plots, QuadGK
+plotly()
 ```
 
 For two functions $x(t)$ and $y(t)$, their parametric plot over the interval $[a,b]$ is the graph of $(x(t), y(t))$ for $t$ in $[a,b]$.
@@ -126,12 +126,13 @@ The second derivative, $\vec{r}''(t)$, can be defined in an analogous manner tho
 But we have by the chain rule that $dy/dx = (dy/dt) / (dx/dt)$ (that is the slope of the tangent line is just $y'(t)/x'(t)$). This gives
 
 $$~
-\frac{d^2y}{dx^2}
-= \frac{d}{dx}\frac{dy}{dx}
-= \frac{d}{dt}(\frac{dy}{dx}) / \frac{dx}{dt}
-= \frac{d}{dt}(\frac{dy}{dt} / \frac{dx}{dt}) / \frac{dx}{dt}
-= \frac{y'' x' - y' x''}{(x'')^2} / (x''(t))
-= \frac{y'' x' - y' x''}{(x'')^3}.
+\begin{align}
+\frac{d^2y}{dx^2} &= \frac{d}{dx}\frac{dy}{dx}\\
+&= \frac{d}{dt}(\frac{dy}{dx}) / \frac{dx}{dt}\\
+&= \frac{d}{dt}(\frac{dy}{dt} / \frac{dx}{dt}) / \frac{dx}{dt}\\
+&= \frac{y'' x' - y' x''}{(x'')^2} / (x''(t))\\
+&= \frac{y'' x' - y' x''}{(x'')^3}.
+\end{align}
 ~$$
 
 (The expression $y'' x' - y' x''$ can be written as the [determinant](http://en.wikipedia.org/wiki/Determinant) of the matrix $[\vec{r}'(t) \quad\vec{r}''(t)]$.)
@@ -527,7 +528,7 @@ x(t) = sin(t)^2
 y(t) = sin(t^2)
 a,b = 0, 1
 f(x,y) = x - y
-val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -542,7 +543,7 @@ x(t) = 10t
 y(t) = 10t - 16t^2
 a,b = sort(fzeros(y))
 f(x,y) = 1
-val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -555,7 +556,7 @@ x(t) = 10t
 y(t) = 10t - 16t^2
 a,b = sort(fzeros(y))
 f(x,y) = 1/(y+1)
-val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 

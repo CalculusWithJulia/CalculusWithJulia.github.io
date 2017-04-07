@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
 ```
 
 A function is continuous at $c$ if $f(c+h) - f(c)$ goes to $0$ as $h$ goes to $0$,
@@ -187,7 +187,7 @@ will be a zero of the derivative. We can check for these with:
 using Roots
 Base.ctranspose(f::Function) = D(f)    # for f' instead of D(f)
 f(x) = x^2 * exp(-x)
-xs = fzeros(f', 0, 5)
+cps = fzeros(f', 0, 5)
 ```
 
 We get $0$ and $2$ are critical points. The endpoints are $0$ and
@@ -200,13 +200,29 @@ f(0), f(2), f(5)
 
 We see that $f(2)$ is then the maximum.
 
-A few things. First, `fzeros` can miss some roots, in particular roots that just touch $0$. We should graph to verify it didn't. Second, it can be easier sometimes to check the values using a comprehension:
+A few things. First, `fzeros` can miss some roots, in particular roots
+that just touch $0$. We should graph to verify it didn't. Second, it
+can be easier sometimes to check the values using the "dot"
+notation. If `f`, `a`,`b` are the function and the interval, then this
+would typically follow this pattern:
 
 ```
-[f(x) for x in [0,2,5]]
+a, b= 0, 5
+cps = fzeros(f', a, b)
+f.(cps), f(a), f(b)
 ```
 
-Though in this case, that was more typing.
+For this problem, we have the left endpoint repeated, but in general
+this won't be a point where the derivative is zero.
+
+```
+note("""
+
+If you don't like how the output has the values at critical points in a vector, the following, though a bit cryptic, could be done: `f.( (cps..., a, b) )`
+
+""")
+```
+
 
 ##### Example
 
@@ -222,7 +238,7 @@ cps = fzeros(f', 0, 2)
 And checking values gives:
 
 ```
-f(0), f(2), map(f, cps)
+f.(cps), f(0), f(2)
 ```
 
 Here the maximum occurs at an endpoint. The critical point $c=0.67\dots$
@@ -314,12 +330,12 @@ a, b = -2, 1.75
 m = (f(b) - f(a)) / (b-a)
 cps = fzeros(x -> f'(x) - m, a, b)
 
-p = plot(f, a-1, b+1, linewidth=3, legend=false)
-plot!(x -> f(a) + m*(x-a), a-1, b+1, linewidth=3, color=:orange)
+p = plot(f, a-1, b+1,         linewidth=3, legend=false)
+plot!(x -> f(a) + m*(x-a),    linewidth=3, color=:orange)
 scatter!([a,b], [f(a), f(b)])
 
 for cp in cps
-  plot!(x -> f(cp) + f'(cp)*(x-cp), a-1, b+1, color=:red)
+  plot!(x -> f(cp) + f'(cp)*(x-cp), color=:red)
 end
 Outputonly(p)  
 ```
@@ -340,7 +356,7 @@ The mean value is an extremely useful tool for some proofs.
 
 
 For example, suppose we have a function $f(x)$ and we know that the
-derivative is always $0$. What can we say about the function?
+derivative is **always** $0$. What can we say about the function?
 
 Well, constant functions have derivatives that are constantly $0$. But
 do others? Suppose we know $f'(x)=0$. Take any two values $a$ and
@@ -348,7 +364,7 @@ $b$. Since $f'(x)$ always exists, $f(x)$ is always differentiable, and
 hence always continuous. So on $[a,b]$ the conditions of the mean
 value theorem apply. So there is a $c$ with $(f(b) - f(a)) / (b-a) =
 f'(c) = 0$. But this would imply $f(b) - f(a)=0$. That is $f(x)$ is a
-constant, as for any $a$ and $b$, $f(a)=f(b)$. 
+constant, as for any $a$ and $b$, as $f(a)=f(b)$. 
 
 ### The Cauchy mean value theorem
 
@@ -411,7 +427,7 @@ m = (f(b) - f(a))/(g(b) - g(a))
 cps = fzeros(x -> f'(x)/g'(x) - m, -pi/2, pi/2)
 Delta = (0 + m * (c - 0)) - (g(c))
 
-p = plot(g, f, -pi/2, pi/2, linewidth=3)
+p = plot(g, f, -pi/2, pi/2, linewidth=3, legend=false)
 plot!(x -> f(a) + m * (x - g(a)), -1, 1, linewidth=3, color=:red)
 scatter!([g(a),g(b)], [f(a), f(b)])
 for c in cps

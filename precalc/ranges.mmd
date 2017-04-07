@@ -3,35 +3,35 @@
 Sequences of numbers are prevalent in math. A simple one is just counting by ones:
 
 $$~
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, \dots
 ~$$
 
 Or counting by sevens:
 
 $$~
-7, 14, 21, 28, 35, 42, 49
+7, 14, 21, 28, 35, 42, 49, \dots
 ~$$
 
 More challenging for humans is [counting backwards](http://www.psychpage.com/learning/library/assess/mse.htm) by 7:
 
 $$~
-100, 93, 86, 79, ...
+100, 93, 86, 79, \dots
 ~$$
 
-These are examples of [arithmetic sequences](http://en.wikipedia.org/wiki/Arithmetic_progression). The form of these is:
+These are examples of [arithmetic sequences](http://en.wikipedia.org/wiki/Arithmetic_progression). The form of the first $n+1$ terms in such a sequence is:
 
 $$~
-a_0, a_0 + h, a_0 +2h, a_0 + 3h, \dots, a_0 + nh
+a_0, a_0 + h, a_0 + 2h, a_0 + 3h, \dots, a_0 + nh
 ~$$
 
 
-The formula for the $n$th term can be written in terms of $a_0$, or
+The formula for the $a_n$th term can be written in terms of $a_0$, or
 any other $0 < m \leq n$ with $a_n = a_m + (n-m)\cdot h$.
 
 
 A typical question might be: The first term of an arithmetic sequence
 is equal to 200 and the common difference is equal to -10. Find the
-value of the 20th term. We could find this using $a_n = a_0 + n\cdot h$:
+value of $a_{20}$. We could find this using $a_n = a_0 + n\cdot h$:
 
 ```
 a0, h, n = 200, -10, 20
@@ -40,7 +40,7 @@ a0 + n * h
 
 More complicated questions involve solving for an unknown first, as
 with: an arithmetic sequence has a common difference equal to 10 and
-its 6th term is equal to 52. Find its 15th term. Here we have to
+its 6th term is equal to 52. Find its 15th term, $a_{15}$. Here we have to
 answer: $a_0 + 15 \cdot 10$, but to find $a_0$, we use $52 = a_0 +
 6\cdot(10)$. This yields $a_0=-8$, and so:
 
@@ -51,7 +51,7 @@ a0 + n * h
 
 
 Rather than express sequences by the $a_0$, $h$, and $n$, `Julia` uses
-the starting point (`a`), the difference (`h`) and a suggested
+the starting point (`a`), the difference (`h`) and a *suggested*
 stopping value (`b`).  That is, we need three values to specify these
 ranges of numbers: a `start`, a `step`, and an `endof`. `Julia` gives
 a convenient syntax for this: `a:h:b`. When the difference is just $1$, all
@@ -63,8 +63,8 @@ numbers between the start and end are specified by `a:b`, as in
 
 But wait, nothing printed? This is because `1:10` is efficiently
 stored. Basically, only the current state and a means to generate the
-next values are kept. To expand the values, you have to ask for them
-to be `collect`ed:
+next value are kept. To expand the values, you have to ask for them
+to be `collect`ed (though this typically isn't needed):
 
 ```
 collect(1:10)
@@ -105,16 +105,16 @@ general styles to modify a sequence to produce a new sequence.
 For example, another way to get the values between 0 and 100 that are
 multiples of 7 is to start with all 101 values and throw out those
 that don't match. To check if a number is divisible by $7$, we could
-use the `%`operator for modulo division (`m%n` is the remainder when
-dividing `m` by `n`). Multiples of `7` match `m % 7 == 0`. Checking
-for divisibility by seven is unusual enough there is nothing built in
-for that, but checking for division by $2$ is common, and for that,
-there is a built-in function `iseven`.
+use the `rem` function. It gives the remainder upon division.
+Multiples of `7` match `rem(m, 7) == 0`. Checking for divisibility by
+seven is unusual enough there is nothing built in for that, but
+checking for division by $2$ is common, and for that, there is a
+built-in function `iseven`.
 
 The act of throwing out elements of a collection based on some
 condition is called *filtering*. The `filter` function does this in
 `Julia`. The basic syntax being
-`filter(predicate_function,collection)`.
+`filter(predicate_function, collection)`.
 The "`predicate_function`" is one that returns either
 `true` or `false`, such as `iseven`. The output of `filter` consists
 of the new collection of values -- those where the predicate returns `true`.
@@ -132,9 +132,11 @@ requires us to write a function akin to `iseven`, which isn't hard (e.g.,
 `is_seven(x)=x%7==0`), but isn't something we continue with just yet.
 
 For another example, here is an inefficient way to list the prime
-numbers between 100 and 200 using the built-in `isprime` function:
+numbers between 100 and 200 using the `isprime` function from the
+`Primes` package (which may need installation):
 
 ```
+using Primes
 filter(isprime, 100:200)
 ```
 
@@ -237,10 +239,80 @@ the extra prefix of `T[]` can be used, where `T` is the desired
 type. We will see that this will be needed at times with symbolic math.
 
 
+## Generators
+
+A typical pattern would be to generate a collection of numbers and then apply a function to them. For example, here is one way to sum the powers of `2`:
+
 ```
-alert("""
-The `map` function. Using a comprehension is very convenient when the expression is to be typed in. However if the expression is a function call, then the `map` function yields a similar result and has a more convenient notation: `map(f, collection)` will also produce the output of `[f(x) for x in collection]`.
-""")
+sum([2^i for i in 1:10])
+```
+
+Conceptually this is easy to understand, but computationally it is a
+bit inefficient. The generator syntax allows this type of task to be
+done more efficiently. To use this syntax, we just need to drop the
+`[]`:
+
+```
+sum(2^i for i in 1:10)
+```
+
+### Filtering generated expressions
+
+Both comprehensions and generators allow for filtering through the keyword `if`. The following shows *one* way to add the prime numbers in $[1,100]$:
+
+```
+sum(p for p in 1:100 if isprime(p))
+```
+
+
+The value on the other side of `if` should be either `true` or `false` for a given `p`. The `isprime` function is a predicate function and returns a logical value. In this example, we use the fact that `rem(k, 7)` returns the remainder found from dividing `k` by `7`, and so is `0` when `k` is a multiple of `7`:
+
+```
+sum(k for k in 1:100 if rem(k,7) == 0)  ## add multiples of 7
+```
+
+#### Example
+
+This example of Stefan Karpinski comes from a
+[blog](http://julialang.org/blog/2016/10/julia-0.5-highlights) post
+highlighting changes to the `Julia` language with version
+`v"0.5.0"`. It involves making change. First, a simple question: using
+pennies, nickels, dimes, and quarters how many different ways can we
+generate one dollar? Clearly 100 pennies, or 20 nickels, or 10 dimes,
+or 4 quarters will do this, so the answer is atleast four, but how
+much more than four?
+
+Well, we can use a comprehension to enumerate the
+possibilities. First, we either have 0,1,2,3, or 4 quarters, or 0, 25
+cents, 50 cents, 75 cents, or a dollar's worth. If we have, say, 1
+quarter, then we need to make up 75 cents with the rest. If we had 3
+dimes, then we need to make up 45 cents out of nickels and pennies, 
+if we then had 6 nickels, we know we must need 15 pennies.
+
+
+The following expression shows how this can be done through
+enumeration. Here `q` is the amount contributed by quarters, `d` the
+amount from dimes, `n` the amount from nickels, and `p` the amount from
+pennies. `q` ranges over $0, 25, 50, 75, 100` or `0:25:100`, etc. If
+we know that the sum of quarters, dimes, nickels contributes a certain
+amount, then the number of pennies must round things up to 100.
+
+```
+[(q, d, n, p) for q = 0:25:100 for d = 0:10:(100 - q) for n = 0:5:(100 - q - d) for p = (100 - q - d - n)]
+```
+
+We see 242 cases, each distinct. The expression reads naturally. It
+introduces the use of multiple `for` statements, each subsequent one
+depending on the value of the previous (working left to right). Now
+suppose we want to ensure that the amount of pennies is less than the
+amount from nickels, etc. We could use `filter` somehow to do this for
+our last answer, but using `if` allows for filtering while the events
+are generating. Here our condition is simply expressed: `q > d > n >
+p`:
+
+
+```
+[(q, d, n, p) for q = 0:25:100 for d = 0:10:(100 - q) for n = 0:5:(100 - q - d) for p = (100 - q - d - n) if q > d > n > p]
 ```
 
 ## Random numbers

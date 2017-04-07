@@ -1,0 +1,1052 @@
+
+# ODEs
+
+Some relationships are easiest to describe in terms of derivatives. For example:
+
+  * $$
+    F=ma
+    $$
+
+    , One of Newton's famous laws, describes the force on an object of mass $m$ in terms of the acceleration. The acceleration is the derivative of velocity, which in turn is the derivative of position. So if we know the rates of change of $v(t)$ or $x(t)$, we can differentiate to find $F$.
+
+  * Newton's law of [cooling](http://tinyurl.com/z4lmetp). This describes the temperature change in an object due to a difference in temperature with the object's surroundings. The formula being, $T'(t) = -r (T(t) - T_a)$, where $T(t)$ is temperature at time $t$ and $T_a$ the ambient temperature.
+  * [Hooke's law](http://tinyurl.com/kbz7r8l) relates force on an object to the position on the object, through $F = k x$. This is appropriate for many systems involving springs. Combined with Newton's law $F=ma$, this leads to an equation that $x$ must satisfy: $m x''(t) = k x(t)$.
+
+## Motion with constant acceleration
+
+Let's consider the case of constant acceleration. This describes how nearby objects fall to earth, as the force due to gravity is assumed to be a constant, so the acceleration is the constant force divided by the constant mass.
+
+With constant acceleration, what is the velocity?
+
+As mentioned, we have $dv/dt = a$ for any velocity function $v(t)$, but in this case, the right hand side is assumed to be constant. How does this restrict the possible functions, $v(t)$, that the velocity can be?
+
+Here we can integrate to find that any answer must look like the following for some constant of integration:
+$$~
+v(t) = \int \frac{dv}{dt} dt = \int a dt = at + C.
+~$$
+
+If we are given the velocity at a fixed time, say $v(t_0) = v_0$, then we can use the definite integral to get:
+$$~
+v(t) - v(t_0) = \int_{t_0}^t a dt = at - a t_0.
+~$$
+
+Solving, gives:
+$$~
+v(t) = v_0 + a (t - t_0).
+~$$
+
+This expresses the velocity at time $t$ in terms of the initial velocity, the constant acceleration and the time duration.
+
+A natural question might be, is this the *only* possible answer? There are a few useful ways to think about this.
+
+First, suppose there were another, say $u(t)$. Then define $w(t)$ to be the difference: $w(t) = v(t) - u(t)$. We would have that $w'(t) = v'(t) - u'(t) = a - a = 0$. But from the mean value theorem, a function whose derivative is *continuously* $0$, will necessarily be a constant. So at most, $v$ and $u$ will differ by a constant, but if both are equal at $t_0$, they will be equal for all $t$.
+
+Second, since the derivative of any solution is a continous function, it is true by the fundamental theorem of calculus that it *must* satisfy the form for the antiderivative. The initial condition makes the answer unique, as the indeterminate $C$ can take only one value.
+
+Summarizing, we have
+
+> If $v(t)$ satisfies the equation: $~ v'(t) = a, \quad v(t_0) = v_0,~$ then the unique solution will be $v(t) = v_0 + a (t - t_0)$.
+
+
+Next, what about position? Here we know that the time derivative of position yields the velocity, so we should have that the unknown position function satisfies this equation and initial condition:
+$$~
+x'(t) = v(t) = v_0 + a (t - t_0), \quad x(t_0) = x_0.
+~$$
+
+Again, we can integrate to get an answer for any value $t$:
+$$~
+x(t) - x(t_0) = \int_{t_0}^t \frac{dv}{dt} dt = (v_0t + \frac{1}{2}a t^2 - at_0 t) |_{t_0}^t =
+(v_0 - at_0)(t - t_0) + \frac{1}{2} a (t^2 - t_0^2).
+~$$
+
+There are three constants: the initial value for the independent variable, $t_0$, and the two initial values for the velocity and position, $v_0, x_0$.  Assuming $t_0 = 0$, we can simplify the above to get a formula familiar from introductory physics:
+$$~
+x(t) = x_0 + v_0 t + \frac{1}{2} at^2.
+~$$
+
+Again, the mean value theorem can show that with the initial value specified this is the only possible solution.
+
+## First-order initial-value problems
+
+The two problems just looked at can be summarized by the following. We are looking for solutions to an equation of the form (taking $y$ and $x$ as the variables, in place of $x$ and $t$):
+$$~
+y'(x) = f(x), \quad y(x_0) = y_0.
+~$$
+
+This is called an *ordinary differential equation* (ODE), as it is an equation involving the ordinary derivative of an unknown function, $y$.
+
+This is called a first-order, ordinary differential equation, as there is only the first derivative involved.
+
+This is called an initial-value problem, as the value at the initial point $x_0$ is specified as part of the problem.
+
+### Examples
+
+Let's look at a few more examples, and then generalize.
+
+##### Newton's Law of Cooling
+
+Consider the ordinary differential equation given by Newton's law of cooling:
+$$~
+T'(t) = -r (T(t) - T_a), \quad T(0) = T_0
+~$$
+
+This equation is also first order, as it involves just the first derivative, but notice that on the right hand side is the function $T$, not the variable being differentiated against, $t$.
+
+As we have a difference on the right hand side, we rename the variable through $U(t) = T(t) - T_a$. Then, as $U'(t) = T'(t)$, we have the equation:
+$$~
+U'(t) = -r U(t), \quad U(0) = U_0.
+~$$
+
+This shows that the rate of change of $U$ depends on $U$. Large postive values indicate a negative rate of change – a push back towards the orgin, and large negative values of $U$ indicate a positive rate of change – again, a push back towards the origin. We shouldn't be surprised to either see a steady decay towards the origin, or oscillations about the origin.
+
+What will we find? This equation is different from the previous two equations, as the function $U$ appear on both sides. However, we can rearrange to get:
+$$~
+\frac{dU}{dt}\frac{1}{U(t)} = -r.
+~$$
+
+This suggests integrating both sides, as before. Here we do the "$u$"-substitution $u = U(t)$, so $du = U'(t) dt$:
+$$~
+-rt + C = \int \frac{dU}{dt}\frac{1}{U(t)} dt =
+\int \frac{1}{u}du = \log(u).
+~$$
+
+Solving gives: $u = U(t) = e^C e^{-rt}$. Using the initial condition forces $e^C = U(t_0) = T(0) - T_a$ and so our solution in terms of $T(t)$ is:
+$$~
+T(t) - T_a = (T_0 - T_a) e^{-rt}.
+~$$
+
+In words, the initial difference in temperature of the object and the environment exponentially decays to $0$.
+
+That is, as $t > 0$ goes to $\infty$, the right hand will go to $0$ for $r > 0$, so $T(t) \rightarrow T_a$ – the temperature of the object will reach the ambient temperature. The rate of this is largest when the difference between $T(t)$ and $T_a$ is largest, so when objects are cooling the statement "hotter things cool faster" is appropriate.
+
+A graph of the solution for $T_0=200$ and $T_a=72$ and $r=1/2$ is made as follows. We've added a few line segments from the defining formula, and see that they are indeed tangent to the solution found for the differential equation.
+<div id="689437a1-cc99-4db5-81f2-3aca0a8eb227" style="width:600px;height:400px;"></div>
+<script>
+PLOT = document.getElementById('689437a1-cc99-4db5-81f2-3aca0a8eb227');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[200.0,196.17939247316866,192.47282433597854,188.8768916841296,185.38829221474646,182.0038221937292,178.72037351362312,175.5349308393075,172.44456883888074,169.44644949719984,166.53781950960615,163.716007753445,160.97842283505648,158.32255070998463,155.74595237422017,153.24626162435607,150.82118288459887,148.46848909864067,146.18601968445563,143.97167855014243,141.82343216899116,139.73930771200645,137.71739123617178,135.7558259267918,133.85281039229767,132.00659700995013,130.21549032092082,128.47784547327794,126.79206671144652,125.15660591075591,123.56996115572903,122.03067536080732,120.53733493224516,119.08856846994462,117.6830455080385,116.31947529306512,114.99660559861279,113.71322157534514,112.46814463535179,111.26023136979927,110.08837249888836,108.95149185315393,107.84854538517106,106.77852021076059,105.74043367881302,104.73333246887688,103.75629171568264,102.80841415979833,101.88882932363691,100.99669271205829,100.13118503683246,99.29151146425116,98.47690088519707,97.68660520700058,96.9198986664333,96.1760771632079,95.45445761337191,94.75437732200164,94.0751933746204,93.41628204678186,92.77703823127656,92.15687488243533,91.55522247701947,90.97152849120258,90.40525689316364,89.85588765082548,89.32291625428643,88.80585325250678,88.30422380382434,87.81756723988659,87.34543664259851,86.88739843369832,86.44303197658328,86.0119291900208,85.59369417338937,85.18794284310582,84.79430257990431,84.41241188664385,84.04192005632945,83.68248685004264,83.33378218448496,82.99548582884816,82.66728711073203,82.34888463084036,82.03998598619273,81.74030750159797,81.44957396914283,81.16751839545645,80.8938817565186,80.62841275978654,80.3708676134221,80.12100980240687,79.8786098713401,79.64344521371972,79.41529986751299,79.19396431682915,78.9792352995117,78.77091562047387,78.56881397060573,78.37274475108659],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":4,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[188.45388666482563,186.10128289381905,183.74867912281246,181.39607535180588,179.0434715807993,176.69086780979273,174.33826403878615,171.98566026777956,169.63305649677298,167.28045272576642,164.92784895475984,162.57524518375325,160.22264141274667,157.8700376417401,155.51743387073353,153.16483009972694,150.81222632872036,148.4596225577138,146.10701878670721,143.75441501570063,141.40181124469404,139.0492074736875,136.6966037026809,134.34399993167432,131.99139616066773,129.63879238966118,127.28618861865459,124.933584847648,122.58098107664142,120.22837730563485,117.87577353462828,115.5231697636217,113.17056599261511,110.81796222160854,108.46535845060197,106.11275467959538,103.76015090858881,101.40754713758224,99.05494336657564,96.70233959556907,94.34973582456249,91.99713205355592,89.64452828254935,87.29192451154276,84.93932074053619,82.5867169695296,80.23411319852302,77.88150942751643,75.52890565650986,73.17630188550329,70.82369811449671,68.47109434349014,66.11849057248357,63.76588680147698,61.413283030470396,59.06067925946381,56.70807548845724,54.35547171745067,52.002867946444084,49.65026417543751,47.29766040443093,44.94505663342436,42.59245286241776,40.23984909141119,37.88724532040462,35.53464154939803,33.18203777839146,30.82943400738489,28.476830236378305,26.124226465371734,23.771622694365163,21.41901892335858,19.066415152351993,16.713811381345437,14.361207610338852,12.008603839332238,9.656000068325653,7.303396297319097,4.950792526312512,2.5981887553059266,0.24558498429937003,-2.107018786707215,-4.4596225577138,-6.812226328720357,-9.164830099726942,-11.517433870733527,-13.870037641740083,-16.22264141274667,-18.575245183753253,-20.92784895475981,-23.280452725766395,-25.63305649677301,-27.985660267779593,-30.33826403878615,-32.690867809792735,-35.04347158079932,-37.39607535180588,-39.74867912281246,-42.10128289381905,-44.4538866648256],"showlegend":true,"name":"y2","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(227, 111, 71, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[143.40165124749754,142.5361766869218,141.67070212634607,140.80522756577034,139.93975300519463,139.0742784446189,138.20880388404316,137.34332932346743,136.4778547628917,135.612380202316,134.74690564174026,133.88143108116452,133.0159565205888,132.15048196001308,131.28500739943735,130.4195328388616,129.55405827828588,128.68858371771017,127.82310915713444,126.9576345965587,126.09216003598297,125.22668547540725,124.36121091483153,123.4957363542558,122.63026179368006,121.76478723310434,120.89931267252862,120.03383811195289,119.16836355137715,118.30288899080143,117.4374144302257,116.57193986964998,115.70646530907425,114.84099074849851,113.97551618792279,113.11004162734707,112.24456706677134,111.3790925061956,110.51361794561988,109.64814338504415,108.78266882446843,107.9171942638927,107.05171970331698,106.18624514274124,105.32077058216552,104.45529602158979,103.58982146101405,102.72434690043833,101.8588723398626,100.99339777928688,100.12792321871115,99.26244865813543,98.39697409755969,97.53149953698397,96.66602497640824,95.8005504158325,94.93507585525678,94.06960129468105,93.20412673410533,92.3386521735296,91.47317761295388,90.60770305237814,89.74222849180242,88.87675393122669,88.01127937065095,87.14580481007523,86.28033024949951,85.41485568892378,84.54938112834805,83.68390656777233,82.8184320071966,81.95295744662087,81.08748288604514,80.22200832546942,79.3565337648937,78.49105920431795,77.62558464374223,76.7601100831665,75.89463552259078,75.02916096201504,74.16368640143932,73.29821184086359,72.43273728028787,71.56726271971213,70.70178815913641,69.83631359856068,68.97083903798496,68.10536447740924,67.2398899168335,66.37441535625777,65.50894079568205,64.6434662351063,63.77799167453058,62.912517113954856,62.04704255337913,61.1815679928034,60.316093432227674,59.45061887165195,58.58514431107622,57.71966975050049],"showlegend":true,"name":"y3","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(62, 164, 78, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[108.77407938350669,108.45568908581399,108.13729878812129,107.81890849042858,107.50051819273588,107.1821278950432,106.8637375973505,106.54534729965779,106.22695700196509,105.9085667042724,105.5901764065797,105.271786108887,104.9533958111943,104.6350055135016,104.3166152158089,103.99822491811621,103.6798346204235,103.3614443227308,103.0430540250381,102.72466372734542,102.40627342965271,102.08788313196001,101.76949283426731,101.45110253657461,101.13271223888191,100.81432194118922,100.49593164349652,100.17754134580382,99.85915104811112,99.54076075041843,99.22237045272573,98.90398015503303,98.58558985734032,98.26719955964762,97.94880926195493,97.63041896426223,97.31202866656953,96.99363836887683,96.67524807118414,96.35685777349144,96.03846747579874,95.72007717810604,95.40168688041334,95.08329658272065,94.76490628502795,94.44651598733525,94.12812568964254,93.80973539194984,93.49134509425716,93.17295479656445,92.85456449887175,92.53617420117905,92.21778390348636,91.89939360579366,91.58100330810096,91.26261301040826,90.94422271271556,90.62583241502287,90.30744211733017,89.98905181963747,89.67066152194477,89.35227122425206,89.03388092655938,88.71549062886668,88.39710033117397,88.07871003348127,87.76031973578858,87.44192943809588,87.12353914040318,86.80514884271048,86.48675854501778,86.16836824732509,85.84997794963239,85.53158765193969,85.21319735424699,84.89480705655428,84.5764167588616,84.2580264611689,83.9396361634762,83.6212458657835,83.30285556809079,82.9844652703981,82.6660749727054,82.3476846750127,82.02929437732,81.71090407962731,81.39251378193461,81.07412348424191,80.75573318654921,80.4373428888565,80.11895259116382,79.80056229347112,79.48217199577842,79.16378169808571,78.84539140039301,78.52700110270032,78.20861080500762,77.89022050731492,77.57183020962222,77.25343991192952],"showlegend":true,"name":"y4","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(195, 113, 210, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,50.0,100.0,150.0,200.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0","50","100","150","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0,6.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0","1","2","3","4","5","6"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+
+The above is implicitly assuming that there could be no other solution, than the one we found. Is that really the case? We will see that there is a theorem that can answer this, but in this case, the trick of taking the difference of two equations satisfying the equation leads to the equation $W'(t) = r W(t), \text{ and } W(0) = 0$. This equation has a general solution of $W(t) = Ce^{rt}$ and the initial condition forces $C=0$, so $W(t) = 0$, as before. Hence, the initial-value problem for Newton's law of cooling has a unique solution.
+
+In general, the equation could be written as (again using $y$ and $x$ as the variables):
+$$~
+y'(x) = g(y), \quad y(x_0) = y_0
+~$$
+
+This is called an *autonomous*, first-order ODE, as the right-hand side does not depend on $x$.
+
+Let $F(y) = \int_{y_0}^y du/g(u)$, then a solution to the above is $F(y) = x - x_0$, assuming $1/g(u)$ is integrable.
+
+##### Example Toricelli's Law
+
+[Toricelli's Law](http://tinyurl.com/hxvf3qp) describes the speed a jet of water will leave a vessel through an opening below the surface of the water. The formula is $v=\sqrt{2gh}$, where $h$ is the height of the water above the hole and $g$ the gravitational constant. This arises from equating the kinetic energy gained, $1/2 mv^2$ and potential energy lost, $mgh$, for the exiting water.
+
+An application of Torricelli's law is to describe the Volume of water in a tank over time, $V(t)$. Imagine a cylinder of cross sectional area $A$ with a hole of cross sectional diameter $a$ at the bottom, Then $V(t) = A h(t)$, with $h$ giving the height. The change in volume over $\Delta t$ units of time must be given by the value $a v(t) \Delta t$, or
+$$~
+V(t+\Delta t) - V(t) = -a v(t) \Delta t = -a\sqrt{2gh(t)}\Delta t
+~$$
+
+This suggests the following formula, written in terms of $h(t)$ should apply:
+$$~
+A\frac{dh}{dt} = -a \sqrt{2gh(t)}.
+~$$
+
+Rearranging, this gives an equation
+$$~
+\frac{dh}{dt} \frac{1}{\sqrt{h(t)}} = -\frac{a}{A}\sqrt{2g}.
+~$$
+
+Integrating both sides yields:
+$$~
+2\sqrt{h(t)} = -\frac{a}{A}\sqrt{2g} t + C.
+~$$
+
+If $h(0) = h_0 = V(0)/A$, we can solve for $C = 2\sqrt{h_0}$, or
+$$~
+h(t) = \sqrt{h_0} -\frac{1}{2}\frac{a}{A}\sqrt{2g} t.
+~$$
+
+Setting $h(t)=0$ and solving for $t$ shows that the time to drain the tank would be $(2A)/(a\sqrt{2g})\sqrt{h_0}$.
+
+##### Example
+
+Consider now the equation
+$$~
+y'(x) = y(x)^2, \quad y(x_0) = y_0.
+~$$
+
+This is called a *non-linear* ordinary differential equation, as the $y$ variable on the right hand side presents itself in a non-linear form (it is squared). These equations may have solutions that are not defined for all times.
+
+This particular problem can be solved as before by moving the $y^2$ to the left hand side and integrating to yield:
+$$~
+y(x) = - \frac{1}{C + x},
+~$$
+
+and with the initial condition:
+$$~
+y(x) = \frac{y_0}{1 - y_0(x - x_0)}.
+~$$
+
+This answer can demonstrate *blow-up*. That is, in a finite range for $x$ values, the $y$ value can go to infinity. For example, if the initial conditions are $x_0=0$ and $y_0 = 1$, then $y(x) = 1/(1-x)$ is only defined for $x \geq x_0$ on $[0,1)$, as at $x=1$ there is a vertical asymptote.
+
+## Separable equations
+
+We've seen equations of the form $y'(x) = f(x)$ and $y'(x) = g(y)$ both solved by integrating. The same tricks will work for equations of the form $y'(x) = f(x) \cdot g(y)$. Such equations are called *separable*.
+
+Basically, we equate up to constants
+$$~
+\int \frac{dy}{g(y)} = \int f(x) dx.
+~$$
+
+For example, suppose we have the equation
+$$~
+\frac{dy}{dx} = x \cdot y(x), \quad y(x_0) = y_0.
+~$$
+
+Then we can find a solution, $y(x)$ through:
+$$~
+\int \frac{dy}{y} = \int x dx,
+~$$
+
+or
+$$~
+\log(y) = \frac{x^2}{2} + C
+~$$
+
+Which yields:
+$$~
+y(x) = e^C e^{\frac{1}{2}x^2}.
+~$$
+
+Substituting in $x_0$ yields a value for $C$ in terms of the initial information $y_0$ and $x_0$.
+
+## Symbolic solutions
+
+Differential equations are classified according to their type. Different types have different methods for solution, when a solution exists.
+
+The first-order initial value equations we have seen can described generally by $y'(x) = F(y,x), \quad y(x_0)=x_0$. The equation is *linear* if the function $F$ is linear in $y$; it is *autonomous* if $F(y,x) = G(y)$ (a function of $y$ alone); it is *separable* if $F(y,x) = G(y)H(x)$.
+
+As seen, separable equations are approached by moving the "$y$" terms to one side, the "$x$" terms to the other and integrating. This also applies to autonomous equations then. There are other families of equation types that have exact solutions, and techniques for solution, summarized at this [Wikipedia page](http://tinyurl.com/zywzz4q).
+
+Rather than go over these various families, we demonstrate that `SymPy` can solve many of these equations symbolically.
+
+The `solve` function in `SymPy` solves equations for unknown *variables*. As a differential equation involves an unknown *function* there is a different function, `dsolve`. The basic idea is to describe the differential equation using a symbolic function and then call `dsolve` to solve the expression.
+
+Here is an example for the *logistic equation*
+$$~
+u'(x) = a u(1-u), \quad a > 0
+~$$
+
+Before beginning, we look at the form of the equation. When $u=0$ or $u=1$ the rate of change is $0$, so we expect the function might be bounded within that range. If not, when $u$ gets bigger than $1$, then the slope is negative and when $u$ gets less than $0$, the slope is positive, so there will atleast be a drift back to the range $[0,1]$. Let's see exactly what happens.
+
+We first load `SymPy` and then create a symbolic variable and function:
+
+```{r eval=FALSE}
+using SymPy
+x, y = symbols("x, y")
+a = symbols("a", positive=true)
+u = SymFunction("u")
+
+```
+                                    
+
+```{r eval=FALSE}
+## 
+```
+
+
+
+Our equation can be specified by an expression equaling $0$:
+
+```{r eval=FALSE}
+eqn = u'(x) - a * u(x) * (1 - u(x))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+Note that we evaluate the symbolic function at the variable `x` through the use of `u(x)` in the expression. Finally, we call `dsolve` to find a solution (if possible):
+
+```{r eval=FALSE}
+out = dsolve(eqn)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+This answer – to a first-order equation – has one free constant, `C_1`, which can be solved for from an initial condition. We can see that when $a > 0$, as $x$ goes to positive infinity the solution goes to $1$, and when $x$ goes to $-$ infinity, the solution goes to $0$ and otherwise is trapped in between, as expected.
+
+Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
+
+```{r eval=FALSE}
+eq = rhs(out)    # just the right hand side
+C1 = free_symbols(eq)[1]  # there are three
+c1 = solve(eq(x=>0) - 1//2, C1)
+
+```
+                                    
+
+```{r eval=FALSE}
+## \begin{bmatrix}-1\end{bmatrix}
+```
+
+
+
+And we plug in with:
+
+```{r eval=FALSE}
+eq(C1 => c1[1])
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are independent variable (`x`) and tuples of conditions of the form `(SymFunction, x0, y0)`:
+
+```{r eval=FALSE}
+x0, y0 = 0, 1//2
+dsolve(eqn, x, (u, x0, y0))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+##### Example: Hooke's law
+
+In the first example, we solved for position, $x(t)$, from an assumption of constant acceleration in two steps. The equation relating the two is a second-order equation: $x''(t) = a$, so two constants are generated. That a second-order equation could be reduced to two first-order equations is not happy circumstance, as it can always be done. Rather than show the technique though, we demonstrate that `SymPy` can also handle some second-order ODEs.
+
+Hooke's law relates the force on an object to its position via $F=ma = -kx$, or $x''(t) = -(k/m)x(t)$.
+
+Suppose $k > 0$. Then we can solve, similar to the above, with:
+
+```{r eval=FALSE}
+k, m = symbols("k, m", positive=true)
+eqn = u''(x) + k/m*u(x)
+dsolve(eqn)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+Here we find two constants, as anticipated, for we would guess that two integrations are needed in the solution.
+
+Suppose the spring were started by pulling it down to a bottom and releasing. The initial position at time $0$ would be $a$, say, and initial velocity $0$. Here we get the solution:
+
+```{r eval=FALSE}
+a = symbols("a", positive=true)
+dsolve(eqn, x, (u, 0, -a), (u', 0, 0))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+We get that the motion will follow $u(x) = -a \cos(\sqrt{k/m}x)$. This is simple oscillatory behavior. As the spring stretches, the force gets large enough to pull it back, and as it compresses the force gets large enough to push it back. The amplitude of this oscillation is $a$ and the period $2\pi/\sqrt{k/m}$. Larger $k$ values mean shorter periods; larger $m$ values mean longer periods.
+
+##### The pendulum
+
+The simple gravity [pendulum](http://tinyurl.com/h8ys6ts) is an idealization of a physical pendulum that models a "bob" with mass $m$ swinging on a massless rod of length $l$ in a frictionless world governed only by the gravitational constant $g$. The motion can be described by this differential equation for the angle, $\theta$, made from the vertical:
+$$~
+\theta''(t) + \frac{g}{l}\sin(\theta(t)) = 0
+~$$
+
+Can this second-order equation be solved by `SymPy`?
+
+```{r eval=FALSE}
+g, l = symbols("g, l", positive=true)
+eqn = u''(x) + g/l*sin(u(x))
+dsolve(eqn)
+
+```
+                                    
+
+```{r eval=FALSE}
+## PyError (:PyObject_Call) <type 'exceptions.NotImplementedError'>
+## NotImplementedError('solve: Cannot solve g*sin(u(x))/l + Derivative(u(x), x, x)',)
+##   File "/Users/verzani/.julia/v0.5/Conda/deps/usr/lib/python2.7/site-packages/sympy/solvers/ode.py", line 625, in dsolve
+##     x0=x0, n=n, **kwargs)
+##   File "/Users/verzani/.julia/v0.5/Conda/deps/usr/lib/python2.7/site-packages/sympy/solvers/deutils.py", line 235, in _desolve
+##     raise NotImplementedError(dummy + "solve" + ": Cannot solve " + str(eq))
+## 
+## 
+```
+
+
+
+That long error message can be summarized: no easy answer is forthcoming for this equation. In general, for the first-order initial value problem characterized by $y'(x) = F(y,x)$, there are conditions ([Peano](http://tinyurl.com/h663wba) and [Picard-Lindelof](http://tinyurl.com/3rbde5e)) that can guarantee the existence (and uniqueness) of equation locally, but there may not be an accompanying method to actually find it. This particular problem has a solution, but it can not be written in terms of elementary functions.
+
+However, as [Huygens](https://en.wikipedia.org/wiki/Christiaan_Huygens) first noted, if the angles involved are small, then we approximate the solution through the linearization $\sin(\theta(t)) \approx \theta(t)$. The resulting equation for an approximate answer is just that of Hooke:
+$$~
+\theta''(t) + \frac{g}{l}\theta(t) = 0
+~$$
+
+Here, the solution is in terms of sines and cosines, with period given by $T = 2\pi/\sqrt{k} =  2\pi\cdot\sqrt{l/g}$. The answer does not depend on the mass, $m$, of the bob nor the amplitude of the motion, provided the small-angle approximation is valid.
+
+If we pull the bob back an angle $a$ and release it then the initial conditions are $\theta(0) = a$ and $\theta'(a) = 0$. This gives the solution:
+
+```{r eval=FALSE}
+eqn = u''(x) + g/l * u(x)
+dsolve(eqn, x, (u, 0, a), (u', 0, 0))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+##### Example: Hanging cables
+
+A chain hangs between two supports a distance $L$ apart. What shape will it take if there are no forces outside of gravity acting on it? What about if the force is uniform along length of the chain, like a suspension bridge? How will the shape differ then?
+
+Let $y(x)$ describe the chain at position $x$, with $0 \leq X \leq L$, say. We consider first the case of the chain with no force save gravity. Let $w(x)$ be the density of the chain at $x$.
+
+The chain is in equlibrium, so tension, $T(x)$, in the chain will be in the direction of the derivative. Let $V$ be the vertical component and $H$ the horizontal component. With only gravity acting on the chain, the value of $H$ will be a constant. The value of $W$ will vary with position.
+
+At a point $x$, there is $s(x)$ amount of chain with weight $w \cdot s(x)$. The tension is in the direction of the tangent line, so:
+$$~
+\tan(\theta) = y'(x) = \frac{w s(x)}{H}.
+~$$
+
+In terms of an increment of chain, we have:
+$$~
+\frac{w ds}{H} = d(y'(x)).
+~$$
+
+That is the ratio of the vertical and horizontal tensions in the increment are in balance with the differential of the derivative.
+
+But $ds = \sqrt{dx^2 + dy^2} = \sqrt{dx^2 + y'(x)^2 dx^2} = \sqrt{1 + y'(x)^2}dx$, so we can simplify to:
+$$~
+\frac{w}{H}\sqrt{1 + y'(x)^2}dx =y''(x)dx.
+~$$
+
+This yields the second-order equation:
+$$~
+y''(x) = \frac{w}{H} \sqrt{1 + y'(x)}.
+~$$
+
+This equation can be solved exactly, though with some work, as a direct approach fails:
+
+```{r eval=FALSE}
+using SymPy
+x, w, H = symbols("x, w, H", positive=true)
+u = SymFunction("u")
+out = dsolve(u''(x) - w/H * sqrt(1 + u'(x)^2))
+
+```
+                                    
+
+```{r eval=FALSE}
+## PyError (:PyObject_Call) <type 'exceptions.NotImplementedError'>
+## NotImplementedError('solve: Cannot solve Derivative(u(x), x, x) - w*sqrt(Derivative(u(x), x)**2 + 1)/H',)
+##   File "/Users/verzani/.julia/v0.5/Conda/deps/usr/lib/python2.7/site-packages/sympy/solvers/ode.py", line 625, in dsolve
+##     x0=x0, n=n, **kwargs)
+##   File "/Users/verzani/.julia/v0.5/Conda/deps/usr/lib/python2.7/site-packages/sympy/solvers/deutils.py", line 235, in _desolve
+##     raise NotImplementedError(dummy + "solve" + ": Cannot solve " + str(eq))
+## 
+## 
+```
+
+
+
+Let $u = y'$, then we have $u'(x) = (w/H)\sqrt{1 + u(x)^2}$:
+
+```{r eval=FALSE}
+out = dsolve(u'(x) - w/H * sqrt(1 + u(x)^2))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+So $y'(x) = \sinh(C_1 + w*x/H)$. This can be solved by direct integration as there is no $u(x)$ term on the right hand side.
+
+```{r eval=FALSE}
+out1 = dsolve(u'(x) - rhs(out))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+The shape is a hyperbolic cosine, known as the catenary.
+
+If the chain has a uniform load, sufficient to make the weight of the chain neglible, then how does the above change? Then the vertical tension comes from $Udx$ and not $w ds$, so the equation becomes instead:
+$$~
+\frac{Udx}{H} = d(y'(x)).
+~$$
+
+This $y''(x) = U/H$, a constant. So it's answer will be a parabola.
+
+##### Example: projectile motion in a medium
+
+The first example describes projectile motion without air resistance. If we use $(x(t), y(t))$ to describe position at time $t$, the functions satisfy:
+$$~
+x''(t) = 0, \quad y''(t) = -g.
+~$$
+
+That is, the $x$ position – where no forces act – has $0$ acceleration, and the $y$ position – where the force of gravity acts – has constant acceleration, $-g$, where $g=9.8m/sec^2$ is the gravitational constant. These equations can be solved to give:
+$$~
+x(t) = x_0 + v_0 \cos(\alpha) t, \quad y(t) = y_0 + v_0\sin(\alpha)t - \frac{1}{2}g \cdot t^2.
+~$$
+
+Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(x)$:
+
+```{r eval=FALSE}
+x0, y0, v0, alpha, g = symbols("x0, y0, v0, alpha, g",real=true)
+x, y, t = symbols("x,  y, t")
+y = y0 + v0 * sin(alpha) * t - 1//2 * g * t^2
+ts = solve(x - (x0 + v0 * cos(alpha) *t), t)[1]
+y(t=> ts)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+The answer is a quadratic polyonmial in $x$ which gives the familiar parabolic motion for a trajectory.
+
+In a resistive medium, there are drag forces at play. If this force is proportional to the velocity, say, with proportion $\gamma$, then the equations become:
+$$~
+x''(t) = -\gamma x'(t), \quad y''(t) = -\gamma y'(t) -g, \quad x(0) = x_0, y(0)=y_0, x'(0) = v_0\cos(\alpha), y'(0) = v_0 \sin(\alpha).
+~$$
+
+We now attempt to solve these:
+
+```{r eval=FALSE}
+gamma = symbols("gamma")
+u = SymFunction("u")
+a1 = dsolve(u''(t) + gamma * u'(t),     t, (u, 0, x0), (u', 0, v0 * cos(alpha)))
+a2 = dsolve(u''(t) + gamma * u'(t) + g, t, (u, 0, y0), (u', 0, v0 * sin(alpha)))
+ts = solve(x - rhs(a1), t)[1]
+y = simplify(rhs(a2)(t => ts))
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+This gives $y$ as a function of $x$.
+
+There are a lot of symbols. Lets simplify by using constants $x_0=y_0=0$:
+
+```{r eval=FALSE}
+y = y(x0 => 0, y0 => 0)
+
+```
+                                    
+
+```{r eval=FALSE}
+## ... bug ...
+```
+
+
+What is the trajectory? We see that the `log` function part will have issues when $-\gamma x + v_0 \cos(\alpha) = 0$.
+
+If we fix some parameters, we can plot.
+
+```{r eval=FALSE}
+v_0, gam, alp = 200, 1/2, pi/4
+plot(y(v0=>v_0, gamma=>gam, alpha=>alp, g=>9.8), 0, v_0 * cos(alp) / gam - 1/10)
+
+```
+                                    
+<div id="4c3a2121-bca3-4e5f-b3ed-e0ccab4df359" style="width:600px;height:400px;"></div>
+<script>
+PLOT = document.getElementById('4c3a2121-bca3-4e5f-b3ed-e0ccab4df359');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[0.0,2.853975057506653,5.703871185221894,8.549603874159224,11.391085961477119,14.228227518182996,17.060935730834032,19.88911477684541,22.712665692987052,25.53148623661735,28.345470739167155,31.154509951348764,33.958490879522785,36.75729661260943,39.550806138881406,42.3388941519197,45.121430844954126,47.89828169274396,50.66930722008189,53.43436275592446,56.19329817206466,58.9459576051655,61.69217916086703,64.43179459856115,67.16462899529846,69.89050038714711,72.60921938616394,75.32058877095992,78.02440304864517,80.72044798571882,83.40850010522334,86.08832614720991,88.75968248925476,91.42231452342344,94.07595598569523,96.72032823342717,99.35513946594993,101.98008388283877,104.59484077378146,107.19907353326211,109.79242859248313,112.37453426004011,114.94499946183257,117.50341236951482,120.04933890544245,122.58232111052419,125.10187535961045,127.60749040700338,130.09862524230482,132.57470673407985,135.03512703562842,137.47924072344986,139.90636163465138,142.3157593644747,144.70665537914283,147.07821869218765,149.42956104407918,151.75973151507085,154.06771048935985,156.35240287451194,158.6126304630871,160.84712330285635,163.0545099170704,165.23330618585314,167.38190266255728,169.49855005305463,171.5813425291214,173.62819847628703,175.636838187753,177.6047579039548,179.52919945493653,181.40711458034758,183.23512276648609,185.00946113338833,186.72592450245116,188.37979324116517,189.9657457659368,191.47775161401242,192.9089396647262,194.25143424027416,195.49614920732665,196.6325264638108,197.64819974986005,198.52855663610717,199.25615928227876,199.8099655317147,200.16426159746715,200.28716786970205,200.13849501271207,199.6665787723992,198.80344761291303,197.45714400513248,195.49891552810706,192.74051923265534,188.89078083168187,183.4634515623518,175.5513443154314,163.1343890769202,139.883559131353,10.387792029069828],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,2.8559869946931213,5.711973989386243,8.567960984079363,11.423947978772485,14.279934973465608,17.135921968158726,19.99190896285185,22.84789595754497,25.703882952238093,28.559869946931215,31.41585694162433,34.27184393631745,37.12783093101058,39.9838179257037,42.839804920396816,45.69579191508994,48.55177890978306,51.407765904476186,54.263752899169305,57.11973989386243,59.97572688855554,62.83171388324866,65.68770087794178,68.5436878726349,71.39967486732803,74.25566186202116,77.11164885671428,79.9676358514074,82.8236228461005,85.67960984079363,88.53559683548676,91.39158383017988,94.247570824873,97.10355781956612,99.95954481425925,102.81553180895237,105.67151880364548,108.52750579833861,111.38349279303173,114.23947978772486,117.09546678241796,119.95145377711108,122.80744077180421,125.66342776649732,128.51941476119046,131.37540175588356,134.23138875057668,137.0873757452698,139.94336273996294,142.79934973465606,145.6553367293492,148.5113237240423,151.36731071873544,154.22329771342856,157.07928470812166,159.9352717028148,162.7912586975079,165.647245692201,168.50323268689417,171.35921968158726,174.21520667628042,177.0711936709735,179.92718066566664,182.78316766035977,185.63915465505286,188.495141649746,191.35112864443911,194.20711563913224,197.06310263382534,199.9190896285185,202.7750766232116,205.63106361790474,208.48705061259784,211.34303760729097,214.1990246019841,217.05501159667722,219.91099859137032,222.76698558606347,225.62297258075657,228.47895957544972,231.33494657014282,234.19093356483592,237.04692055952907,239.90290755422217,242.7588945489153,245.61488154360842,248.47086853830154,251.32685553299464,254.1828425276878,257.0388295223809,259.89481651707405,262.7508035117671,265.6067905064603,268.46277750115337,271.31876449584655,274.1747514905396,277.03073848523275,279.8867254799259,282.742712474619],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,50.0,100.0,150.0,200.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0","50","100","150","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,100.0,200.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0","100","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+
+We can see that the resistance makes the path quite non-symmetric.
+
+## Visualizing a first-order initial value problem
+
+The solution, $y(x)$, is known through its derivative. A useful tool to visualize the solution to a first-order differential equation is the [slope field](http://tinyurl.com/jspzfok) (or direction field) plot, which at different values of $(x,y)$, plots a vector with slope given through $y'(x)$. These plots are made possible with the `vectorfieldplot` function of `SymPy`.
+
+For example, in a previous example we found a solution to  $y'(x) = x\cdot y(x)$. Suppose $x_0=1$ and $y_0=1$. Then a direction field plot is drawn through:
+
+```{r eval=FALSE}
+x, y = symbols("x, y")
+x0, y0 = 1, 1
+F(y, x) = y*x
+vectorfieldplot([1, F(y,x)], (x, x0, 2), (y, y0-5, y0+5))
+
+f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
+plot!(f, x0, 2, linewidth=5)
+
+```
+                                    
+<div id="9ff16f87-c50c-4492-a905-8ae00c7041be" style="width:600px;height:400px;"></div>
+<script>
+PLOT = document.getElementById('9ff16f87-c50c-4492-a905-8ae00c7041be');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[0.0,2.853975057506653,5.703871185221894,8.549603874159224,11.391085961477119,14.228227518182996,17.060935730834032,19.88911477684541,22.712665692987052,25.53148623661735,28.345470739167155,31.154509951348764,33.958490879522785,36.75729661260943,39.550806138881406,42.3388941519197,45.121430844954126,47.89828169274396,50.66930722008189,53.43436275592446,56.19329817206466,58.9459576051655,61.69217916086703,64.43179459856115,67.16462899529846,69.89050038714711,72.60921938616394,75.32058877095992,78.02440304864517,80.72044798571882,83.40850010522334,86.08832614720991,88.75968248925476,91.42231452342344,94.07595598569523,96.72032823342717,99.35513946594993,101.98008388283877,104.59484077378146,107.19907353326211,109.79242859248313,112.37453426004011,114.94499946183257,117.50341236951482,120.04933890544245,122.58232111052419,125.10187535961045,127.60749040700338,130.09862524230482,132.57470673407985,135.03512703562842,137.47924072344986,139.90636163465138,142.3157593644747,144.70665537914283,147.07821869218765,149.42956104407918,151.75973151507085,154.06771048935985,156.35240287451194,158.6126304630871,160.84712330285635,163.0545099170704,165.23330618585314,167.38190266255728,169.49855005305463,171.5813425291214,173.62819847628703,175.636838187753,177.6047579039548,179.52919945493653,181.40711458034758,183.23512276648609,185.00946113338833,186.72592450245116,188.37979324116517,189.9657457659368,191.47775161401242,192.9089396647262,194.25143424027416,195.49614920732665,196.6325264638108,197.64819974986005,198.52855663610717,199.25615928227876,199.8099655317147,200.16426159746715,200.28716786970205,200.13849501271207,199.6665787723992,198.80344761291303,197.45714400513248,195.49891552810706,192.74051923265534,188.89078083168187,183.4634515623518,175.5513443154314,163.1343890769202,139.883559131353,10.387792029069828],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,2.8559869946931213,5.711973989386243,8.567960984079363,11.423947978772485,14.279934973465608,17.135921968158726,19.99190896285185,22.84789595754497,25.703882952238093,28.559869946931215,31.41585694162433,34.27184393631745,37.12783093101058,39.9838179257037,42.839804920396816,45.69579191508994,48.55177890978306,51.407765904476186,54.263752899169305,57.11973989386243,59.97572688855554,62.83171388324866,65.68770087794178,68.5436878726349,71.39967486732803,74.25566186202116,77.11164885671428,79.9676358514074,82.8236228461005,85.67960984079363,88.53559683548676,91.39158383017988,94.247570824873,97.10355781956612,99.95954481425925,102.81553180895237,105.67151880364548,108.52750579833861,111.38349279303173,114.23947978772486,117.09546678241796,119.95145377711108,122.80744077180421,125.66342776649732,128.51941476119046,131.37540175588356,134.23138875057668,137.0873757452698,139.94336273996294,142.79934973465606,145.6553367293492,148.5113237240423,151.36731071873544,154.22329771342856,157.07928470812166,159.9352717028148,162.7912586975079,165.647245692201,168.50323268689417,171.35921968158726,174.21520667628042,177.0711936709735,179.92718066566664,182.78316766035977,185.63915465505286,188.495141649746,191.35112864443911,194.20711563913224,197.06310263382534,199.9190896285185,202.7750766232116,205.63106361790474,208.48705061259784,211.34303760729097,214.1990246019841,217.05501159667722,219.91099859137032,222.76698558606347,225.62297258075657,228.47895957544972,231.33494657014282,234.19093356483592,237.04692055952907,239.90290755422217,242.7588945489153,245.61488154360842,248.47086853830154,251.32685553299464,254.1828425276878,257.0388295223809,259.89481651707405,262.7508035117671,265.6067905064603,268.46277750115337,271.31876449584655,274.1747514905396,277.03073848523275,279.8867254799259,282.742712474619],"mode":"lines"},{"yaxis":"y","y":[1.0,1.0102037319399864,1.020615708547402,1.0312402118948472,1.0420816338040788,1.0531444787903756,1.0644333670955042,1.0759530378120825,1.087708352102234,1.099704296513527,1.1119459863952916,1.1244386694185124,1.137187729202609,1.1501986890525266,1.1634772158096751,1.1770291238203796,1.1908603790256318,1.2049771031760599,1.2193855781761707,1.2340922505620573,1.2491037361169204,1.2644268246288781,1.2800684847957275,1.2960358692814582,1.312336319929493,1.3289773731378118,1.3459667654012855,1.3633124390267395,1.3810225480264544,1.3991054641960246,1.4175697833826877,1.4364243319504657,1.4556781734486781,1.4753406154906221,1.4954212168494552,1.5159297947785588,1.5368764325639386,1.558271487316466,1.5801255980120568,1.602449693788169,1.6252550025053056,1.6485530595825164,1.672355717116212,1.6966751532919524,1.7215238820992165,1.746914763359504,1.7728610130785225,1.7993762141335916,1.8264743273077904,1.8541697026828134,1.882477091402922,1.9114116578228424,1.9409889920529177,1.9712251229153246,2.0021365313256716,2.0337401641148003,2.0660534483061967,2.0990943058649485,2.1328811689348117,2.167432995580526,2.202769286053185,2.238910099597128,2.275876071817474,2.313688432628183,2.35236902480124,2.391940323138334,2.4324254542872086,2.4738482172257052,2.5162331044373776,2.5596053238034373,2.6039908212367786,2.649416304084751,2.695909265328385,2.7434980086068346,2.792211674096883,2.84208026527851,2.8931346766186623,2.9454067222066773,2.9989291653760115,3.053735749348303,3.109861228937165,3.1673414033505667,3.2262131501321387,3.2865144602832905,3.3482844746097076,3.41156352133741,3.4763931550453604,3.5428161969634333,3.610876776686453,3.6806203753569804,3.7520938703716213,3.8253455816677446,3.9004253196497687,3.977384434816451,4.056275869153107,4.137154209355155,4.220075741952016,4.305098510403176,4.392282374241023,4.4816890703380645],"showlegend":true,"name":"y2","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(227, 111, 71, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,50.0,100.0,150.0,200.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0","50","100","150","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,100.0,200.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0","100","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+
+In general, if the first-order equation is written as $y'(x) = F(y,x)$, then the above pattern (`[1, F(y,x)]`) will work to make the direction field plot. 
+
+The plots are also useful for illustrating solutions for different initial conditions:
+
+```{r eval=FALSE}
+p = vectorfieldplot([1, F(y,x)], (x, x0, 2), (y, y0-5, y0+5))
+for y0 in -4:4
+  f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
+  plot!(p, f, x0, 2, linewidth=5)
+end
+p
+
+```
+                                    
+<div id="f3c34f31-5f5b-4d92-b4df-a0c149b908a6" style="width:600px;height:400px;"></div>
+<script>
+PLOT = document.getElementById('f3c34f31-5f5b-4d92-b4df-a0c149b908a6');
+Plotly.plot(PLOT, [{"yaxis":"y","y":[200.0,196.17939247316866,192.47282433597854,188.8768916841296,185.38829221474646,182.0038221937292,178.72037351362312,175.5349308393075,172.44456883888074,169.44644949719984,166.53781950960615,163.716007753445,160.97842283505648,158.32255070998463,155.74595237422017,153.24626162435607,150.82118288459887,148.46848909864067,146.18601968445563,143.97167855014243,141.82343216899116,139.73930771200645,137.71739123617178,135.7558259267918,133.85281039229767,132.00659700995013,130.21549032092082,128.47784547327794,126.79206671144652,125.15660591075591,123.56996115572903,122.03067536080732,120.53733493224516,119.08856846994462,117.6830455080385,116.31947529306512,114.99660559861279,113.71322157534514,112.46814463535179,111.26023136979927,110.08837249888836,108.95149185315393,107.84854538517106,106.77852021076059,105.74043367881302,104.73333246887688,103.75629171568264,102.80841415979833,101.88882932363691,100.99669271205829,100.13118503683246,99.29151146425116,98.47690088519707,97.68660520700058,96.9198986664333,96.1760771632079,95.45445761337191,94.75437732200164,94.0751933746204,93.41628204678186,92.77703823127656,92.15687488243533,91.55522247701947,90.97152849120258,90.40525689316364,89.85588765082548,89.32291625428643,88.80585325250678,88.30422380382434,87.81756723988659,87.34543664259851,86.88739843369832,86.44303197658328,86.0119291900208,85.59369417338937,85.18794284310582,84.79430257990431,84.41241188664385,84.04192005632945,83.68248685004264,83.33378218448496,82.99548582884816,82.66728711073203,82.34888463084036,82.03998598619273,81.74030750159797,81.44957396914283,81.16751839545645,80.8938817565186,80.62841275978654,80.3708676134221,80.12100980240687,79.8786098713401,79.64344521371972,79.41529986751299,79.19396431682915,78.9792352995117,78.77091562047387,78.56881397060573,78.37274475108659],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":4,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[188.45388666482563,186.10128289381905,183.74867912281246,181.39607535180588,179.0434715807993,176.69086780979273,174.33826403878615,171.98566026777956,169.63305649677298,167.28045272576642,164.92784895475984,162.57524518375325,160.22264141274667,157.8700376417401,155.51743387073353,153.16483009972694,150.81222632872036,148.4596225577138,146.10701878670721,143.75441501570063,141.40181124469404,139.0492074736875,136.6966037026809,134.34399993167432,131.99139616066773,129.63879238966118,127.28618861865459,124.933584847648,122.58098107664142,120.22837730563485,117.87577353462828,115.5231697636217,113.17056599261511,110.81796222160854,108.46535845060197,106.11275467959538,103.76015090858881,101.40754713758224,99.05494336657564,96.70233959556907,94.34973582456249,91.99713205355592,89.64452828254935,87.29192451154276,84.93932074053619,82.5867169695296,80.23411319852302,77.88150942751643,75.52890565650986,73.17630188550329,70.82369811449671,68.47109434349014,66.11849057248357,63.76588680147698,61.413283030470396,59.06067925946381,56.70807548845724,54.35547171745067,52.002867946444084,49.65026417543751,47.29766040443093,44.94505663342436,42.59245286241776,40.23984909141119,37.88724532040462,35.53464154939803,33.18203777839146,30.82943400738489,28.476830236378305,26.124226465371734,23.771622694365163,21.41901892335858,19.066415152351993,16.713811381345437,14.361207610338852,12.008603839332238,9.656000068325653,7.303396297319097,4.950792526312512,2.5981887553059266,0.24558498429937003,-2.107018786707215,-4.4596225577138,-6.812226328720357,-9.164830099726942,-11.517433870733527,-13.870037641740083,-16.22264141274667,-18.575245183753253,-20.92784895475981,-23.280452725766395,-25.63305649677301,-27.985660267779593,-30.33826403878615,-32.690867809792735,-35.04347158079932,-37.39607535180588,-39.74867912281246,-42.10128289381905,-44.4538866648256],"showlegend":true,"name":"y2","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(227, 111, 71, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[143.40165124749754,142.5361766869218,141.67070212634607,140.80522756577034,139.93975300519463,139.0742784446189,138.20880388404316,137.34332932346743,136.4778547628917,135.612380202316,134.74690564174026,133.88143108116452,133.0159565205888,132.15048196001308,131.28500739943735,130.4195328388616,129.55405827828588,128.68858371771017,127.82310915713444,126.9576345965587,126.09216003598297,125.22668547540725,124.36121091483153,123.4957363542558,122.63026179368006,121.76478723310434,120.89931267252862,120.03383811195289,119.16836355137715,118.30288899080143,117.4374144302257,116.57193986964998,115.70646530907425,114.84099074849851,113.97551618792279,113.11004162734707,112.24456706677134,111.3790925061956,110.51361794561988,109.64814338504415,108.78266882446843,107.9171942638927,107.05171970331698,106.18624514274124,105.32077058216552,104.45529602158979,103.58982146101405,102.72434690043833,101.8588723398626,100.99339777928688,100.12792321871115,99.26244865813543,98.39697409755969,97.53149953698397,96.66602497640824,95.8005504158325,94.93507585525678,94.06960129468105,93.20412673410533,92.3386521735296,91.47317761295388,90.60770305237814,89.74222849180242,88.87675393122669,88.01127937065095,87.14580481007523,86.28033024949951,85.41485568892378,84.54938112834805,83.68390656777233,82.8184320071966,81.95295744662087,81.08748288604514,80.22200832546942,79.3565337648937,78.49105920431795,77.62558464374223,76.7601100831665,75.89463552259078,75.02916096201504,74.16368640143932,73.29821184086359,72.43273728028787,71.56726271971213,70.70178815913641,69.83631359856068,68.97083903798496,68.10536447740924,67.2398899168335,66.37441535625777,65.50894079568205,64.6434662351063,63.77799167453058,62.912517113954856,62.04704255337913,61.1815679928034,60.316093432227674,59.45061887165195,58.58514431107622,57.71966975050049],"showlegend":true,"name":"y3","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(62, 164, 78, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[108.77407938350669,108.45568908581399,108.13729878812129,107.81890849042858,107.50051819273588,107.1821278950432,106.8637375973505,106.54534729965779,106.22695700196509,105.9085667042724,105.5901764065797,105.271786108887,104.9533958111943,104.6350055135016,104.3166152158089,103.99822491811621,103.6798346204235,103.3614443227308,103.0430540250381,102.72466372734542,102.40627342965271,102.08788313196001,101.76949283426731,101.45110253657461,101.13271223888191,100.81432194118922,100.49593164349652,100.17754134580382,99.85915104811112,99.54076075041843,99.22237045272573,98.90398015503303,98.58558985734032,98.26719955964762,97.94880926195493,97.63041896426223,97.31202866656953,96.99363836887683,96.67524807118414,96.35685777349144,96.03846747579874,95.72007717810604,95.40168688041334,95.08329658272065,94.76490628502795,94.44651598733525,94.12812568964254,93.80973539194984,93.49134509425716,93.17295479656445,92.85456449887175,92.53617420117905,92.21778390348636,91.89939360579366,91.58100330810096,91.26261301040826,90.94422271271556,90.62583241502287,90.30744211733017,89.98905181963747,89.67066152194477,89.35227122425206,89.03388092655938,88.71549062886668,88.39710033117397,88.07871003348127,87.76031973578858,87.44192943809588,87.12353914040318,86.80514884271048,86.48675854501778,86.16836824732509,85.84997794963239,85.53158765193969,85.21319735424699,84.89480705655428,84.5764167588616,84.2580264611689,83.9396361634762,83.6212458657835,83.30285556809079,82.9844652703981,82.6660749727054,82.3476846750127,82.02929437732,81.71090407962731,81.39251378193461,81.07412348424191,80.75573318654921,80.4373428888565,80.11895259116382,79.80056229347112,79.48217199577842,79.16378169808571,78.84539140039301,78.52700110270032,78.20861080500762,77.89022050731492,77.57183020962222,77.25343991192952],"showlegend":true,"name":"y4","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(195, 113, 210, 1.000)","shape":"linear"},"x":[0.0,0.06060606060606061,0.12121212121212122,0.18181818181818182,0.24242424242424243,0.30303030303030304,0.36363636363636365,0.42424242424242425,0.48484848484848486,0.5454545454545454,0.6060606060606061,0.6666666666666666,0.7272727272727273,0.7878787878787878,0.8484848484848485,0.9090909090909091,0.9696969696969697,1.0303030303030303,1.0909090909090908,1.1515151515151516,1.2121212121212122,1.2727272727272727,1.3333333333333333,1.393939393939394,1.4545454545454546,1.5151515151515151,1.5757575757575757,1.6363636363636365,1.696969696969697,1.7575757575757576,1.8181818181818181,1.878787878787879,1.9393939393939394,2.0,2.0606060606060606,2.121212121212121,2.1818181818181817,2.242424242424242,2.303030303030303,2.3636363636363638,2.4242424242424243,2.484848484848485,2.5454545454545454,2.606060606060606,2.6666666666666665,2.727272727272727,2.787878787878788,2.8484848484848486,2.909090909090909,2.9696969696969697,3.0303030303030303,3.090909090909091,3.1515151515151514,3.212121212121212,3.272727272727273,3.3333333333333335,3.393939393939394,3.4545454545454546,3.515151515151515,3.5757575757575757,3.6363636363636362,3.696969696969697,3.757575757575758,3.8181818181818183,3.878787878787879,3.9393939393939394,4.0,4.0606060606060606,4.121212121212121,4.181818181818182,4.242424242424242,4.303030303030303,4.363636363636363,4.424242424242424,4.484848484848484,4.545454545454546,4.606060606060606,4.666666666666667,4.7272727272727275,4.787878787878788,4.848484848484849,4.909090909090909,4.96969696969697,5.03030303030303,5.090909090909091,5.151515151515151,5.212121212121212,5.2727272727272725,5.333333333333333,5.393939393939394,5.454545454545454,5.515151515151516,5.575757575757576,5.636363636363637,5.696969696969697,5.757575757575758,5.818181818181818,5.878787878787879,5.9393939393939394,6.0],"mode":"lines"},{"yaxis":"y","y":[-4.0,-4.040814927759945,-4.082462834189608,-4.124960847579389,-4.168326535216315,-4.212577915161503,-4.257733468382017,-4.30381215124833,-4.350833408408936,-4.398817186054108,-4.4477839455811665,-4.49775467767405,-4.548750916810436,-4.600794756210107,-4.6539088632387005,-4.708116495281518,-4.763441516102527,-4.8199084127042395,-4.877542312704683,-4.936369002248229,-4.9964149444676815,-5.0577072985155125,-5.12027393918291,-5.184143477125833,-5.249345279717972,-5.315909492551247,-5.383867061605142,-5.453249756106958,-5.524090192105818,-5.596421856784098,-5.670279133530751,-5.745697327801863,-5.8227126937947125,-5.9013624619624885,-5.981684867397821,-6.063719179114235,-6.147505730255754,-6.233085949265864,-6.320502392048227,-6.409798775152676,-6.5010200100212225,-6.594212238330066,-6.689422868464848,-6.78670061316781,-6.886095528396866,-6.987659053438016,-7.09144405231409,-7.1975048565343664,-7.305897309231161,-7.416678810731254,-7.529908365611688,-7.64564663129137,-7.763955968211671,-7.884900491661298,-8.008546125302686,-8.134960656459201,-8.264213793224787,-8.396377223459794,-8.531524675739247,-8.669731982322103,-8.81107714421274,-8.955640398388512,-9.103504287269896,-9.254753730512732,-9.40947609920496,-9.567761292553335,-9.729701817148834,-9.895392868902821,-10.06493241774951,-10.23842129521375,-10.415963284947114,-10.597665216339005,-10.78363706131354,-10.973992034427338,-11.168846696387533,-11.36832106111404,-11.57253870647465,-11.78162688882671,-11.995716661504046,-12.214942997393212,-12.43944491574866,-12.669365613402267,-12.904852600528555,-13.146057841133162,-13.39313789843883,-13.64625408534964,-13.905572620181442,-14.171264787853733,-14.443507106745813,-14.722481501427922,-15.008375481486485,-15.301382326670979,-15.601701278599075,-15.909537739265804,-16.22510347661243,-16.54861683742062,-16.880302967808063,-17.220394041612703,-17.56912949696409,-17.926756281352258],"showlegend":true,"name":"y5","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(172, 142, 24, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[-3.0,-3.030611195819959,-3.061847125642206,-3.0937206356845417,-3.126244901412236,-3.159433436371127,-3.1933001012865128,-3.2278591134362475,-3.263125056306702,-3.2991128895405812,-3.335837959185875,-3.373316008255537,-3.4115631876078267,-3.4505960671575804,-3.4904316474290256,-3.531087371461139,-3.572581137076895,-3.6149313095281794,-3.6581567345285118,-3.702276751686172,-3.747311208350761,-3.7932804738866346,-3.8402054543871826,-3.8881076078443746,-3.937008959788479,-3.9869321194134355,-4.037900296203857,-4.089937317080219,-4.143067644079363,-4.197316392588074,-4.252709350148063,-4.309272995851397,-4.367034520346035,-4.426021846471866,-4.4862636505483655,-4.547789384335677,-4.6106292976918155,-4.674814461949398,-4.7403767940361705,-4.807349081364507,-4.875765007515917,-4.945659178747549,-5.017067151348636,-5.090025459875857,-5.16457164629765,-5.240744290078512,-5.318583039235568,-5.398128642400775,-5.479422981923371,-5.56250910804844,-5.647431274208766,-5.734234973468527,-5.822966976158753,-5.913675368745974,-6.006409593977015,-6.101220492344401,-6.19816034491859,-6.2972829175948455,-6.398643506804435,-6.502298986741577,-6.608307858159555,-6.716730298791385,-6.827628215452422,-6.941065297884549,-7.057107074403721,-7.175820969415002,-7.297276362861625,-7.421544651677115,-7.548699313312133,-7.6788159714103115,-7.811972463710336,-7.948248912254254,-8.087727795985154,-8.230494025820503,-8.37663502229065,-8.52624079583553,-8.679404029855988,-8.836220166620032,-8.996787496128036,-9.16120724804491,-9.329583686811496,-9.502024210051701,-9.678639450396417,-9.859543380849871,-10.044853423829123,-10.23469056401223,-10.42917946513608,-10.6284485908903,-10.83263033005936,-11.041861126070941,-11.256281611114865,-11.476036745003235,-11.701275958949306,-11.932153304449352,-12.16882760745932,-12.411462628065467,-12.660227225856046,-12.915295531209527,-13.17684712272307,-13.445067211014194],"showlegend":true,"name":"y6","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(0, 170, 174, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[-2.0,-2.0204074638799727,-2.041231417094804,-2.0624804237896943,-2.0841632676081576,-2.1062889575807513,-2.1288667341910084,-2.151906075624165,-2.175416704204468,-2.199408593027054,-2.2238919727905833,-2.248877338837025,-2.274375458405218,-2.3003973781050533,-2.3269544316193502,-2.354058247640759,-2.3817207580512636,-2.4099542063521198,-2.4387711563523413,-2.4681845011241146,-2.4982074722338408,-2.5288536492577562,-2.560136969591455,-2.5920717385629164,-2.624672639858986,-2.6579547462756237,-2.691933530802571,-2.726624878053479,-2.762045096052909,-2.798210928392049,-2.8351395667653754,-2.8728486639009314,-2.9113563468973562,-2.9506812309812442,-2.9908424336989103,-3.0318595895571177,-3.073752865127877,-3.116542974632932,-3.1602511960241135,-3.204899387576338,-3.2505100050106113,-3.297106119165033,-3.344711434232424,-3.393350306583905,-3.443047764198433,-3.493829526719008,-3.545722026157045,-3.5987524282671832,-3.6529486546155807,-3.708339405365627,-3.764954182805844,-3.822823315645685,-3.8819779841058355,-3.942450245830649,-4.004273062651343,-4.067480328229601,-4.1321068966123935,-4.198188611729897,-4.265762337869623,-4.334865991161052,-4.40553857210637,-4.477820199194256,-4.551752143634948,-4.627376865256366,-4.70473804960248,-4.783880646276668,-4.864850908574417,-4.9476964344514105,-5.032466208874755,-5.119210647606875,-5.207981642473557,-5.298832608169502,-5.39181853065677,-5.486996017213669,-5.584423348193766,-5.68416053055702,-5.786269353237325,-5.890813444413355,-5.997858330752023,-6.107471498696606,-6.21972245787433,-6.334682806701133,-6.452426300264277,-6.573028920566581,-6.696568949219415,-6.82312704267482,-6.952786310090721,-7.085632393926867,-7.221753553372906,-7.361240750713961,-7.504187740743243,-7.650691163335489,-7.800850639299537,-7.954768869632902,-8.112551738306214,-8.27430841871031,-8.440151483904032,-8.610197020806352,-8.784564748482046,-8.963378140676129],"showlegend":true,"name":"y7","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(237, 94, 147, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[-1.0,-1.0102037319399864,-1.020615708547402,-1.0312402118948472,-1.0420816338040788,-1.0531444787903756,-1.0644333670955042,-1.0759530378120825,-1.087708352102234,-1.099704296513527,-1.1119459863952916,-1.1244386694185124,-1.137187729202609,-1.1501986890525266,-1.1634772158096751,-1.1770291238203796,-1.1908603790256318,-1.2049771031760599,-1.2193855781761707,-1.2340922505620573,-1.2491037361169204,-1.2644268246288781,-1.2800684847957275,-1.2960358692814582,-1.312336319929493,-1.3289773731378118,-1.3459667654012855,-1.3633124390267395,-1.3810225480264544,-1.3991054641960246,-1.4175697833826877,-1.4364243319504657,-1.4556781734486781,-1.4753406154906221,-1.4954212168494552,-1.5159297947785588,-1.5368764325639386,-1.558271487316466,-1.5801255980120568,-1.602449693788169,-1.6252550025053056,-1.6485530595825164,-1.672355717116212,-1.6966751532919524,-1.7215238820992165,-1.746914763359504,-1.7728610130785225,-1.7993762141335916,-1.8264743273077904,-1.8541697026828134,-1.882477091402922,-1.9114116578228424,-1.9409889920529177,-1.9712251229153246,-2.0021365313256716,-2.0337401641148003,-2.0660534483061967,-2.0990943058649485,-2.1328811689348117,-2.167432995580526,-2.202769286053185,-2.238910099597128,-2.275876071817474,-2.313688432628183,-2.35236902480124,-2.391940323138334,-2.4324254542872086,-2.4738482172257052,-2.5162331044373776,-2.5596053238034373,-2.6039908212367786,-2.649416304084751,-2.695909265328385,-2.7434980086068346,-2.792211674096883,-2.84208026527851,-2.8931346766186623,-2.9454067222066773,-2.9989291653760115,-3.053735749348303,-3.109861228937165,-3.1673414033505667,-3.2262131501321387,-3.2865144602832905,-3.3482844746097076,-3.41156352133741,-3.4763931550453604,-3.5428161969634333,-3.610876776686453,-3.6806203753569804,-3.7520938703716213,-3.8253455816677446,-3.9004253196497687,-3.977384434816451,-4.056275869153107,-4.137154209355155,-4.220075741952016,-4.305098510403176,-4.392282374241023,-4.4816890703380645],"showlegend":true,"name":"y8","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(198, 130, 37, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"showlegend":true,"name":"y9","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(0, 169, 141, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[1.0,1.0102037319399864,1.020615708547402,1.0312402118948472,1.0420816338040788,1.0531444787903756,1.0644333670955042,1.0759530378120825,1.087708352102234,1.099704296513527,1.1119459863952916,1.1244386694185124,1.137187729202609,1.1501986890525266,1.1634772158096751,1.1770291238203796,1.1908603790256318,1.2049771031760599,1.2193855781761707,1.2340922505620573,1.2491037361169204,1.2644268246288781,1.2800684847957275,1.2960358692814582,1.312336319929493,1.3289773731378118,1.3459667654012855,1.3633124390267395,1.3810225480264544,1.3991054641960246,1.4175697833826877,1.4364243319504657,1.4556781734486781,1.4753406154906221,1.4954212168494552,1.5159297947785588,1.5368764325639386,1.558271487316466,1.5801255980120568,1.602449693788169,1.6252550025053056,1.6485530595825164,1.672355717116212,1.6966751532919524,1.7215238820992165,1.746914763359504,1.7728610130785225,1.7993762141335916,1.8264743273077904,1.8541697026828134,1.882477091402922,1.9114116578228424,1.9409889920529177,1.9712251229153246,2.0021365313256716,2.0337401641148003,2.0660534483061967,2.0990943058649485,2.1328811689348117,2.167432995580526,2.202769286053185,2.238910099597128,2.275876071817474,2.313688432628183,2.35236902480124,2.391940323138334,2.4324254542872086,2.4738482172257052,2.5162331044373776,2.5596053238034373,2.6039908212367786,2.649416304084751,2.695909265328385,2.7434980086068346,2.792211674096883,2.84208026527851,2.8931346766186623,2.9454067222066773,2.9989291653760115,3.053735749348303,3.109861228937165,3.1673414033505667,3.2262131501321387,3.2865144602832905,3.3482844746097076,3.41156352133741,3.4763931550453604,3.5428161969634333,3.610876776686453,3.6806203753569804,3.7520938703716213,3.8253455816677446,3.9004253196497687,3.977384434816451,4.056275869153107,4.137154209355155,4.220075741952016,4.305098510403176,4.392282374241023,4.4816890703380645],"showlegend":true,"name":"y10","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(142, 151, 30, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[2.0,2.0204074638799727,2.041231417094804,2.0624804237896943,2.0841632676081576,2.1062889575807513,2.1288667341910084,2.151906075624165,2.175416704204468,2.199408593027054,2.2238919727905833,2.248877338837025,2.274375458405218,2.3003973781050533,2.3269544316193502,2.354058247640759,2.3817207580512636,2.4099542063521198,2.4387711563523413,2.4681845011241146,2.4982074722338408,2.5288536492577562,2.560136969591455,2.5920717385629164,2.624672639858986,2.6579547462756237,2.691933530802571,2.726624878053479,2.762045096052909,2.798210928392049,2.8351395667653754,2.8728486639009314,2.9113563468973562,2.9506812309812442,2.9908424336989103,3.0318595895571177,3.073752865127877,3.116542974632932,3.1602511960241135,3.204899387576338,3.2505100050106113,3.297106119165033,3.344711434232424,3.393350306583905,3.443047764198433,3.493829526719008,3.545722026157045,3.5987524282671832,3.6529486546155807,3.708339405365627,3.764954182805844,3.822823315645685,3.8819779841058355,3.942450245830649,4.004273062651343,4.067480328229601,4.1321068966123935,4.198188611729897,4.265762337869623,4.334865991161052,4.40553857210637,4.477820199194256,4.551752143634948,4.627376865256366,4.70473804960248,4.783880646276668,4.864850908574417,4.9476964344514105,5.032466208874755,5.119210647606875,5.207981642473557,5.298832608169502,5.39181853065677,5.486996017213669,5.584423348193766,5.68416053055702,5.786269353237325,5.890813444413355,5.997858330752023,6.107471498696606,6.21972245787433,6.334682806701133,6.452426300264277,6.573028920566581,6.696568949219415,6.82312704267482,6.952786310090721,7.085632393926867,7.221753553372906,7.361240750713961,7.504187740743243,7.650691163335489,7.800850639299537,7.954768869632902,8.112551738306214,8.27430841871031,8.440151483904032,8.610197020806352,8.784564748482046,8.963378140676129],"showlegend":true,"name":"y11","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(0, 169, 204, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[3.0,3.030611195819959,3.061847125642206,3.0937206356845417,3.126244901412236,3.159433436371127,3.1933001012865128,3.2278591134362475,3.263125056306702,3.2991128895405812,3.335837959185875,3.373316008255537,3.4115631876078267,3.4505960671575804,3.4904316474290256,3.531087371461139,3.572581137076895,3.6149313095281794,3.6581567345285118,3.702276751686172,3.747311208350761,3.7932804738866346,3.8402054543871826,3.8881076078443746,3.937008959788479,3.9869321194134355,4.037900296203857,4.089937317080219,4.143067644079363,4.197316392588074,4.252709350148063,4.309272995851397,4.367034520346035,4.426021846471866,4.4862636505483655,4.547789384335677,4.6106292976918155,4.674814461949398,4.7403767940361705,4.807349081364507,4.875765007515917,4.945659178747549,5.017067151348636,5.090025459875857,5.16457164629765,5.240744290078512,5.318583039235568,5.398128642400775,5.479422981923371,5.56250910804844,5.647431274208766,5.734234973468527,5.822966976158753,5.913675368745974,6.006409593977015,6.101220492344401,6.19816034491859,6.2972829175948455,6.398643506804435,6.502298986741577,6.608307858159555,6.716730298791385,6.827628215452422,6.941065297884549,7.057107074403721,7.175820969415002,7.297276362861625,7.421544651677115,7.548699313312133,7.6788159714103115,7.811972463710336,7.948248912254254,8.087727795985154,8.230494025820503,8.37663502229065,8.52624079583553,8.679404029855988,8.836220166620032,8.996787496128036,9.16120724804491,9.329583686811496,9.502024210051701,9.678639450396417,9.859543380849871,10.044853423829123,10.23469056401223,10.42917946513608,10.6284485908903,10.83263033005936,11.041861126070941,11.256281611114865,11.476036745003235,11.701275958949306,11.932153304449352,12.16882760745932,12.411462628065467,12.660227225856046,12.915295531209527,13.17684712272307,13.445067211014194],"showlegend":true,"name":"y12","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(155, 127, 233, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"},{"yaxis":"y","y":[4.0,4.040814927759945,4.082462834189608,4.124960847579389,4.168326535216315,4.212577915161503,4.257733468382017,4.30381215124833,4.350833408408936,4.398817186054108,4.4477839455811665,4.49775467767405,4.548750916810436,4.600794756210107,4.6539088632387005,4.708116495281518,4.763441516102527,4.8199084127042395,4.877542312704683,4.936369002248229,4.9964149444676815,5.0577072985155125,5.12027393918291,5.184143477125833,5.249345279717972,5.315909492551247,5.383867061605142,5.453249756106958,5.524090192105818,5.596421856784098,5.670279133530751,5.745697327801863,5.8227126937947125,5.9013624619624885,5.981684867397821,6.063719179114235,6.147505730255754,6.233085949265864,6.320502392048227,6.409798775152676,6.5010200100212225,6.594212238330066,6.689422868464848,6.78670061316781,6.886095528396866,6.987659053438016,7.09144405231409,7.1975048565343664,7.305897309231161,7.416678810731254,7.529908365611688,7.64564663129137,7.763955968211671,7.884900491661298,8.008546125302686,8.134960656459201,8.264213793224787,8.396377223459794,8.531524675739247,8.669731982322103,8.81107714421274,8.955640398388512,9.103504287269896,9.254753730512732,9.40947609920496,9.567761292553335,9.729701817148834,9.895392868902821,10.06493241774951,10.23842129521375,10.415963284947114,10.597665216339005,10.78363706131354,10.973992034427338,11.168846696387533,11.36832106111404,11.57253870647465,11.78162688882671,11.995716661504046,12.214942997393212,12.43944491574866,12.669365613402267,12.904852600528555,13.146057841133162,13.39313789843883,13.64625408534964,13.905572620181442,14.171264787853733,14.443507106745813,14.722481501427922,15.008375481486485,15.301382326670979,15.601701278599075,15.909537739265804,16.22510347661243,16.54861683742062,16.880302967808063,17.220394041612703,17.56912949696409,17.926756281352258],"showlegend":true,"name":"y13","type":"scatter","xaxis":"x","line":{"width":5,"dash":"solid","color":"rgba(97, 141, 246, 1.000)","shape":"linear"},"x":[1.0,1.0101010101010102,1.02020202020202,1.0303030303030303,1.0404040404040404,1.0505050505050506,1.0606060606060606,1.0707070707070707,1.0808080808080809,1.0909090909090908,1.101010101010101,1.1111111111111112,1.121212121212121,1.1313131313131313,1.1414141414141414,1.1515151515151516,1.1616161616161615,1.1717171717171717,1.1818181818181819,1.1919191919191918,1.202020202020202,1.2121212121212122,1.2222222222222223,1.2323232323232323,1.2424242424242424,1.2525252525252526,1.2626262626262625,1.2727272727272727,1.2828282828282829,1.292929292929293,1.303030303030303,1.3131313131313131,1.3232323232323233,1.3333333333333333,1.3434343434343434,1.3535353535353536,1.3636363636363635,1.3737373737373737,1.3838383838383839,1.393939393939394,1.404040404040404,1.4141414141414141,1.4242424242424243,1.4343434343434343,1.4444444444444444,1.4545454545454546,1.4646464646464648,1.4747474747474747,1.4848484848484849,1.494949494949495,1.505050505050505,1.5151515151515151,1.5252525252525253,1.5353535353535352,1.5454545454545454,1.5555555555555556,1.5656565656565657,1.5757575757575757,1.5858585858585859,1.595959595959596,1.606060606060606,1.6161616161616161,1.6262626262626263,1.6363636363636365,1.6464646464646464,1.6565656565656566,1.6666666666666667,1.6767676767676767,1.6868686868686869,1.696969696969697,1.707070707070707,1.7171717171717171,1.7272727272727273,1.7373737373737375,1.7474747474747474,1.7575757575757576,1.7676767676767677,1.7777777777777777,1.7878787878787878,1.797979797979798,1.8080808080808082,1.8181818181818181,1.8282828282828283,1.8383838383838385,1.8484848484848484,1.8585858585858586,1.8686868686868687,1.878787878787879,1.8888888888888888,1.898989898989899,1.9090909090909092,1.9191919191919191,1.9292929292929293,1.9393939393939394,1.9494949494949494,1.9595959595959596,1.9696969696969697,1.97979797979798,1.9898989898989898,2.0],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,50.0,100.0,150.0,200.0],"domain":[0.03762029746281716,0.9901574803149606],"ticktext":["0","50","100","150","200"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","y":1.0,"font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)","x":1.0},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"ticks":"inside","tickmode":"array","showgrid":true,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0,6.0],"domain":[0.05100612423447069,0.9934383202099737],"ticktext":["0","1","2","3","4","5","6"],"tickangle":0,"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+</script>
+
+Such solutions are called [integral curves](https://en.wikipedia.org/wiki/Integral_curve). It is clear from the graph that the slope field is tangent to the graph of any integral curve.
+
+## Questions
+
+##### Question
+
+Using `SymPy` to solve the differential equation
+$$~
+u' = \frac{1-x}{u}
+~$$
+
+gives
+
+```{r eval=FALSE}
+u = SymFunction("u")
+x = symbols("x")
+dsolve(u'(x) - (1-x)/u(x))
+
+```
+                                    
+
+```{r eval=FALSE}
+## \begin{bmatrix}u{\left (x \right )} = - \sqrt{C_{1} - x^{2} + 2 x}\\u{\left (x \right )} = \sqrt{C_{1} - x^{2} + 2 x}\end{bmatrix}
+```
+
+
+
+The two answers track positive and negative solutions. For the initial condition, $u(-1)=1$, we have the second one is approriate: $u(x) = \sqrt{C_1 - x^2 + 2x}$. At $-1$ this gives: $1 = \sqrt{C_1-3}$, so $C_1 = 4$.
+
+This value is good for what values of $x$?
+
+----
+
+<form name="WeaveQuestion" data-id="wI5JDYCF" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_wI5JDYCF" value="1"><div class="markdown">$[-1, 0]$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_wI5JDYCF" value="2"><div class="markdown">$[-1, \infty)$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_wI5JDYCF" value="3"><div class="markdown">$[1-\sqrt{5}, 1 + \sqrt{5}]$
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_wI5JDYCF" value="4"><div class="markdown">$[-1, 4]$
+</div>
+</label>
+</div>
+
+
+
+<div id="wI5JDYCF_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_wI5JDYCF']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#wI5JDYCF_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#wI5JDYCF_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+
+##### Question
+
+Suppose $y(x)$ satisfies
+$$~
+y'(x) = y(x)^2, \quad y(1) = 1.
+~$$
+
+What is $y(3/2)$?
+
+----
+
+<form name='WeaveQuestion' data-id='obWW1bX4' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="obWW1bX4" type="number" class="form-control">
+
+</div>
+
+<div id='obWW1bX4_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#obWW1bX4').on('change', function() {
+correct = Math.abs(this.value - 2.0) <= 0.001;
+
+if(correct) {
+$('#obWW1bX4_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#obWW1bX4_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+Solve the initial value problem
+$$~
+y' = 1 + x^2 + y(x)^2 + x^2 y(x)^2, \quad y(0) = 1.
+
+~$$
+
+Use your answer to find $y(1)$.
+
+----
+
+<form name='WeaveQuestion' data-id='RPyxgz4c' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="RPyxgz4c" type="number" class="form-control">
+
+</div>
+
+<div id='RPyxgz4c_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#RPyxgz4c').on('change', function() {
+correct = Math.abs(this.value - -1.6386248637145369) <= 0.001;
+
+if(correct) {
+$('#RPyxgz4c_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#RPyxgz4c_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+A population is modeled by $y(x)$. The rate of population growth is generally proportional to the population ($k y(x)$), but as the population gets large, the rate is curtailed $(1 - y(x)/M)$. 
+
+Solve the initial value problem
+$$~
+y'(x) = k\cdot y(x) \cdot (1 - y(x)/M),
+~$$
+
+when $k=1$, $M=100$, and $y(0) = 20$. Find the value of $y(5)$.
+
+----
+
+<form name='WeaveQuestion' data-id='MDiI9tkv' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="MDiI9tkv" type="number" class="form-control">
+
+</div>
+
+<div id='MDiI9tkv_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#MDiI9tkv').on('change', function() {
+correct = Math.abs(this.value - 97.37555469386477) <= 0.001;
+
+if(correct) {
+$('#MDiI9tkv_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#MDiI9tkv_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+Solve the initial value problem
+$$~
+y'(t) = \sin(t) - \frac{y(t)}{t}, \quad y(\pi) = 1
+~$$
+
+Find the value of the solution at $t=2\pi$.
+
+----
+
+<form name='WeaveQuestion' data-id='T69w71fs' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="T69w71fs" type="number" class="form-control">
+
+</div>
+
+<div id='T69w71fs_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#T69w71fs').on('change', function() {
+correct = Math.abs(this.value - -1) <= 0;
+
+if(correct) {
+$('#T69w71fs_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#T69w71fs_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+At time $0$ a tank contains 10 gallons of water containing $1/2$ pound of salt in a solution. Water containing a salt concentration is added at 1 gallon/minute. The concentration is time dependent and satisfies $q(t) = (1 + \sin(t))/100$. Water leaves the tank at 2 gallons/minute.
+
+The volume of the tank at time $t$ is $v(t)=10-t$, as $dv/dt = -1$. So it takes 10 minute to empty the tank. During these 10 minutes, the amount of salt in the tank, $c(t)$, satisfies:
+$$~
+\Delta c = q(t) \cdot 1 \cdot \Delta t - \frac{c(t)}{v(t)} \cdot 2 \Delta t.
+~$$
+
+This suggests that the following differential equation should hold:
+$$~
+\frac{dc}{dt} = q(t) - 2\frac{c(t)}{v(t)}, \quad c(0) = 1/2
+~$$
+
+What is the amount of salt at time $t=5$?
+
+----
+
+<form name='WeaveQuestion' data-id='IlMIIrng' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="IlMIIrng" type="number" class="form-control">
+
+</div>
+
+<div id='IlMIIrng_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#IlMIIrng').on('change', function() {
+correct = Math.abs(this.value - -1) <= 0;
+
+if(correct) {
+$('#IlMIIrng_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#IlMIIrng_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+Suppose $u(x)$ satisfies:
+$$~
+\frac{du}{dx} = e^{-x} \cdot u(x), \quad u(0) = 1.
+~$$
+
+Find $u(5)$ using `SymPy`.
+
+----
+
+<form name='WeaveQuestion' data-id='BcJFsWV6' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="BcJFsWV6" type="number" class="form-control">
+
+</div>
+
+<div id='BcJFsWV6_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#BcJFsWV6').on('change', function() {
+correct = Math.abs(this.value - 2.70002775611737) <= 0.001;
+
+if(correct) {
+$('#BcJFsWV6_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+} else {
+$('#BcJFsWV6_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+}
+});
+</script>
+
+----
+
+
+
+##### Question
+
+The differential equation with boundary values
+$$~
+\frac{r^2 \frac{dc}{dr}}{dr} = 0, \quad c(1)=2, c(10)=1,
+~$$
+
+can be solved with `SymPy`. What is the value of $c(5)$?
+
+----
+
+<form name="WeaveQuestion" data-id="aBXn8NNW" data-controltype="radio">
+<div class="form-group ">
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_aBXn8NNW" value="1"><div class="markdown"><p>3/2</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_aBXn8NNW" value="2"><div class="markdown"><p>9/10</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_aBXn8NNW" value="3"><div class="markdown"><p>10/9</p>
+</div>
+</label>
+</div>
+
+<div  class="radio"> 
+<label>
+<input type="radio" name="radio_aBXn8NNW" value="4"><div class="markdown"><p>8/9</p>
+</div>
+</label>
+</div>
+
+
+
+<div id="aBXn8NNW_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_aBXn8NNW']").on("change", function() {
+correct = this.value == 3;
+
+if(correct) {
+$("#aBXn8NNW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+} else {
+$("#aBXn8NNW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+}
+});
+
+</script>
+
+----
+
+
+

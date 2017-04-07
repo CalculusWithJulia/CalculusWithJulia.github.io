@@ -2,6 +2,10 @@ using WeavePynb
 using Mustache
 
 mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus with Julia")
+## uncomment to generate just .md files
+mmd(fname) = mmd_to_md(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus with Julia")
+
+
 
 mmd("derivatives.mmd") ## more questions
 
@@ -16,7 +20,7 @@ mmd("lhopitals_rule.mmd")  ## Okay - -but could beef up questions..
 
 mmd("implicit_differentiation.mmd") ## add more questions?
 mmd("related_rates.mmd")            
-mmd("differential_equations.mmd")
+mmd("taylor_series_polynomials.mmd")
 
 """
 ## TODO

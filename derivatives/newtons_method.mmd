@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 The Babylonian method is an algorithm to find an approximate value for $\sqrt{k}$. 
@@ -97,7 +97,8 @@ using Plots
 f(x) = x^3 - 2x - 5
 fp(x) = 3x^2 - 2
 c = 2
-p = plot([f, x->f(2) + fp(2)*(x-2), x->0 ], 1.75, 2.25)
+p = plot([f, x->f(2) + fp(2)*(x-2), zero], 1.75, 2.25, legend=false)
+scatter!(p, [c], [f(c)], color=:orange, markersize=3)
 Outputonly(p)
 ```
 
@@ -202,7 +203,7 @@ method.
 
 ## Examples
 
-This  graphic demonstrates the method:
+This  graphic demonstrates the method and the rapid convergence:
 
 {{{newtons_method_example}}}
 
@@ -387,8 +388,10 @@ The argument `verbose=true` will force a print out of a message on each step.
 More generally, the function `fzero` provides a derivative-free
 algorithm for finding roots of functions. It is similar to Newton's
 method in that only a good initial guess is needed. However, the
-algorithm, while slower,  is engineered to be a bit more robust to the choice of initial
-estimate than Newton's method. Here we see how to call the function
+algorithm, while slower, is engineered to be a bit more robust to the
+choice of initial estimate than Newton's method. (If it finds a
+bracket, it will use bisection which is guaranteed to converge, but
+can be slower to do so.) Here we see how to call the function
 (identically to the `nm` function we previously defined):
 
 ```
@@ -405,6 +408,40 @@ fzero(f, [0, 1])           ## [0,1] must be a bracketing interval
 
 For this example both give the same answer, but the bisection method
 is a bit more inconvenient as a bracket must be pre-specified.
+
+
+##### Example: intersection of two graphs
+
+Find the intersection point between $f(x) = \cos(x)$ and $g(x) = 5x$ near $0$.
+
+We have Newton's method solve for zeros of $f(x)$, i.e. when $f(x) =
+0$. Here we want to solve for $x$ with $f(x) = g(x)$. To do so, we
+make a new function $h(x) = f(x) - g(x)$, for that is $0$ when $f(x)$
+equals $g(x)$:
+
+```
+f(x) = cos(x)
+g(x) = 5x
+h(x) = f(x) - g(x)
+newton(h, 0)
+```
+
+##### Example: Finding  $c$ in Rolle's Theorem
+
+The function $f(x) = \sqrt{1 - \cos(x^2)^2}$ has a zero at $0$ and one near 1.77. 
+
+```
+f(x) = sqrt(1 - cos(x^2)^2)
+plot(f, 0, 1.77)
+```
+
+As $f(x)$ is differentiable between $0$ and $a$, Rolle's theorem says there will be point where the derivative is $0$. Find that.
+
+This will be a zero of the derivative. A graph shows it should be near $1.5$:
+
+```
+fzero(D(f), 1.5)
+```
 
 ## Convergence
 
@@ -424,7 +461,7 @@ problems, with a good initial guess it will take around 4 or so steps
 to converge.
 
 The actual value of $M$ depends on $i$ and $f$, so the answer isn't always so easy. To see what $M$ is,
-the basic assumption of $f$ is such that this fact of linearization holds at each $x_i$:
+the basic assumption of $f$ is such that this fact of linearization holds at each $x_i$ with $f(x_i) \neq 0$:
 
 $$~
 f(x) = f(x_i) + f'(x_i) \cdot (x - x_i) + \frac{1}{2} f''(\xi) \cdot (x-x_i)^2.
@@ -432,10 +469,12 @@ f(x) = f(x_i) + f'(x_i) \cdot (x - x_i) + \frac{1}{2} f''(\xi) \cdot (x-x_i)^2.
 
 The value $\xi$ is from the mean value theorem and is between $x$ and $x_i$.
 
-Let $x=\alpha$, the zero of $f(x)$ that is being sought. Then $f(\alpha)=0$. For this value, we have
+Let $x=\alpha$, the zero of $f(x)$ that is being sought. Then
+$f(\alpha)=0$ and $0=f(x_i)/f'(x_i) + (\alpha-x_i) + 1/2\cdot
+f''(\xi)/f'(x_i) \cdot (\alpha-x_i)^2$. For this value, we have
 
 $$~
-x_{i+1} - \alpha = x_i - \alpha - \frac{f(x_i)}{f'(x_i)}
+x_{i+1} - \alpha = x_i  - \frac{f(x_i)}{f'(x_i)} - \alpha
 = (x_i - \alpha) + (\alpha - x_i) + \frac{1}{2}\frac{f''(\xi) \cdot(\alpha - x_i)^2}{f'(x_i)}
 =  \frac{1}{2}\frac{f''(\xi)}{f'(x_i)} \cdot(x_i - \alpha)^2.
 ~$$
@@ -462,6 +501,15 @@ This convergence will be quadratic *if*:
   which means it is "turning" a lot. In this case, the function turns
   away from the tangent line quickly, so the tangent line's zero is
   not necessarily a better approximation to the actual zero, $\alpha$.
+
+
+```
+note("""
+The basic tradeoff: methods like Newton's are faster than the
+bisection method in terms of function calls, but are not guaranteed to
+converge, as the bisection method is.
+""")
+```
 
 
 What can go wrong when one of these isn't the case is illustrated next:
@@ -507,6 +555,77 @@ convergence is linear with $\lvert e_{i+1}\rvert \approx (k-1)/k
 
 
 ## Questions
+
+###### Question
+
+Look at this graph with $x_0$ marked with a point:
+
+```
+p = plot(airy, -3.3, 0);
+plot!(p, zero, -3.3, 0);
+scatter!(p, [-3], [0], color=:orange, markersize=5);
+annotate!(p, [(-3, .2, "x₀")])
+```
+
+If one step of Newton's method was used, what would be the value of $x_1$?
+
+```
+choices = [L"-2.338", L"-1.800", L"-1.020", L"0.355"]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+###### Question
+
+Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $x^+$ be the zero.
+
+```nocode
+p = plot(x -> x^2 - 2, .75, 2.2, legend=false);
+plot!(p, zero,                   color=:green);
+scatter!(p, [1],[0],             color=:orange, markersize=5);
+annotate!(p, [(1,.2, "x₀"), (sqrt(2), .2, "x⁺")]);
+p
+```
+
+
+What can be said about $x_1$?
+
+```
+choices = [
+L"It must be $x_1 > x^*$",
+L"It must be $x_1 < x_0$",
+L"It must be $x_0 < x_1 < x^*$"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $x^+$ be the zero.
+
+```nocode
+p = plot(x -> x^2 - 2, .75, 2.2, legend=false);
+plot!(p, zero, .75, 2.2, color=:green);
+scatter!(p, [2],[0], color=:orange, markersize=5);
+annotate!(p, [(2,.2, "x₀"), (sqrt(2), .2, "x⁺")]);
+p
+```
+
+
+What can be said about $x_1$?
+
+```
+choices = [
+L"It must be $x_1 < x^*$",
+L"It must be $x_1 > x_0$",
+L"It must be $x^+ < x_1 < x_0$"
+]
+ans = 1
+radioq(choices, ans)
+```
 
 ###### Question
 
@@ -717,6 +836,25 @@ Will Newton's method find the zero at $0.0$ starting at $1$?
 yesnoq("no")
 ```
 
+Considering this plot:
+
+```
+plot(newton_baffler, -1.1, 1.1)
+```
+
+Starting with $x_0=1$, you can see why Newton's method will fail. Why?
+
+```
+choices = [
+L"It doesn't fail, it converges to $0$",
+L"The tangent lines for $|x| > 0.25$ intersect at $x$ values with $|x| > 0.25$",
+L"The first derivative is $0$ at $1$"
+]
+ans = 2
+radioq(choices, ans)
+```
+
+
 ###### Question
 
 Consider this crazy function defined by:
@@ -729,7 +867,7 @@ f(x) = cos(100*x)-4*erf(30*x-10)
 
 Make a plot over the interval $[-3,3]$ to see why it is called "crazy".
 
-Does `fzero` find a zero to this function starting from $4$?
+Does `fzero` find a zero to this function starting from $0$?
 
 
 ```
@@ -739,7 +877,7 @@ yesnoq("yes")
 If so, what is the value?
 
 ```
-val = fzero(f, 4)
+val = fzero(f, 0)
 numericq(val)
 ```
 
@@ -750,6 +888,34 @@ choices = [
 "The zero is a simple zero",
 "The zero is not a simple zero",
 "The function oscillates too much to rely on the tangent line approximation far from the zero",
+"We can find an answer"
+]
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+
+Does `fzero` find a zero to this function starting from $1$?
+
+
+```
+yesnoq(false)
+```
+
+If so, what is the value?
+
+```
+val = fzero(f, 0)
+numericq(val)
+```
+
+If not, what is the reason?
+
+```
+choices = [
+"The zero is a simple zero",
+"The zero is not a simple zero",
+"The function oscillates too much to rely on the tangent line approximations far from the zero",
 "We can find an answer"
 ]
 ans = 4
@@ -791,6 +957,51 @@ many more steps to find the same zero for $f(x) = (\cos(x) - x)^2$.
 How many?
 
 ```
-val = 22
+val = 24
 numericq(val, 2)
 ```
+
+###### Question: implicit equations
+
+The equation $x^2 + x\cdot y + y^2 = 1$ is a rotated ellipse.
+
+```nocode
+using ImplicitEquations
+f(x,y) = x^2 + x*y + y^2 - 1
+plot(Eq(f, 0), (-2,2), (-2,2))
+```
+
+Can we find which point on its graph has the largest $y$ value?
+
+This would be straightforward *if* we could write $y(x) = \dots$, for then we would simply find the critical points and investiate. But we can't so easily solve for $y$ interms of $x$. However, we can use Newton's method to do so:
+
+```
+function findy(x)
+  newton(y -> (x^2 + x*y + y^2) - 1, sqrt(1 - x^2))
+end
+```
+
+For a *fixed* x, this solve for $y$ in the equation: $F(y) = x^2 + x*y + y^2 - 1 = 0$. It should be that $(x,y)$ is a solution:
+
+```
+x = .75
+y = findy(x)
+x^2 + x*y + y^2  ## is this 1?
+```
+
+So we have a means to find $y(x)$, but it is implicit. We can't readily find the derivative to find critical points. Instead we can use the approximate derivative with $h=10^{-6}$:
+
+```
+yp(x) = (findy(x + 1e-6) - findy(x)) / 1e-6
+```
+
+Using `fzero`, find the value $x$ which maximizes `yp`. Use this to find the point $(x,y)$ with largest $y$ value.
+
+```
+xstar = fzero(yp, 0)
+ystar = findy(xstar)
+choices = [L"(-0.577, 1.155)", L"(0,0)", L"(0, -0.577)", L"(0.577, 0.577)"]
+ans = 1
+radioq(choices, ans)
+```
+

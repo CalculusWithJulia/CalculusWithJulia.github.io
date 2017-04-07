@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-backend(:gadfly)
+plotly()
 ```
 
 ```
@@ -31,7 +31,7 @@ g'(t)}$ is Riemann integrable.
 
 
 > **The arc length of a curve**. For $f$ and $g$ as described, the arc length of the parameterized curve is given by
-> $$~ L = \int_a^b \sqrt{g'(t) + f'(t)} dt ~$$. For the special case of the graph of a function $f(x)$ between $a$ and $b$ the formula becomes $L = \int_a^b \sqrt{ 1 + f'(x)} dx$ (taking $g(t) = t$).
+> $$~ L = \int_a^b \sqrt{g'(t) + f'(t)} dt. ~$$ For the special case of the graph of a function $f(x)$ between $a$ and $b$ the formula becomes $L = \int_a^b \sqrt{ 1 + f'(x)} dx$ (taking $g(t) = t$).
 
 
 ```
@@ -121,7 +121,7 @@ Let $f(x) = x^2$. The arc length of the graph of $f(x)$ over $[0,1]$ is then $L=
 
 ```
 using SymPy
-x = symbols("x")
+@vars x
 F = integrate(sqrt(1 + (2x)^2), x)
 ```
 
@@ -168,7 +168,7 @@ L = \int_{1/e}^e \sqrt{1 + (\frac{1}{x})^2} dx.
 This has a *messy* antiderivative, so we let `SymPy` compute for us:
 
 ```
-x = symbols("x")
+@vars x
 ex = integrate(sqrt(1 + (1/x)^2), (x, 1/E, E))
 ```
 
@@ -199,12 +199,12 @@ between $2$ and $2.5$, say, but it isn't much work to get
 an approximate numeric answer. We add in a bit to make `f'(t)` call `D(f)(t)` to match the equations:
 
 ```
-using Roots
+using Roots, QuadGK
 Base.ctranspose(f::Function) = D(f)
 quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
 ```
 
-We needed a numeric approach, as a simple antiderivative is not available.
+We used a numeric approach, but this can be solved by hand and the answer is suprising.
 
 ##### Example
 
@@ -274,7 +274,7 @@ basically unloaded so will form a catenary.) Suppose the drop of the
 main cables is $147$ meters over this span. Then the cable itself can
 be modeled as a parabola with
     
-* $x$-intercepts $a = 1298/2$ and $-a$ and 
+* The $x$-intercepts $a = 1298/2$ and $-a$ and 
 * vertex $(0,b)$ with $b=-147$.
 
 The parabola that fits these three points is 

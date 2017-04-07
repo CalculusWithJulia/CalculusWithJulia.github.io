@@ -2,7 +2,7 @@
 
 ```nocode, noout
 using Plots
-gadfly()
+plotly()
 ```
 
 ## Graphs of equations
@@ -35,13 +35,13 @@ and provide a viewing window:
 ```
 using Plots, ImplicitEquations
 F(x,y) = x^2 + y^2
-plot(F == 4, (-5, 5), (-5, 5))
+plot(F ⩵ 4, (-5, 5), (-5, 5))
 ```
 
 The graphs aren't  very pretty -- they really plot pixels only --  but you should see a circle of radius 2
 within the viewing window $[-5,5] \times [-5,5]$. The equation to
-graph was represented by a function of two variables and the equality
-operator, `==` was used to specify what to draw. 
+graph was represented by a function of two variables and the
+`⩵` (formed by typing `\Equal[tab]`) was used to describe what to draw, in this case all points $(x,y)$ in the region satisfying the equation $F(x,y) = 0$.
 
 More complicated equations are possible.
 The
@@ -58,7 +58,7 @@ default viewing window of $[-5,5] \times [-5,5]$ is used:
 ```
 a,b = -1,2
 F(x,y) = y^4 - x^4 + a*y^2 + b*x^2
-plot(F == 0)
+plot(F ⩵ 0)
 ```
 
 
@@ -88,7 +88,7 @@ $$~
 2x + 2y\cdot \frac{dy}{dx} = 0.
 ~$$
 
-The chain rules was used to find $d/dx$ of $y^2$. From this we can solve for $dy/dx$:
+The chain rule was used to find $d/dx$ of $y^2$. From this we can solve for $dy/dx$:
 
 $$~
 dy/dx = -x/y
@@ -121,7 +121,7 @@ For $a = 2, b=1$ we have the graph:
 
 ```
 F(x,y; a=2, b=1) = x^2*y + a * b * y - a^2 * x
-plot(F == 0, (-2, 2), (-2, 2))
+plot(F ⩵ 0, (-2, 2), (-2, 2))
 ```
 
 We can see that at each point in the viewing window the tangent line
@@ -153,7 +153,7 @@ A graph for $a=3$ shows why it has the name it does:
 
 ```
 F(x,y; a=3) = x^4 - a^2*(x^2 - y^2)
-plot(F==0, (-3, 3), (-2, 2))
+plot(F ⩵ 0, (-3, 3), (-2, 2))
 ```
 
 The tangent line at $(x,y)$ will have slope, $dy/dx$ satisfying:
@@ -204,7 +204,9 @@ equation. Tangent lines are tangent at a point, so we need a point to
 discuss.
 
 Returning to the equation for a circle, $x^2 + y^2 = 1$, let's look at
-$(\sqrt{2}/2, - \sqrt{2}/2)$. The derivative is $ -y/x$, so the slope at this point is $1$. The line itself has equation $y = b + m \cdot (x-a)$. The following represents this in `Julia`"
+$(\sqrt{2}/2, - \sqrt{2}/2)$. The derivative is $ -y/x$, so the slope
+at this point is $1$. The line itself has equation $y = b + m \cdot
+(x-a)$. The following represents this in `Julia`:
 
 ```
 F(x,y) = x^2 + y^2
@@ -223,12 +225,12 @@ the function `tl`. Basically, it is an algebraic equivalent of
 G(x,y) = y - tl(x)
 ```
 
-Now we want to plot *both* $F==1$ and $G==0$. The graph will be either
+Now we want to plot *both* $F ⩵ 1$ and $G ⩵ 0$. The graph will be either
 the one of $F$ *or* the one of $G$. As with other operations, `|` means
 "or" (though precedence rules require the parentheses):
 
 ```
-plot((F == 1) |  (G == 0), (-3, 3), (-3, 3))
+plot((F ⩵ 1) |  (G ⩵ 0), (-3, 3), (-3, 3))
 ```
 
 We can see that combining terms with the logical operator `|` will request that both equations be rendered.
@@ -236,7 +238,7 @@ We can see that combining terms with the logical operator `|` will request that 
 Alternatively, we can add a line with `plot!`, as follows:
 
 ```
-plot(F == 1, (-3, 3), (-3, 3))
+plot(F ⩵ 1, (-3, 3), (-3, 3))
 plot!(x -> b + m*(x-a), -3, 3)
 ```
 
@@ -261,12 +263,17 @@ G(x,y) = c*x^3 + d*x^2 + e*x + h
 
 Now we approach this with SymPy.
 
+```
+note(""" Both `SymPy` and `ImplicitEquations` use the same operators for comparison. As such we `import` `SymPy` and qualify each use of the comparison operator.
+""")
+```
+
 We define variable `x` and `y` *and* a symbolic function $u$:
 
 ```
-using SymPy
-x, y = symbols("x, y", real=true)
-u = SymFunction("u")        # otherwise: symbols("u", cls = SymFunction)
+import SymPy
+SymPy.@vars x y 
+u = SymPy.SymFunction("u")        
 ```
 
 Defining a symbolic function is done through `SymFunction`. (This
@@ -278,42 +285,42 @@ To define the equation $xy=cx^3 + dx^2 + ex + h$ we can either move
 everything to one side, or use SymPy's `Eq` function, as follows:
 
 ```
-eqn = Eq(F(x,y), G(x,y))
+eqn = SymPy.Eq(F(x,y), G(x,y))
 ```
 
 As we assume $y$ is a function of $x$, called `u(x)`, this substitution is just a renaming:
 
 ```
-eqn1 = subs(eqn, y, u(x))
+eqn1 = eqn(y => u(x))
 ```
 
 At this point,  we differentiate both sides in `x`:
 
 ```
-eqn2 = diff(eqn1, x)
+eqn2 = SymPy.diff(eqn1, x)
 ```
 
 The next step is solve for $dy/dx$ -- the lone answer to the linear equation -- which is done as follows:
 
 ```
-dydx = diff(u(x), x)
-ex = solve(eqn2, dydx)[1]
+dydx = SymPy.diff(u(x), x)
+ex = SymPy.solve(eqn2, dydx)[1]
 ```
 
 As this represents an answer in terms of `u(x)`, we replace that term with the original variable:
 
 ```
-dydx = subs(ex, u(x), y)
+dydx = ex(u(x) => y)
 ```
 
 If `x` and `y` are the variable names, this function will combine the steps above:
 
 ```
 function dy_dx(eqn)
-  u = SymFunction("u")
-  eqn1 = subs(eqn, y, u(x))
-  eqn2 = solve(diff(eqn1, x), diff(u(x), x))[1]
-  subs(eqn2, u(x), y)
+  u = SymPy.SymFunction("u")
+  eqn1 = eqn(y => u(x)) 
+  eqn2 = SymPy.solve(SymPy.diff(eqn1, x), SymPy.diff(u(x), x))[1]
+  eqn2(u(x) => y)
 end
 ```
 
@@ -323,15 +330,15 @@ If we have a point on the curve, such as $(1,4)$, then we can draw a tangent lin
 ```
 H(x,y) = F(x,y) - G(x,y)
 a,b = 1, 4
-m = N(subs(dydx, (x,a), (y,b)))
+m = SymPy.N(dydx(x => a,  y => b))
 TL(x,y) = y - (b + m * (x-a))
-plot((H == 0) | (TL == 0))
+plot((H ⩵ 0) | (TL ⩵ 0))
 ```
 
 ```
 note("""
 
-`SymPy` has the `plot_implicit` function for plotting implicit equations, but this works with `PyPlot`, not `Gadfly`, so we use the `ImplicitEquations` package.
+While `SymPy` has the `plot_implicit` function for plotting implicit equations,  this works only with `PyPlot`, not `Plots`, so we use the `ImplicitEquations` package in these examples.
 
 """)
 ```
@@ -356,7 +363,7 @@ Setting $a=1$, it has the graph:
 ```
 a = 1
 F(x,y) = x^3 + y^3 - 3*a*x*y
-plot(F==0)
+plot(F ⩵ 0)
 ```
 
 We can solve for the lower curve, $y$, as a function of $x$, as follows:
@@ -425,22 +432,22 @@ To visualize, we plot implicitly and notice that:
 
 ```
 F(x,y) = x^3 - y^3
-plot(F == 3,  (-3, 3), (-3, 3))
+plot(F ⩵ 3,  (-3, 3), (-3, 3))
 ```
 
 
 The same problem can be done symbolically. The steps are similar, though the last step (replacing $x^3 - y^3$) isn't done without explicitly asking.
 
 ```
-x, y = symbols("x, y")
-u = symbols("u", cls=SymFunction)
+SymPy.@vars x y
+u = SymPy.SymFunction("u")
 
 eqn = F(x,y) - 3
-eqn1 = subs(eqn, y, u(x))
-dydx = solve(diff(eqn1,x), diff(u(x), x))[1]          # 1 soln
-d2ydx2 = solve(diff(eqn1, x, 2), diff(u(x),x, 2))[1]  # 1 soln
-eqn2 = subs(d2ydx2, (diff(u(x), x), dydx), (u(x), y))
-simplify(eqn2)
+eqn1 = eqn(y => u(x))
+dydx = SymPy.solve(SymPy.diff(eqn1,x), SymPy.diff(u(x), x))[1]          # 1 soln
+d2ydx2 = SymPy.solve(SymPy.diff(eqn1, x, 2), SymPy.diff(u(x),x, 2))[1]  # 1 soln
+eqn2 = d2ydx2(SymPy.diff(u(x), x) => dydx, u(x) => y)
+SymPy.simplify(eqn2)
 ```
 
 ## Inverse functions
@@ -589,7 +596,7 @@ F(x, y) = F(x, y, a, b)
 Our values $(x,y)$ must satisfy $f(x,y) = L$. Let's graph:
 
 ```
-plot(F == L, (-5, 7), (-5, 7))
+plot(F ⩵ L, (-5, 7), (-5, 7))
 ```
 
 The graph is an ellipse, though slightly tilted.
@@ -598,10 +605,8 @@ Okay, now to find the lowest point. This will be when the derivative
 is $0$. We solve by assuming $y$ is a function of $x$ called `u`:
 
 ```
-using SymPy
-a,b,L = symbols("a,b,L", real=true)
-x,y = symbols("x,y", real=true)
-u = symbols("u", cls=SymFunction)
+SymPy.@vars a b L x y
+u = SymPy.SymFunction("u")
 ```
 
 ```
@@ -610,30 +615,34 @@ eqn = F(x,y,a,b) - L
 ```
 
 ```
-dydx = subs(eqn, y, u(x)) |> ex -> diff(ex, x) |> ex -> solve(ex, diff(u(x),x))[1] |> subs(u(x), y)
+eqn1 = SymPy.diff(eqn(y => u(x)), x)
+eqn2 = SymPy.solve(eqn1, SymPy.diff(u(x), x))[1]
+dydx  = eqn2(u(x) => y)
 ```
 
 We are looking for when the tangent line has 0 slope, or when `dydx` is 0:
 
 ```
-cps = solve(dydx, x)
+cps = SymPy.solve(dydx, x)
 ```
 
 There are two answers, as we could guess from the graph, but we want the one for the smallest value of $y$, which is the second.
 
 
-The values of `dydx` depend on any pair `(x,y)`, but our solution must also satisfy the equation. That is for our value of `x`, we need to find the corresponding `y`. This should be possible by substituting:
+The values of `dydx` depend on any pair `(x,y)`, but our solution must
+also satisfy the equation. That is for our value of `x`, we need to
+find the corresponding `y`. This should be possible by substituting:
 
 ```
-eqn1 = subs(eqn, (x, cps[2]))
+eqn3 = eqn(x => cps[2])
 ```
 
-Then trying to solve with `solve(eqn1, y)`. This doesn't work though, as `SymPy` can't complete the problem.
+Then trying to solve with `solve(eqn3, y)`. This doesn't work though, as `SymPy` can't complete the problem.
 
 However, we can solve numerically if we fix numeric values for `a`, `b`, abd `L`:
 
 ```
-f(w) = N(subs(eqn1, (a,3), (b,3), (L,10), (y,w)))
+f(w) = SymPy.N(eqn3(a => 3, b=>3, L=>10, y=>w))
 ```
 
 Then `f` will return a numeric value. We can use this function with the `fzero` function of the `Roots` package:
@@ -646,7 +655,7 @@ ystar = fzero(f, -3)
 Okay, now we need to put this value back into our expression for the `x` value and also substitute in for the parameters:
 
 ```
-xstar = N(subs(cps[2], (y,ystar), (a,3), (b,3), (L,3)))
+xstar = SymPy.N(cps[2](y => ystar, a =>3, b => 3, L => 3))
 ```
 
 Our minimum is at `(xstar, ystar)`, as this graphic shows:
@@ -655,7 +664,7 @@ Our minimum is at `(xstar, ystar)`, as this graphic shows:
 
 F(x,y) = F(x,y, 3, 3)
 tl(x,y) = y - (ystar + 0 * (x- xstar))
-plot((F == 10) | (tl == 0), (-10, 10), (-10, 10))
+plot((F ⩵ 10) | (tl ⩵ 0), (-6, 6), (-10, 10))
 ```
 
 
@@ -692,7 +701,7 @@ x^2 - 2xy + y^2 = 1?
 
 ```
 x,y=1,1
-yesnoq(x^2 - 2x*y + y^2 == 1)
+yesnoq(x^2 - 2x*y + y^2 ==1)
 ```
 
 ###### Question
@@ -707,7 +716,7 @@ If $x=4$, what is a value for $y$ such that $(x,y)$ is a point on the graph of t
 
 ```
 using SymPy
-x,y=symbols("x,y")
+@vars x y
 eqn = x^2*y + 2y - 4x
 val = float(N(solve(subs(eqn, (x,4)), y)[1]))
 numericq(val)
@@ -734,12 +743,11 @@ yesnoq(false)
 Let $(x/3)^2 + (y/2)^2 = 1$. Find the slope of the tangent line at the point $(3/\sqrt{2}, 2/\sqrt{2})$.
 
 ```
-using SymPy
-x,y=symbols("x,y")
-u = symbols("u", cls=SymFunction)
+SymPy.@vars x y
+u = SymFunction("u")
 eqn = (x/3)^2 + (y/2)^2 - 1
-dydx = solve(diff(subs(eqn, y, u(x)), x), diff(u(x), x))[1]
-val = float(N(subs(dydx, (u(x), y), (x, 3/sqrt(2)), (y, 2/sqrt(2)))))
+dydx = SymPy.solve(SymPy.diff(SymPy.subs(eqn, y, u(x)), x), SymPy.diff(u(x), x))[1]
+val = float(SymPy.N(SymPy.subs(dydx, (u(x), y), (x, 3/sqrt(2)), (y, 2/sqrt(2)))))
 numericq(val)
 ```
 
@@ -843,7 +851,7 @@ If $y>0$ is the sign positive or negative?
 
 ```
 choices = ["positive", "negative", "Can be both"]
-ans = 1
+ans = 2
 radioq(choices, ans, keep_order=true)
 ```
 

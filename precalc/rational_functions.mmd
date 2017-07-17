@@ -1,13 +1,11 @@
 # Rational functions
 
-```nocode, noout
-using Plots
-plotly()
-```
 
-A rational expression is the ratio of two polynomial expressions. This
-section covers some additional details that arise when graphing such
-expressions.
+A rational expression is the ratio of two polynomial expressions.
+Such expressions arise in many modeling situations. As well, as many
+facts are known about polynomial expressions, much can be determined
+about rational expressions.  This section covers some additional
+details that arise when graphing such expressions.
 
 ## Rational functions
 
@@ -39,7 +37,7 @@ Rational functions are not quite so nice:
   every other point, as the graph of $f(x) =1/x$ will show.
 
 
-Here, as with out discussion on polynomials, we are interested now in just
+Here, as with our discussion on polynomials, we are interested for now in just
 a few properties:
 
 * What happens to $f(x)$ when $x$ gets really big or really small (towards $\infty$ or $-\infty$)?
@@ -49,9 +47,9 @@ a few properties:
 * When is $f(x) = 0$?
 
 
-Much of this can often be answered with a graph, but with rational
+These questions can often be answered with a graph, but with rational
 functions we will see that care must be take when producing
-the graph.
+a useful graph.
 
 For example, consider this graph generated from a simple rational
 function:
@@ -69,7 +67,7 @@ plot(f, -10, 10)
 
 We would be hard pressed to answer any of the three questions above
 from the graph, though, on inspection, we might think the strange spikes have something
-to do with $q(x)=0$.
+to do with $x$ values where $q(x)=0$.
 
 The question of big or small $x$ is not answered well with this graph,
 as the spikes dominate the scale of the $y$-axis. Setting a much
@@ -86,18 +84,19 @@ that can be determined just from the two leading terms.
 The spikes haven't vanished completely. It is just that with only a
 few hundred points to make the graph, there aren't any values near
 enough to the problem to make a large spike. The spikes happen because
-the function has a *vertical asymptote* at these values. Recall the
-graph is made by selecting a few hundred points in the domain
-specified, and finding the corresponding $y$ values. These are then
-connected by straight lines. Near a vertical asymptote the function
-values can be arbitrarily large, though at the vertical asymptote the
-function is undefined. The graph doesn't show this detail.
+the function has a *vertical asymptote* at these values. Though not
+quite right, it is reasonable to think of the graph graph being made
+by selecting a few hundred points in the specified domain, computing
+the corresponding $y$ values, plotting the pairs, and finally connecting the points with
+straight line segments.  Near a vertical asymptote the function values
+can be arbitrarily large in absolute values, though at the vertical asymptote the
+function is undefined. This graph doesn't show such detail.
 
 The spikes will be related to the points where $q(x) = 0$, though not
-necessarily all such points will produce a vertical asymptote.
+necessarily as not all such points will produce a vertical asymptote.
 
 Where the function crosses $0$ is very hard to tell from these
-graphs. As well, other finer features, such as local peaks or valleys,
+two graphs. As well, other finer features, such as local peaks or valleys,
 when present, can be hard to identify as the $y$-scale is set to
 accommodate the  asymptotes. Working around the asymptotes requires
 some extra effort. Strategies are discussed herein.
@@ -166,8 +165,8 @@ apart(p)
 ```
 
 
-This decomposition breaks the rational expression into two pieces: $x
-- 4$ and $40/(3x+0) + 2/(3x-9)$. The first piece would have a graph
+This decomposition breaks the rational expression into two pieces: $x-4$
+and $40/(3x+9) + 2/(3x-9)$. The first piece would have a graph
 that is the line with slope $1$ and $y$-intercept $4$. As $x$ goes to
 $\infty$, the second piece will clearly go towards 0, as this simple
 graph shows:
@@ -183,7 +182,7 @@ approach a straight line, in this case $y=x-4$ as $x \rightarrow \pm
 \infty$.
 
 We can easily do most of this analysis without needing a
-computer. First, we should know that the graph of $y=mx$ is a line with
+computer or algebra. First, we should know that the graph of $y=mx$ is a line with
 slope $m$, the graph of $y = c$ is a constant line at height $c$, and
 the graph of $y=c/x^m$, $m > 0$ will decay towards $0$ as $x
 \rightarrow \pm\infty$. The latter should be clear, as $x^m$ gets big,
@@ -195,11 +194,11 @@ rather we use the expanded form, which we get through the `cancel`
 function
 
 ```
-cancel(r)
+cancel(p)
 ```
 
-We can see that numerator is of degree 3 and the denominator of degree
-2. The leading terms are $x^3$ and $x^2$ respectively. If we were to
+We can see that numerator is of degree 3 and the denominator of degree $2$.
+The leading terms are $x^3$ and $x^2$ respectively. If we were to
 pull those out we would get:
 
 $$~
@@ -215,16 +214,15 @@ bit more work, as a division step is needed.)
 
 
 Just by looking at the ratio of the two leading terms, the behaviour
-as $x \rightarrow \pm \infty$ can be discerned. If this ratio is of
-the form
+as $x \rightarrow \pm \infty$ can be discerned. If this ratio is of:
 
-- $c x^m$ with $m > 1$ then the shape will follow the polynomial growth of of the monomial $c x^m$.
+* the form $c x^m$ with $m > 1$ then the shape will follow the polynomial growth of of the monomial $c x^m$.
 
-- $c x^m$ with  $m=1$ then there will be a line with slope $c$ as a *slant asymptote*.
+* the form $c x^m$ with  $m=1$ then there will be a line with slope $c$ as a *slant asymptote*.
 
-- $cx^0$ with  $m=0$ (or just $c$) then there will be a *horizontal asymptote* $y=c$.
+* the form $cx^0$ with  $m=0$ (or just $c$) then there will be a *horizontal asymptote* $y=c$.
 
-- $c/x^{m}$ with $m  >  0$ then there will be a horizontal asymptote $y=0$, or the $y$ axis.
+* the form $c/x^{m}$ with $m  >  0$ then there will be a horizontal asymptote $y=0$, or the $y$ axis.
 
 To expand on the first points where the degree of the numerator is
 greater than that of the denominator, we have from the division
@@ -282,13 +280,15 @@ q, r = divrem(a, b)
 The graph of $a/b$ has nothing in common with the graph of $g$ for small $x$
 
 ```
-plot([a/b, q], -3, 3)
+plot(a/b, -3, 3)
+plot!(q)
 ```
 
 But the graphs do match for large $x$:
 
 ```
-plot([a/b, q], 5, 10)
+plot(a/b, 5, 10)
+plot!(q)
 ```
 
 
@@ -329,8 +329,8 @@ apart(p/q)
 
 The denominator, $q$, has factors $x-3$ and $x^2 - x - 1$, each
 irreducible. The answer is expressed in terms of a sum of rational
-functions each with a denominator coming from one o these factors,
-possible with a power.
+functions each with a denominator coming from one of these factors,
+possibly with a power.
 
 ### Vertical asymptotes
 
@@ -419,11 +419,11 @@ function.
 
 
 We can also clip the `y` axis. The `plot` function can be passed an
-argument `ylim=(lo, hi)` to limit which values are plotted. With this,
+argument `ylims=(lo, hi)` to limit which values are plotted. With this,
 we can have:
 
 ```
-plot(f, -5, 5, ylim=c(-20, 20))
+plot(f, -5, 5, ylims=(-20, 20))
 ```
 
 This isn't ideal, as the large values are still computed, just the
@@ -432,7 +432,7 @@ effecting the graph.
 
 There is another way, we could ask `Julia` to not plot $y$ values that
 get too large. This is not a big request.  If instead of the value of
-`f(x)` -- when it is large -- we use `NaN` instead, then the
+`f(x)`---when it is large---we use `NaN` instead, then the
 connect-the-dots algorithm will skip those values.
 
 This is actually quite easy to implement, if we operate on the
@@ -478,7 +478,7 @@ The usual recipe for construction follows these steps:
 - Identify when the function is $0$ or undefined. Place those values
   on a number line.
 
-- Identify "test points" within each implied interval (these are $(-\infty, -1)$, $(-1,0)$, $(0,1)$, and $(1, \infty)$ in the example) and check for the sign of $f(x)$ at these test points. Write in `-`, `+`, `0`, of `*` as appropriate. This uses a fact that "continuous" functions may only change sign when they cross $0$ or are undefined.
+- Identify "test points" within each implied interval (these are $(-\infty, -1)$, $(-1,0)$, $(0,1)$, and $(1, \infty)$ in the example) and check for the sign of $f(x)$ at these test points. Write in `-`, `+`, `0`, or `*`, as appropriate. The value comes from the fact that "continuous" functions may only change sign when they cross $0$ or are undefined.
 
 With the computer, where it is convenient to draw a graph, it might be better to emphasize
 the sign on the graph of the function. This helper function will do
@@ -488,7 +488,8 @@ so, plotting the function and then coloring it different colors based on the sig
 function signchart(f, a, b)
    nonneg(x) = f(x) < 0 ? NaN : f(x)
    nonpos(x) = f(x) > 0 ? NaN : f(x)
-   plot([nonneg, nonpos], a, b, linewidth=5)
+   plot(nonneg, a, b, linewidth=5, legend=false)
+   plot!(nonpos, linewidth=5)
    plot!(zero)
 end
 f(x) = x^3 - x
@@ -516,7 +517,7 @@ $$~
 and
 
 $$~
-\tan(x) \approx \frac{1 + 1/15 \cdot x^3}{1 + 2/5 \cdot x^2}
+\tan(x) \approx \frac{x - 1/15 \cdot x^3}{1 - 2/5 \cdot x^2}
 ~$$
 
 
@@ -525,11 +526,13 @@ We can look graphically at these approximations:
 ```
 sin_p(x) = (x - (7/60)*x^3) / (1 + (1/20)*x^2)
 tan_p(x) = (x - (1/15)*x^3) / (1 - (2/5)*x^2)
-plot([sin, sin_], -pi, pi)
+plot(sin, -pi, pi)
+plot!(sin_p)
 ```
 
 ```
-plot([tan, tan_p], -pi/2 + 0.2, pi/2 - 0.2)
+plot(tan, -pi/2 + 0.2, pi/2 - 0.2)
+plot!(tan_p)
 ```
 
 ## Questions

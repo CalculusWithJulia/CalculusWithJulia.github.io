@@ -16,81 +16,29 @@ Mathematically, these number systems are naturally nested within each
 other as integers are rational numbers which are real numbers, which
 can be viewed as part of the complex numbers.
 
-However, we will see that their representation within `Julia`, while
-nearly identical, is not exactly the same. For the most part being
-aware of these differences is not important, but there are some cases
-which can be surprising if these differences are not appreciated.
 
-## Closure
+Calculators typically have just one type of number---floating point
+values. These model the real numbers. `Julia`, on othe other hand, has
+a rich type system, and within that has many different number
+types. There are types that model each of the four main systems above,
+and within each type, specializations for how these values are stored.
 
-A desirable algebraic property of a set of numbers and an operation on
-them is *closure*. That is, if one takes an operation like `+` and
-then uses it to add two numbers in a set, will that result also be in
-the set? If this is so for any pair of numbers, then the set is closed with
-respect to operation addition. For the even numbers with `+`, the answer is yes
-and for the odd numbers, false, as the sum of any two odd numbers is
-even, for example, $3+3=6$. If we start with the *natural numbers*,
-then it is closed under addition, However, if you think of subtraction
-as the operation, then the natural numbers are not closed under
-subtraction, as, for example, $1 - 2 = -1$. The integers are closed
-under addition, subtraction, and, as well, multiplication. That being
-said, once we look at division, closure is no longer the case for the
-integers, as, for example $1/2$ is not an integer. Before talking
-about the rational numbers, which are closed by division -- as long as
-we don't try to divide by 0, we note that there are other ideas of
-division of integers. Euclidean division decomposes $a/b$ via $a = q
-\cdot b + r$, where $0 \leq r < q$, $q$, $r$ are integers. The value
-$r$ is the *remainder* and $q$ the *quotient*.
+Most of the details will not be of interest to all, and will be described later.
 
 
-Back to the rational numbers. These are closed under addition, subtraction, multiplication, and division (with the standard caveat about dividing by 0). 
-
-### Powers
-
-But now, let's consider powers.  Powers are defined for positive integers in a simple enough manner
-
-$$~
-a^n=a\cdot a \cdot a \cdots a \text{ (n times); }  a, n \text{ are integers, $n$ is positive}.
-~$$
-
-We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as `1` within `Julia`).
-
-(Here we abuse the notion of closure, as we don't assume the same number system for the base and the exponent. Above, $a^n$ can be defined the same way for $a$ a real number and $n$ a positive integer. For any $a$ and $n$ $a^n$ will be a real number (except $0^0$) so we consider the operation $a$ into $a^n$ closed.)
-
-
-This extends easily to define integer powers of rational numbers:
-$(p/q)^n = p^n/q^n$. Negative integer powers are handled with a
-reciprocal through $p^{-n} = 1/p^n$. For postive, rational powers,
-like $p^{1/n}$ a reference to these as solutions to $x^n=p$ is
-used. With that, we can define values of $p^{m/n}$ as $(p^m)^{1/n}$,
-so defining the value is possible. However, solutions to $x^n=p$ may
-not be rational, e.g., $x^2=2$ has solutions $\sqrt{2}$ and
-$-\sqrt{2}$. The operation `^` is not closed for the rational
-exponents. For closure under powers, the real numbers are needed as
-the set provided we restrict the base to $p \geq 0$ and complex
-numbers are needed for closure if we allow $p$ to be negative e.g.,
-$(-1)^{1/2}$ is the definition of $i$, the imaginary unit.
-
-> So closure of the number systems under the basic operations depends on the system and the operation. 
-
-As you can see, even with these familiar operations, the desire for
-simple things, such as the natural numbers and closure, leads one
-naturally into the need for more complicated systems such as the rational numberss, the real
-numbers or the complex numbers.
-
-## Julia and number systems
-
-With `Julia`, such distinctions are also made. `Julia` has types for each of the four basic number systems above. This is unlike most calculators which use just a floating-point type, a model for the real numbers.
-
-Consider the number 1. It is both an integer, rational, real and complex number. To construct "1" in each type within `Julia` we have these different styles:
+For now, let's consider the number 1. It can be viewed as either an integer, rational,
+real, or complex number. To construct "1" in each type within `Julia`
+we have these different styles:
 
 ```
 1, 1.0, 1//1, 1 + 0im
 ```
 
-The basic number types in `Julia` are `Int`, `Float64`, `Rational` and `Complex`, though in fact there are many more. This distinction is important, as the type of number dictates how it will be stored and how precisely the stored value is to the mathematical value it represents.
+The basic number types in `Julia` are `Int`, `Float64`, `Rational` and `Complex`, though in fact there are many more. This distinction is important, as the type of number dictates how it will be stored and how precisely the stored value can be expected to be  to the mathematical value it models.
 
-As is seen in the last example, `Julia`'s parser can distinguish these types through an easy to understand syntax:
+Though there are explicit constructors for these types, these notes
+avoid them unless necessary, as`Julia`'s parser can distinguish these
+types through an easy to understand syntax:
 
 * integers have no decimal point;
 * floating point numbers have a decimal point (or are in scientific notation);
@@ -103,57 +51,127 @@ Heads up, the difference between `1` and `1.0` is subtle (and even more so, as `
 """)
 ```
 
-Julia also has *abstract types* `Integer`, `Real`, and `Number`, all of the above are also of type `Number`, but `Complex` is not of type `Real`. Abstract types allow code to be written generically for different concrete types.  For example the square root of any `Real` number is defined generically by the square root of that number converted to floating point, so that `sqrt(1)`, `sqrt(1.0)`, and `sqrt(1//1)` are all computed identically. An abstract type like `Integer` might seem redundant at first, but there are many different types of "integers" provided by `Julia`: for example, 32-bit integers, 64-bit integers, "big" integers (multiprecision integers), and numerous types of unsigned integers (which are useful for some types of programming).
+Similarly, each type is printed slightly differently.
+
+The key distinction is between integers and floating points. While
+floating point values include integers, and so can be used exclusively
+on the calculator, the difference is that an integer is guaranteed to
+be an exact value, whereas a floating point value is typically just an
+*approximate* value---used to advantage, as floating point values can model a much
+wider set of numbers.
+
+
+Now in nearly all cases, the differences are not noticed. Take for instance this simple calculation involving mixed types.
+
 
 ```
-note("""
-
-That numbers without decimal points are read in as integers is accurate, but that they will be of type `Int` is typical, though not always the case. `Julia` will use different storage types for each of `1234567890`, `12345678901234567890`, and `1234567890123456789012345678901234567890`.
-
-""")
+1 + 1.25 + 3//2
 ```
 
-## Integers
+The sum of an integer, a floating point number and rational number returns a floating point number without a complaint.
 
-Depending on the underlying computer system, basic integers  (`Int`s) in `Julia` are stored with 64 bits or 32 bits, For a 64 bit integer, there are $2^{64}$ possible values that can be represented, as each "bit" can have only one of two possible values. Roughly half are negative and half are positive. The largest positive number is $2^{63}-1$. Notice what comes of trying to compute $2^{63}$ on a 64-bit machine:
+This is  because behind the scenes, `Julia` will often "promote" a type to match, so for example to compute `1 + 1.25` the integer `1` will be promoted toa floating point value and the two values are then added. Similarly, with `2.25 + 3//2`, where the fraction is promoted to the floating point value `1.5` and addition is carried out.
 
-```
-2^63
-```
-
-It produces a negative number! 
-
-The fact that negative numbers can occur -- and not the desired number -- results from a compromise made in `Julia`'s design: some operations aren't checked for overflow so that they run faster (much faster). This is something the user must be aware of, especially on a 32-bit system, where the representable integers can only be as big as $4,294,967,295$ -- which is not even 5 billion.
-
-(Julia provides the `typemax` function to return the largest value for
-a number type. It can verify the largest representable integer with
-`typemax(Int)`.)
-
-## Floating point numbers
-
-
-As mentioned, integers are not closed under division as the result can lead to rational numbers. Similarly, in `Julia`, division of two integers using `/` will not be an integer, rather it will *always* be a floating point number -- even dividing by `1` where an integer answer is possible:
+As floating point numbers are approximations, some values are not quite what they would be mathematically:
 
 ```
-2/1
+sqrt(2) * sqrt(2) - 2, sin(pi)
 ```
 
-To make a rational number from division of integers, the double `//` is used, as in `2//1`.
+These values are *very* small numbers, but not exactly $0$, as they are mathematically.
+
+----
+
+The only  common issue is with powers. `Julia` tries to keep a
+predictable output from the input types (not their values). Here are the three main cases
+that arise where this can cause unexpected results:
+
+* integer bases and negative integer exponents. In `Julia` the expression `m^n` for `m` and `n` integers can only return an integer. However, when `n` is negative, the mathematical result is typically a non-integer fraction. So `Julia` throws a domain error:
 
 ```
-note("""
-
-The basic operations in `Julia` are engineered to give the same *type*
-of output given the same *type(s)* of input. This is for performance
-reasons. This is the concept of *type stability*.
-
-""")
+2^(-1)
 ```
+
+The workaround is to use a floating point value for either the base or the exponent:
+
+```
+2.0^(-1), 2^(-1.0)
+```
+
+This annoyance could be avoided, but isn't to make these commonly used
+values faster to compute.
+
+
+* integer bases and integer exponents can *easily* overflow. Not only `m^n` is always an integer, it is always an integer with a fixed storage size computed from the sizes of `m` and `n`. So the powers can quickly get too big. This can be especially noticeable on older $32$-bit machines, where too big is $2^{32} = 4,294,967,296$. On $64$-bit machines, this limit is present but much bigger.
+
+Rather than give an error though, `Julia` gives seemingly arbitrary answers, as can be seen in this example on a $64$-bit machine:
+
+```
+2^62, 2^63
+```
+
+Again, this could be worked around, but it isn't, as it
+would slow down this basic computation. So, it is up to the user to be
+aware of cases where their integer values can grow to big. Again, use
+floating point numbers in this domain, as they have more room, at
+the cost of often being approximate values.
+
+
+* the `sqrt` function will give a domain error for negative values:
+
+```
+sqrt(-1.0)
+```
+
+This is because for real-valued inputs `Julia` expects to return a real-valued output. Of course, this is true in mathematics until the complex numbers are introduced. Similarly in `Julia`---to take square roots of negative numbers, start with complex numbers:
+
+```
+sqrt(-1.0 + 0im)
+```
+
+
+
+
+
+## Some more details.
+
+
+What follows is only needed for those seeking more background.
+
+
+Julia has *abstract* number types `Integer`, `Real`, and `Number`. All
+four types described above are of type `Number`, but `Complex` is not
+of type `Real`.
+
+However, a specific value is an instance of a *concrete* type. A
+concrete type will also include information about how the value is
+stored. For example, the *integer* `1` could be stored using $64$ bits
+as a signed integers, or, should storage be a concern, as an $8$ bits 
+signed or even unsigned integer. If storage
+isn't an issue, but exactness at all scales is, then it can be stored in a manner
+that allows for the storage to grow using "big" numbers.
+
+These distinctions can be seen in how `Julia` parses these three values:
+
+* `1234567890` will be a $64$-bit integer (on newer machines), `Int64`
+* `12345678901234567890` will be a $128$ bit integer, `Int128`
+* `1234567890123456789012345678901234567890` will be a big integer, `BigInt`
+
+Having abstract types allows programmers to write functions that will
+work over a wide range of input values that are similar, but have
+different implementation details.
+
+
+### Integers
+
+Integers are often used casually, as they come about from parsing. As with a calculator, floating point numbers *could* be used for integers, but in `Julia`---and other languages---it proves useful to have numbers known to have *exact* values. In `Julia` there are built-in number types for integers stored in $8$, $16$, $32$, $64$, and $128$ bits and `BigInt`s if the previous aren't large enough. ($8$ bits can hold $8$ binary values representing $1$ of $256=2^8$ possibilities, whereas the larger $128$ bit can hold one of $2^{128}$ possibilities.) Smaller values can be more efficiently used, and this is leveraged at the system level, but not a necessary distinction with calculus where the default size along with an occasional usage of `BigInt` suffice.
+
+### Floating point numbers
 
 [Floating point](http://en.wikipedia.org/wiki/Floating_point) numbers
 are a computational model for the real numbers.  For floating point
-numbers, 64 bits are used for both 32- and 64-bit systems. This gives
-a large -- but still finite -- set of numbers that can be
+numbers, $64$ bits are used by default for both $32$- and $64$-bit systems, though other storage sizes can be requested. This gives
+a large---but still finite---set of real numbers that can be
 represented. However, there are infinitely many real numbers just
 between $0$ and $1$, so there is no chance that all can be represented
 exactly on the computer with a floating point value. Floating point
@@ -164,18 +182,18 @@ as $a\cdot 2^b$ where $a$ is the *significand* and $b$ is the
 *exponent*. The significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert <
 2$, the exponent can be taken to be an integer, possibly negative.
 
-As per IEEE Standard 754, the `Float64` type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but rather are much more concentrated closer to $0$.
+As per IEEE Standard 754, the `Float64` type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but, rather, are much more concentrated closer to $0$.
 
 
 ```
 alert("""
 You can discover more about the range of floating point values provided by calling a few different functions.
 
-- `typemax(0.0)` gives the largest (`Inf`).
+- `typemax(0.0)` gives the largest value for the type (`Inf` in this case).
 
-- `prevfloat(Inf)` gives the largest finite one.
+- `prevfloat(Inf)` gives the largest finite one, in general `prevfloat` is the next smallest floating point value.
 
-- similarly `nextfloat(-Inf)` gives the smallest finite one.
+- `nextfloat(-Inf)`, similarly,  gives the smallest finite floating point value, and in general returns the next largest floating point value.
 
 - `nextfloat(0.0)` gives the closest positive value to 0.
 
@@ -184,7 +202,7 @@ You can discover more about the range of floating point values provided by calli
 """, title="More on floating point", label="More on the range of floating point values")
 ```
 
-### Scientific notation
+#### Scientific notation
 
 Floating point numbers may print in a familiar manner:
 
@@ -218,9 +236,16 @@ Floating point values in scientific notation will always be normalized. This is 
 
 The power in the first is 71, not 70 = 30+40, as the product of 3 and 4 as 12 or `1.2e^1`. (We also see the artifact of `1.2` not being exactly representable in floating point.)
 
-### Special values: Inf, -Inf, NaN
+#### Special values: Inf, -Inf, NaN
 
-The coding of floating point numbers also allows for the special values of `Inf`, `-Inf` to represent positive and negative infinity. As well, a special value `NaN` ("not a number") is used to represent a value that arises when an operation is not closed (e.g., $0.0/0.0$ yields `NaN`). Except for negative bases, the floating point numbers with the addition of `Inf` and `NaN` are closed under the operations `+`, `-`, `*`, `/`, and `^`. Here are some computations that produce `NaN`:
+The coding of floating point numbers also allows for the special
+values of `Inf`, `-Inf` to represent positive and negative
+infinity. As well, a special value `NaN` ("not a number") is used to
+represent a value that arises when an operation is not closed (e.g.,
+$0.0/0.0$ yields `NaN`). Except for negative bases, the floating point
+numbers with the addition of `Inf` and `NaN` are closed under the
+operations `+`, `-`, `*`, `/`, and `^`. Here are some computations
+that produce `NaN`:
 
 ```
 0/0, Inf/Inf, Inf - Inf, 0 * Inf
@@ -238,7 +263,7 @@ Finally, these are mathematically undefined, but still yield a finite value with
 0^0, Inf^0
 ```
 
-### Floating point numbers and real numbers
+#### Floating point numbers and real numbers
 
 Floating point numbers are an abstraction for the real numbers. For
 the most part this abstraction works in the background, though there
@@ -278,39 +303,49 @@ Such differences are usually very small and are generally attributed to rounding
 1.0 - cos(1e-8)
 ```
 
-## Rational numbers
+### Rational numbers
 
-Rational numbers in `Julia` are stored as two numbers, one for the
-denominator and one for the numerator, each some type of integer. They
-can exactly represent a rational number. Unlike with floating point
-values, this leads to the familiar things being true:
+Rational numbers can be used when the exactness of the number is more
+important than the speed or wider range of values offered by floating
+point numbers. In `Julia` a rational number is comprised of a
+numerator and a denominator, each an integer of the same type, and
+reduced to lowest terms. The operations of addition, subtraction,
+multiplication, and division will keep their answers as rational
+numbers. As well, raising a rational number to a positive, integer
+value will produce a rational number.
+
+As mentioned, these are constructed using a double slashes:
+
+```
+1//2, 2//1, 6//4
+```
+
+Rational numbers are exact, so the following are identical to their mathematical counterparts:
 
 ```
 1//10 + 2//10 == 3//10
 ```
 
-And associativity:
+and associativity:
 
 ```
 (1//10 + 2//10) + 3//10 == 1//10 + (2//10 + 3//10)
 ```
 
-
-Rational numbers are closed under the operations `+`, `-`, `*`, and `/` and as well `^` with integer powers. For example,
+Here we see that the type is preserved under the basic  operations:
 
 ```
-1//2 + 1//3, 1//2 * 1//3, 1//2 / 1//3, (1//2)^4
+(1//2 + 1//3 * 1//4 / 1//5) ^ 6
 ```
 
-Non-integer powers are converted to floating point:
+For powers, a non-integer exponent is converted to floating point, so this operation is defined:
 
 ```
 (1//2)^(1//2)   # the first parentheses are necessary as `^` will be evaluated before `//`.
 ```
 
-However, this exactness comes at a cost in terms of speed of operations and limitation of the range of numbers that can be represented. For example, for 64-bit integers, the smallest positive value would be limited to be about $10^{-19}$ and not $10^{-308}$, as it is for floating point. Their primary usage within `Julia` is when exactness is important.
 
-### Different types of real numbers
+##### Example: different types of real numbers
 
 This table shows what attributes are implemented for the different types.
 
@@ -355,15 +390,124 @@ discr = b^2 - 4a*c
 
 When learning calculus, the only common usage of complex numbers arises when solving polynomial equations for roots, or zeros, though they are very important for subsequent work using the concepts of calculus.
 
-## And why you needn't worry too much
 
-Despite all of these types floating around, for the most part the distinction is of no concern to the `Julia` user. Consider the following sum:
+## Type stability
 
-```
-1 + 1.25 + 3//2
-```
+One design decision of `Julia` is that it should be fast. How can
+`Julia` do this? In a simple model, `Julia` is an interface between
+the user and the computer's processor(s). Processors consume a set of
+instructions, the user issues a set of commands. `Julia` is in charge
+of the translation between the two. Ultimately `Julia` calls a compiler to create
+the instructions. A basic premise is the shorter the instructions, the
+faster they are to process. Shorter instructions can come about by
+being more explicit about what types of values the instructions
+concern. Explictness means, there is no need to reason about what a
+value can be. When `Julia` can reason about the type of value involved
+without having to reason about the values themselves, it can work with
+the compiler to produce shorter lists of instructions.
 
-The sum of an integer, a floating point number and rational number returns a floating point number without a complaint. This is because of the promotion mechanism for the binary operations. The basic definition of `x + y` in `julia` does the following: first promote `x` and `y` to a common type, then add the two numbers of the same type. When the above computation, `1 + 1.25 + 3//2` is parsed, first `1` and `1.25` are added. This is done by promoting `1` to a floating point (as one can't easily promote a floating point value to an integer without a loss of information). The result, `2.25` is then added to `3//2`. Again, the rational number is promoted to a floating point and the two are added (though technically, a floating point could be promoted to a rational, in general floating point numbers model the real numbers and there is no way to take an arbitrary real number and create a rational). A similar thing happens when complex numbers are used, though there each component is promoted. So, except for some special cases (like integer bases raised to integer powers) where the output is best suited to be a type different from a floating point value, the details are just handled in the background.
+So knowing the type of the output of a function can be a big
+advantage. In `Julia` this is known as *type stability*. In the
+standard `Julia` library, thisis a primary design consideration.
+
+
+##### Example: closure
+
+To motivate this a bit, we discuss how mathematics can be shaped by a
+desire to stick to simple ideas.  A desirable algebraic property of a
+set of numbers and an operation---*closure*.  That is, if one takes an
+operation like `+` and then uses it to add two numbers in a set, will
+that result also be in the set? If this is so for any pair of numbers,
+then the set is closed with respect to the operation addition.
+
+Lets suppose we start with the *natural numbers*: $1,2, \dots$. Natural, in that we can easily represent small values in terms of fingers.
+This set is closed under addition---as a child learns when counting using their fingers. However, if we started with the odd natural numbers, this set would *not* be closed under addition---$3+3=6$.
+
+The natural numbers are not all the numbers we need, as once a desire
+for subtraction is included, we find the set isn't closed. There isn't
+a $0$, needed as $n-n=0$ and there aren't negative numbers. The set of
+integers are needed for closure under addition and subtraction.
+
+The integers are also closed under multiplication, which for integer values can be seen as just regrouping into longer additions.
+
+However, the integers are not closed under division---even if you put
+aside the pesky issue of dividing by $0$. For that, the rational
+numbers must be introduced. So aside form division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.
+
+Powers are defined for positive integers in a simple enough manner
+
+$$~
+a^n=a\cdot a \cdot a \cdots a \text{ (n times); }  a, n \text{ are integers, $n$ is positive}.
+~$$
+
+We can define $a^0$ to be $1$, except for the special case of $0^0$,
+which is left undefined mathematically (though it is also defined as
+`1` within `Julia`). We can extend the above to include negative
+values of $a$, but what about negative values of $n$? We can't say the
+integers are closed under powers, as the definition consistent with
+the rules that $a^(-n) = 1/a^n$ requires rational numbers to be
+defined.
+
+Well, in the above `a` could be a rational number, is `a^n` closed for
+rational numbers? No again. Though it is fine for $n$ as an integer
+(save the odd case of $0$, simple definitions like $2^{1/2}$ are not
+answered within the rationals. For this, we need to introduce the
+*real* numbers. It is mentioned that
+[Aristotle](http://tinyurl.com/bpqbkap) hinted at the irrationality of
+the square root of $2$. Do define terms like $a^{1/n}$ for integer
+values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is
+used. Such solutions require the irrational numbers to have solutions
+in general. Hence the need for the real numbers (well, algebraic
+numbers atleast, though once the exponent is no longer a rational
+number, the full set of real numbers are needed.)
+
+So, save the pesky cases, the real numbers will be closed under
+addition, subtraction, multiplication, division, and powers---provided
+the base is non-negative.
+
+Finally for that last case, the complex numbers are introduced to give an answer to $\sqrt{-1}$.
+
+
+
+----
+
+
+How does this apply with `Julia`?
+
+The point is, if we restrict our set of inputs, we can get more
+precise values for the output of basic operations, but to get more
+general inputs we need to have bigger output sets.
+
+
+A similar thing happens in `Julia`. For addition say, the addition of
+two integers of the same type will be an integer of that type. This
+speed consideration is not solely for type stability, but also to
+avoid checking for overflow.
+
+Another example, the division of two integers will always be a number
+of the same type---floating point, as that is the only type that
+ensures the answer will always fit within. (The explict use of
+rationals notwithstanding.) So even if two integers are the input and
+their answer *could* be an integer, in `Julia` it will be a floating
+point number, (cf. `2/1`).
+
+Hopefully this helps explain the subtle issues around powers: in
+`Julia` an integer raised to an integer must be an integer. Again this
+is for speed. But this means the exponent in this case *must* be a
+non-negative integer. Hence, `2^(-1)` is an error. However since a
+real number raised to a real number makes sense always when the base
+is non-negative, as long as real numbers are used as outputs, the
+expressions `2.0^(-1)` and `2^(-1.0)` are computed and real numbers
+(floating points) are returned. For type stability, even though
+$2.0^1$ could be an integer, a floating point answer is returned.
+
+As for negative bases, `Julia` could always return complex numbers,
+but in addition to this being slower, it would be irksome to users. So
+user's must opt in. Hence `sqrt(-1.0)` will be an error, but the more
+explicit---but mathematically equivalent---`sqrt(-1.0 + 0im)` will not
+be a domain error, but rather a complex value will be returned.
+
+
 
 ## Questions
 

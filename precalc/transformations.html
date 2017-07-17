@@ -34,7 +34,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
 </script>
 <script>
 MathJax.Hub.Config({
@@ -79,7 +79,7 @@ $( document ).ready(function() {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+         
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -103,52 +103,57 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Function manipulations</h1><p>Thinking of functions as objects themselves that can be manipulated – rather than just blackboxes for evaluation – is a major abstraction of calculus. The main operations to come: the limit <em>of a function</em>, the derivative <em>of a function</em>, and the integral <em>of a function</em> all operate on functions. Hence the idea of an operator. Here we discuss manipulations of functions that have proven to be useful abstractions.</p><h2>The algebra of functions</h2><p>We can talk about the algebra of functions. For example, the sum of functions $f$ and $g$ would be a function whose value at $x$ was just $f(x) + g(x)$. More formally, we would have:</p>$$~
+<h1>Function manipulations</h1><p>Thinking of functions as objects themselves that can be manipulated–-rather than just blackboxes for evaluation–-is a major abstraction of calculus. The main operations to come: the limit <em>of a function</em>, the derivative <em>of a function</em>, and the integral <em>of a function</em> all operate on functions. Hence the idea of an operator. Here we discuss manipulations of functions from pre-calculus that have proven to be useful abstractions.</p><h2>The algebra of functions</h2><p>We can talk about the algebra of functions. For example, the sum of functions $f$ and $g$ would be a function whose value at $x$ was just $f(x) + g(x)$. More formally, we would have:</p>$$~
 (f + g)(x) = f(x) + g(x),
 ~$$
-<p>We have given meaning to a new function $f+g$ by defining what is does to $x$ with the rule on the right hand side. Similarly, we can define operations for subtraction, multiplication, addition, and powers. These aren't defined in base <code>Julia</code>, though they could be if desired, by a commands such as:</p><pre class="sourceCode julia">f::Function + g::Function = x -> f(x) + g(x)</pre>
+<p>We have given meaning to a new function $f+g$ by defining what is does to $x$ with the rule on the right hand side. Similarly, we can define operations for subtraction, multiplication, addition, and powers. These aren't defined in base <code>Julia</code>, though they could be if desired, by a commands such as:</p><pre class="sourceCode julia">import Base: +
+f::Function + g::Function = x -> f(x) + g(x)</pre>
 <pre class="output">
-+ (generic function with 1 method)</pre>
++ (generic function with 233 methods)</pre>
 
 <p>This adds a method to the generic <code>&#43;</code> function for functions. The type annotations <code>::Function</code> ensure this applies only to functions. To see that it would work, we could do odd-looking things like:</p><pre class="sourceCode julia">(sin + sqrt)(4)</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(-0.7568024953079282,2.0),0x0000000000005114)
-</pre>
+1.2431975046920718</pre>
 
-<p>Doing this works, but is kind of limiting, as functions in mathematics and Julia can be much more varied than just the univariate functions we have defined addition for. We won't pursue this further.</p><h2>Composition of function</h2><p>As seen, just like with numbers, it can make sense to define addition, subtraction, multiplication and division of functions. Unlike numbers though, we can also define a new operation on functions called <strong>composition</strong> that involves chaining the output of one function to the input of another.  Composition is a common practice in life, where the result of some act is fed into another process. For example, making a pie from scratch involves first making a crust, then composing this with a filling. A better abstraction might be how we "surf" the web. The output of one search leads us to another search whose output then is a composition.</p><p>Mathematically, a composition of univariate functions $f$ and $g$ is written $f \circ g$ and defined by what it does to a value in the domain of $g$ by:</p>$$~
+<p>Doing this works, but is kind of limiting, as functions in mathematics and Julia can be much more varied than just the univariate functions we have defined addition for. We won't pursue this further.</p><h2>Composition of functions</h2><p>As seen, just like with numbers, it can make sense to define addition, subtraction, multiplication and division of functions. Unlike numbers though, we can also define a new operation on functions called <strong>composition</strong> that involves chaining the output of one function to the input of another.  Composition is a common practice in life, where the result of some act is fed into another process. For example, making a pie from scratch involves first making a crust, then composing this with a filling. A better abstraction might be how we "surf" the web. The output of one search leads us to another search whose output then is a composition.</p><p>Mathematically, a composition of univariate functions $f$ and $g$ is written $f \circ g$ and defined by what it does to a value in the domain of $g$ by:</p>$$~
 (f \circ g)(x) = f(g(x)).
 ~$$
-<p>The output of $g$ becomes the input of $f$.</p><p>Composition depends on the order of things. There is no guarantee that $f \circ g$ should be the same as $g \circ f$. We can see this quite clearly with the functions $f(x) = x^2$ and $g(x) = \sin(x)$. Algebraically we have:</p>$$~
+<p>The output of $g$ becomes the input of $f$.</p><p>Composition depends on the order of things. There is no guarantee that $f \circ g$ should be the same as $g \circ f$. (Putting on socks then shoes is quite different from putting on shoes then socks.) Mathematically, we can see this quite clearly with the functions $f(x) = x^2$ and $g(x) = \sin(x)$. Algebraically we have:</p>$$~
 (f \circ g)(x) = \sin(x)^2, \quad (g \circ f)(x) = \sin(x^2).
 ~$$
 <p>Though they may be <em>typographically</em> similar don't be fooled, the following graph shows that the two functions aren't even close except for $x$ near $0$ (for example, one composition is always non-negative, whereas the other is not):</p><pre class="sourceCode julia">using Plots
 fg(x) = sin(x)^2
 gf(x) = sin(x^2)
 plot([fg, gf], -2, 2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="f5cba3a5-9781-4d0d-a2cf-b1482557713e" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('f5cba3a5-9781-4d0d-a2cf-b1482557713e');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.8384855853716058,0.9293164676588365,0.9671424267140868,0.9881953127250651,0.999152234924742,0.998030274363056,0.9848950215328519,0.9546778387639819,0.9150891231305684,0.8713522403487023,0.8151445026658289,0.7509648253517812,0.6729712640302491,0.5939544387785792,0.5091454169673758,0.43744656907059104,0.35180509168189067,0.27728411265570185,0.213517969278698,0.15535642386496162,0.09947534937664684,0.058604226995153795,0.02447247656727508,0.005784496754986932,1.3545268053468287e-5,0.0065739666317197855,0.02557292933964972,0.059091638710064724,0.09538720851345459,0.15519813753233913,0.21946697738951618,0.2863097883721124,0.35463642380573307,0.43430539249757777,0.5114933628766528,0.5973153853596382,0.6716698979785937,0.7424297626921016,0.8140305194017474,0.8635733540436183,0.9176688671757695,0.9588778453091383,0.9845432880857354,0.9976386967981898,0.9991042766126242,0.9896693411595621,0.9619101840925193,0.932536495858849,0.8391226625144746],"type":"scatter","name":"y1","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.7146686385661019,-0.24122227831821225,0.06828315431345822,0.314882532849546,0.5495777501512721,0.7254549896446034,0.8654749046691084,0.9641282374754885,0.9984816160199526,0.9926515769283785,0.954711553571272,0.8907345889419168,0.7989107425224128,0.6991797183464438,0.5901949470907097,0.49884616388875325,0.3923201121624483,0.3027224183273148,0.22868412927240772,0.16340705506102987,0.10277902191283053,0.05975062406716529,0.02467225417511163,0.005795652314127068,1.3545329211591446e-5,0.006588375369050164,0.025791083718379446,0.06025719164295726,0.09842495030826133,0.16323241015139148,0.23548379524403937,0.31340341157048673,0.3957850352921279,0.49488200579503233,0.5932078797883821,0.7034835656408613,0.7973048196494759,0.8812408780434728,0.9537465729403488,0.9889502095797796,0.9977550674114192,0.9562821651632856,0.8675457849146256,0.7342414786199407,0.5474030722279463,0.3372194397756524,0.018513915705722965,-0.21852271306252136,-0.7122601765514714],"type":"scatter","name":"y2","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-0.5,0.0,0.5],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-0.5","0.0","0.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>Starting with two functions and composing them requires nothing more than a solid grasp of knowing the rules of function evaluation. If $f(x)$ is defined by some rule involving $x$, then $f(g(x))$ just replaces each $x$ in the rule with a $g(x)$.</p><p>So if $f(x) = x^2 + 2x - 1$ and $g(x) = e^x - x$ then $f \circ g$ would be (before any simplification)</p>$$~
 (f \circ g)(x) = (e^x - x)^2 + 2(e^x - x) - 1.
 ~$$
-<blockquote>
-<p>The real value of composition is to break down more complicated things into a sequence of easier steps. This is good mathematics, but also good practice more generally. For example, when we approach a problem with the computer, we generally use a smallish set of functions and piece them together (that is, compose them) to find a solution.</p>
-</blockquote><p>Here we look at a few compositions:</p><ul>
-<li>$h(x) = \sqrt{1 - x^2}$
-<p>can be seen as $f\circ g$ with $f(x) = \sqrt{x}$ and $g(x) = 1-x^2$.</p>
+<div class="alert alert-info" role="alert">
+<div class="markdown"><p>The real value of composition is to break down more complicated things into a sequence of easier steps. This is good mathematics, but also good practice more generally. For example, when we approach a problem with the computer, we generally use a smallish set of functions and piece them together (that is, compose them) to find a solution.</p>
+</div> 
+</div>
+<p>Here we look at a few compositions:</p><ul>
+<li><p>The function $h(x) = \sqrt{1 - x^2}$ can be seen as $f\circ g$ with $f(x) = \sqrt{x}$ and $g(x) = 1-x^2$.</p>
 </li>
-<li>$h(x) = \sin(x/3 + x^2)$
-<p>can be viewed as $f\circ g$ with $f(x) = \sin(x)$ and $g(x) = x/3 + x^2$.</p>
+<li><p>The function $h(x) = \sin(x/3 + x^2)$ can be viewed as $f\circ g$ with $f(x) = \sin(x)$ and $g(x) = x/3 + x^2$.</p>
 </li>
-<li>$h(x) = e^{-1/2 \cdot x^2}$
-<p>can be viewed as $f\circ g$ with $f(x) = e^{-x}$ and $g(x) = (1/2) \cdot x^2$.</p>
+<li><p>The function $h(x) = e^{-1/2 \cdot x^2}$  can be viewed as $f\circ g$ with $f(x) = e^{-x}$ and $g(x) = (1/2) \cdot x^2$.</p>
 </li>
-</ul><p>Decomposing a function into a composition of functions is not unique, other compositions could have been given above.</p><h2>Shifting and scaling graphs</h2><p>It is very useful to mentally categorize functions within families. The difference between $f(x) = \cos(x)$ and $g(x) = 12\cos(2(x - \pi/4))$ is not that much – both are cosine functions, one is just a simple enough transformation of the other. As such, we expect bounded, oscillatory behaviour with the details of how large and how fast the oscillations are to depend on the specifics of function. Similarly, both these functions $f(x) = 2^x$ and $g(x)=e^x$ behave like exponential growth, the difference being only in the rate of growth. So these members from a whole family of functions are qualitatively similar, but quantitatively different.</p><p>There is a set of operations of functions, which does not really change the type of function. Rather, it basically moves and stretches how the functions are graphed. We discuss these four main transformations of $f$:</p><div class="table-responsive">
-  <table class="table table-hover">
-  <tr><th>Transformation</th><th>Description</th></tr>
+</ul><p>Decomposing a function into a composition of functions is not unique, other compositions could have been given above. For example, the last function is also $f(x) = e^{-x/2}$ composed with $g(x) = x^2$.</p><div class="alert alert-info" role="alert">
+<div class="markdown"><p><code>Julia</code> allows the Unicode operator <code>circ&#91;tab&#93;</code> to define composition of functions, to mirror notation. It's use with generic functions is a bit cumbersome, as the operation returns an anoymous function. However, it can be useful and will mirror standard mathematical usage up to issues with precedence rules.)</p>
+</div> 
+</div>
+<h2>Shifting and scaling graphs</h2><p>It is very useful to mentally categorize functions within families. The difference between $f(x) = \cos(x)$ and $g(x) = 12\cos(2(x - \pi/4))$ is not that much–-both are cosine functions, one is just a simple enough transformation of the other. As such, we expect bounded, oscillatory behaviour with the details of how large and how fast the oscillations are to depend on the specifics of function. Similarly, both these functions $f(x) = 2^x$ and $g(x)=e^x$ behave like exponential growth, the difference being only in the rate of growth. There are families of functions that are qualitatively similar, but quantitatively different, linked together by a few basic transformations.</p><p>There is a set of operations of functions, which does not really change the type of function. Rather, it basically moves and stretches how the functions are graphed. We discuss these four main transformations of $f$:</p>    
+<div class="table-responsive">
+<table class="table table-hover">
+<tr><th>Transformation</th><th>Description</th></tr>
 
-  <tr><td><div class="markdown"><p><em>vertical shifts</em></p>
+<tr><td><div class="markdown"><p><em>vertical shifts</em></p>
 </div></td><td><div class="markdown"><p>The function $h(x) = k + f(x)$ will have the same graph as $f$ shifted up by $k$ units.</p>
 </div></td></tr>
 <tr><td><div class="markdown"><p><em>horizontal shifts</em></p>
@@ -161,81 +166,88 @@ ErrorException("Unsupported backend gadfly")
 </div></td><td><div class="markdown"><p>The function $h(x) = f(kx)$ will have the same graph as $f$ compressed horizontally by a factor of $1/k$.</p>
 </div></td></tr>
                                                                          
-  </table>
+</table>
 </div>
+    
 <p>The functions $h$ are derived from $f$ in a predictable way. To implement these transformations within <code>Julia</code>, we define operators (functions which transform one function into another). As these return functions, the function bodies are anonymous functions. The basic definitions are similar, save for the <code>x -&gt; ...</code> part that signals the creation of an anonymous function to return:</p><pre class="sourceCode julia">up(f, k)       = x -> f(x) + k
 over(f, k)     = x -> f(x - k)
 stretch(f, k)  = x -> k * f(x)
-compress(f, k) = x -> f(k * x)</pre>
+scale(f, k)    = x -> f(k * x)</pre>
 <pre class="output">
-compress (generic function with 1 method)</pre>
+scale (generic function with 1 method)</pre>
 
-<p>(We called the last one <code>compress</code>, as <code>scale</code> is already used by <code>Julia</code>.)</p><p>To illustrate, let's define a hat-shaped function as follows:</p><pre class="sourceCode julia">f(x) = max(0, 1 - abs(x))
+<p>To illustrate, let's define a hat-shaped function as follows:</p><pre class="sourceCode julia">f(x) = max(0, 1 - abs(x))
 plot(f, -2,2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="c2ce5304-c4d0-4b3c-bd82-fcc0de34e631" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('c2ce5304-c4d0-4b3c-bd82-fcc0de34e631');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03798026019904688,0.12008550519174954,0.20545590961816085,0.27731960586695226,0.36505703357818253,0.44543006791344464,0.5196607675822043,0.5948541660240176,0.6791248856162622,0.7554877624876536,0.8429179897507033,0.9238706051501071,0.9963196020307573,0.9188308985312612,0.839395069004405,0.7544522118100461,0.6860182140589476,0.5950726916576723,0.5124383811558773,0.43539846371752067,0.3620952011086783,0.2804869434362217,0.2031074613229955,0.11666133248949762,0.039366559127192446,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,0.25,0.5,0.75],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.00","0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>The same graph of $f$ and its image shifted up by 2 units would be given by:</p><pre class="sourceCode julia">plot([f, up(f, 2)], -2, 2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="25272cab-0c46-4c79-ba70-3373b23651d5" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('25272cab-0c46-4c79-ba70-3373b23651d5');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03798026019904688,0.12008550519174954,0.20545590961816085,0.27731960586695226,0.36505703357818253,0.44543006791344464,0.5196607675822043,0.5948541660240176,0.6791248856162622,0.7554877624876536,0.8429179897507033,0.9238706051501071,0.9963196020307573,0.9188308985312612,0.839395069004405,0.7544522118100461,0.6860182140589476,0.5950726916576723,0.5124383811558773,0.43539846371752067,0.3620952011086783,0.2804869434362217,0.2031074613229955,0.11666133248949762,0.039366559127192446,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.037980260199047,2.1200855051917493,2.205455909618161,2.2773196058669525,2.3650570335781826,2.4454300679134446,2.519660767582204,2.5948541660240174,2.679124885616262,2.7554877624876535,2.8429179897507035,2.923870605150107,2.9963196020307574,2.918830898531261,2.839395069004405,2.754452211810046,2.6860182140589477,2.5950726916576725,2.512438381155877,2.4353984637175206,2.362095201108678,2.280486943436222,2.2031074613229955,2.116661332489498,2.0393665591271923,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0],"type":"scatter","name":"y2","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.02137649460484106,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,1.0,2.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>A graph of $f$ and its shift over by $2$ units would be given  by:</p><pre class="sourceCode julia">plot([f, over(f, 2)], -2, 4)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="61887411-7d75-499a-96d2-61d530815f83" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('61887411-7d75-499a-96d2-61d530815f83');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.08733225466645145,0.19407760769652793,0.31045869597276665,0.427531469006749,0.5569703902985702,0.6801282577876243,0.8081838644272412,0.9159794088004283,0.9524144496327261,0.831854898129833,0.7205088486266937,0.6077187509639735,0.48131267157560664,0.36676835626851956,0.23562301537394514,0.11419409227483934,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-1.9765620343525085,-1.7598441987959053,-1.6296058128665025,-1.5194909150821623,-1.3998752719206764,-1.2896002291168924,-1.1713737286244243,-1.0343967335875226,-0.9126677453335486,-0.8059223923034721,-0.6895413040272333,-0.572468530993251,-0.4430296097014298,-0.3198717422123757,-0.19181613557275873,-0.08402059119957171,0.04758555036727386,0.16814510187016696,0.2794911513733063,0.39228124903602646,0.5186873284243934,0.6332316437314804,0.7643769846260549,0.8858059077251607,1.005520596953864,1.1217536522031082,1.2409073964933925,1.368321682284931,1.4709726789115787,1.6073909625134917,1.7313424282661842,1.8469023044237192,1.9568571983369825,2.0792695848456675,2.195338808015507,2.3250080012657537,2.4409501613092113,2.557749152513535,2.68739148449189,2.788714508980203,2.9196573862948303,3.0498912175650066,3.1692231656268186,3.2832759103028146,3.401094152212386,3.5089179927420586,3.650834732711686,3.7503198419064248,3.9752626242533946]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0055205969538640876,0.12175365220310819,0.24090739649339254,0.3683216822849309,0.4709726789115787,0.6073909625134917,0.7313424282661842,0.8469023044237192,0.9568571983369825,0.9207304151543325,0.804661191984493,0.6749919987342463,0.5590498386907887,0.44225084748646504,0.31260851550811,0.211285491019797,0.08034261370516971,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y2","yaxis":"y","x":[-1.9765620343525085,-1.7598441987959053,-1.6296058128665025,-1.5194909150821623,-1.3998752719206764,-1.2896002291168924,-1.1713737286244243,-1.0343967335875226,-0.9126677453335486,-0.8059223923034721,-0.6895413040272333,-0.572468530993251,-0.4430296097014298,-0.3198717422123757,-0.19181613557275873,-0.08402059119957171,0.04758555036727386,0.16814510187016696,0.2794911513733063,0.39228124903602646,0.5186873284243934,0.6332316437314804,0.7643769846260549,0.8858059077251607,1.005520596953864,1.1217536522031082,1.2409073964933925,1.368321682284931,1.4709726789115787,1.6073909625134917,1.7313424282661842,1.8469023044237192,1.9568571983369825,2.0792695848456675,2.195338808015507,2.3250080012657537,2.4409501613092113,2.557749152513535,2.68739148449189,2.788714508980203,2.9196573862948303,3.0498912175650066,3.1692231656268186,3.2832759103028146,3.401094152212386,3.5089179927420586,3.650834732711686,3.7503198419064248,3.9752626242533946]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0,2.0,3.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,0.25,0.5,0.75],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.00","0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>A graph of $f$ and it being stretched by $2$ units would be given by:</p><pre class="sourceCode julia">plot([f, stretch(f, 2)], -2, 2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="25e9e460-6ef1-4b2d-9302-9937bfe92264" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('25e9e460-6ef1-4b2d-9302-9937bfe92264');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03798026019904688,0.12008550519174954,0.20545590961816085,0.27731960586695226,0.36505703357818253,0.44543006791344464,0.5196607675822043,0.5948541660240176,0.6791248856162622,0.7554877624876536,0.8429179897507033,0.9238706051501071,0.9963196020307573,0.9188308985312612,0.839395069004405,0.7544522118100461,0.6860182140589476,0.5950726916576723,0.5124383811558773,0.43539846371752067,0.3620952011086783,0.2804869434362217,0.2031074613229955,0.11666133248949762,0.039366559127192446,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.07596052039809376,0.24017101038349908,0.4109118192363217,0.5546392117339045,0.7301140671563651,0.8908601358268893,1.0393215351644085,1.1897083320480353,1.3582497712325243,1.5109755249753072,1.6858359795014066,1.8477412103002142,1.9926392040615146,1.8376617970625224,1.67879013800881,1.5089044236200921,1.3720364281178952,1.1901453833153446,1.0248767623117545,0.8707969274350413,0.7241904022173566,0.5609738868724434,0.406214922645991,0.23332266497899523,0.07873311825438489,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y2","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,0.5,1.0,1.5],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>More exciting is what happens if we combine these operations.</p><p>A shift right by 2 and up by 1 is achieved through</p><pre class="sourceCode julia">plot([f, up(over(f,2), 1)], -2, 4)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="a69ed1af-f6ed-49dd-8948-b981f20267c7" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('a69ed1af-f6ed-49dd-8948-b981f20267c7');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.08733225466645145,0.19407760769652793,0.31045869597276665,0.427531469006749,0.5569703902985702,0.6801282577876243,0.8081838644272412,0.9159794088004283,0.9524144496327261,0.831854898129833,0.7205088486266937,0.6077187509639735,0.48131267157560664,0.36676835626851956,0.23562301537394514,0.11419409227483934,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-1.9765620343525085,-1.7598441987959053,-1.6296058128665025,-1.5194909150821623,-1.3998752719206764,-1.2896002291168924,-1.1713737286244243,-1.0343967335875226,-0.9126677453335486,-0.8059223923034721,-0.6895413040272333,-0.572468530993251,-0.4430296097014298,-0.3198717422123757,-0.19181613557275873,-0.08402059119957171,0.04758555036727386,0.16814510187016696,0.2794911513733063,0.39228124903602646,0.5186873284243934,0.6332316437314804,0.7643769846260549,0.8858059077251607,1.005520596953864,1.1217536522031082,1.2409073964933925,1.368321682284931,1.4709726789115787,1.6073909625134917,1.7313424282661842,1.8469023044237192,1.9568571983369825,2.0792695848456675,2.195338808015507,2.3250080012657537,2.4409501613092113,2.557749152513535,2.68739148449189,2.788714508980203,2.9196573862948303,3.0498912175650066,3.1692231656268186,3.2832759103028146,3.401094152212386,3.5089179927420586,3.650834732711686,3.7503198419064248,3.9752626242533946]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.005520596953864,1.1217536522031082,1.2409073964933925,1.368321682284931,1.4709726789115787,1.6073909625134917,1.7313424282661842,1.8469023044237192,1.9568571983369825,1.9207304151543325,1.804661191984493,1.6749919987342463,1.5590498386907887,1.442250847486465,1.31260851550811,1.211285491019797,1.0803426137051697,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"type":"scatter","name":"y2","yaxis":"y","x":[-1.9765620343525085,-1.7598441987959053,-1.6296058128665025,-1.5194909150821623,-1.3998752719206764,-1.2896002291168924,-1.1713737286244243,-1.0343967335875226,-0.9126677453335486,-0.8059223923034721,-0.6895413040272333,-0.572468530993251,-0.4430296097014298,-0.3198717422123757,-0.19181613557275873,-0.08402059119957171,0.04758555036727386,0.16814510187016696,0.2794911513733063,0.39228124903602646,0.5186873284243934,0.6332316437314804,0.7643769846260549,0.8858059077251607,1.005520596953864,1.1217536522031082,1.2409073964933925,1.368321682284931,1.4709726789115787,1.6073909625134917,1.7313424282661842,1.8469023044237192,1.9568571983369825,2.0792695848456675,2.195338808015507,2.3250080012657537,2.4409501613092113,2.557749152513535,2.68739148449189,2.788714508980203,2.9196573862948303,3.0498912175650066,3.1692231656268186,3.2832759103028146,3.401094152212386,3.5089179927420586,3.650834732711686,3.7503198419064248,3.9752626242533946]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0,2.0,3.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,0.5,1.0,1.5],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>As a last example, a common transformation mathematically is</p>$$~
 h(x) = \frac{1}{a}f(\frac{x - b}{a}).
 ~$$
-<p>We can view this as a composition of "compress" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:</p><pre class="sourceCode julia">a = 2; b = 4
-h(x) = stretch(over(compress(f, 1/a), b), 1/a)(x)
+<p>We can view this as a composition of "scale" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:</p><pre class="sourceCode julia">a = 2; b = 5
+h(x) = stretch(over(scale(f, 1/a), b), 1/a)(x)
 plot([f, h], -1, 12)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
+    <div id="0fb825d8-8672-4d16-adce-fbd28aa169b7" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('0fb825d8-8672-4d16-adce-fbd28aa169b7');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.050782258902898225,0.5203375692755388,0.8025207387892441,0.9588969826780182,0.6997297558281326,0.4608004964199335,0.20464307868625287,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y1","yaxis":"y","x":[-0.9492177410971018,-0.4796624307244613,-0.19747926121075585,0.041103017321981815,0.30027024417186743,0.5391995035800665,0.7953569213137471,1.092140410560368,1.3558865517773115,1.5871681500091441,1.8393271746076614,2.092984849514623,2.373435845646902,2.640277891873186,2.9177317062590227,3.151288719067595,3.4364353591290935,3.6976477207186953,3.9388974946421635,4.1832760395780575,4.457155878252852,4.705335228084874,4.989483466689786,5.252579466737848,5.511961293400039,5.7637995797734005,6.021966025735684,6.29803031161735,6.5204408043084205,6.816013752112565,7.0845752612433985,7.334954992918058,7.573190596396795,7.838417433832279,8.089900750700265,8.370850669409132,8.622058682836624,8.875123163779326,9.156014883065762,9.375548102790441,9.659257670305465,9.941430971390847,10.199983525524773,10.447097805656098,10.702370663126835,10.935988984274461,11.243475254208654,11.459026324130587,11.946402352549022]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03782217976689872,0.10910883978227337,0.17441193017967382,0.23472437366054089,0.2958190098945144,0.364288969563213,0.4263338070212186,0.49737086667244657,0.43685513331553794,0.3720096766499903,0.30905010505664987,0.24450849356607907,0.1754924220956624,0.11988979892289486,0.04599656197185875,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y2","yaxis":"y","x":[-0.9492177410971018,-0.4796624307244613,-0.19747926121075585,0.041103017321981815,0.30027024417186743,0.5391995035800665,0.7953569213137471,1.092140410560368,1.3558865517773115,1.5871681500091441,1.8393271746076614,2.092984849514623,2.373435845646902,2.640277891873186,2.9177317062590227,3.151288719067595,3.4364353591290935,3.6976477207186953,3.9388974946421635,4.1832760395780575,4.457155878252852,4.705335228084874,4.989483466689786,5.252579466737848,5.511961293400039,5.7637995797734005,6.021966025735684,6.29803031161735,6.5204408043084205,6.816013752112565,7.0845752612433985,7.334954992918058,7.573190596396795,7.838417433832279,8.089900750700265,8.370850669409132,8.622058682836624,8.875123163779326,9.156014883065762,9.375548102790441,9.659257670305465,9.941430971390847,10.199983525524773,10.447097805656098,10.702370663126835,10.935988984274461,11.243475254208654,11.459026324130587,11.946402352549022]}], {"showlegend":true,"xaxis":{"tickvals":[0.0,5.0,10.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0","5","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,0.25,0.5,0.75],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.00","0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>(This transformation keeps the same amount of area in the triangles, can you tell from the graph?)</p><h5>Example</h5><p>A  model for the length of a day must take into account periodic seasonal effects. A simple model might be a sine curve. However, there would need to be many modifications: Obvious ones would be that the period would need to be about $365$ days, the oscillation around 12 and the amplitude of the oscillations no more than 12.</p><p>We can be more precise. According to <a href="http://dateandtime.info/citysunrisesunset.php?id&#61;5128581">dateandtime.info</a> in 2015 the longest day will be June 21st when there will be 15h 5m 46s of sunlight, the shortest day will be December 21st when there will be 9h 15m 19s of sunlight. On January 1, there will be 9h 19m 44s of sunlight. </p><p>A model for a transformed sine curve is</p>$$~
 a + b\sin(dx - c)
 ~$$
 <p>Where $b$ is related to the amplitude, $c$ the shift and the period is $T=2\pi/d$. We can find some of these easily from the above:</p><pre class="sourceCode julia">a = 12
 b = ((15 + 5/60 + 46/60/60) - (9 + 19/60 + 44/60/60)) / 2
 d = 2pi/365</pre>
-<div class="well well-sm">
-0.01721420632103996</div>
-
-<p>If we let January 1 be $x=0$ then the first day of spring, March 21, is day 79. This day aligns with shift of the sine curve. The choice of $c$ refers to moving $\sin(dx)$ over – the sine curve with period $365$ days – not $\sin(x)$ – the sine curve with period $2\pi$. This shift is 79.</p><pre class="sourceCode julia">c = 79</pre>
-<div class="well well-sm">
-79</div>
-
-<p>Putting this together, we have our graph is "compressed" by $d$, "over" by $c$, "stretched" by $b$ and "up" by $a$:</p><pre class="sourceCode julia">newyork(t) = up(stretch(over(compress(sin, d), c), b), a)(t)
-plot(newyork, 0, 365)</pre>
 <pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
+0.01721420632103996</pre>
 
+<p>If we let January 1 be $x=0$ then the first day of spring, March 21, is day 79 (<code>Date&#40;2017, 3, 21&#41; - Date&#40;2017, 1, 1&#41;</code>). This day aligns with shift of the sine curve. The choice of $c$ refers to moving $\sin(dx)$ over–-the sine curve with period $365$ days–-not $\sin(x)$–-the sine curve with period $2\pi$. This shift is 79.</p><pre class="sourceCode julia">c = 79</pre>
+<pre class="output">
+79</pre>
+
+<p>Putting this together, we have our graph is "scaled" by $d$, "over" by $c$, "stretched" by $b$ and "up" by $a$:</p><pre class="sourceCode julia">newyork(t) = up(stretch(over(scale(sin, d), c), b), a)(t)
+plot(newyork, 0, 365)</pre>
+    <div id="45f8a6bf-c3df-4748-aa17-fa9cadb041f0" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('45f8a6bf-c3df-4748-aa17-fa9cadb041f0');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[9.19592788144215,9.419167374264045,9.618019507567857,9.820832298957981,10.073843895963577,10.333937106034801,10.637337076393235,11.01461658388124,11.367135466333137,11.684912027808315,12.035717910297002,12.388063710616562,12.770631686897168,13.121613282483784,13.466717374276076,13.737046247444514,14.036789289785986,14.277601775413705,14.46788375941496,14.62645379249227,14.760587051265535,14.84046506305015,14.881756219839824,14.871603575402533,14.81619784018242,14.720097725014355,14.579819435743378,14.3855021584648,14.197918254808634,13.909771513114014,13.61404927845897,13.313778778654552,13.010162477592912,12.656595029130418,12.311302042688792,11.920356615586082,11.571823959846801,11.227102465688251,10.858213635913389,10.584202520135257,10.254101451605507,9.958288075721253,9.720403087738985,9.526223989602244,9.362672571005987,9.248082172510594,9.150857095756168,9.120078245887106,9.165577721537204],"type":"scatter","name":"y1","yaxis":"y","x":[1.425809576889067,14.609477906582432,22.532313050621084,29.230969332501797,36.50758762482551,43.215986062055705,50.40809817534752,58.74086537342571,66.14604549220914,72.63972113487212,79.71957067167664,86.84149769791055,94.71569874316303,102.20780234874715,109.99785175265718,116.55541403535939,124.56145431400915,131.89549369710184,138.66904504187613,145.53044264969162,153.22014581248393,160.18825832699838,168.16626656475168,175.55319271994728,182.83583631469338,189.9066805090224,197.15519995334805,204.9062356723333,211.15083796712102,219.4496168862374,226.98999771952623,234.01989018577623,240.70881289883312,248.15556641144477,255.21644415427664,263.10465341033336,270.1578014796437,277.26307344457337,285.14964863992327,291.31346596296237,299.2791576662689,307.2017157352046,314.4610759089648,321.39928454342123,328.5665609262535,335.12584455847525,343.7591129066276,349.81112371597413,363.49514297541486]}], {"showlegend":true,"xaxis":{"tickvals":[100.0,200.0,300.0],"ticks":"inside","tickmode":"array","domain":[0.03619130941965587,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[10.0,11.0,12.0,13.0,14.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["10","11","12","13","14"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>To test if we match up with the model powering <a href="http://dateandtime.info/citysunrisesunset.php?id&#61;5128581">dateandtime.info</a> we note that it predicts "15h 0m 4s" on July 4, 2015. This is day 184 (<code>Date&#40;2015, 7, 4&#41; - Date&#40;2015, 1, 1&#41;</code>). Our model prediction has a difference of</p><pre class="sourceCode julia">datetime = 15 + 0/60 + 4/60/60
 delta = (newyork(184) - datetime) * 60</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(3.888472786516245,12),0x0000000000005121)
-</pre>
+-11.874016679895263</pre>
 
-<p>This is off by a fair amount – almost 12 minutes. Clearly a trigonometric model, based on the assumption of circular motion of the earth around the sun, is not accurate enough for precise work.</p><h5>Example: the pipeline operator</h5><p>In the last example, we described our sequence as compress, over, stretch, and up, but code this in reverse order, as the composition $f \circ g$ is done from right to left. A more convenient notation would be to have syntax that allows the composition of $g$ then $f$ to be written $x \rightarrow g \rightarrow f$. <code>Julia</code> provides the <a href="http://julia.readthedocs.org/en/latest/stdlib/base/#Base.|&gt;">pipeline</a> operator for chaining function calls together.</p><p>For example, if $g(x) = \sqrt{x}$ and $f(x) =\sin(x)$ we could call $f(g(x))$ through:</p><pre class="sourceCode julia">g(x) = sqrt(x)
+<p>This is off by a fair amount–-almost 12 minutes. Clearly a trigonometric model, based on the assumption of circular motion of the earth around the sun, is not accurate enough for precise work.</p><h5>Example: the pipeline operator</h5><p>In the last example, we described our sequence as scale, over, stretch, and up, but code this in reverse order, as the composition $f \circ g$ is done from right to left. A more convenient notation would be to have syntax that allows the composition of $g$ then $f$ to be written $x \rightarrow g \rightarrow f$. <code>Julia</code> provides the <a href="http://julia.readthedocs.org/en/latest/stdlib/base/#Base.|&gt;">pipeline</a> operator for chaining function calls together.</p><p>For example, if $g(x) = \sqrt{x}$ and $f(x) =\sin(x)$ we could call $f(g(x))$ through:</p><pre class="sourceCode julia">g(x) = sqrt(x)
 f(x) = sin(x)
 pi/2 |> g |> f</pre>
-<div class="well well-sm">
-0.9500244274657834</div>
+<pre class="output">
+0.9500244274657834</pre>
 
 <p>The output of the preceding expression is passed as the input to the next. This notation is especially convenient when the enclosing function is not the main focus.</p><h2>Operators</h2><p>The functions <code>up</code>, <code>over</code>, etc. are operators that take a function as an argument and return a function. The use of operators fits in with the template <code>action&#40;f, args...&#41;</code>. The action is what we are doing, such as <code>plot</code>, <code>over</code>, and others to come. The function <code>f</code> here is just an object that we are performing the action on. For example, a plot takes a function and renders a graph using the additional arguments to select the domain to view, etc.</p><p>Creating operators that return functions involves the use of anonymous functions, using these operators is relatively straightforward. Two basic patterns are</p><ul>
 <li><p>Storing the returned function, then calling it:</p>
@@ -253,8 +265,7 @@ D (generic function with 1 method)</pre>
 <p>To see that it works, we take a typical function and check:</p><pre class="sourceCode julia">f(k) = 1 + k^2
 D(f)(3), f(3) - f(3-1)</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(1,9),0x0000000000005126)
-</pre>
+(5, 5)</pre>
 
 <p>That the two are the same value is no coincidence. (Again, pause for a second to make sure you understand why <code>D&#40;f&#41;&#40;3&#41;</code> makes sense. If this is unclear, you could name the function<code>D&#40;f&#41;</code> and then call this with a value of <code>3</code>.)</p><p>Now we want a function to cumulatively <em>sum</em> the values $S(f)(k) = f(1) + f(2) + \cdots + f(k-1) + f(k)$, as a function of $k$. Adding up $k$ terms is easy to do with comprehensions and the function <code>sum</code> to add a vector of numbers:</p><pre class="sourceCode julia">S(f) = k -> sum([f(i) for i in 1:k])</pre>
 <pre class="output">
@@ -262,376 +273,388 @@ S (generic function with 1 method)</pre>
 
 <p>To check if this works as expected, compare these two values:</p><pre class="sourceCode julia">S(f)(4), f(1) + f(2) + f(3) + f(4)</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(1,1),0x0000000000005128)
-</pre>
+(34, 34)</pre>
 
 <p>So one function adds, the other subtracts. Addition and subtraction are somehow inverse to each other so should "cancel" out. This holds for these two operations as well, in the following sense: subtracting after adding leaves the function alone:</p><pre class="sourceCode julia">k = 10    # some arbitrary value k >= 1
 D(S(f))(k), f(k)</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(1,1),0x0000000000005128)
-</pre>
+(101, 101)</pre>
 
 <p>Any positive integer value of <code>k</code> will give the same answer (up to overflow). This says the difference of the accumulation process is just the last value to accumulate.</p><p>Adding after subtracting also leaves the function alone, save for a vestige of $f(0)$:</p><pre class="sourceCode julia">k=15
 S(D(f))(k),  f(k) - f(0)</pre>
 <pre class="output">
-MethodError(WeavePynb.ZUYSZIDRL.+,(1,1),0x0000000000005128)
-</pre>
+(225, 225)</pre>
 
-<p>That is the accumulation of differences is just the difference of the end values.</p><p>These two operations are discrete versions of the two main operations of calculus – the derivative and the integral. This relationship will be known as the "fundamental theorem of calculus." </p><h2>Questions</h2><h6>Question</h6><p>If $f(x) = 1/x$ and $g(x) = x-2$, what is $g(f(x))$?</p><form name="WeaveQuestion" data-id="yHZeEzFu" data-controltype="radio">
+<p>That is the accumulation of differences is just the difference of the end values.</p><p>These two operations are discrete versions of the two main operations of calculus–-the derivative and the integral. This relationship will be known as the "fundamental theorem of calculus." </p><h2>Questions</h2><h6>Question</h6><p>If $f(x) = 1/x$ and $g(x) = x-2$, what is $g(f(x))$?</p><form name="WeaveQuestion" data-id="mkFglxfa" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_yHZeEzFu" value="1"><div class="markdown">$1/x - 2$
+      <input type="radio" name="radio_mkFglxfa" value="1"><div class="markdown">$1/(x-2)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_yHZeEzFu" value="2"><div class="markdown">$x - 2$
+      <input type="radio" name="radio_mkFglxfa" value="2"><div class="markdown">$1/x - 2$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_yHZeEzFu" value="3"><div class="markdown">$1/(x-2)$
+      <input type="radio" name="radio_mkFglxfa" value="3"><div class="markdown">$-2$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_mkFglxfa" value="4"><div class="markdown">$x - 2$
 </div>
     </label>
     </div>
     
 
 
-<div id="yHZeEzFu_message"></div>
+<div id="mkFglxfa_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_yHZeEzFu']").on("change", function() {
+$("input:radio[name='radio_mkFglxfa']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#mkFglxfa_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#mkFglxfa_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>If $f(x) = e^{-x}$ and $g(x) = x^2$ and $h(x) = x-3$, what is $f \circ g \circ h$?</p><form name="WeaveQuestion" data-id="39EIOjAR" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_39EIOjAR" value="1"><div class="markdown">$(e^x -3)^2$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_39EIOjAR" value="2"><div class="markdown">$e^x+x^2+x-3$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_39EIOjAR" value="3"><div class="markdown">$e^{-(x-3)^2}$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_39EIOjAR" value="4"><div class="markdown">$e^{-x^2 - 3}$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="39EIOjAR_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_39EIOjAR']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#39EIOjAR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#39EIOjAR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>If $h(x) = (f \circ g)(x) = \sin^2(x)$ which is  a possibility for $f$ and $g$:</p><form name="WeaveQuestion" data-id="M1BvJTBX" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_M1BvJTBX" value="1"><div class="markdown">$f(x)=x^2; \quad g(x) = \sin^2(x)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_M1BvJTBX" value="2"><div class="markdown">$f(x)=x^2; \quad g(x) = \sin(x)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_M1BvJTBX" value="3"><div class="markdown">$f(x)=\sin(x); \quad g(x) = x^2$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="M1BvJTBX_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_M1BvJTBX']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#M1BvJTBX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#M1BvJTBX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Which function would have the same graph as the sine curve shifted over by 4 and up by 6?</p><form name="WeaveQuestion" data-id="l5F9RK86" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_l5F9RK86" value="1"><div class="markdown">$h(x) = 6\sin(x-4)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_l5F9RK86" value="2"><div class="markdown">$h(x) = 6 + \sin(x + 4)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_l5F9RK86" value="3"><div class="markdown">$h(x) = 4 + \sin(6x)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_l5F9RK86" value="4"><div class="markdown">$h(x) = 6 + \sin(x-4)$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="l5F9RK86_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_l5F9RK86']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#l5F9RK86_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#l5F9RK86_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Let $h(x) = 4x^2$ and $f(x) = x^2$. Which is <strong>not</strong> true:</p><form name="WeaveQuestion" data-id="n9MctYdv" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_n9MctYdv" value="1"><div class="markdown"><p>The graph of $h(x)$ is the graph of $f(x)$ scaled by a factor of 2</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_n9MctYdv" value="2"><div class="markdown"><p>The graph of $h(x)$ is the graph of f(x) shifted up by 4 units</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_n9MctYdv" value="3"><div class="markdown"><p>The graph of $h(x)$ is the graph of $f(x)$ stretched by a factor of 4</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="n9MctYdv_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_n9MctYdv']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#n9MctYdv_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#n9MctYdv_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The transformation $h(x) = (1/a) \cdot f((x-b)/a)$ can be viewed in one sequence:</p><form name="WeaveQuestion" data-id="8UjCD1ol" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8UjCD1ol" value="1"><div class="markdown"><p>shifting by $b$, then  scaling by $1/a$, and then scaling by $1/a$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8UjCD1ol" value="2"><div class="markdown"><p>shifting by $a$, then scaling by $a$, and then scaling by $b$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8UjCD1ol" value="3"><div class="markdown"><p>shifting by $a$, then scaling by $b$, and then scaling by $1/a$</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="8UjCD1ol_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_8UjCD1ol']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#yHZeEzFu_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#8UjCD1ol_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#yHZeEzFu_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>If $f(x) = e^{-x}$ and $g(x) = x^2$ and $h(x) = x-3$, what is $f \circ g \circ h$?</p><form name="WeaveQuestion" data-id="lwmpMHza" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_lwmpMHza" value="1"><div class="markdown">$(e^x -3)^2$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_lwmpMHza" value="2"><div class="markdown">$e^{-(x-3)^2}$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_lwmpMHza" value="3"><div class="markdown">$e^{-x^2 - 3}$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="lwmpMHza_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_lwmpMHza']").on("change", function() {
-  correct = this.value == 2;
-
-  if(correct) {
-     $("#lwmpMHza_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#lwmpMHza_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>If $h(x) = (f \circ g)(x) = \sin^2(x)$ which is  a possibility for $f$ and $g$:</p><form name="WeaveQuestion" data-id="qu0ovKWz" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_qu0ovKWz" value="1"><div class="markdown">$f(x)=x^2; \quad g(x) = \sin^2(x)$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_qu0ovKWz" value="2"><div class="markdown">$f(x)=x^2; \quad g(x) = \sin(x)$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_qu0ovKWz" value="3"><div class="markdown">$f(x)=\sin(x); \quad g(x) = x^2$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="qu0ovKWz_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_qu0ovKWz']").on("change", function() {
-  correct = this.value == 2;
-
-  if(correct) {
-     $("#qu0ovKWz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#qu0ovKWz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Which function would have the same graph as the sine curve shifted over by 4 and up by 6?</p><form name="WeaveQuestion" data-id="MSZHLA4Q" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_MSZHLA4Q" value="1"><div class="markdown">$h(x) = 4 + \sin(6x)$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_MSZHLA4Q" value="2"><div class="markdown">$h(x) = 6 + \sin(x-4)$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_MSZHLA4Q" value="3"><div class="markdown">$h(x) = 6\sin(x-4)$
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_MSZHLA4Q" value="4"><div class="markdown">$h(x) = 6 + \sin(x + 4)$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="MSZHLA4Q_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_MSZHLA4Q']").on("change", function() {
-  correct = this.value == 2;
-
-  if(correct) {
-     $("#MSZHLA4Q_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#MSZHLA4Q_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Let $h(x) = 4x^2$ and $f(x) = x^2$. Which is <strong>not</strong> true:</p><form name="WeaveQuestion" data-id="e3fdboE0" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_e3fdboE0" value="1"><div class="markdown"><p>The graph of $h(x)$ is the graph of $f(x)$ compressed by a factor of 2</p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_e3fdboE0" value="2"><div class="markdown"><p>The graph of $h(x)$ is the graph of f(x) shifted up by 4 units</p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_e3fdboE0" value="3"><div class="markdown"><p>The graph of $h(x)$ is the graph of $f(x)$ stretched by a factor of 4</p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="e3fdboE0_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_e3fdboE0']").on("change", function() {
-  correct = this.value == 2;
-
-  if(correct) {
-     $("#e3fdboE0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#e3fdboE0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>The transformation $h(x) = (1/a) \cdot f((x-b)/a)$ can be viewed in one sequence:</p><form name="WeaveQuestion" data-id="UTGyAeth" data-controltype="radio">
-<div class="form-group ">
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_UTGyAeth" value="1"><div class="markdown"><p>shifting by $b$, then  compressing by $1/a$, and then scaling by $1/a$</p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_UTGyAeth" value="2"><div class="markdown"><p>shifting by $a$, then compressing by $b$, and then scaling by $1/a$</p>
-</div>
-    </label>
-    </div>
-    
-    <div   class="radio"> 
-    <label>
-      <input type="radio" name="radio_UTGyAeth" value="3"><div class="markdown"><p>shifting by $a$, then compressing by $a$, and then scaling by $b$</p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="UTGyAeth_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_UTGyAeth']").on("change", function() {
-  correct = this.value == 1;
-
-  if(correct) {
-     $("#UTGyAeth_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#UTGyAeth_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#8UjCD1ol_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>This is the graph of a transformed sine curve.</p><pre class="sourceCode julia">f(x) = 2*sin(pi*x)
 p = plot(f, -2,2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>What is the period of the graph?</p><form name='WeaveQuestion' data-id='ckzqGvYj' data-controltype='numeric'>
+    <div id="acfec4e1-c8d8-48c7-bc07-fe383633160a" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('acfec4e1-c8d8-48c7-bc07-fe383633160a');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.09813729680497883,0.9640791908987875,1.400505917866921,1.6897975147301387,1.9022744166311454,1.9931251431712413,1.9729435417621333,1.799536295819614,1.5212681720120271,1.1955493750333885,0.7732595650019994,0.3023913394723361,-0.23807117366669006,-0.7367485965353466,-1.2031299665223765,-1.5302368562700641,-1.8229539912261257,-1.9706814400795023,-1.9961861587816823,-1.9118552586713644,-1.6915957122958099,-1.3896231168037783,-0.9474006451227149,-0.47378790302815876,0.023124107204639196,0.5044913066599505,0.966836354652463,1.394295217333937,1.6680937328689942,1.911451681197898,1.9984732349694936,1.9589517892469237,1.815220048990263,1.542974915913263,1.1913100947042894,0.7167046094597754,0.2467173307080884,-0.2413097337344232,-0.7649468967287136,-1.137001400938467,-1.5401112981801763,-1.8269055314825933,-1.971446799458092,-1.9951448648266432,-1.9006917608055762,-1.7130719801840362,-1.3356607480036262,-0.9988395176272509,-0.10357332642578329],"type":"scatter","name":"y1","yaxis":"y","x":[-1.984374689568339,-1.8398961325306036,-1.7530705419110018,-1.6796606100547748,-1.5999168479471177,-1.526400152744595,-1.4475824857496162,-1.3562644890583484,-1.2751118302223656,-1.2039482615356478,-1.126360869351489,-1.0483123539955006,-0.9620197398009531,-0.8799144948082505,-0.7945440903818392,-0.7226803941330477,-0.6349429664218175,-0.5545699320865554,-0.4803392324177958,-0.40514583397598236,-0.3208751143837378,-0.24451223751234638,-0.15708201024929674,-0.07612939484989288,0.0036803979692426815,0.08116910146873875,0.16060493099559506,0.2455477881899539,0.3139817859410524,0.40492730834232776,0.4875616188441228,0.5646015362824793,0.6379047988913217,0.7195130565637783,0.7968925386770045,0.8833386675105024,0.9606334408728076,1.0384994350090233,1.1249276563279267,1.1924763393201354,1.2797715908632201,1.3665941450433379,1.4461487770845456,1.5221839402018766,1.6007294348082575,1.6726119951613725,1.7672231551411242,1.83354656127095,1.9835084161689298]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.03619130941965587,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>What is the period of the graph?</p><form name='WeaveQuestion' data-id='xplmqg1T' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="ckzqGvYj" type="number" class="form-control">
+<input id="xplmqg1T" type="number" class="form-control">
 
 </div>
   
-<div id='ckzqGvYj_message'></div>
+<div id='xplmqg1T_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#ckzqGvYj').on('change', function() {
+$('#xplmqg1T').on('change', function() {
   correct = Math.abs(this.value - 2) <= 0;
 
   if(correct) {
-     $('#ckzqGvYj_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#xplmqg1T_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#ckzqGvYj_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#xplmqg1T_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>What is the amplitude of the graph?</p><form name='WeaveQuestion' data-id='mK1KBRmb' data-controltype='numeric'>
+<p>What is the amplitude of the graph?</p><form name='WeaveQuestion' data-id='Q1CIvDoU' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="mK1KBRmb" type="number" class="form-control">
+<input id="Q1CIvDoU" type="number" class="form-control">
 
 </div>
   
-<div id='mK1KBRmb_message'></div>
+<div id='Q1CIvDoU_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#mK1KBRmb').on('change', function() {
+$('#Q1CIvDoU').on('change', function() {
   correct = Math.abs(this.value - 2) <= 0;
 
   if(correct) {
-     $('#mK1KBRmb_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#Q1CIvDoU_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#mK1KBRmb_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#Q1CIvDoU_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>What is the form of the function graphed?</p><form name="WeaveQuestion" data-id="sMvg7l9u" data-controltype="radio">
+<p>What is the form of the function graphed?</p><form name="WeaveQuestion" data-id="UIwggT53" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sMvg7l9u" value="1"><div class="markdown">$\sin(2x)$
+      <input type="radio" name="radio_UIwggT53" value="1"><div class="markdown">$\sin(\pi x)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sMvg7l9u" value="2"><div class="markdown">$2 \sin(\pi x)$
+      <input type="radio" name="radio_UIwggT53" value="2"><div class="markdown">$\sin(2x)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sMvg7l9u" value="3"><div class="markdown">$\sin(\pi x)$
+      <input type="radio" name="radio_UIwggT53" value="3"><div class="markdown">$2 \sin(x)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sMvg7l9u" value="4"><div class="markdown">$2 \sin(x)$
+      <input type="radio" name="radio_UIwggT53" value="4"><div class="markdown">$2 \sin(\pi x)$
 </div>
     </label>
     </div>
     
 
 
-<div id="sMvg7l9u_message"></div>
+<div id="UIwggT53_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_sMvg7l9u']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_UIwggT53']").on("change", function() {
+  correct = this.value == 4;
 
   if(correct) {
-     $("#sMvg7l9u_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#UIwggT53_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#sMvg7l9u_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#UIwggT53_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -641,36 +664,36 @@ $("input:radio[name='radio_sMvg7l9u']").on("change", function() {
 -f(0) + f(1) - f(1) + f(2) - f(2) + \cdots + f(n-1) - f(n-1) + f(n) =
 f(n) - f(0).
 ~$$
-<p>Referring to the definitions of <code>D</code> and <code>S</code> in the example on operators, which relationship does this support:</p><form name="WeaveQuestion" data-id="TxHTa9AC" data-controltype="radio">
+<p>Referring to the definitions of <code>D</code> and <code>S</code> in the example on operators, which relationship does this support:</p><form name="WeaveQuestion" data-id="Z28EEsjD" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_TxHTa9AC" value="1"><div class="markdown"><p><code>D&#40;S&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41;</code></p>
+      <input type="radio" name="radio_Z28EEsjD" value="1"><div class="markdown"><p><code>D&#40;S&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41;</code></p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_TxHTa9AC" value="2"><div class="markdown"><p><code>S&#40;D&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41; - f&#40;0&#41;</code></p>
+      <input type="radio" name="radio_Z28EEsjD" value="2"><div class="markdown"><p><code>S&#40;D&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41; - f&#40;0&#41;</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="TxHTa9AC_message"></div>
+<div id="Z28EEsjD_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_TxHTa9AC']").on("change", function() {
+$("input:radio[name='radio_Z28EEsjD']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#TxHTa9AC_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Z28EEsjD_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#TxHTa9AC_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Z28EEsjD_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -678,36 +701,36 @@ $("input:radio[name='radio_TxHTa9AC']").on("change", function() {
 <h6>Question</h6><p>Consider this expression:</p>$$~
 \left(f(1) + f(2) + \cdots + f(n-1) + f(n)\right) - \left(f(1) + f(2) + \cdots + f(n-1)\right) = f(n).
 ~$$
-<p>Referring to the definitions of <code>D</code> and <code>S</code> in the example on operators, which relationship does this support:</p><form name="WeaveQuestion" data-id="pdJJZWEd" data-controltype="radio">
+<p>Referring to the definitions of <code>D</code> and <code>S</code> in the example on operators, which relationship does this support:</p><form name="WeaveQuestion" data-id="bB9kTzu9" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_pdJJZWEd" value="1"><div class="markdown"><p><code>D&#40;S&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41;</code></p>
+      <input type="radio" name="radio_bB9kTzu9" value="1"><div class="markdown"><p><code>D&#40;S&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41;</code></p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_pdJJZWEd" value="2"><div class="markdown"><p><code>S&#40;D&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41; - f&#40;0&#41;</code></p>
+      <input type="radio" name="radio_bB9kTzu9" value="2"><div class="markdown"><p><code>S&#40;D&#40;f&#41;&#41;&#40;n&#41; &#61; f&#40;n&#41; - f&#40;0&#41;</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="pdJJZWEd_message"></div>
+<div id="bB9kTzu9_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_pdJJZWEd']").on("change", function() {
+$("input:radio[name='radio_bB9kTzu9']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#pdJJZWEd_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#bB9kTzu9_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#pdJJZWEd_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#bB9kTzu9_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

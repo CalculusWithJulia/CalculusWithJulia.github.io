@@ -85,21 +85,67 @@ collect(100:-7:1)
 ```
 
 In this last example, we said end with 1, but it ended with 2. The
-ending value in the range is a suggestion to go up to, but not exceed.
+ending value in the range is a suggestion to go up to, but not exceed. Negative values for `h` lead are used to make decreasing sequences.
+
+### The linspace function
+
+For generating points to make graphs, a natural set of points is $n$ evenly spaced points between $a$ and $b$. We can mimic this with the range operation by solving the correct step size. We have $a_0=a$ and $a_0 + (n-1) \cdot h = b$. (Why $n-1$ and not $n$?) Solving yields $h = (b-a)/(n-1)$. To be concrete we might ask for 9 points between $-1$ and $1$:
 
 ```
-note(L"""
-
-The `linspace` function is related to the colon operation. It generates `n` values evenly spaced between `a` and `b` with the call `linspace(a, b, n)`. The `n` is optional, defaulting to $100$. Specifying the number of numbers is more convenient in some cases, than specifying the step size. On particular case arises when generating points to produce a graph of a function.
-
-""")
+a, b, n = -1, 1, 9
+h = (b-a)/(n-1)
+collect(a:h:b)
 ```
 
+Pretty neat. If we were doing this many times---such as once per plot---we'd want to encapsulate this into a function, for example:
+
+```
+function evenly_spaced(a, b, n)
+    h = (b-a)/(n-1)
+    collect(a:h:b)
+end
+```
+
+Great, let's try it out:
+
+```
+evenly_spaced(0, 2pi, 5)
+```
+
+Now, our implementation was straightforward, but only because it avoids somethings. Look at  something simple:
+
+```
+evenly_spaced(1/5, 3/5, 3)
+```
+
+It seems to work as expected. But looking just at the algorithm it isn't quite so clear:
+
+```
+1/5, 1/5 + 1*1/5, 1/5 + 2*1/5
+```
+
+Floating point roundoff leads to the last value *exceeding* `0.6`, so should it be included? Well, here it is pretty clear it *should* be, but 
+better to have something programmed that hits both `a` and `b` and adjusts `h` accordingly.
+
+Enter the base function `linspace` (*lin*early *space*d) which solves this seemingly
+simple---but not really---task. It asks for `a`, `b`, and `n`, though a
+default value of `n` will be given if a third argument is
+ommitted. Like the range operation, this function returns a generator
+which can be collected to realize the values:
+
+```
+xs = linspace(-1, 1, 9)
+```
+
+and
+
+```
+collect(xs)
+```
 
 ## Filtering and modifying arithmetic progressions
 
-Within `Julia`, there are other, specific, ways to achieve a different
-step size. We don't pursue them, but rather concentrate on some more
+Now we concentrate on some more
 general styles to modify a sequence to produce a new sequence.
 
 For example, another way to get the values between 0 and 100 that are
@@ -117,13 +163,13 @@ condition is called *filtering*. The `filter` function does this in
 `filter(predicate_function, collection)`.
 The "`predicate_function`" is one that returns either
 `true` or `false`, such as `iseven`. The output of `filter` consists
-of the new collection of values -- those where the predicate returns `true`.
+of the new collection of values---those where the predicate returns `true`.
 
-To see it used, lets start with the numbers between `0` and `100`
+To see it used, lets start with the numbers between `0` and `25`
 (inclusive) and filter out those that are even:
 
 ```
-filter(iseven, 0:100)
+filter(iseven, 0:25)
 ```
 
 
@@ -150,7 +196,7 @@ to write predicate functions.
 
 ## Comprehensions
 
-Let's return to the case of even numbers between 0 and 100. We have many ways to describe this set:
+Let's return to the case of the set of even numbers between 0 and 100. We have many ways to describe this set:
 
 - The collection of numbers $0, 2, 4, 6 \dots, 100$, or the arithmetic
   sequence with step size 2, which is returned by `0:2:100`.
@@ -162,8 +208,9 @@ Let's return to the case of even numbers between 0 and 100. We have many ways to
 While `Julia` has a special type for dealing with sets, we will use a
 vector for such a set. (Unlike a set, vectors can have repeated
 values, but as vectors are more widely used, we demonstrate them.)
-Vectors are constructed using square brackets: `[]` (a special syntax
-for
+Vectors are described more fully in a previous section, but as a
+reminder vectors are constructed using square brackets: `[]` (a
+special syntax for
 [concatenation](http://docs.julialang.org/en/latest/manual/arrays/#concatenation)). Square
 brackets are used in many different contexts within `Julia`, in this
 case we use them to create a *collection*. If we separate single
@@ -184,7 +231,7 @@ For this simple case, a range can be used, but more generally a
 [comprehension](http://julia.readthedocs.org/en/latest/manual/arrays/#comprehensions)
 provides this ability using a construct that closely mirrors  a set definition, such as $\{2k:
 k=0, \dots, 50\}$. The simplest use of a comprehension takes this
-form:
+form (as we described in the section on vectors):
 
 `[expr for variable in collection]`
 
@@ -198,15 +245,15 @@ that are *iterable*. Here is how the mathematical set $\{2k: k=0,
 [2k for k in 0:50]
 ```
 
-The expression is `2k`, the variable `k` and the collection is the range
+The expression is `2k`, the variable `k`, and the collection is the range
 of values, `0:50`. The syntax is basically identical to how the math
 expression is typically read aloud.
 
 
-For some other examples, here is how we can create the first 50 numbers divisible by 7:
+For some other examples, here is how we can create the first 10 numbers divisible by 7:
 
 ```
-[7k for k in 1:50]
+[7k for k in 1:10]
 ```
 
 Here is how we can square the numbers between 1 and 10:
@@ -265,7 +312,13 @@ sum(p for p in 1:100 if isprime(p))
 ```
 
 
-The value on the other side of `if` should be either `true` or `false` for a given `p`. The `isprime` function is a predicate function and returns a logical value. In this example, we use the fact that `rem(k, 7)` returns the remainder found from dividing `k` by `7`, and so is `0` when `k` is a multiple of `7`:
+The value on the other side of `if` should be either `true` or `false`
+for a given `p` (like a predicate function, but here as an
+expression). The value returned by `isprime(p)` is such.
+
+In this example, we use the fact that `rem(k, 7)` returns the
+remainder found from dividing `k` by `7`, and so is `0` when `k` is a
+multiple of `7`:
 
 ```
 sum(k for k in 1:100 if rem(k,7) == 0)  ## add multiples of 7
@@ -276,39 +329,51 @@ sum(k for k in 1:100 if rem(k,7) == 0)  ## add multiples of 7
 This example of Stefan Karpinski comes from a
 [blog](http://julialang.org/blog/2016/10/julia-0.5-highlights) post
 highlighting changes to the `Julia` language with version
-`v"0.5.0"`. It involves making change. First, a simple question: using
+`v"0.5.0"`, which added features to comprehensions that made this example possible. It involves making change. First, a simple question: using
 pennies, nickels, dimes, and quarters how many different ways can we
-generate one dollar? Clearly 100 pennies, or 20 nickels, or 10 dimes,
-or 4 quarters will do this, so the answer is atleast four, but how
+generate one dollar? Clearly $100$ pennies, or $20$ nickels, or $10$ dimes,
+or $4$ quarters will do this, so the answer is atleast four, but how
 much more than four?
 
 Well, we can use a comprehension to enumerate the
-possibilities. First, we either have 0,1,2,3, or 4 quarters, or 0, 25
-cents, 50 cents, 75 cents, or a dollar's worth. If we have, say, 1
-quarter, then we need to make up 75 cents with the rest. If we had 3
-dimes, then we need to make up 45 cents out of nickels and pennies, 
-if we then had 6 nickels, we know we must need 15 pennies.
+possibilities. This example illustrates how comprehensions and generators can involve one or more variable for the iteration.
 
 
-The following expression shows how this can be done through
+
+First, we either have $0,1,2,3$, or $4$ quarters, or $0$, $25$
+cents, $50$ cents, $75$ cents, or a dollar's worth. If we have, say, $1$
+quarter, then we need to make up $75$ cents with the rest. If we had $3$
+dimes, then we need to make up $45$ cents out of nickels and pennies, 
+if we then had $6$ nickels, we know we must need $15$ pennies.
+
+
+The following expression shows how counting this can be done through
 enumeration. Here `q` is the amount contributed by quarters, `d` the
 amount from dimes, `n` the amount from nickels, and `p` the amount from
-pennies. `q` ranges over $0, 25, 50, 75, 100` or `0:25:100`, etc. If
+pennies. `q` ranges over $0, 25, 50, 75, 100$ or `0:25:100`, etc. If
 we know that the sum of quarters, dimes, nickels contributes a certain
-amount, then the number of pennies must round things up to 100.
+amount, then the number of pennies must round things up to $100$.
 
 ```
-[(q, d, n, p) for q = 0:25:100 for d = 0:10:(100 - q) for n = 0:5:(100 - q - d) for p = (100 - q - d - n)]
+ways = [(q, d, n, p) for q = 0:25:100 for d = 0:10:(100 - q) for n = 0:5:(100 - q - d) for p = (100 - q - d - n)]
+length(ways)
 ```
 
-We see 242 cases, each distinct. The expression reads naturally. It
-introduces the use of multiple `for` statements, each subsequent one
-depending on the value of the previous (working left to right). Now
-suppose we want to ensure that the amount of pennies is less than the
-amount from nickels, etc. We could use `filter` somehow to do this for
-our last answer, but using `if` allows for filtering while the events
-are generating. Here our condition is simply expressed: `q > d > n >
-p`:
+We see 242 cases, each distinct. The first $3$ are:
+
+```
+ways[1:3]
+```
+
+
+
+The generating expression reads naturally. It introduces the use of
+multiple `for` statements, each subsequent one depending on the value
+of the previous (working left to right). Now suppose we want to ensure
+that the amount of pennies is less than the amount from nickels,
+etc. We could use `filter` somehow to do this for our last answer, but
+using `if` allows for filtering while the events are generating. Here
+our condition is simply expressed: `q > d > n > p`:
 
 
 ```
@@ -317,7 +382,9 @@ p`:
 
 ## Random numbers
 
-This section discusses structured sets of numbers. On the opposite end of the spectrum are random numbers. `Julia` makes them easy to generate, especially random numbers chosen uniformly for $(0,1)$.
+We have been discussing structured sets of numbers. On the opposite
+end of the spectrum are random numbers. `Julia` makes them easy to
+generate, especially random numbers chosen uniformly for $(0,1)$.
 
 - The `rand()` function returns a randomly chosen number in $(0,1)$.
 
@@ -339,7 +406,7 @@ Easy to use. The only common source of confusion is the subtle distinction betwe
 
 ```
 alert(L"""
-The documentation for `rand` shows that the value is in $[0,1)$, but in practice $0$ doesn't come up with any frequency -- about 1 out of every $10^{19}$ numbers -- so we say $(0,1)$.
+The documentation for `rand` shows that the value is in $[0,1)$, but in practice $0$ doesn't come up with any frequency---about 1 out of every $10^{19}$ numbers---so we say $(0,1)$.
 """)
 ```
 
@@ -391,6 +458,67 @@ val = length(collect(0:19:1000))
 numericq(val)
 ```
 
+
+###### Question
+
+The range operation (`a:h:b`) can also be used to countdown. Which of these will do so, counting down from `10` to `1`? (You can call `collect` to visualize the generated numbers.)
+
+```
+choices = [
+"`10:-1:1`",
+"`10:1`",
+"`1:-1:10`",
+"`1:10`"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+What is the last number generated by `1:4:7`?
+
+```
+val = (1:4:7)[end]
+numericq(val)
+```
+
+###### Question
+
+While the range operation can generate vectors by collecting, do the objects themselves act like vectors?
+
+Does scalar multiplication work as expected? In particular, is the result of `2*(1:5)` *basically* the same as `2 * [1,2,3,4,5]`?
+
+```
+yesnoq(true)
+```
+
+Does vector addition work? as expected? In particular, is the result of `(1:4) + (2:5)` *basically* the same as `[1,2,3,4] + `[2,3,4,5]`?
+
+```
+yesnoq(true)
+```
+
+What if parenthese are left off. Explain the output of `1:4 + 2:5`?
+
+```
+choices = ["It is just random",
+"Addition happens prior to the use of `:` so this is like `1:(4+2):5`",
+"It gives the correct answer, generator for the vector `[3,5,7,9]`"
+]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+How is `a:b-1` interpreted:
+
+```
+choices = ["as `a:(b-1)`", "as `(a:b) - 1`, which is `(a-1):(b-1)`"]
+ans = 1
+radioq(choices, ans)
+```
 
 ###### Question
 
@@ -451,7 +579,7 @@ We can easily add an arithmetic progression with the `sum`
 function. For example, `sum(1:100)` will add the numbers $1, 2, ..., 100$.
 
 
-What is the sum of the odd numbers between 0 and 100?
+What is the sum of the odd numbers between $0$ and $100$?
 
 ```
 val = sum(1:2:99)
@@ -460,7 +588,7 @@ numericq(val)
 
 ###### Question
 
-The sum of the arithmetic progression $a, a+h, \dots, a+n\cdot h $ has
+The sum of the arithmetic progression $a, a+h, \dots, a+n\cdot h$ has
 a simple formula. Using a few cases, can you tell if this is the
 correct one:
 
@@ -496,7 +624,7 @@ yesnoq(true)
 ###### Question
 
 The [product](http://en.wikipedia.org/wiki/Arithmetic_progression) of
-the terms in arithmetic progression has a known formula.  The product
+the terms in an arithmetic progression has a known formula.  The product
 can be found by an expression of the form `prod(a:h:b)`.  Find the product of the terms in the sequence $1,3,5,\dots,19$.
 
 ```

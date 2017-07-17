@@ -27,7 +27,7 @@ and consider more than one symbol, but we won't pursue this here,
 restricting ourselves to the case of a single variable and real
 coefficients.
 
-A *polynomial* is a simply a sum or difference of monomials. After
+A *polynomial* is a sum of monomials. After
 combining terms with same powers, a polynomial may be written uniquely
 as:
 
@@ -56,7 +56,7 @@ coefficient is not 1.
 
 Lower degree polynomials have special names: a degree $0$ polynomial
 ($a_0$) is a non-zero constant, a degree 1 polynomial ($a_0+a_1x$) is called
-linear, a degree $2$ polynomial is quadratic, and degree $3$ cubic.
+linear, a degree $2$ polynomial is quadratic, and  a degree $3$ polynomial is called cubic.
 
 ## Linear polynomials
 
@@ -118,7 +118,7 @@ expressions of algebraic symbols easy.  This makes sense, `Julia` is
 primarily designed for technical computing, where numeric approaches
 rule the day. However, symbolic math can be used from within `Julia` with an add-on package.
 
-Symbolic math programs include well known ones like the commercial
+Symbolic math programs include well-known ones like the commercial programs
 Mathematica and Maple. Mathematica powers the popular
 [WolframAlpha](www.wolframalpha.com) website, which turns "natural"
 language into the specifics of a programming language. The open-source
@@ -164,12 +164,12 @@ possibly complex. There are many other
 [assumptions](http://docs.sympy.org/dev/modules/core.html#module-sympy.core.assumptions)
 that can be made.
 
-The *macro* `@syms` is like the second usage, only it does not need
+The *macro* `@vars` is like the second usage, only it does not need
 assignment, as the variable are created behind the scenes. This may
 be the easiest way to create symbolic values (no commas are used):
 
-```verbatim
-@syms h t
+```
+@vars h t
 ```
 
 
@@ -177,8 +177,7 @@ The `SymPy` package does two basic things:
 
 - It imports some of the functionality provided by `SymPy`.
 
-- It overloads many `Julia` functions to work seamlessly with symbolic
-expressions. This makes working with polynomials quite natural.
+- It overloads many `Julia` functions to work seamlessly with symbolic expressions. This makes working with polynomials quite natural.
 
 To illustrate, using the just defined `x`, here is how we can create the polynomial $-16x^2 + 100$:
 
@@ -230,20 +229,25 @@ Algebraically working with symbolic expressions is straightforward. A
 different symbolic task is substitution. For example, replacing each
 instance of `x` in a polynomial, with, say, `(x-1)^2`. Substitution
 requires three things to be specified: an expression to work on, a
-variable to substitute, and a value to substitute in. The `subs`
-function is called as `subs(ex, variable, value)`. To do
+variable to substitute, and a value to substitute in.
+
+
+SymPy provides its `subs` function for this. This function is available in `Julia`, but it is easier to use notation reminiscent of function evaluation.
+
+To illustrate, to do
 the task above for the polynomial $-16x^2 + 100$ we could have:
 
 ```
 p = -16x^2 + 100
-subs(p, x, (x-1)^2)
+p(x => (x-1)^2)
 ```
 
+This "call" notation takes pairs (designated by `a=>b`) where the left-hand side is the variable to substitute for, and the right-hand side the new value.
 The value to substitute can depend on the variable, as illustrated; be
 a different variable; or be a numeric value, such as $2$:
 
 ```
-y = subs(p, x, 2)
+y = p(x=>2)
 ```
 
 The result will always be of a symbolic type, even if the answer is
@@ -254,33 +258,10 @@ typeof(y)
 ```
 
 
-
-There are two alternatives to `subs` that are a bit easier.
-
-* First, one can pass in a "pair," instead of three arguments:
+If there is just one free variable in an expression, the pair notation can be dropped:
 
 ```
-ex = -16x^2 + 100
-subs(ex, x=>2)   # same as subs(ex, x, 2)
-```
-
-
-Pairs are linked via `=>`. In this form the substitution happens from left to right, which means the right most values can depend on ones to the left.
-
-* Even more compactly, when there is only one free variable, we can bypass the left side of the pair notation and
-  "call" an expression like a function:
-
-```
-ex(2)
-```
-
-Though more than one variable can be substituted this way, if there is
-more than one free symbol in the expression, it is best to pass values
-as a pair indicating which variable is to be substituted for:
-
-```
-quad = a*x^2 + b*x + c    # as before
-quad(x => 2)
+p(4) # substitutes x=>4
 ```
 
 
@@ -314,7 +295,7 @@ y = p(2)
 The value, $36$ is still symbolic, but clearly an integer. If we
 are just looking at the output, we can easily translate from the
 symbolic value to an integer, as they print similarly. However the
-conversion to an integer, or other type of number, does not happen
+conversion to an integer, or another type of number, does not happen
 automatically.  If a number is needed to pass along to another `Julia`
 function, it must be converted. In general, conversions between
 different types are handled through various methods of
@@ -371,7 +352,7 @@ This graph illustrates the key features of polynomial graphs:
   is no *horizontal asymptote*.
 
 To investigate this last point, let's consider the case of the
-monomial $x^n$. When $n$ is even, the following animations shows that
+monomial $x^n$. When $n$ is even, the following animation shows that
 larger values of $n$ have greater growth once outside of $[-1,1]$:
 
 {{{ poly_growth_graph }}}
@@ -396,7 +377,7 @@ Again, for larger powers the shape is similar, but the growth is faster.
 
 To see the roots and/or the peaks and valleys of a polynomial requires a
 judicious choice of viewing window, as ultimately the leading term
-will dominate the graph. The following animation of
+will dominate the graph. The following animation of the graph of
 $(x-5)(x-3)(x-2)(x-1)$ illustrates. Subsequent images show a widening
 of the plot window until the graph appears U-shaped.
 
@@ -425,7 +406,7 @@ leading term.
 ##### Example
 
 Suppose $p = a_n x^n + \cdots + a_1 x + a_0$ with $a_n > 0$. Then by
-the above, evenually for large $x > 0$ we have $p > 0$, as that is the
+the above, eventually for large $x > 0$ we have $p > 0$, as that is the
 behaviour of $a_n x^n$. Were $a_n < 0$, then eventually for large
 $x>0$, $p < 0$.
 
@@ -434,7 +415,7 @@ Now consider the related polynomial, $q$, where we multiply $p$ by $x^n$ and sub
 ```
 p = a*x^2 + b*x + c
 n = 2    # the degree of p
-q = x^n * p(x => 1/x)
+q = expand(x^n * p(x => 1/x))
 ```
 
 In particular, from the reversal, the behavior of $q$ for large $x$
@@ -448,7 +429,7 @@ That is, if $p$ has $a_n > 0$ but $a_0 < 0$ then the graph of $p$ must cross the
 This observation is the start of Descartes' rule of
 [signs](http://sepwww.stanford.edu/oldsep/stew/descartes.pdf), which
 counts the change of signs of the coefficients in `p` to say something
-about how many possible crossing there are of the $x$ axis by the
+about how many possible crossings there are of the $x$ axis by the
 graph of the polynomial $p$.
 
 
@@ -475,7 +456,7 @@ one value is that it is easy to read off *roots* of the polynomial (values of $x
 a product is $0$ only if a term is $0$, so any zero must be a zero of
 a factor. However, factored form has other advantages. For example,
 the polynomial $(x-1)^{1000}$ can be compactly represented using the
-factored form , but would require 1001 coefficients to store in expanded
+factored form, but would require 1001 coefficients to store in expanded
 form. (As well, due to floating point differences, the two would
 evaluate quite differently as one would require over a 1000 operations
 to compute, the other just two.)
@@ -670,7 +651,7 @@ p = -16x^2 + 64
 What command will return the value of the polynomial when $x=2$?
 
 ```
-choices = [q"p*2", q"p[2]", q"p_2", q"subs(p, x,  2)"]
+choices = [q"p*2", q"p[2]", q"p_2", q"p(x=>2)"]
 ans = 4
 radioq(choices, ans)
 ```

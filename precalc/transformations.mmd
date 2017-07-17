@@ -5,12 +5,13 @@ using Plots
 plotly()
 ```
 
-Thinking of functions as objects themselves that can be manipulated --
-rather than just blackboxes for evaluation -- is a major abstraction
-of calculus. The main operations to come: the limit *of a function*,
-the derivative *of a function*, and the integral *of a function* all
-operate on functions. Hence the idea of an operator. Here we discuss
-manipulations of functions that have proven to be useful abstractions.
+Thinking of functions as objects themselves that can be
+manipulated---rather than just blackboxes for evaluation---is a major
+abstraction of calculus. The main operations to come: the limit *of a
+function*, the derivative *of a function*, and the integral *of a
+function* all operate on functions. Hence the idea of an
+operator. Here we discuss manipulations of functions from pre-calculus that have proven
+to be useful abstractions.
 
 ## The algebra of functions
 
@@ -65,8 +66,9 @@ $$~
 The output of $g$ becomes the input of $f$.
 
 Composition depends on the order of things. There is no guarantee that
-$f \circ g$ should be the same as $g \circ f$. We can see this quite
-clearly with the functions $f(x) = x^2$ and $g(x) =
+$f \circ g$ should be the same as $g \circ f$. (Putting on socks then
+shoes is quite different from putting on shoes then socks.) Mathematically, we can see
+this quite clearly with the functions $f(x) = x^2$ and $g(x) =
 \sin(x)$. Algebraically we have:
 
 $$~
@@ -113,21 +115,29 @@ Here we look at a few compositions:
 
 Decomposing a function into a composition of functions is not unique,
 other compositions could have been given above. For example, the last
-function is also $f(x) = e{-x/2}$ composed with $g(x) = x^2$.
+function is also $f(x) = e^{-x/2}$ composed with $g(x) = x^2$.
 
+
+```
+note("""
+
+`Julia` allows the Unicode operator `\circ[tab]` to define composition of functions, to mirror notation. It's use with generic functions is a bit cumbersome, as the operation returns an anoymous function. However, it can be useful and will mirror standard mathematical usage up to issues with precedence rules.)
+
+""")
+```
 
 ## Shifting and scaling graphs
 
 It is very useful to mentally categorize functions within
 families. The difference between $f(x) = \cos(x)$ and $g(x) =
-12\cos(2(x - \pi/4))$ is not that much -- both are cosine functions,
+12\cos(2(x - \pi/4))$ is not that much---both are cosine functions,
 one is just a simple enough transformation of the other. As such, we
 expect bounded, oscillatory behaviour with the details of how large
 and how fast the oscillations are to depend on the specifics of
 function. Similarly, both these functions $f(x) = 2^x$ and $g(x)=e^x$
 behave like exponential growth, the difference being only in the rate
 of growth. There are families of functions that are qualitatively
-similar, but quantitatively different. 
+similar, but quantitatively different, linked together by a few basic transformations.
 
 There is a set of operations of functions, which does not really
 change the type of function. Rather, it basically moves and stretches
@@ -150,10 +160,8 @@ The functions $h$ are derived from $f$ in a predictable way. To implement these 
 up(f, k)       = x -> f(x) + k
 over(f, k)     = x -> f(x - k)
 stretch(f, k)  = x -> k * f(x)
-compress(f, k) = x -> f(k * x)
+scale(f, k)    = x -> f(k * x)
 ```
-
-(We called the last one `compress`, as `scale` is already used by `Julia`.)
 
 To illustrate, let's define a hat-shaped function as follows:
 
@@ -195,11 +203,11 @@ $$~
 h(x) = \frac{1}{a}f(\frac{x - b}{a}).
 ~$$
 
-We can view this as a composition of "compress" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:
+We can view this as a composition of "scale" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:
 
 ```
 a = 2; b = 5
-h(x) = stretch(over(compress(f, 1/a), b), 1/a)(x)
+h(x) = stretch(over(scale(f, 1/a), b), 1/a)(x)
 plot([f, h], -1, 12)
 ```
 
@@ -236,18 +244,18 @@ d = 2pi/365
 ```
 
 If we let January 1 be $x=0$ then the first day of spring, March 21,
-is day 79. This day aligns with shift of the sine curve. The choice of
-$c$ refers to moving $\sin(dx)$ over -- the sine curve with period $365$ days -- not $\sin(x)$ -- the sine curve with period $2\pi$. This shift is 79.
+is day 79 (`Date(2017, 3, 21) - Date(2017, 1, 1)`). This day aligns with shift of the sine curve. The choice of
+$c$ refers to moving $\sin(dx)$ over---the sine curve with period $365$ days---not $\sin(x)$---the sine curve with period $2\pi$. This shift is 79.
 
 ```
 c = 79
 ```
 
-Putting this together, we have our graph is "compressed" by $d$, "over" by $c$, "stretched" by $b$ and "up" by $a$:
+Putting this together, we have our graph is "scaled" by $d$, "over" by $c$, "stretched" by $b$ and "up" by $a$:
 
 
 ```
-newyork(t) = up(stretch(over(compress(sin, d), c), b), a)(t)
+newyork(t) = up(stretch(over(scale(sin, d), c), b), a)(t)
 plot(newyork, 0, 365)
 ```
 
@@ -262,11 +270,11 @@ datetime = 15 + 0/60 + 4/60/60
 delta = (newyork(184) - datetime) * 60
 ```
 
-This is off by a fair amount -- almost 12 minutes. Clearly a trigonometric model, based on the assumption of circular motion of the earth around the sun, is not accurate enough for precise work.
+This is off by a fair amount---almost 12 minutes. Clearly a trigonometric model, based on the assumption of circular motion of the earth around the sun, is not accurate enough for precise work.
 
 ##### Example: the pipeline operator
 
-In the last example, we described our sequence as compress, over,
+In the last example, we described our sequence as scale, over,
 stretch, and up, but code this in reverse order, as the composition $f
 \circ g$ is done from right to left. A more convenient notation would
 be to have syntax that allows the composition of $g$ then $f$ to be
@@ -378,7 +386,7 @@ S(D(f))(k),  f(k) - f(0)
 That is the accumulation of differences is just the difference of the end values.
 
 These two operations are discrete versions of the two main operations
-of calculus -- the derivative and the integral. This relationship will
+of calculus---the derivative and the integral. This relationship will
 be known as the "fundamental theorem of calculus." 
 
 ## Questions
@@ -388,7 +396,7 @@ be known as the "fundamental theorem of calculus."
 If $f(x) = 1/x$ and $g(x) = x-2$, what is $g(f(x))$?
 
 ```
-choices=[L"1/(x-2)", L"1/x - 2", L"x - 2"]
+choices=[L"1/(x-2)", L"1/x - 2", L"x - 2", L"-2"]
 ans = 2
 radioq(choices, ans)
 ```
@@ -398,7 +406,7 @@ radioq(choices, ans)
 If $f(x) = e^{-x}$ and $g(x) = x^2$ and $h(x) = x-3$, what is $f \circ g \circ h$?
 
 ```
-choices=[L"e^{-x^2 - 3}", L"(e^x -3)^2", L"e^{-(x-3)^2}"]
+choices=[L"e^{-x^2 - 3}", L"(e^x -3)^2", L"e^{-(x-3)^2}", L"e^x+x^2+x-3"]
 ans = 3
 radioq(choices, ans)
 ```
@@ -429,7 +437,7 @@ Let $h(x) = 4x^2$ and $f(x) = x^2$. Which is **not** true:
 
 ```
 choices = [L"The graph of $h(x)$ is the graph of $f(x)$ stretched by a factor of 4",
-	   L"The graph of $h(x)$ is the graph of $f(x)$ compressed by a factor of 2",
+	   L"The graph of $h(x)$ is the graph of $f(x)$ scaled by a factor of 2",
 	   L"The graph of $h(x)$ is the graph of $f(x) shifted up by 4 units"]
 ans = 3
 radioq(choices, ans)
@@ -440,9 +448,9 @@ radioq(choices, ans)
 The transformation $h(x) = (1/a) \cdot f((x-b)/a)$ can be viewed in one sequence:
 
 ```
-choices = [L"shifting by $b$, then  compressing by $1/a$, and then scaling by $1/a$",
-           L"shifting by $a$, then compressing by $b$, and then scaling by $1/a$",
-	   L"shifting by $a$, then compressing by $a$, and then scaling by $b$" ]
+choices = [L"shifting by $b$, then  scaling by $1/a$, and then scaling by $1/a$",
+           L"shifting by $a$, then scaling by $b$, and then scaling by $1/a$",
+	   L"shifting by $a$, then scaling by $a$, and then scaling by $b$" ]
 ans=1
 radioq(choices, ans)
 ```

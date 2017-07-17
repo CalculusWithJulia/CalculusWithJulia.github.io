@@ -9,7 +9,7 @@ end
 fig_size = (400, 300)
 
 using Plots
-pyplot()
+gr()
 
 x0 = [0, 64]
 v0 = [20, 0]
@@ -44,7 +44,7 @@ function make_plot(t)
 
     xs, ys = [p[1] for p in xys], [p[2] for p in xys]
     
-    plt = Plots.plot(xs, ys, legend=false, size=fig_size)
+    plt = Plots.plot(xs, ys, legend=false, size=fig_size, xlims=(0,45), ylims=(0,70))
     plot!(plt, zero, extrema(xs)...)
     make_arrow!(plt, xn(t), 10*unit(xn(t)), col="black")
     make_arrow!(plt, xn(t), 10*unit(vn(t)), col="red")

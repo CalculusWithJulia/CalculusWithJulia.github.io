@@ -2,16 +2,17 @@ module polynomial
 #using Gadfly, Reel, Mustache, WeavePynb
 
 using WeavePynb
+using LaTeXStrings
 using SymPy
 using Plots
-pyplot()
+gr() #pyplot()
 fig_size = (400, 300)
 
 
 ## different linear graphs
 anim = @animate for m in  [-5, -2, -1, 1, 2, 5, 10, 20]
     fn = x -> m * x
-    plot(fn, -1, 1, size = fig_size, legend=false, title="m = $m")
+    plot(fn, -1, 1, size = fig_size, legend=false, title="m = $m", xlims=(-1,1), ylims=(-20, 20))
 end
 
 imgfile = tempname() * ".gif"
@@ -22,21 +23,21 @@ lines_m_graph =  gif_to_data(imgfile, caption)
 
 ## x^10 >>  x^8 ...
 
-anim = @animate for m in  2:2:12
+anim = @animate for m in  0:2:12
     fn = x -> x^m
-    plot(fn, -1.2, 1.2, size = fig_size, legend=false, title="x^$m over [-1.2, 1.2]")
+    plot(fn, -1.2, 1.2, size = fig_size, legend=false, xlims=(-1.2, 1.2), ylims=(0, 1.2^12), title="x^{$m} over [-1.2, 1.2]")
 end
 
 imgfile = tempname() * ".gif"
 gif(anim, imgfile, fps = 1)
-caption = "Demonstration that x^10 grows faster than x^8, ... and x^2  grows faster than x^0 (which is constant)."
+caption = L"Demonstration that $x^10$ grows faster than $x^8$, ... and $x^2$  grows faster than $x^0$ (which is constant)."
 poly_growth_graph =  gif_to_data(imgfile, caption)
 
 
 ## Different polys
-anim = @animate for m in  [-5, -2, -1, 1, 2, 5, 10, 20]
-    fn = x -> m * x
-    plot(fn, -1, 1, size = fig_size, legend=false, title="m = $m")
+anim = @animate for m in  2:2:10
+    fn = x -> x^m
+    plot(fn, -1, 1, size = fig_size, legend=false, title="graph of x^$m", xlims=(-1,1), ylims=(-.1,1))
 end
 
 imgfile = tempname() * ".gif"
@@ -46,9 +47,9 @@ different_poly_graph =  gif_to_data(imgfile, caption)
 
 
 ## leading term graph
-anim = @animate for n in 1:5
-    m = Any[1, 1//2, -1, -5, -20]
-    M = [2, 4,    5, 10, 25]
+anim = @animate for n in 1:6
+    m = [1, .5, -1, -5, -20, -25]
+    M = [2, 4,    5, 10, 25, 30]
     fn = x -> (x-1)*(x-2)*(x-3)*(x-5)
 
     plt = plot(fn, m[n], M[n], size=fig_size, legend=false, linewidth=2, title ="Graph of on ($(m[n]), $(M[n]))")
@@ -57,7 +58,7 @@ anim = @animate for n in 1:5
     end
 end
 
-caption = "Ulitmately the leading term (\$x^4\$ here) dominates the graph"
+caption = "The previous graph is highlighted in red. Ulitmately the leading term (\$x^4\$ here) dominates the graph."
 imgfile = tempname() * ".gif"
 gif(anim, imgfile, fps=1)
 leading_term_graph = gif_to_data(imgfile, caption)

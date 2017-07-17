@@ -5,14 +5,21 @@ using Plots
 plotly()
 ```
 
-The trigonometric functions are used to describe relationships between triangles, circles and oscillatory motions. With such a wide range of utility is no wonder that they pop up in many places and their [origins](https://en.wikipedia.org/wiki/Trigonometric_functions#History) date to Hipparcus and Ptolemy over 2000 years ago.
 
-This section gives a quick overview of some topics related to the trigonometric functions.
+We have informally used some of the trigonometric functions in examples
+so far. In this section we quickly review their definitions and some
+basic properties. 
+
+The trigonometric functions are used to describe relationships between
+triangles, circles and oscillatory motions. With such a wide range of
+utility is no wonder that they pop up in many places and their
+[origins](https://en.wikipedia.org/wiki/Trigonometric_functions#History)
+date to Hipparcus and Ptolemy over 2000 years ago.
 
 ## The 6 basic trigonometric functions
 
 We measure angles in radians, where $360$ degrees is $2\pi$
-radians. By proportions, $90$ degree is $\pi/2$.
+radians. By proportions, $90$ degrees is $\pi/2$, $60$ degree is $\pi/3$, etc.
 
 For a right triangle with angles $\theta$, $\pi/2 - \theta$ and
 $\pi/2$ we call the side opposite $\theta$ the "opposite" side, the
@@ -35,30 +42,19 @@ note("""Many students remember these through [SOH-CAH-TOA](http://mathworld.wolf
 Some algebra shows that $\tan(\theta) = \sin(\theta)/\cos(\theta)$. There are also 3 reciprocal functions, the cosecant, secant and cotangent.
 
 
-These definitions in terms of sides only apply for $0 \leq \theta \leq \pi/2$. More generally, if we relate any angle taken in the counter clockwise direction for the $x$-axis with a point $(x,y)$ on the *unit* circle, then we can extend these definitions -- the point $(x,y)$ is also $(\cos(\theta), \sin(\theta))$.
+These definitions in terms of sides only apply for $0 \leq \theta \leq \pi/2$. More generally, if we relate any angle taken in the counter clockwise direction for the $x$-axis with a point $(x,y)$ on the *unit* circle, then we can extend these definitions---the point $(x,y)$ is also $(\cos(\theta), \sin(\theta))$.
 
-```nocode
-p = plot(cos, sin, 0, 2pi, legend=false, size=(400, 400))
-t = 3pi/4
-plot!(p, [0,cos(t)], [0, sin(t)])
-plot!(p, [0,cos(0)], [0, sin(0)])
-r = 1/6
-plot!(p, t -> r*cos(t), t -> r*sin(t), 0, t)
-scatter!(p, [cos(t)], [sin(t)])
-annotate!(p, [(2/7 * cos(t-pi/8), 2/7 * sin(t - pi/8), "t"),
-              (cos(t)+.1, sin(t), "(cos(t), sin(t))"])
 
-p
-```
+{{{radian_to_trig}}}
 
 
 ### The trigonometric functions in Julia
 
 Julia has the 6 basic trigonometric functions defined through the functions `sin`, `cos`, `tan`, `csc`, `sec`, and `cot`.
 
-Two right triangles -- the one with equal, $\pi/4$, angles; and the
-one with $\pi/6$ and $\pi/3$ can have the ratio of their sides
-computed from basic geometry. In particular, the following values are
+Two right triangles---the one with equal, $\pi/4$, angles; and the
+one with angles $\pi/6$ and $\pi/3$ can have the ratio of their sides
+computed from basic geometry. In particular, this leads to the following values, which are
 usually committed to memory:
 
 $$~
@@ -69,18 +65,26 @@ $$~
 ~$$
 
 Using the circle definition allows these basic values to inform us of
-values throughout the unit circle. In fact, the following are clear from the definition involving the unit circle:
+values throughout the unit circle.
 
 
-* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then the angle $-\theta$ corresponds to $(x, -y)$. So $\sin(\theta) = - \sin(-\thetea)$ (an odd function), but $\cos(\theta) = \cos(-\theta)$ (an even function).
+These all follow from the definition involving the unit circle:
 
-* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi$ moves the points to $(-x, -y)$. So $\cos(\theta) = x = - \cos(\theta + \pi)$, and $\sin(\theta) = y = -\sin(theta + \pi)$.
+
+* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then the angle $-\theta$ corresponds to $(x, -y)$. So $\sin(\theta) = - \sin(-\theta)$ (an odd function), but $\cos(\theta) = \cos(-\theta)$ (an even function).
+
+* If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi$ moves the points to $(-x, -y)$. So $\cos(\theta) = x = - \cos(\theta + \pi)$, and $\sin(\theta) = y = -\sin(\theta + \pi)$.
 
 
 * If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi/2$ moves the points to $(-y, x)$. So $\cos(\theta) = x = \sin(\theta + \pi/2)$.
 
-* The fact that $x^2 + y^2 = 1$ for the unit circle leads to the
-  "Pythagorean identity" for trigonometric functions:
+
+These can be used to define the trigonometric functions exactly for many different angles, though not all.
+
+
+
+The fact that $x^2 + y^2 = 1$ for the unit circle leads to the
+"Pythagorean identity" for trigonometric functions:
 
 $$~
 \sin(\theta)^2 + \cos(\theta)^2 = 1.
@@ -89,18 +93,26 @@ $$~
 This basic fact can be manipulated many ways. For example, dividing through by $\cos(\theta)^2$ gives the related identity: $\tan(\theta)^2 + 1 = \sec(\theta)^2$.
 
 
-`Julia`'s functions can compute values for any angles, including these:
+`Julia`'s functions can compute values for any angles, including these fundamental:
 
 ```
-[sin(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
+[cos(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
 ```
+
+These are floating point approximations, as can be seen clearly in the last value. Symbolic math can be used if exactness matters:
+
+```
+using SymPy
+cos.([0, PI/6, PI/4, PI/3, PI/2])
+```
+
 
 ```
 note(L"""
 
 For really large values, round off error can play a big role. For example, the *exact* value of $\sin(1000000 \pi)$ is $0$, but the returned value is not quite $0$ `sin(1_000_000 * pi) = -2.231912181360871e-10`. For exact multiples of $\pi$ with large multiples the `sinpi` and  `cospi` functions are useful.
 
-(Both functions are computed by first employing periodicity to reduce the problem to a smaller angle. However, for large multiples the floating-point roundoff becomes a problem.)
+(Both functions are computed by first employing periodicity to reduce the problem to a smaller angle. However, for large multiples the floating-point roundoff becomes a problem with the usual functions.)
 
 """)
 ```
@@ -117,7 +129,7 @@ plot(sin, 0, 4pi)
 
 The graph shows two periods. The wavy aspect of the graph is why this function is used to model periodic motions, such as the amount of sunlight in a day, or the alternating current powering a computer.
 
-From this graph -- or considering when the $y$ coordinate is $0$ -- we see that the sine function has zeros at any integer multiple of $\pi$, or $k\pi$, $k$ in $\dots,-2,-1, 0, 1, 2, \dots$.
+From this graph---or considering when the $y$ coordinate is $0$---we see that the sine function has zeros at any integer multiple of $\pi$, or $k\pi$, $k$ in $\dots,-2,-1, 0, 1, 2, \dots$.
 
 The cosine function is similar, in that it has the same domain and range, but is "out of phase" with the sine curve. A graph of both shows the two are related:
 
@@ -129,11 +141,18 @@ The cosine function is just a shift of the sine function (or vice versa). We see
 
 The tangent function does not have all $\theta$ for its domain, rather those points where division by $0$ occurs are excluded. These occur when the cosine is $0$, or again at $\pi/2 + k\pi$, $k$ in $\dots,-2,-1, 0, 1, 2, \dots$. The range of the tangent function will be all real $y$.
 
-The tangent function is also periodic, but not with period $2\pi$, but rather just $\pi$. A graph will show this. Here we trim the graph to avoid the impact of the vertical asymptotes at the zeros of the cosine function:
+The tangent function is also periodic, but not with period $2\pi$, but
+rather just $\pi$. A graph will show this. Here we avoid the vertical
+asymptotes by keeping them out of the plot domain and layering several
+plots.
 
-```noout
-trim(f, c=20) = x -> abs(f(x)) > c ? NaN : f(x)
-plot(trim(tan), -2pi, 2pi)
+```nocode
+k = -2
+pt = plot(tan, k*pi - pi/2+.1, k*pi + pi/2 - .1, legend=false, color=:blue)
+for k in -1:2
+  plot!(pt, tan,  k*pi - pi/2+.1, k*pi + pi/2 - .1, color=:blue)
+end
+pt
 ```
 
 ### Functions using degrees
@@ -149,15 +168,17 @@ In `Julia`, the functions `sind`, `cosd`, `tand`, `cscd`, `secd`, and `cotd` are
 
 Consider the point on the unit circle $(x,y) = (\cos(\theta), \sin(\theta))$. In terms of $(x,y)$ (or $\theta$) is there a way to represent the angle found by rotating an additional $\theta$, that is what is $(\cos(2\theta), \sin(2\theta))$?
 
-More generally, suppose we have two angles $\alpha and $\beta$, can we
+More generally, suppose we have two angles $\alpha$ and $\beta$, can we
 represent the values of $(\cos(\alpha + \beta), \sin(\alpha + \beta))$
-using the values just involving $\beta$ and $\alpha separately?
+using the values just involving $\beta$ and $\alpha$ separately?
 
 According to [Wikipedia](https://en.wikipedia.org/wiki/Trigonometric_functions#Identities) the following figure (from [mathalino.com](http://www.mathalino.com/reviewer/derivation-of-formulas/derivation-of-sum-and-difference-of-two-angles)) has ideas that date to Ptolemy:
 
 ![Geometric picture](http://www.mathalino.com/sites/default/files/users/Mathalino/summary-sum-and-difference-of-two-angles.jpg)
 
-This shows that
+To read this, there are three triangles: the bigger (green) has hypotenuse $1$ (and adjacent and opposite sides that form the hypotenuses of the other two); the next biggest (yellow) hypotenuse $\cos(\beta)$,  adjacent side (of angle $\alpha$) $\cos(\beta)\cdot \cos(\alpha)$, and opposite side $\cos(\beta)\cdot\sin(\alpha)$; and  the smallest (puplish) hypotenuse $\sin(\beta)$, adjacent side (of angle $\alpha$) $\sin(\beta)\cdot \cos(\alpha)$, and opposite side $\sin(\beta)\sin(\alpha)$.
+
+This figure shows the following sum formula for sine and cosine:
 
 $$~
 \begin{align}
@@ -166,7 +187,7 @@ $$~
 \end{align}
 ~$$
 
-Using the fact that $\sin$ is an odd function and $\cos$ an even function, related formulas for $\alpha - \beta$ can be derived.
+Using the fact that $\sin$ is an odd function and $\cos$ an even function, related formulas for the difference $\alpha - \beta$ can be derived.
 
 Taking $\alpha = \beta$ we immediately get the "double-angle" formulas:
 
@@ -275,17 +296,22 @@ A few things become clear from the above two representations:
 
 * Using the initial definition, we see that the zeros of $T_n(x)$ all occur within $[-1,1]$ and happen when $n\arccos(x) = k\pi + \pi/2$, or $x=\cos((2k+1)/n \cdot \pi/2)$ for $k=0, 1, \dots, n-1$.
 
-Other properties of this polynomial family are not at all obvious. One is that amongst all polynomials of degree $n$ with roots in $[-1,1]$, $T_n(x)$ will be the smallest in magnitude (after we divide by the leading coefficient to make all polynomials considered to be monic). We can check this for one case. Take $n=4$, then we have: $T_4(x) = 8x^4 - 8x^2 + 1$. Compare this with $p(x) = (x+3/5)(x+1/5)(x-1/5)(x-3/5)$ (evenly spaced zeros):
+Other properties of this polynomial family are not at all obvious. One is that amongst all polynomials of degree $n$ with roots in $[-1,1]$, $T_n(x)$ will be the smallest in magnitude (after we divide by the leading coefficient to make all polynomials considered to be monic). We can check this for one case. Take $n=4$, then we have: $T_4(x) = 8x^4 - 8x^2 + 1$. Compare this with $q(x) = (x+3/5)(x+1/5)(x-1/5)(x-3/5)$ (evenly spaced zeros):
 
 ```
 T4(x) = (8x^4 - 8x^2 + 1) / 8 
-p(x) = (x+3/5)*(x+1/5)*(x-1/5)*(x-3/5) 
-plot([x -> abs(T4(x)), x -> abs(p(x))], -1,1)
+q(x) = (x+3/5)*(x+1/5)*(x-1/5)*(x-3/5) 
+plot([x -> abs(T4(x)), x -> abs(q(x))], -1,1)
 ```
 
 ## Hyperbolic trigonometric functions
 
-Related to the trigonometric functions are the hyperbolic trigonometric functions. Instead of associating a point $(x,y)$ on the unit circle with an angle $\theta$, we associate a point $(x,y)$ on the unit *hyperbola* (with $x^2 - y^2 = 1$. We define the hyperbolic sin ($\sinh$) and hyperbolic cosine ($\cosh$) through $(\cosh(\theta), \sinh(\theta)) = (x,y)$.
+Related to the trigonometric functions are the hyperbolic
+trigonometric functions. Instead of associating a point $(x,y)$ on the
+unit circle with an angle $\theta$, we associate a point $(x,y)$ on
+the unit *hyperbola* (with $x^2 - y^2 = 1$. We define the hyperbolic
+sin ($\sinh$) and hyperbolic cosine ($\cosh$) through $(\cosh(\theta),
+\sinh(\theta)) = (x,y)$.
 
 These can be expressed using the exponential function as:
 

@@ -34,7 +34,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
 </script>
 <script>
 MathJax.Hub.Config({
@@ -79,7 +79,7 @@ $( document ).ready(function() {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+         
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -103,89 +103,140 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Rational functions</h1><p>The rational numbers are simply ratios of integers, of the form $p/q$ for non-zero $q$. A rational function is a ratio of <em>polynomial</em> <em>functions</em> of the form $p(x)/q(x)$, again $q$ is non-zero, but may have zeros.</p><p>We know that polynomials are nice, and in particular have the following facts:</p><ul>
-<li><p>Behaviour at $-\infty$, $\infty$ are known just from the leading term.</p>
+<h1>Rational functions</h1><p>A rational expression is the ratio of two polynomial expressions. Such expressions arise in many modeling situations. As well, as many facts are known about polynomial expressions, much can be determined about rational expressions.  This section covers some additional details that arise when graphing such expressions.</p><h2>Rational functions</h2><p>The rational numbers are simply ratios of integers, of the form $p/q$ for non-zero $q$. A rational function is a ratio of <em>polynomial</em> <em>functions</em> of the form $p(x)/q(x)$, again $q$ is non-zero, but may have zeros.</p><p>We know that polynomials have nice behaviours due to the following facts:</p><ul>
+<li><p>Behaviours at $-\infty$, $\infty$ are known just from the leading term.</p>
 </li>
 <li><p>There are possible wiggles up and down, the exact behavior depends on intermediate terms, but there can be no more than $n-1$ wiggles.</p>
 </li>
 <li><p>The number of zeros is no more than $n$, the degree of the polynomial.</p>
 </li>
 </ul><p>Rational functions are not quite so nice:</p><ul>
-<li><p>behavior at $\infty$ and  $\infty$ can be like a polynomial of any degree, including constants</p>
+<li><p>behavior at $-\infty$ and  $\infty$ can be like a polynomial of any degree, including constants</p>
 </li>
 <li><p>behaviour at any value x can blow up due to division by 0 – rational functions, unlike polynomials, are not always defined</p>
 </li>
 <li><p>The function may or may not cross zero, even if the range includes every other point, as the graph of $f(x) =1/x$ will show.</p>
 </li>
-</ul><p>As with polynomials, we are interested in a few properties:</p><ul>
+</ul><p>Here, as with our discussion on polynomials, we are interested for now in just a few properties:</p><ul>
 <li><p>What happens to $f(x)$ when $x$ gets really big or really small (towards $\infty$ or $-\infty$)?</p>
 </li>
 <li><p>What happens near the values where $q(x) = 0$?</p>
 </li>
 <li><p>When is $f(x) = 0$?</p>
 </li>
-</ul><p>Much of this can often be answered with a graph, but with rational functions we will see that care must be take when producing the graph.</p><p>For example, consider this graph generated from a simple rational function:</p>$$~
+</ul><p>These questions can often be answered with a graph, but with rational functions we will see that care must be take when producing a useful graph.</p><p>For example, consider this graph generated from a simple rational function:</p>$$~
 f(x) = \frac{(x-1)^2 \cdot (x-2)}{(x+3) \cdot (x-3)}.
 ~$$
 <pre class="sourceCode julia">using Plots
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -10, 10)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>We would be hard pressed to answer any of the three questions above from the graph, though you may think the strange spikes have something to do with $q(x)=0$.</p><p>The question of big or small $x$ is not answered well with this graph, as the spikes dominate the scale of the $y$-axis. Setting a much larger viewing window illuminates:</p><pre class="sourceCode julia">plot(f, -100, 100)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>We can see from this, that the function eventually looks like a slanted straight line. The eventual shape of the graph is something that can be determined just from the two leading terms.</p><p>The spikes haven't vanished completely. It is just that with only a few hundred points to make the graph, there aren't any values near enough to the problem to make a large spike. The spikes happen because the function has a <em>vertical asymptote</em> at these values. Recall the graph is made by selecting a few hundred points in the domain specified, and finding the corresponding $y$ values. These are then connected by straight lines. Near a vertical asymptote the function values can be arbitrarily large, though at the vertical asymptote the function is undefined. The graph doesn't show this detail.</p><p>The spikes will be related to the points where $q(x) = 0$, though not necessarily all such points will produce a vertical asymptote.</p><p>Where the function crosses $0$ is very hard to tell from these graphs. As well, other finer features, such as local peaks or valleys, when present, can be hard to identify as the $y$-scale is set to accommodate the  asymptotes. Working around the asymptotes requires some extra effort.</p><h2>Asymptotes</h2><p>Formally, an <a href="http://en.wikipedia.org/wiki/Asymptote">asymptote</a> of a curve is a line such that the distance between the curve and the line approaches $0$ as they tend to infinity. Tending to infinity can happen as $x \rightarrow \pm \infty$ <em>or</em> $y \rightarrow \pm \infty$, the former being related to <em>horizontal asymptotes</em> or <em>slant asymptotes</em>, the latter being related to <em>vertical asymptotes</em>.</p><h3>Behaviour as $x \rightarrow \infty$ or $x \rightarrow -\infty$.</h3><p>Let's look more closely at our example rational function using symbolic math, in particular, let's rewrite the expression:</p><pre class="sourceCode julia">using SymPy
+    <div id="a981b616-35ca-4f9c-bc35-bae62597c2b9" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('a981b616-35ca-4f9c-bc35-bae62597c2b9');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-15.899726332067367,-15.404845584973211,-15.13468193890805,-14.926703260899462,-14.727081015032317,-14.573230266505348,-14.449232997082456,-14.375582796951232,-14.396628897418392,-14.509042515957322,-14.775270837160242,-15.270686319541404,-16.26153910243042,-18.016386521349467,-21.77559237463921,-29.45090528537864,-83.59751559403294,51.80994325850146,15.760106948170101,7.527068659771909,3.804503258665576,2.120987033302961,1.0591533245416787,0.5124676237654822,0.2121566883855095,0.06369544814834159,0.005558461739091788,0.005345678950922601,0.021374703989817428,-0.005277743648633229,-0.29605825127063834,-2.6538666953782952,4.861286003196364,2.7341510405839653,2.5706501914239333,2.685019057639392,2.8815949166807924,3.124069854396131,3.4246000913880907,3.675125631315509,4.013614339219632,4.362882427059478,4.691581961013235,5.012071185438675,5.348602773164508,5.660759969745833,6.076842686543712,6.371616615927625,7.04610353443205],"type":"scatter","name":"y1","yaxis":"y","x":[-9.921873447841696,-9.199480662653016,-8.76535270955501,-8.398303050273874,-7.999584239735588,-7.632000763722974,-7.237912428748081,-6.7813224452917416,-6.375559151111829,-6.01974130767824,-5.631804346757444,-5.241561769977503,-4.810098699004766,-4.3995724740412525,-3.9727204519091956,-3.613401970665239,-3.1747148321090872,-2.772849660432777,-2.401696162088979,-2.025729169879912,-1.6043755719186887,-1.222561187561732,-0.7854100512464838,-0.3806469742494644,0.01840198984621341,0.40584550734369373,0.8030246549779753,1.2277389409497697,1.5699089297052622,2.0246365417116388,2.437808094220614,2.8230076814123963,3.1895239944566085,3.5975652828188918,3.9844626933850225,4.416693337552513,4.803167204364038,5.1924971750451165,5.6246382816396325,5.962381696600677,6.398857954316101,6.832970725216688,7.230743885422728,7.610919701009383,8.003647174041287,8.363059975806863,8.83611577570562,9.16773280635475,9.91754208084465]}], {"showlegend":true,"xaxis":{"tickvals":[-5.0,0.0,5.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-5","0","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-50.0,0.0,50.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-50","0","50"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>We would be hard pressed to answer any of the three questions above from the graph, though, on inspection, we might think the strange spikes have something to do with $x$ values where $q(x)=0$.</p><p>The question of big or small $x$ is not answered well with this graph, as the spikes dominate the scale of the $y$-axis. Setting a much larger viewing window illuminates this question:</p><pre class="sourceCode julia">plot(f, -100, 100)</pre>
+    <div id="2c707736-2ca4-4985-aa7a-acca69e1b234" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('2c707736-2ca4-4985-aa7a-acca69e1b234');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-103.36382959222976,-96.15164603058122,-91.81838586088725,-88.15533837924369,-84.17704445165306,-80.51026363707095,-76.58014923631701,-72.0283582237407,-67.98503672890038,-64.4410728075344,-60.579354010617976,-56.69746823268106,-52.40966590273916,-48.335147593963654,-44.10584435872493,-40.55346133386886,-36.23014866896546,-32.289380991758954,-28.676045703126164,-25.058576811785418,-21.100963297666663,-17.71464967207705,-14.662339782741455,-24.43737743001833,0.13485432110905798,2.5772913718842014,5.371575556756554,9.22199816338488,12.464633703500027,16.85858727076864,20.896273125348294,24.68343916159843,28.300407845048813,32.33796367077968,36.17392292747981,40.46581151649213,44.30775208974941,48.181353454272994,52.483952129572046,55.84850211511089,60.19854945363641,64.52683728998282,68.49410984020737,72.28685919363015,76.20569766202796,79.79277812225841,84.51490865147812,87.82567516676062,95.31284711466512],"type":"scatter","name":"y1","yaxis":"y","x":[-99.21873447841695,-91.99480662653018,-87.65352709555009,-83.98303050273874,-79.99584239735589,-76.32000763722975,-72.3791242874808,-67.81322445291741,-63.75559151111828,-60.1974130767824,-56.31804346757444,-52.415617699775034,-48.10098699004766,-43.99572474041252,-39.727204519091956,-36.13401970665239,-31.747148321090872,-27.728496604327766,-24.01696162088979,-20.25729169879912,-16.043755719186887,-12.225611875617318,-7.8541005124648375,-3.806469742494644,0.18401989846213407,4.058455073436937,8.030246549779752,12.277389409497696,15.699089297052621,20.246365417116387,24.378080942206143,28.230076814123965,31.895239944566082,35.97565282818892,39.84462693385022,44.16693337552512,48.03167204364038,51.924971750451164,56.246382816396334,59.62381696600677,63.98857954316101,68.32970725216688,72.30743885422729,76.10919701009384,80.03647174041286,83.63059975806863,88.3611577570562,91.67732806354749,99.1754208084465]}], {"showlegend":true,"xaxis":{"tickvals":[-50.0,0.0,50.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-50","0","50"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-100.0,-50.0,0.0,50.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-100","-50","0","50"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>We can see from this, that the function eventually looks like a slanted straight line. The <em>eventual</em> shape of the graph is something that can be determined just from the two leading terms.</p><p>The spikes haven't vanished completely. It is just that with only a few hundred points to make the graph, there aren't any values near enough to the problem to make a large spike. The spikes happen because the function has a <em>vertical asymptote</em> at these values. Though not quite right, it is reasonable to think of the graph graph being made by selecting a few hundred points in the specified domain, computing the corresponding $y$ values, plotting the pairs, and finally connecting the points with straight line segments.  Near a vertical asymptote the function values can be arbitrarily large in absolute values, though at the vertical asymptote the function is undefined. This graph doesn't show such detail.</p><p>The spikes will be related to the points where $q(x) = 0$, though not necessarily as not all such points will produce a vertical asymptote.</p><p>Where the function crosses $0$ is very hard to tell from these two graphs. As well, other finer features, such as local peaks or valleys, when present, can be hard to identify as the $y$-scale is set to accommodate the  asymptotes. Working around the asymptotes requires some extra effort. Strategies are discussed herein.</p><h2>Asymptotes</h2><p>Formally, an <a href="http://en.wikipedia.org/wiki/Asymptote">asymptote</a> of a curve is a line such that the distance between the curve and the line approaches $0$ as they tend to infinity. Tending to infinity can happen as $x \rightarrow \pm \infty$ <em>or</em> $y \rightarrow \pm \infty$, the former being related to <em>horizontal asymptotes</em> or <em>slant asymptotes</em>, the latter being related to <em>vertical asymptotes</em>.</p><h3>Behaviour as $x \rightarrow \infty$ or $x \rightarrow -\infty$.</h3><p>Let's look more closely at our example rational function using symbolic math. </p><p>In particular, let's rewrite the expression in terms of its numerator and denominator:</p><pre class="sourceCode julia">using SymPy
 x = symbols("x", real=true)
-f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) ) # function
-r = f(x)                                # a symbolic expression
-apart(r)</pre>
+a =  (x-1)^2 * (x-2)
+b = (x+3)*(x-3)</pre>
 <div class="well well-sm">
-x - 4 + 40/(3*(x + 3)) + 2/(3*(x - 3))</div>
+$$\left(x - 3\right) \left(x + 3\right)$$</div>
 
-<p>This decomposition breaks the rational expression into two pieces: $x - 4$ and $40/(3x+0) + 2/(3x-9)$. The first piece would have a graph that is the line with slope $1$ and $y$-intercept $4$. As $x$ goes to $\infty$, the second piece will clearly go towards 0, as this simple graph shows:</p><pre class="sourceCode julia">plot(apart(r) - (x - 4), 10, 100)</pre>
+<p>Euclid's <a href="https://en.wikipedia.org/wiki/Polynomial_greatest_common_divisor#Euclidean_division">division</a> algorithm can be used for polynomials $a(x)$ and $b(x)$ to produce $q(x)$ and $r(x)$ with $a = b\cdot q + r$ <em>and</em> the degree of $r(x)$ is less than the degree of $b(x)$. This is in direct analogy to the division algorithm of integers, only there the value of the remainder, $r(x)$, satisfies $0 \leq r < b$. Given $q(x)$ and $r(x)$ as above, we can reexpress the rational function</p>$$~
+\frac{a(x)}{b(x)} = q(x)  + \frac{r(x)}{b(x)}.
+~$$
+<p>The rational expression on the right-hand side has larger degree in the denominator.</p><p>The division algorithm is implemented in <code>Julia</code> generically through the <code>divrem</code> method:</p><pre class="sourceCode julia">q, r = divrem(a, b)</pre>
 <pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
+(x - 4, 14*x - 38)</pre>
 
-<p>Similarly, a plot over $[-100, -10]$ would show decay towards $0$, though in that case from below. Combining these two facts then, it is now no surprise that the graph of the rational function $f(x)$ should approach a straight line, in this case $y=x-4$ as $x \rightarrow \pm \infty$.</p><p>We can easily do most of this analysis without needing a computer. First, we should know that the graph of $y=mx$ is a line with slope $m$, the graph of $y = c$ is a constant line at height $c$, and the graph of $y=c/x^m$, $m > 0$ will decay towards $0$ as $x \rightarrow \pm\infty$. The latter should be clear, as $x^m$ gets big, so its reciprocal goes towards $0$.</p><p>The factored form, as $r$ is presented, is a bit hard to work with, rather we use the expanded form, which we get through the <code>cancel</code> function</p><pre class="sourceCode julia">cancel(r)</pre>
+<p>This yield the decomposition of <code>a/b</code>:</p><pre class="sourceCode julia">q + r/b</pre>
 <div class="well well-sm">
-(x^3 - 4*x^2 + 5*x - 2)/(x^2 - 9)</div>
+$$x - 4 + \frac{14 x - 38}{\left(x - 3\right) \left(x + 3\right)}$$</div>
 
-<p>We can see that numerator is of degree 3 and the denominator of degree 2. The leading terms are $x^3$ and $x^2$ respectively. If we were to pull those out we would get:</p>$$~
+<p>A similar result can be found using the <code>apart</code> function, which can be easier to use if the expression is not given in terms of a separate numerator and denominator.</p><pre class="sourceCode julia">f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3))  # as a function
+p = f(x)                                # a symbolic expression
+apart(p)</pre>
+<div class="well well-sm">
+$$x - 4 + \frac{40}{3 x + 9} + \frac{2}{3 x - 9}$$</div>
+
+<p>This decomposition breaks the rational expression into two pieces: $x-4$ and $40/(3x+9) + 2/(3x-9)$. The first piece would have a graph that is the line with slope $1$ and $y$-intercept $4$. As $x$ goes to $\infty$, the second piece will clearly go towards 0, as this simple graph shows:</p><pre class="sourceCode julia">plot(apart(p) - (x - 4), 10, 100)</pre>
+    <div id="81c2e001-000d-4126-b342-7941ed571dcb" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('81c2e001-000d-4126-b342-7941ed571dcb');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.0893177404223051,0.8659790061937561,0.7716448743372899,0.7067396970862512,0.6476708649604096,0.6013930500219271,0.5586398793619506,0.516160651777139,0.4835076122097093,0.4581053798000918,0.4332947567943893,0.4109142550292495,0.3887209072846703,0.36972525860557853,0.3518507833063874,0.3380935508270437,0.32269140231240023,0.3097657027057003,0.29871579205997373,0.28829906194388594,0.2774564588909798,0.26831302089342335,0.2585580350014387,0.25013806233037067,0.24235743805555146,0.23525292359319333,0.22838987396418872,0.22148089576249466,0.21621165108944862,0.20958536188604532,0.20390741419063788,0.1988842638653628,0.1943293486538154,0.18949779826225607,0.18513347539608685,0.18048963619647368,0.17653041857068325,0.17271382617592632,0.16866633109068618,0.16563270986148013,0.16187027631378495,0.15829405764475962,0.1551532162417571,0.15226567401726648,0.14939355510940136,0.14685843770198886,0.14365004747385157,0.14148326903136987,0.13681711565287016],"type":"scatter","name":"y1","yaxis":"y","x":[10.351569484712371,13.602337018061421,15.55591280700246,17.207636273767566,19.00187092118985,20.655996563246614,22.429394070633634,24.484048996187163,26.30998381999677,27.91116411544792,29.6568804395915,31.412972035101237,33.354555854478555,35.20192386681437,37.12275796640862,38.73969113200642,40.71378325550911,42.522176528052505,44.1923672705996,45.884218735540394,47.780309926365895,49.49847465597221,51.465654769390824,53.287088615877416,55.08280895430796,56.826304783046616,58.61361094740089,60.52482523427396,62.06459018367368,64.11086443770238,65.97013642399276,67.70353456635578,69.35285797505475,71.18904377268501,72.9300821202326,74.87512001898631,76.61425241963816,78.36623728770303,80.31087226737836,81.83071763470305,83.79486079442245,85.74836826347509,87.53834748440228,89.24913865454222,91.01641228318579,92.63376989113088,94.76252099067528,96.25479762859638,99.62893936380092]}], {"showlegend":true,"xaxis":{"tickvals":[25.0,50.0,75.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["25","50","75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.2,0.4,0.6000000000000001,0.8,1.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.2","0.4","0.6","0.8","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>Similarly, a plot over $[-100, -10]$ would show decay towards $0$, though in that case from below. Combining these two facts then, it is now no surprise that the graph of the rational function $f(x)$ should approach a straight line, in this case $y=x-4$ as $x \rightarrow \pm \infty$.</p><p>We can easily do most of this analysis without needing a computer or algebra. First, we should know that the graph of $y=mx$ is a line with slope $m$, the graph of $y = c$ is a constant line at height $c$, and the graph of $y=c/x^m$, $m > 0$ will decay towards $0$ as $x \rightarrow \pm\infty$. The latter should be clear, as $x^m$ gets big, so its reciprocal goes towards $0$.</p><p>The factored form, as $p$ is presented, is a bit hard to work with, rather we use the expanded form, which we get through the <code>cancel</code> function</p><pre class="sourceCode julia">cancel(p)</pre>
+<div class="well well-sm">
+$$\frac{1}{x^{2} - 9} \left(x^{3} - 4 x^{2} + 5 x - 2\right)$$</div>
+
+<p>We can see that numerator is of degree 3 and the denominator of degree $2$. The leading terms are $x^3$ and $x^2$ respectively. If we were to pull those out we would get:</p>$$~
 \frac{x^3 \cdot (1 - 4/x + 5/x^2 - 2/x^3)}{x^2 \cdot (1 - 9/x^2)}.
 ~$$
-<p>The terms $(1 - 4/x + 5/x^2 - 2/x^3)$ and $ (1 - 9/x^2)$ go towards $1$ as $x \rightarrow \pm \infty$, as each term with $x$ goes towards $0$. So the dominant terms comes from the ratio of the leading terms, $x^3$ and $x^2$. This ratio is $x$, so their will be an asymptote of a line with slope $1$. (The fact that the asymptote is $y=x-4$ takes a bit more work, as a division step is needed.)</p><p>Just by looking at the ratio of the two leading terms, the behaviour as $x \rightarrow \pm \infty$ can be discerned. If this ratio is of the form</p><ul>
-<li>$c x^m$
-<p>with $m > 1$ then the shape will follow the polynomial growth of of the monomial $c x^m$.</p>
+<p>The terms $(1 - 4/x + 5/x^2 - 2/x^3)$ and $(1 - 9/x^2)$ go towards $1$ as $x \rightarrow \pm \infty$, as each term with $x$ goes towards $0$. So the dominant terms comes from the ratio of the leading terms, $x^3$ and $x^2$. This ratio is $x$, so their will be an asymptote of a line with slope $1$. (The fact that the asymptote is $y=x-4$ takes a bit more work, as a division step is needed.)</p><p>Just by looking at the ratio of the two leading terms, the behaviour as $x \rightarrow \pm \infty$ can be discerned. If this ratio is of:</p><ul>
+<li><p>the form $c x^m$ with $m > 1$ then the shape will follow the polynomial growth of of the monomial $c x^m$.</p>
 </li>
-<li>$c x^m$
-<p>with  $m=1$ then there will be a line with slope $c$ as a <em>slant asymptote</em>.</p>
+<li><p>the form $c x^m$ with  $m=1$ then there will be a line with slope $c$ as a <em>slant asymptote</em>.</p>
 </li>
-<li>$cx^0$
-<p>with  $m=0$ (or just $c$) then there will be a <em>horizontal asymptote</em> $y=c$.</p>
+<li><p>the form $cx^0$ with  $m=0$ (or just $c$) then there will be a <em>horizontal asymptote</em> $y=c$.</p>
 </li>
-<li>$c/x^{m}$
-<p>with $m  >  0$ then there will be a horizontal asymptote $y=0$, or the $y$ axis.</p>
+<li><p>the form $c/x^{m}$ with $m  >  0$ then there will be a horizontal asymptote $y=0$, or the $y$ axis.</p>
 </li>
-</ul><h5>Examples</h5><p>Consider the rational expression</p>$$~
+</ul><p>To expand on the first points where the degree of the numerator is greater than that of the denominator, we have from the division algorithm that if $a(x)$ is the numerator and $b(x)$ the denominator, then $a(x)/b(x) = q(x) + r(x)/b(x)$ where the degree of $b(x)$ is greater than the degree of $r(x)$, so the rightmost term will have a horizontal asymptote of $0$. This says that the graph  will eventually approach the graph of $q(x)$, giving more detail than just saying it follows the shape of the leading term of $q(x)$, at the expense of the work required to find $q(x)$.</p><h5>Examples</h5><p>Consider the rational expression</p>$$~
 \frac{17x^5 - 300x^4 - 1/2}{x^5 - 2x^4 + 3x^3 - 4x^2 + 5}.
 ~$$
 <p>The leading term of the numerator is $17x^5$ and the leading term of the denominator is $x^5$. The ratio is $17$ (or $17x^0 = 17x^{5-5}$). As such, we would have a horizontal asymptote $y=17$.</p><hr /><p>If we consider instead this rational expression:</p>$$~
 \frac{x^5 - 2x^4 + 3x^3 - 4x^2 + 5}{5x^4 + 4x^3 + 3x^2 + 2x + 1}
 ~$$
-<p>Then we can see that the ratio of the leading terms is $x^5 / (5x^4) = (1/5)x$. We expect a slant asymptote with slope $1/5$, though we would need to divide to see the exact intercept.</p><hr /><p>Finally, consider this rational expression in factored form:</p>$$~
+<p>Then we can see that the ratio of the leading terms is $x^5 / (5x^4) = (1/5)x$. We expect a slant asymptote with slope $1/5$, though we would need to divide to see the exact intercept. This is found with</p><pre class="sourceCode julia">p = (x^5 - 2x^4 + 3x^3 - 4x^2 + 5) / (5x^4 + 4x^3 + 3x^2 + 2x + 1)
+apart(p)</pre>
+<div class="well well-sm">
+$$\frac{x}{5} + \frac{116 x^{3} - 68 x^{2} + 23 x + 139}{125 x^{4} + 100 x^{3} + 75 x^{2} + 50 x + 25} - \frac{14}{25}$$</div>
+
+<hr /><p>The rational function</p>$$~
+\frac{5x^3 + 6x^2 + 2}{x-1}
+~$$
+<p>has decompostion $5x^2 + 11x + 11 + 13/(x-1)$:</p><pre class="sourceCode julia">a = 5x^3 + 6x^2 +2
+b = x-1
+q, r = divrem(a, b)</pre>
+<pre class="output">
+(5*x^2 + 11*x + 11, 13)</pre>
+
+<p>The graph of $a/b$ has nothing in common with the graph of $g$ for small $x$</p><pre class="sourceCode julia">plot(a/b, -3, 3)
+plot!(q)</pre>
+    <div id="21a2027f-2060-44c6-ba13-b816df919f18" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('21a2027f-2060-44c6-ba13-b816df919f18');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[19.28826975476773,15.267823742473169,13.06681355874111,11.331056262981207,9.57470893070267,8.073895551789287,6.590038346805233,5.031273915788248,3.7888820696529413,2.8085745428255984,1.854256781310238,1.0126207936337666,0.21708482229954748,-0.4120401562672218,-0.9390034243417134,-1.2866654965444773,-1.5995148725689563,-1.787122972898597,-1.8858365095275633,-1.9242872630234904,-1.9121299443554132,-1.873344183617487,-1.8352704419036887,-1.8585595973063451,-2.011287209240954,-2.388815014813724,-3.185547045739888,-4.850252522247802,-7.283624263429542,-13.585901066941435,-26.669659387002003,-61.010957514688755,-275.2215831302211,192.69340627543227,97.84393699042305,74.3523342840887,66.7139284838701,63.576121866313414,62.7098324442344,63.15587418853869,64.67735265760193,66.94130862170077,69.5075938904644,72.3131028395823,75.51676413426232,78.6868904076058,83.16860998693392,86.50202840530362,94.5702306066597],"type":"scatter","name":"y1","yaxis":"y","x":[-2.9765620343525083,-2.759844198795905,-2.6296058128665027,-2.5194909150821623,-2.3998752719206764,-2.289600229116892,-2.1713737286244243,-2.0343967335875224,-1.9126677453335486,-1.805922392303472,-1.6895413040272331,-1.5724685309932511,-1.4430296097014297,-1.3198717422123758,-1.1918161355727586,-1.0840205911995717,-0.9524144496327261,-0.831854898129833,-0.7205088486266937,-0.6077187509639735,-0.4813126715756066,-0.36676835626851956,-0.23562301537394512,-0.11419409227483932,0.0055205969538640225,0.12175365220310812,0.24090739649339257,0.36832168228493084,0.4709726789115786,0.6073909625134917,0.7313424282661842,0.8469023044237189,0.9568571983369825,1.0792695848456675,1.1953388080155067,1.3250080012657537,1.4409501613092113,1.557749152513535,1.68739148449189,1.7887145089802032,1.91965738629483,2.0498912175650066,2.1692231656268186,2.2832759103028146,2.401094152212386,2.5089179927420586,2.650834732711686,2.7503198419064248,2.9752626242533946]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[22.123831616610275,18.370699632865232,16.337545239141562,14.748754939787236,13.15808266178669,11.816352211918439,10.510789673983275,9.170156971600584,8.133702511237484,7.344817869521602,6.612483707353068,6.010266872376267,5.501428495736205,5.170340223082487,4.984359133988557,4.95288805700973,5.0694795099551575,5.325858407746146,5.689688003097945,6.1826161322464,6.88381167224543,7.654998395623756,8.696482559422119,9.811700719476077,11.053208702455604,12.393541670126975,13.905547509193706,15.676944884678171,17.220260242765722,19.43171183333746,21.599851318166838,23.757382547874588,25.932266677841618,28.493505781850804,31.05821491287121,34.080209382820954,36.92239591030553,39.91933241440616,43.40300639335646,46.2408393516738,50.05789428342224,54.0216302611755,57.80008587648881,61.54234611718935,65.54256707660112,69.32315571345747,74.47350897460649,78.20211901993873,86.99181937223901],"type":"scatter","name":"y2","yaxis":"y","x":[-2.9533122573711252,-2.738334497766877,-2.609141824954935,-2.4999110643028177,-2.3812558418822283,-2.271866222050831,-2.1545889885622054,-2.0187118124418104,-1.897960213448952,-1.7920719427229514,-1.6766253042233001,-1.560492534657462,-1.432092907402794,-1.309923901965682,-1.1828964824206138,-1.0759664525725834,-0.9454170061389952,-0.8258254542280972,-0.7153734270495742,-0.6034889462969831,-0.47809780958008685,-0.3644731961887785,-0.23438085055584426,-0.11392690742764128,0.004826565797148561,0.12012635986007411,0.2383233920987637,0.3647146401042199,0.4665414289297122,0.6018643796341387,0.7248206113570088,0.8394526314336521,0.9485246729215452,1.069954183011743,1.1850914604396565,1.3137195107477153,1.4287307452674962,1.5445919312591938,1.6731933359705184,1.7737028152428636,1.9035943229211978,2.0327824776442904,2.151156282816586,2.264293272507299,2.381165525412462,2.488123624220812,2.62890088295751,2.727587203969068,2.9507238704270873]}], {"showlegend":true,"xaxis":{"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-200.0,-100.0,0.0,100.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-200","-100","0","100"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>But the graphs do match for large $x$:</p><pre class="sourceCode julia">plot(a/b, 5, 10)
+plot!(q)</pre>
+    <div id="a5b725af-7492-4655-9fd8-c495130b3047" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('a5b725af-7492-4655-9fd8-c495130b3047');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[195.42754500151295,206.50332206279438,213.32190986174092,219.1818369447697,225.64568226185455,231.69531779358698,238.2774844829555,246.02799809075208,253.0276585539571,259.2522824816463,266.1308376852932,273.14704291104556,281.01720509864924,288.61537592769724,296.62925310082403,303.46488651258227,311.92143582876344,319.77520891314407,327.11962585959947,334.64818311360887,343.19183653989967,351.03069784180076,360.11875350721533,368.6410844213766,377.14433406806245,385.4964113973345,394.15662481801303,403.5272489366056,411.1593481973163,421.41618123599454,430.84858448871296,439.7392083044302,448.28530921337347,457.8990785882425,467.11141159076504,477.5144880612902,486.9157377365227,496.4813902287379,507.2104343241577,515.6774926222148,526.7258730876271,537.8331097195257,548.1144524000807,558.0337956625611,568.3759019915017,577.9255336748242,590.618237284425,599.5996724979046,620.1616780640263],"type":"scatter","name":"y1","yaxis":"y","x":[5.0195316380395765,5.200129834336746,5.308661822611247,5.400424237431531,5.5001039400661025,5.5919998090692555,5.6905218928129795,5.804669388677064,5.9061102122220435,5.99506467308044,6.092048913310639,6.189609557505625,6.297475325248809,6.4001068814896875,6.506819887022701,6.59664950733369,6.706321291972729,6.806787584891806,6.8995759594777555,6.993567707530022,7.098906107020327,7.194359703109567,7.303647487188379,7.4048382564376345,7.504600497461554,7.601461376835923,7.700756163744494,7.8069347352374425,7.892477232426316,8.00615913542791,8.109452023555153,8.205751920353098,8.297380998614154,8.399391320704723,8.496115673346255,8.604173334388127,8.70079180109101,8.79812429376128,8.906159570409908,8.99059542415017,9.099714488579025,9.20824268130417,9.307685971355683,9.402729925252347,9.500911793510321,9.590764993951716,9.709028943926404,9.791933201588687,9.979385520211162]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[193.38086214374482,204.53906870747164,211.39907567937263,217.28955195213018,223.78214863905913,229.8543656519666,236.45672564482499,244.22564435032334,251.23734085503065,257.4692949656011,264.3525212902533,271.3700383173321,279.23782113416564,286.8301086540601,294.83423851028334,301.6588757845955,310.0986330166249,317.9338552277191,325.25851252022727,332.7645383914337,341.2799955756676,349.09067340765165,358.14345009595365,366.6303054546163,375.095984770106,383.4091611452957,392.02705851437486,401.34974632103274,408.9412361042258,419.14139419139235,428.5196608925576,437.3575799764286,445.8515566119499,455.40505656634275,464.55808858708866,474.8924640790002,484.23011848886716,493.7296586642388,504.38293886794304,512.789054803518,523.7564519838588,534.7806768749854,544.9838160779013,554.8265179460849,565.0875198052986,574.5612179629279,587.1515072106173,596.0594855735325,616.4503890455669],"type":"scatter","name":"y2","yaxis":"y","x":[5.038906452190729,5.2180545851942695,5.325715145870888,5.416740779747652,5.515620131764809,5.606778148290974,5.704509176198163,5.817740156298491,5.9183664887925405,6.006606714397541,6.102812246480583,6.199589554452115,6.306589243831005,6.408396748361931,6.514252931316156,6.603361289522847,6.712152494884171,6.811812121476585,6.903855477458689,6.997092544752514,7.10158515868326,7.1962723365093515,7.304682624536796,7.405060910476966,7.50402213816429,7.600105299883396,7.69860282674897,7.803928866753516,7.888784524108093,8.001553649695115,8.10401717613084,8.199543859528042,8.29043722743462,8.39162848584312,8.487576217033048,8.59476625895643,8.69060895438958,8.787159942715995,8.89432777997543,8.978085679369054,9.086328602434332,9.193985398036908,9.292630235680488,9.386911060422749,9.484304604510385,9.573436353517343,9.690750735797925,9.77298933664089,9.958936558689238]}], {"showlegend":true,"xaxis":{"tickvals":[6.0,7.0,8.0,9.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["6","7","8","9"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[200.0,400.0,600.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["200","400","600"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<hr /><p>Finally, consider this rational expression in factored form:</p>$$~
 \frac{(x-2)^3\cdot(x-4)\cdot(x-3)}{(x-5)^4 \cdot (x-6)^2}.
 ~$$
-<p>By looking at the powers we can see that the leading term of the numerator will the $x^5$ and the leading term of the denominator $x^6$. The ratio is $1/x^1$. As such, we expect the $y$-axis as a horizontal asymptote:</p><h3>Vertical asymptotes</h3><p>As just discussed, the graph of $1/x$ will have a horizontal asymptote. However it will also show a spike at $0$:</p><pre class="sourceCode julia">plot(1/x, -1, 1)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
+<p>By looking at the powers we can see that the leading term of the numerator will the $x^5$ and the leading term of the denominator $x^6$. The ratio is $1/x^1$. As such, we expect the $y$-axis as a horizontal asymptote:</p><h4>Partial fractions</h4><p>The <code>apart</code> function was useful to express a rational function in terms of a polynomial plus additional rational functions whose horizontal asymptotes are $0$.  This function computes the partial fraction <a href="https://en.wikipedia.org/wiki/Partial_fraction_decomposition">decomposition</a> of a rational function. Outside of the initial polynomial, this decomposition is a reexpression of a rational function into a sum of rational functions, where the denominators are <em>irreducible</em>, or unable to be further factored (non-trivially) and the numerators have lower degree than the denominator. Hence the horizontal asymptotes of $0$.</p><p>To see another example we have:</p><pre class="sourceCode julia">x = symbols("x")
+p = (x-1)*(x-2)
+q = (x-3)^3 * (x^2 - x - 1)
+apart(p/q)</pre>
+<div class="well well-sm">
+$$\frac{2 x - 1}{25 x^{2} - 25 x - 25} - \frac{2}{25 x - 75} + \frac{1}{5 \left(x - 3\right)^{2}} + \frac{2}{5 \left(x - 3\right)^{3}}$$</div>
 
+<p>The denominator, $q$, has factors $x-3$ and $x^2 - x - 1$, each irreducible. The answer is expressed in terms of a sum of rational functions each with a denominator coming from one of these factors, possibly with a power.</p><h3>Vertical asymptotes</h3><p>As just discussed, the graph of $1/x$ will have a horizontal asymptote. However it will also show a spike at $0$:</p><pre class="sourceCode julia">plot(1/x, -1, 1)</pre>
+    <div id="cde26bfa-28a7-4664-a7a5-b49de854e94d" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('cde26bfa-28a7-4664-a7a5-b49de854e94d');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-1.0078741734178538,-1.0870178835851938,-1.1408554032399765,-1.1907167364809363,-1.250064965917595,-1.3102724055706054,-1.3816138421737811,-1.4746386240552503,-1.5684898787671209,-1.6612009534770045,-1.7756298664312757,-1.907828322710565,-2.0789594197036023,-2.272948123710403,-2.5171667931465542,-2.767475105505344,-3.1498892117364155,-3.606398191252545,-4.16372402048645,-4.936494052950234,-6.232954536973471,-8.179549704128867,-12.73220273171895,-26.271061315323383,543.4194934118882,24.63991794673586,12.45291777532568,8.145054022856094,6.369796241542126,4.9391581125696495,4.102045613724601,3.5423212150088226,3.135264076200711,2.779657688981379,2.5097486837063205,2.2641372709705605,2.081959585107562,1.9258556457304403,1.7778921059942203,1.6771821243348584,1.5627788695098146,1.4634922937830788,1.382983571048634,1.3139016561525108,1.249430388739974,1.195734579080931,1.1317189876002316,1.0907822262302793,1.0083143503181715],"type":"scatter","name":"y1","yaxis":"y","x":[-0.9921873447841695,-0.9199480662653018,-0.8765352709555009,-0.8398303050273874,-0.7999584239735589,-0.7632000763722975,-0.7237912428748081,-0.6781322445291742,-0.6375559151111828,-0.6019741307678239,-0.5631804346757445,-0.5241561769977503,-0.48100986990047656,-0.43995724740412523,-0.3972720451909196,-0.36134019706652387,-0.31747148321090873,-0.2772849660432777,-0.2401696162088979,-0.20257291698799118,-0.1604375571918689,-0.12225611875617319,-0.07854100512464837,-0.03806469742494644,0.0018401989846213408,0.040584550734369375,0.08030246549779753,0.12277389409497695,0.1569908929705262,0.20246365417116388,0.2437808094220614,0.28230076814123967,0.31895239944566084,0.35975652828188914,0.39844626933850225,0.4416693337552512,0.4803167204364038,0.5192497175045117,0.5624638281639633,0.5962381696600677,0.6398857954316101,0.6832970725216689,0.7230743885422728,0.7610919701009383,0.8003647174041287,0.8363059975806862,0.8836115775705621,0.916773280635475,0.9917542080844649]}], {"showlegend":true,"xaxis":{"tickvals":[-0.5,0.0,0.5],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-0.5","0.0","0.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,200.0,400.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0","200","400"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
 <p>Again, this spike is an artifact of the plotting algorithm. The $y$ values for $x$-values just smaller than $0$ are large negative values and the $x$ values just larger than $0$ produce large, positive $y$ values. The two points with $x$ components closest to $0$ are connected with a line, though that is misleading.</p><p>The line $x = 0$ is a <em>vertical asymptote</em> for the graph of $1/x$. As $x$ values get close to $0$ from the right, the $y$ values go towards $\infty$ and as the $x$ values get close to $0$ on the left, the $y$ values go towards $-\infty$.</p><p>This has everything to do with the fact that $0$ is a root of the denominator.</p><p>For a rational function $p(x)/q(x)$, the roots of $q(x)$ may or may not be asymptotes. For a root $c$ if $p(c)$ is not zero then the line $x=c$ will be a vertical asymptote. If $c$ is a root of both $p(x)$ and $q(x)$, then we can rewrite the expression as:</p>$$~
 \frac{p(x)}{q(x)} = \frac{(x-c)^m r(x)}{(x-c)^n s(x)},
 ~$$
@@ -197,161 +248,193 @@ ErrorException("Unsupported backend gadfly")
 </ul><p>Finding the multiplicity isn't so hard, but there is a quick check that is mostly correct. With <code>Julia</code>, if you have a rational function that has <code>f&#40;c&#41;</code> evaluate to <code>Inf</code> or <code>-Inf</code> then there will be a vertical asymptote. If the expression evaluates to <code>NaN</code>, more analysis is needed. (The value of <code>0/0</code> is <code>NaN</code>, where as <code>1/0</code> is <code>Inf</code>.)</p><p>For example, the function $f(x) = ((x-1)^2 \cdot (x-2)) / ((x+3) \cdot (x-3))$ has vertical asymptotes at $-3$ and $3$, as its graph illustrated. Without the graph we could see this as well:</p><pre class="sourceCode julia">f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 f(3), f(-3)</pre>
 <pre class="output">
-(Inf,-Inf)</pre>
+(Inf, -Inf)</pre>
 
 <h4>Graphing with vertical asymptotes</h4><p>As seen in several graphs, the basic plotting algorithm does a poor job with vertical asymptotes. For example, it may erroneously connect their values with a steep vertical line, or the $y$-axis scale can get so large as to make reading the rest of the graph impossible. There are some trick to work around this.</p><p>Consider again the function $f(x) = ((x-1)^2 \cdot (x-2)) / ((x+3) \cdot(x-3))$. Without much work, we can see that $x=3$ and $x=-3$ will be vertical asymptotes and there will be a slant asymptote with slope 1. How to graph this?</p><p>We can avoid the vertical asymptotes in our viewing window. For example we could look at the area between the vertical asymptotes, by plotting over $(-2.9, 2.9)$, say:</p><pre class="sourceCode julia">f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -2.9, 2.9)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>This backs off by $\delta = 0.1$. As we have that $2.9 - 3$ is $\delta$ and $1/\delta$ is 10, the $y$ axis won't get too large, and indeed it doesn't.</p><p>This graph doesn't show well the two zeros at $x=1$ and $x=2$, for that a narrower viewing window is needed. By successively panning throughout the interesting part of the graph, we can get a view of the function.</p><p>There is another way, we could ask <code>Julia</code> to not plot $y$ values that get too large. This is not a big request. If instead of the value of <code>f&#40;x&#41;</code> – when it is large – we use <code>NaN</code> instead, then the connect-the-dots algorithm will skip those values.</p><p>This is actually quite easy to implement, if we operate on the function object. Here is a <code>trim</code> function:</p><pre class="sourceCode julia">trim(f, c=20) = x -> abs(f(x)) > c ? NaN : f(x)</pre>
+    <div id="0fc53094-5efe-4d30-866c-194518d72ad6" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('0fc53094-5efe-4d30-866c-194518d72ad6');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[101.71371106711926,33.356960534485424,22.446802108881844,17.061894194762413,13.159171543397617,10.606849534317478,8.568544226004837,6.801373558020698,5.5968456534701065,4.744108540366336,3.9782002869179847,3.341787300582121,2.760384755761172,2.301606410187046,1.9027037570584673,1.6176226290007059,1.3216072127015683,1.0926202225419208,0.9114297254758085,0.7533881170581003,0.6026014042526335,0.48680824904274206,0.37529393247052,0.28950585492842074,0.21927079150953915,0.16306234277727658,0.11624624646297732,0.07682812705917702,0.05212966067920611,0.02782361029702816,0.01306237684493887,0.004663003647950233,0.0007432335397921136,0.0002266583298925107,0.0026639631994674617,0.007707277180245593,0.013275805703263458,0.018780394871464656,0.023177585103703602,0.023960442336827495,0.019018261254441705,0.0035015479969461093,-0.02533407493864638,-0.07312588268152051,-0.15509427891447397,-0.2770855789785973,-0.5642287836539961,-0.938066563087969,-4.234956837901272],"type":"scatter","name":"y1","yaxis":"y","x":[-2.8773432998740915,-2.667849392169375,-2.5419522857709524,-2.4355078845794234,-2.3198794295233207,-2.2132802214796627,-2.098994604336944,-1.9665835091346051,-1.8489121538224302,-1.7457249792266896,-1.633223260559659,-1.520052913293476,-1.394928622711382,-1.2758760174719632,-1.1520889310536666,-1.0478865714929193,-0.9206673013116353,-0.8041264015255053,-0.6964918870058039,-0.5874614592651743,-0.4652689158564198,-0.35454274439290223,-0.2277689148614803,-0.11038762253234467,0.005336577055401888,0.11769519712967119,0.23287714994361283,0.35604429287543315,0.4552735896145261,0.5871445970963752,0.7069643473239781,0.818672227609595,0.9249619583924165,1.0432939320174786,1.1554941810816564,1.2808410678902284,1.3929184892655708,1.5058241807630839,1.6311451016754936,1.7290906920141964,1.8556688067516693,1.9815615103128397,2.0969157267725915,2.2071667132927213,2.321057680471973,2.42528739298399,2.56247357495463,2.6586425138428775,2.8760872034449485]}], {"showlegend":true,"xaxis":{"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.0,50.0,100.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0","50","100"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>This backs off by $\delta = 0.1$. As we have that $2.9 - 3$ is $\delta$ and $1/\delta$ is 10, the $y$ axis won't get too large, and indeed it doesn't.</p><p>This graph doesn't show well the two zeros at $x=1$ and $x=2$, for that a narrower viewing window is needed.  By successively panning throughout the interesting part of the graph, we can get a view of the function.</p><p>We can also clip the <code>y</code> axis. The <code>plot</code> function can be passed an argument <code>ylims&#61;&#40;lo, hi&#41;</code> to limit which values are plotted. With this, we can have:</p><pre class="sourceCode julia">plot(f, -5, 5, ylims=(-20, 20))</pre>
+    <div id="11d2e193-b704-4440-8920-c90ff5236faa" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('11d2e193-b704-4440-8920-c90ff5236faa');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-15.844150445553648,-17.022148620642046,-18.11611181875338,-19.41072794910366,-21.431138688228877,-24.253671087585527,-29.2613192714398,-41.62514855347993,-78.30075617322402,-1357.926282949504,65.4947316165004,28.420583284238948,15.882431539282678,10.334217825176172,7.033858597746209,5.228109442301207,3.7058908853059234,2.7248152709955393,2.0513529031819373,1.5308292857695784,1.0891135838815695,0.7859040417852905,0.5246518126436857,0.3462160714468701,0.2171501403597201,0.12744319299959725,0.06477792017442605,0.023966562638351604,0.0067020875430568606,1.879205596665154e-5,0.004981097061776102,0.014220621852559576,0.022201569743976864,0.02227255304718595,0.0015202537332342774,-0.07377933431019008,-0.24405594933456257,-0.6723839880561502,-2.4458319053219992,-34.233337829949434,4.693042326070502,3.0951626649038646,2.7142353226388147,2.592355616946,2.571542561794049,2.6023847326869327,2.6856000898493835,2.762895495738774,2.974421029718264],"type":"scatter","name":"y1","yaxis":"y","x":[-4.960936723920848,-4.599740331326508,-4.382676354777505,-4.199151525136937,-3.999792119867794,-3.816000381861487,-3.6189562143740406,-3.3906612226458708,-3.1877795755559144,-3.00987065383912,-2.815902173378722,-2.6207808849887515,-2.405049349502383,-2.1997862370206263,-1.9863602259545978,-1.8067009853326195,-1.5873574160545436,-1.3864248302163884,-1.2008480810444895,-1.012864584939956,-0.8021877859593444,-0.611280593780866,-0.3927050256232419,-0.1903234871247322,0.009200994923106704,0.20292275367184687,0.40151232748898763,0.6138694704748848,0.7849544648526311,1.0123182708558194,1.218904047110307,1.4115038407061982,1.5947619972283043,1.7987826414094459,1.9922313466925112,2.2083466687762563,2.401583602182019,2.5962485875225583,2.8123191408198163,2.9811908483003386,3.1994289771580506,3.416485362608344,3.615371942711364,3.8054598505046915,4.001823587020644,4.181529987903431,4.41805788785281,4.583866403177375,4.958771040422325]}], {"showlegend":true,"xaxis":{"tickvals":[-2.5,0.0,2.5],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2.5","0.0","2.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-20.0,-10.0,0.0,10.0,20.0],"ticks":"inside","range":[-20.0,20.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-20","-10","0","10","20"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>This isn't ideal, as the large values are still computed, just the viewing window is clipped. This leaves the vertical asymptotes still effecting the graph.</p><p>There is another way, we could ask <code>Julia</code> to not plot $y$ values that get too large. This is not a big request.  If instead of the value of <code>f&#40;x&#41;</code>–-when it is large–-we use <code>NaN</code> instead, then the connect-the-dots algorithm will skip those values.</p><p>This is actually quite easy to implement, if we operate on the function object. Here is a <code>trim</code> function:</p><pre class="sourceCode julia">trim(f, c=20) = x -> abs(f(x)) > c ? NaN : f(x)</pre>
 <pre class="output">
 trim (generic function with 2 methods)</pre>
 
-<p>As before, the <code>x -&gt;</code> of the function indicates that this will return an anonymous function, which does what we want: replace large values with <code>NaN</code>.</p><p>Now to graph:</p><pre class="sourceCode julia">plot(trim(f), -10, 10)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>We can see the general shape of 3 curves broken up by the vertical asymptotes. The two on the side heading off towards the line $x-4$ and the one in the middle. We still can't see the precise location of the zeros, but that wouldn't be the case with most graphs that show asymptotic behaviors. However, we can clearly tell where to "zoom in" were those of interest.</p><h3>sign charts</h3><p>When sketching these graphs by hand, it is useful to use sign charts. A sign chart of a function indicates when the function is positive, negative, $0$, or undefined. It typically is represented along the lines of this one for $f(x) = x^3 - x$:</p><pre class="sourceCode julia">    -    0   +   0   -   0   +
+<p>As before, the <code>x -&gt;</code> of the function indicates that this will return an anonymous function, which does what we want: replace large values with <code>NaN</code>.</p><p>Now to graph:</p><pre class="sourceCode julia">plot(trim(f), -5, 5)</pre>
+    <div id="92f5f3b5-a918-41b2-bfb5-b4160676357a" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('92f5f3b5-a918-41b2-bfb5-b4160676357a');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-15.844150445553648,-17.022148620642046,-18.11611181875338,-19.41072794910366,null,null,null,null,null,null,null,null,15.882431539282678,10.334217825176172,7.033858597746209,5.228109442301207,3.7058908853059234,2.7248152709955393,2.0513529031819373,1.5308292857695784,1.0891135838815695,0.7859040417852905,0.5246518126436857,0.3462160714468701,0.2171501403597201,0.12744319299959725,0.06477792017442605,0.023966562638351604,0.0067020875430568606,1.879205596665154e-5,0.004981097061776102,0.014220621852559576,0.022201569743976864,0.02227255304718595,0.0015202537332342774,-0.07377933431019008,-0.24405594933456257,-0.6723839880561502,-2.4458319053219992,null,4.693042326070502,3.0951626649038646,2.7142353226388147,2.592355616946,2.571542561794049,2.6023847326869327,2.6856000898493835,2.762895495738774,2.974421029718264],"type":"scatter","name":"y1","yaxis":"y","x":[-4.960936723920848,-4.599740331326508,-4.382676354777505,-4.199151525136937,-3.999792119867794,-3.816000381861487,-3.6189562143740406,-3.3906612226458708,-3.1877795755559144,-3.00987065383912,-2.815902173378722,-2.6207808849887515,-2.405049349502383,-2.1997862370206263,-1.9863602259545978,-1.8067009853326195,-1.5873574160545436,-1.3864248302163884,-1.2008480810444895,-1.012864584939956,-0.8021877859593444,-0.611280593780866,-0.3927050256232419,-0.1903234871247322,0.009200994923106704,0.20292275367184687,0.40151232748898763,0.6138694704748848,0.7849544648526311,1.0123182708558194,1.218904047110307,1.4115038407061982,1.5947619972283043,1.7987826414094459,1.9922313466925112,2.2083466687762563,2.401583602182019,2.5962485875225583,2.8123191408198163,2.9811908483003386,3.1994289771580506,3.416485362608344,3.615371942711364,3.8054598505046915,4.001823587020644,4.181529987903431,4.41805788785281,4.583866403177375,4.958771040422325]}], {"showlegend":true,"xaxis":{"tickvals":[-2.5,0.0,2.5],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2.5","0.0","2.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-10.0,0.0,10.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-10","0","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>We can see the general shape of 3 curves broken up by the vertical asymptotes. The two on the side heading off towards the line $x-4$ and the one in the middle. We still can't see the precise location of the zeros, but that wouldn't be the case with most graphs that show asymptotic behaviors. However, we can clearly tell where to "zoom in" were those of interest.</p><h3>sign charts</h3><p>When sketching graphs of rational functions by hand, it is useful to use sign charts. A sign chart of a function indicates when the function is positive, negative, $0$, or undefined. It typically is represented along the lines of this one for $f(x) = x^3 - x$:</p><pre class="sourceCode julia">    -    0   +   0   -   0   +
 < ----- -1 ----- 0 ----- 1 ----- >
 </pre><p>The usual recipe for construction follows these steps:</p><ul>
 <li><p>Identify when the function is $0$ or undefined. Place those values on a number line.</p>
 </li>
-<li><p>Identify "test points" within each implied interval (these are $(-\infty, -1)$, $(-1,0)$, $(0,1)$, and $(1, \infty)$ in the example) and check for the sign of $f(x)$ at these test points. Write in <code>-</code>, <code>&#43;</code>, <code>0</code>, of <code>*</code> as appropriate. This uses a fact that "continuous" functions may only change sign when they cross $0$ or are undefined.</p>
+<li><p>Identify "test points" within each implied interval (these are $(-\infty, -1)$, $(-1,0)$, $(0,1)$, and $(1, \infty)$ in the example) and check for the sign of $f(x)$ at these test points. Write in <code>-</code>, <code>&#43;</code>, <code>0</code>, or <code>*</code>, as appropriate. The value comes from the fact that "continuous" functions may only change sign when they cross $0$ or are undefined.</p>
 </li>
 </ul><p>With the computer, where it is convenient to draw a graph, it might be better to emphasize the sign on the graph of the function. This helper function will do so, plotting the function and then coloring it different colors based on the sign of $f(x)$:</p><pre class="sourceCode julia">function signchart(f, a, b)
    nonneg(x) = f(x) < 0 ? NaN : f(x)
    nonpos(x) = f(x) > 0 ? NaN : f(x)
-   plot([nonneg, nonpos], a, b, linewidth=5)
-   plot!(zero, a, b)
+   plot(nonneg, a, b, linewidth=5, legend=false)
+   plot!(nonpos, linewidth=5)
+   plot!(zero)
 end
 f(x) = x^3 - x
 signchart(f, -3/2, 3/2)</pre>
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>The conditions used are similar in spirit to how the <code>trim</code> function was done: for values of $f(x)$ that should not be plotted, they are replaced with <code>NaN</code>.</p><h2>Questions</h2><h6>Question</h6><p>The rational expression $(x^3 - 2x + 3) / (x^2 - x + 1)$ would have</p><form name="WeaveQuestion" data-id="ExU4KA40" data-controltype="radio">
+    <div id="934780a5-709d-46a4-8c83-37862a072ef4" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('934780a5-709d-46a4-8c83-37862a072ef4');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[null,null,null,null,null,null,null,null,0.08169532218210773,0.1667417880940758,0.24191067427134805,0.3002122952157077,0.34590602046209157,0.37252366660210556,0.3842972840553977,0.3827811339977033,0.36821613097613376,0.34397381262014337,0.31349943421357856,0.27580388131610517,0.22671861052173697,0.17721701282447463,0.11617633681717872,0.05691090561733433,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.05177359099578238,0.19130626993558808,0.34630128429537144,0.5298173702884537,0.7196421977072169,1.002984667566124,1.225356611203063,1.8045665824904074],"type":"scatter","name":"y1","yaxis":"y","x":[-1.4882810171762542,-1.3799220993979524,-1.3148029064332514,-1.2597454575410811,-1.1999376359603382,-1.144800114558446,-1.0856868643122122,-1.0171983667937612,-0.9563338726667743,-0.902961196151736,-0.8447706520136166,-0.7862342654966256,-0.7215148048507148,-0.6599358711061879,-0.5959080677863793,-0.5420102955997859,-0.4762072248163631,-0.4159274490649165,-0.36025442431334687,-0.30385937548198677,-0.2406563357878033,-0.18338417813425978,-0.11781150768697256,-0.05709704613741966,0.0027602984769320113,0.06087682610155406,0.12045369824669629,0.18416084114246542,0.2354863394557893,0.30369548125674584,0.3656712141330921,0.42345115221185947,0.47842859916849123,0.5396347924228337,0.5976694040077534,0.6625040006328768,0.7204750806546056,0.7788745762567675,0.843695742245945,0.8943572544901016,0.959828693147415,1.0249456087825033,1.0846115828134093,1.1416379551514073,1.200547076106193,1.2544589963710293,1.325417366355843,1.3751599209532124,1.4876313121266973]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":5},"y":[-1.7432122324942234,-1.1974996290069224,-0.9156851929238876,-0.702961032223443,-0.4972000834370094,-0.329811400359701,-0.17297409632994776,-0.01897523033581705,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,-0.002413268843773115,-0.05984649686803382,-0.11746965837790468,-0.17629317468628958,-0.22057723576513,-0.2736797156763388,-0.3148108904885131,-0.34578305508209206,-0.3675889924601015,-0.38186638661477673,-0.3844967367390767,-0.373447932967783,-0.3498119461124692,-0.3116669423927681,-0.2510676922883476,-0.1893379695019255,-0.08954713610202547,null,null,null,null,null,null,null,null],"type":"scatter","name":"y2","yaxis":"y","x":[-1.4766561286855626,-1.3691672488834385,-1.3045709124774676,-1.2499555321514089,-1.1906279209411141,-1.1359331110254156,-1.0772944942811027,-1.0093559062209052,-0.948980106724476,-0.8960359713614757,-0.8383126521116501,-0.780246267328731,-0.716046453701397,-0.654961950982841,-0.5914482412103069,-0.5379832262862917,-0.4727085030694976,-0.4129127271140486,-0.3576867135247871,-0.30174447314849157,-0.23904890479004343,-0.18223659809438925,-0.11719042527792213,-0.05696345371382064,0.0024132828985742806,0.060063179930037056,0.11916169604938184,0.18235732005210994,0.2332707144648561,0.3009321898170694,0.3624103056785044,0.41972631571682606,0.4742623364607726,0.5349770915058715,0.5925457302198283,0.6568597553738577,0.7143653726337481,0.7722959656295969,0.8365966679852592,0.8868514076214318,0.9517971614605989,1.0163912388221452,1.075578141408293,1.1321466362536494,1.190582762706231,1.244061812110406,1.314450441478755,1.363793601984534,1.4753619352135436]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","name":"y3","yaxis":"y","x":[-1.4766561286855626,-1.3691672488834385,-1.3045709124774676,-1.2499555321514089,-1.1906279209411141,-1.1359331110254156,-1.0772944942811027,-1.0093559062209052,-0.948980106724476,-0.8960359713614757,-0.8383126521116501,-0.780246267328731,-0.716046453701397,-0.654961950982841,-0.5914482412103069,-0.5379832262862917,-0.4727085030694976,-0.4129127271140486,-0.3576867135247871,-0.30174447314849157,-0.23904890479004343,-0.18223659809438925,-0.11719042527792213,-0.05696345371382064,0.0024132828985742806,0.060063179930037056,0.11916169604938184,0.18235732005210994,0.2332707144648561,0.3009321898170694,0.3624103056785044,0.41972631571682606,0.4742623364607726,0.5349770915058715,0.5925457302198283,0.6568597553738577,0.7143653726337481,0.7722959656295969,0.8365966679852592,0.8868514076214318,0.9517971614605989,1.0163912388221452,1.075578141408293,1.1321466362536494,1.190582762706231,1.244061812110406,1.314450441478755,1.363793601984534,1.4753619352135436]}], {"showlegend":false,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.03619130941965587,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"width":600});
+    </script>
+<p>The conditions used are similar in spirit to how the <code>trim</code> function was done: for values of $f(x)$ that should not be plotted, they are replaced with <code>NaN</code>.</p><h2>Pade approximate</h2><p>One area where rational functions are employed is in approximating functions. Later, the Taylor polynomial will be seen to be a polynomial that approximates well a function (where "well" will be described later). The Pade approximation is similar, though uses a rational function for the form $p(x)/q(x)$, where $q(0)=1$ is customary.</p><p>Some example approximations are</p>$$~
+\sin(x) \approx \frac{x - 7/60 \cdot x^3}{1 + 1/20 \cdot x^2}
+~$$
+<p>and</p>$$~
+\tan(x) \approx \frac{x - 1/15 \cdot x^3}{1 - 2/5 \cdot x^2}
+~$$
+<p>We can look graphically at these approximations:</p><pre class="sourceCode julia">sin_p(x) = (x - (7/60)*x^3) / (1 + (1/20)*x^2)
+tan_p(x) = (x - (1/15)*x^3) / (1 - (2/5)*x^2)
+plot(sin, -pi, pi)
+plot!(sin_p)</pre>
+    <div id="c39aa010-3e99-4973-bc55-cd4aefe18dfa" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('c39aa010-3e99-4973-bc55-cd4aefe18dfa');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.024541716000958794,-0.24884791269054563,-0.3782229464022468,-0.4822207756470779,-0.5878909169838461,-0.6771840693740417,-0.7628667056276863,-0.8474574575846555,-0.9080696169968309,-0.949121740996138,-0.9803660053026494,-0.9971218215545569,-0.9982209145277293,-0.9822620744518492,-0.9483733092158644,-0.9066117084407264,-0.8400449542020196,-0.7650483528261962,-0.6849354506171446,-0.5943053100417641,-0.4829578129110797,-0.3747053262678205,-0.24424772396244054,-0.11929896395668879,0.005781123408550861,0.12715496077115196,0.2496101451231054,0.3762129585824608,0.4734482037902331,0.5940292123714795,0.6931571311900264,0.7751004242063828,0.8425598781004163,0.9045011139310082,0.9495368220672199,0.9832564344637598,0.9980887113568605,0.9981719582582171,0.9808074435834816,0.9546420214435412,0.9049797571218792,0.8387326059848786,0.7643208550618991,0.6820423375094706,0.5868579002328693,0.49189058917289985,0.35755174202779205,0.2584955056538618,0.025902022088647902],"type":"scatter","name":"y1","yaxis":"y","x":[-3.11704847335871,-2.8901020866632083,-2.7537167678461403,-2.6384047165361157,-2.5131435079326017,-2.3976637531503786,-2.2738572513481228,-2.1304152775752105,-2.0029409791660098,-1.8911575068712974,-1.769283516222825,-1.6466851949898438,-1.5111370735835192,-1.3821664563383869,-1.2480669386483851,-1.1351837085508796,-0.9973660793796463,-0.8711164122724564,-0.7545151018973537,-0.6364015878257281,-0.5040294510338675,-0.384078924540795,-0.24674384470515365,-0.11958377379133006,0.005781155611229802,0.12750012643633707,0.2522776356730286,0.38570556374139087,0.4932014360367067,0.636058328563073,0.7658599999665215,0.8868740192952741,1.0020185149433254,1.1302084663313516,1.2517558726040987,1.3875451342413956,1.5089594803193485,1.6312710978907492,1.767032230469899,1.8731374535938934,2.0102605140644076,2.1466410632534867,2.271605187043336,2.39104094197529,2.5144199163892815,2.6273327781525673,2.775947640722565,2.880128203451822,3.1156877342849185]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.24246676579021295,-0.0826045351595965,-0.25673603499825914,-0.39080481322069094,-0.5222269312787835,-0.6298309207966003,-0.7303194899508245,-0.8270089711777502,-0.8948046020564092,-0.9400410553996491,-0.9741547512244964,-0.9925060813581369,-0.9943639885838252,-0.9785415714110554,-0.9445069844999198,-0.9025666813281539,-0.8358592038868629,-0.7608928108825938,-0.6809796817205402,-0.5907286571673919,-0.4800054578374936,-0.3724756141444363,-0.24298611132391315,-0.11902116209054746,0.005054346363142633,0.12546451268185516,0.24698891173806864,0.37271024668105723,0.4693543395645891,0.5893552892268048,0.688188082895712,0.7700646338279086,0.8376360282296512,0.8998610050143462,0.9452429521913195,0.9792862102411649,0.994155858169645,0.9937800977214436,0.9749261809127974,0.9465305885103826,0.8920244860597165,0.8179932568197824,0.7330249786088249,0.6367888476681107,0.5223211961472972,0.4045311167500813,0.23117974326743013,0.09771587415973682,-0.23830243463417683],"type":"scatter","name":"y2","yaxis":"y","x":[-3.092701363837939,-2.867577180418639,-2.7322869298174304,-2.6179007447471907,-2.4936452863916623,-2.379092744377896,-2.2562803126574957,-2.1139900665607088,-1.9875392877923141,-1.8766533499876041,-1.7557579128568905,-1.6341439609538662,-1.4996841857182217,-1.3717491023923545,-1.238726299709936,-1.1267494343036997,-0.9900383736883743,-0.8648023933834812,-0.7491373009974318,-0.6319721467364157,-0.500662855424724,-0.38167543852568575,-0.24544305274945563,-0.1193039784736272,0.005054367883463471,0.12579602987963115,0.24957167259869217,0.38192827800268786,0.48856104190695643,0.6302709045053299,0.7590303692698809,0.8790727399828608,0.9932927147329962,1.120453400342454,1.2410248753164084,1.3757238546142005,1.4961633377634125,1.6174928880126518,1.7521639641067934,1.8574172446728385,1.9934393134348243,2.128724832704454,2.252685591606705,2.371162370160574,2.4935507072056913,2.605556966358438,2.7529785669716786,2.8563226406715834,3.0899908113685934]}], {"showlegend":true,"xaxis":{"tickvals":[-2.0,0.0,2.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2","0","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-0.5,0.0,0.5],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-0.5","0.0","0.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<pre class="sourceCode julia">plot(tan, -pi/2 + 0.2, pi/2 - 0.2)
+plot!(tan_p)</pre>
+    <div id="dacb9627-6825-4d60-965c-e6094294dc90" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('dacb9627-6825-4d60-965c-e6094294dc90');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.6754238730947355,-3.12465604922145,-2.58401383624482,-2.241926577490809,-1.9482487124120076,-1.7280350417181563,-1.5309097763126258,-1.3397026798467278,-1.1948919217074154,-1.082914080856842,-0.9735674331793552,-0.8744375624106822,-0.7750904304345716,-0.6886853084148638,-0.6056711881169319,-0.5402461415105303,-0.46491616852809187,-0.3995300856769091,-0.34165763913426733,-0.28505087598996365,-0.22354299713402076,-0.16917501821303654,-0.108081653058956,-0.052226353913925425,0.0025225433591738594,0.05569061997199874,0.11052510543207293,0.16990518413593622,0.21858742058183933,0.2848889358485115,0.3471950979088949,0.40752533756899123,0.46738732468800204,0.5374449270826145,0.6078734290424144,0.6921509534572264,0.7735705554851081,0.8626382330664166,0.9716558617918857,1.065974366411144,1.2026754322677657,1.3596794975013444,1.5276290011930542,1.7165732618295344,1.9509225427019383,2.213124914646963,2.66040037131275,3.0784417228766747,4.66188874274391],"type":"scatter","name":"y1","yaxis":"y","x":[-1.3600867677225212,-1.2610614300785439,-1.20155132973197,-1.1512362972625803,-1.096580069171589,-1.04619186130073,-0.9921703770990998,-0.9295811898817706,-0.8739593065607683,-0.8251839272820839,-0.7720056711762637,-0.7185113620953718,-0.6593665628116644,-0.6030917786883684,-0.5445790602860088,-0.49532381486213506,-0.4351887430476413,-0.3801012129275727,-0.3292236277068973,-0.2776862105152658,-0.21992721407855997,-0.16758823851916285,-0.10766372132764714,-0.05217894741067573,0.0025225380086906324,0.055633153071294655,0.11007832473695477,0.16829800305170006,0.21520253942424808,0.2775364334473037,0.3341738380988485,0.3869768560193891,0.43721877758253047,0.493152927509298,0.5461886824343489,0.6054387003696476,0.6584163960723936,0.7117856054444723,0.7710233496021568,0.8173210928649332,0.8771530979458817,0.9366611171224097,0.9911877158132135,1.0433020769674575,1.097137014713815,1.1464051895601464,1.2112515048471701,1.256709445598816,1.3594930255255662]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.36569480974375,-2.9982332275090133,-2.501332136230503,-2.18153042193784,-1.9037215724868086,-1.693492269069409,-1.5039709924140452,-1.3189990629530228,-1.1782095872455531,-1.0689550193612556,-0.9619647808634086,-0.8647309666102561,-0.7670732371520959,-0.6819806174909846,-0.6001029705362633,-0.5354957742499233,-0.4610313718148579,-0.39633798876895915,-0.3390390055176247,-0.28296216600579643,-0.22200110619413865,-0.16809645961367267,-0.10750747280146868,-0.05210393635850606,0.0022054164641915697,0.054944782479008324,0.1093301227544566,0.16820990253116871,0.21646681769506806,0.2821605835829872,0.343858981069571,0.4035606197829597,0.4627542645705081,0.5319661912945909,0.6014677930908745,0.6845241115744714,0.7646366519749215,0.8521180992967496,0.9589523815131142,1.0511502264385197,1.1843663406702947,1.3367228415024832,1.498883426485303,1.680244177611498,1.9035318534507524,2.1510960883573977,2.5677038454697825,2.9504651917978286,4.342517266786168],"type":"scatter","name":"y2","yaxis":"y","x":[-1.3494631980942278,-1.251232957024861,-1.1922006765783864,-1.142289634753408,-1.088072253737016,-1.0380886240522262,-0.984500890424601,-0.922414245784234,-0.8672389629995605,-0.8188552121456054,-0.7661039361468921,-0.7130391448331024,-0.6543692323655913,-0.5985462910651318,-0.5405033843602605,-0.49164362031367764,-0.4319913864349209,-0.37734616640986757,-0.32687708869541104,-0.27575347694840907,-0.21845824040702302,-0.1665395061835911,-0.10709613633767164,-0.052056862074970955,0.0022054128885883877,0.05488959094914385,0.1088976101594284,0.16664982966106245,0.21317775902483063,0.2750111602770555,0.33119381054447306,0.3835728612291869,0.43341137917172834,0.48889642130377736,0.5415063402955603,0.6002806265905857,0.6528329525305396,0.7057736485890462,0.7645357596553621,0.810461767986895,0.8698133685226656,0.9288435845092743,0.9829323769489132,1.0346283002464671,1.0880309852420145,1.1369035748978316,1.201229224622005,1.2463221734045202,1.3482804809891575]}], {"showlegend":true,"xaxis":{"tickvals":[-1.0,0.0,1.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-1","0","1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-2.5,0.0,2.5],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-2.5","0.0","2.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<h2>Questions</h2><h6>Question</h6><p>The rational expression $(x^3 - 2x + 3) / (x^2 - x + 1)$ would have</p><form name="WeaveQuestion" data-id="i9sNzijR" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ExU4KA40" value="1"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
+      <input type="radio" name="radio_i9sNzijR" value="1"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ExU4KA40" value="2"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
+      <input type="radio" name="radio_i9sNzijR" value="2"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ExU4KA40" value="3"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
+      <input type="radio" name="radio_i9sNzijR" value="3"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="ExU4KA40_message"></div>
+<div id="i9sNzijR_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_ExU4KA40']").on("change", function() {
+$("input:radio[name='radio_i9sNzijR']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#ExU4KA40_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#i9sNzijR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#ExU4KA40_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#i9sNzijR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The rational expression $(x^2 - x + 1)/ (x^3 - 2x + 3)$ would have</p><form name="WeaveQuestion" data-id="x4CJ77KG" data-controltype="radio">
+<h6>Question</h6><p>The rational expression $(x^2 - x + 1)/ (x^3 - 2x + 3)$ would have</p><form name="WeaveQuestion" data-id="krNy35nY" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_x4CJ77KG" value="1"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
+      <input type="radio" name="radio_krNy35nY" value="1"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_x4CJ77KG" value="2"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
+      <input type="radio" name="radio_krNy35nY" value="2"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_x4CJ77KG" value="3"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
+      <input type="radio" name="radio_krNy35nY" value="3"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="x4CJ77KG_message"></div>
+<div id="krNy35nY_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_x4CJ77KG']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_krNy35nY']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#x4CJ77KG_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#krNy35nY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#x4CJ77KG_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#krNy35nY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The rational expression $(x^2 - x + 1)/ (x^2 - 3x + 3)$ would have</p><form name="WeaveQuestion" data-id="pzHF3TeJ" data-controltype="radio">
+<h6>Question</h6><p>The rational expression $(x^2 - x + 1)/ (x^2 - 3x + 3)$ would have</p><form name="WeaveQuestion" data-id="keyOt1Go" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_pzHF3TeJ" value="1"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
+      <input type="radio" name="radio_keyOt1Go" value="1"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_pzHF3TeJ" value="2"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
+      <input type="radio" name="radio_keyOt1Go" value="2"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_pzHF3TeJ" value="3"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
+      <input type="radio" name="radio_keyOt1Go" value="3"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="pzHF3TeJ_message"></div>
+<div id="keyOt1Go_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_pzHF3TeJ']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_keyOt1Go']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#pzHF3TeJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#keyOt1Go_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#pzHF3TeJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#keyOt1Go_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -359,43 +442,43 @@ $("input:radio[name='radio_pzHF3TeJ']").on("change", function() {
 <h6>Question</h6><p>The rational expression</p>$$~
 \frac{(x-1)\cdot(x-2)\cdot(x-3)}{(x-4)\cdot(x-5)\cdot(x-6)}
 ~$$
-<p>would have</p><form name="WeaveQuestion" data-id="5Ks1mSeW" data-controltype="radio">
+<p>would have</p><form name="WeaveQuestion" data-id="OQfeznWy" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5Ks1mSeW" value="1"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
+      <input type="radio" name="radio_OQfeznWy" value="1"><div class="markdown"><p>A horizontal asymptote $y=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5Ks1mSeW" value="2"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
+      <input type="radio" name="radio_OQfeznWy" value="2"><div class="markdown"><p>A horizontal asymptote $y=0$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5Ks1mSeW" value="3"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
+      <input type="radio" name="radio_OQfeznWy" value="3"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="5Ks1mSeW_message"></div>
+<div id="OQfeznWy_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_5Ks1mSeW']").on("change", function() {
+$("input:radio[name='radio_OQfeznWy']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#5Ks1mSeW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#OQfeznWy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#5Ks1mSeW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#OQfeznWy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -403,43 +486,43 @@ $("input:radio[name='radio_5Ks1mSeW']").on("change", function() {
 <h6>Question</h6><p>The rational expression</p>$$~
 \frac{(x-1)\cdot(x-2)\cdot(x-3)}{(x-4)\cdot(x-5)\cdot(x-6)}
 ~$$
-<p>would have</p><form name="WeaveQuestion" data-id="SyPDhRwi" data-controltype="radio">
+<p>would have</p><form name="WeaveQuestion" data-id="ivmYwxpH" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SyPDhRwi" value="1"><div class="markdown"><p>A vertical asymptote $x=5$</p>
+      <input type="radio" name="radio_ivmYwxpH" value="1"><div class="markdown"><p>A vertical asymptote $x=5$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SyPDhRwi" value="2"><div class="markdown"><p>A vertical asymptote $x=1$</p>
+      <input type="radio" name="radio_ivmYwxpH" value="2"><div class="markdown"><p>A vertical asymptote $x=1$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SyPDhRwi" value="3"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
+      <input type="radio" name="radio_ivmYwxpH" value="3"><div class="markdown"><p>A slant asymptote with slope $m=1$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="SyPDhRwi_message"></div>
+<div id="ivmYwxpH_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_SyPDhRwi']").on("change", function() {
+$("input:radio[name='radio_ivmYwxpH']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#SyPDhRwi_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#ivmYwxpH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#SyPDhRwi_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#ivmYwxpH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -447,130 +530,133 @@ $("input:radio[name='radio_SyPDhRwi']").on("change", function() {
 <h6>Question</h6><p>The rational expression</p>$$~
 \frac{x^3 - 3x^2 + 2x}{3x^2 - 6x + 2}
 ~$$
-<p>has a slant asymptote. What is the equation of that line?</p><form name="WeaveQuestion" data-id="UBX3XrpE" data-controltype="radio">
+<p>has a slant asymptote. What is the equation of that line?</p><form name="WeaveQuestion" data-id="DIN1Qh2T" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_UBX3XrpE" value="1"><div class="markdown">$y = 3x$
+      <input type="radio" name="radio_DIN1Qh2T" value="1"><div class="markdown">$y = (1/3)x - (1/3)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_UBX3XrpE" value="2"><div class="markdown">$y = (1/3)x$
+      <input type="radio" name="radio_DIN1Qh2T" value="2"><div class="markdown">$y = 3x$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_UBX3XrpE" value="3"><div class="markdown">$y = (1/3)x - (1/3)$
+      <input type="radio" name="radio_DIN1Qh2T" value="3"><div class="markdown">$y = (1/3)x$
 </div>
     </label>
     </div>
     
 
 
-<div id="UBX3XrpE_message"></div>
+<div id="DIN1Qh2T_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_UBX3XrpE']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_DIN1Qh2T']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#UBX3XrpE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#DIN1Qh2T_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#UBX3XrpE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#DIN1Qh2T_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Look at the graph of the function $f(x) = ((x-1)\cdot(x-2)) / ((x-3)\cdot(x-4))$</p><pre class="output">
-UndefVarError(:p)
-</pre>
-
-<p>Is the following common conception true: "The graph of a function never crosses its asymptotes."</p><form name="WeaveQuestion" data-id="wwyaiinC" data-controltype="radio">
+<h6>Question</h6><p>Look at the graph of the function $f(x) = ((x-1)\cdot(x-2)) / ((x-3)\cdot(x-4))$</p>    <div id="53ff2f97-19eb-49f3-85f2-c00ff1901ecf" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('53ff2f97-19eb-49f3-85f2-c00ff1901ecf');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.5808091276036482,0.5559656600153766,0.5396001465653598,0.5248164017263678,0.5076738069158313,0.4907720131554255,0.471360681138905,0.44701396291057066,0.42350804631047656,0.4012806077430532,0.37513827474427425,0.34661385962409536,0.3121794071275627,0.2762766970705082,0.23536542248869533,0.1978822468712538,0.14821578644659766,0.09915531352194769,0.05160333508353939,0.003226129081456531,-0.04532062502661604,-0.07098606453785919,-0.03565828122963225,0.18576577918484574,1.07640039415565,6.205785174822976,null,-14.111995451534247,null,null,17.767225865515716,9.48378112769303,6.668376693637404,5.097773989643669,4.2275714948711025,3.599202240710174,3.209247359385592,2.9166648995532083,2.6692624241060128,2.515435955084502,2.3534449144998772,2.2228387365413274,2.1231676067847456,2.041780627328306,1.9690677406445418,1.9107740941838494,1.843835796183423,1.8024268875803249,1.7221535780778574],"type":"scatter","name":"y1","yaxis":"y","x":[-4.941405085881271,-4.399610496989763,-4.074014532166256,-3.7987272877054052,-3.4996881798016912,-3.224000572792231,-2.9284343215610606,-2.5859918339688064,-2.281669363333871,-2.01480598075868,-1.7238532600680831,-1.4311713274831273,-1.1075740242535745,-0.7996793555309393,-0.4795403389318968,-0.2100514779989293,0.11896387591818466,0.42036275467541745,0.6987278784332657,0.9807031225900661,1.2967183210609834,1.583079109328701,1.9109424615651371,2.2145147693129017,2.51380149238466,2.80438413050777,3.1022684912334815,3.420804205712327,3.677431697278947,4.018477406283729,4.3283560706654605,4.6172557610592975,4.892142995842456,5.198173962114169,5.488347020038766,5.8125200031643836,6.102375403273028,6.394372881283838,6.718478711229725,6.971786272450507,7.2991434657370755,7.624728043912516,7.923057914067047,8.208189775757036,8.502735380530964,8.772294981855147,9.127086831779215,9.375799604766062,9.938156560633487]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"type":"scatter","name":"y2","yaxis":"y","x":[-4.941405085881271,-4.399610496989763,-4.074014532166256,-3.7987272877054052,-3.4996881798016912,-3.224000572792231,-2.9284343215610606,-2.5859918339688064,-2.281669363333871,-2.01480598075868,-1.7238532600680831,-1.4311713274831273,-1.1075740242535745,-0.7996793555309393,-0.4795403389318968,-0.2100514779989293,0.11896387591818466,0.42036275467541745,0.6987278784332657,0.9807031225900661,1.2967183210609834,1.583079109328701,1.9109424615651371,2.2145147693129017,2.51380149238466,2.80438413050777,3.1022684912334815,3.420804205712327,3.677431697278947,4.018477406283729,4.3283560706654605,4.6172557610592975,4.892142995842456,5.198173962114169,5.488347020038766,5.8125200031643836,6.102375403273028,6.394372881283838,6.718478711229725,6.971786272450507,7.2991434657370755,7.624728043912516,7.923057914067047,8.208189775757036,8.502735380530964,8.772294981855147,9.127086831779215,9.375799604766062,9.938156560633487]}], {"showlegend":true,"xaxis":{"tickvals":[0.0,5.0],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[-10.0,0.0,10.0],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["-10","0","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>Is the following common conception true: "The graph of a function never crosses its asymptotes."</p><form name="WeaveQuestion" data-id="zJ5YyD2M" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_wwyaiinC" value="1"><div class="markdown"><p>Yes, this is true</p>
+      <input type="radio" name="radio_zJ5YyD2M" value="1"><div class="markdown"><p>No, the graph clearly crosses the drawn asymptote</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_wwyaiinC" value="2"><div class="markdown"><p>No, the graph clearly crosses the drawn asymptote</p>
+      <input type="radio" name="radio_zJ5YyD2M" value="2"><div class="markdown"><p>Yes, this is true</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="wwyaiinC_message"></div>
+<div id="zJ5YyD2M_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_wwyaiinC']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_zJ5YyD2M']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#wwyaiinC_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#zJ5YyD2M_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#wwyaiinC_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#zJ5YyD2M_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>(The wikipedia page indicates that the term "asymptote" was introduced by Apollonius of Perga in his work on conic sections, but in contrast to its modern meaning, he used it to mean any line that does not intersect the given curve. It can sometimes take a while to change perception.)</p><h6>Question</h6><p>Consider the two graphs of $f(x) = 1/x$ over $[10,20]$ and $[100, 200]$:</p><pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<pre class="output">
-ErrorException("Unsupported backend gadfly")
-</pre>
-
-<p>The two shapes are basically identical and do not look like straight lines. How does this reconcile with the fact that $f(x)=1/x$ has a horizontal asymptote $y=0$?</p><form name="WeaveQuestion" data-id="eAfrU93m" data-controltype="radio">
+<p>(The wikipedia page indicates that the term "asymptote" was introduced by Apollonius of Perga in his work on conic sections, but in contrast to its modern meaning, he used it to mean any line that does not intersect the given curve. It can sometimes take a while to change perception.)</p><h6>Question</h6><p>Consider the two graphs of $f(x) = 1/x$ over $[10,20]$ and $[100, 200]$:</p>    <div id="b7b2ef72-469f-4af9-b592-bd1568bc9536" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('b7b2ef72-469f-4af9-b592-bd1568bc9536');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.09961088724112108,0.09615144543093371,0.09418569438165075,0.0925853188596536,0.09090737292393619,0.08941345083543933,0.08786540310678542,0.08613755005157227,0.08465808832441107,0.08340193596995599,0.08207419328291013,0.08078053960506953,0.0793968970382977,0.07812369531610386,0.07684245279283164,0.0757960536548342,0.07455652335036281,0.07345608978746286,0.07246822166124049,0.07149426743400891,0.07043338684329613,0.06949888810589892,0.06845894477753342,0.06752341951092705,0.06662579842446324,0.06577682569349881,0.06492868873761028,0.06404562314876235,0.06335146561408443,0.06245191877181895,0.06165644713695487,0.060932868170170656,0.06025997842976128,0.05952812303999776,0.05885042285483285,0.05811133511242272,0.057466034290960054,0.056830295106713634,0.056140920903911824,0.055613669218939656,0.05494677889372747,0.054299177085674354,0.05371904483442451,0.05317604610307694,0.0526265279445631,0.052133484692338736,0.051498456013233,0.05106243983760814,0.05010328531625063],"type":"scatter","name":"y1","yaxis":"y","x":[10.039063276079153,10.400259668673492,10.617323645222495,10.800848474863063,11.000207880132205,11.183999618138511,11.381043785625959,11.609338777354129,11.812220424444087,11.99012934616088,12.184097826621278,12.37921911501125,12.594950650497617,12.800213762979375,13.013639774045402,13.19329901466738,13.412642583945457,13.613575169783612,13.799151918955511,13.987135415060044,14.197812214040654,14.388719406219135,14.607294974376758,14.809676512875269,15.009200994923107,15.202922753671846,15.401512327488987,15.613869470474885,15.784954464852632,16.01231827085582,16.218904047110307,16.411503840706196,16.594761997228307,16.798782641409446,16.99223134669251,17.208346668776255,17.40158360218202,17.59624858752256,17.812319140819817,17.98119084830034,18.19942897715805,18.41648536260834,18.615371942711366,18.805459850504693,19.001823587020642,19.18152998790343,19.418057887852807,19.583866403177375,19.958771040422324]}], {"showlegend":true,"xaxis":{"tickvals":[15.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["15"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.06,0.07,0.08,0.09],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.06","0.07","0.08","0.09"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+    <div id="eae5b3e8-997b-4f45-93ff-0b052b08e8a3" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('eae5b3e8-997b-4f45-93ff-0b052b08e8a3');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.009961088724112109,0.009615144543093371,0.009418569438165075,0.00925853188596536,0.00909073729239362,0.008941345083543932,0.00878654031067854,0.008613755005157226,0.008465808832441109,0.0083401935969956,0.008207419328291013,0.008078053960506953,0.00793968970382977,0.007812369531610387,0.0076842452792831644,0.00757960536548342,0.007455652335036282,0.007345608978746286,0.0072468221661240485,0.007149426743400891,0.007043338684329612,0.006949888810589893,0.006845894477753342,0.006752341951092706,0.006662579842446325,0.00657768256934988,0.006492868873761028,0.006404562314876235,0.006335146561408443,0.006245191877181894,0.006165644713695486,0.006093286817017065,0.006025997842976129,0.005952812303999776,0.005885042285483284,0.005811133511242271,0.0057466034290960056,0.005683029510671364,0.0056140920903911835,0.0055613669218939656,0.005494677889372746,0.005429917708567435,0.005371904483442451,0.005317604610307694,0.005262652794456309,0.005213348469233874,0.005149845601323299,0.005106243983760813,0.005010328531625062],"type":"scatter","name":"y1","yaxis":"y","x":[100.39063276079152,104.00259668673492,106.17323645222496,108.00848474863064,110.00207880132206,111.83999618138513,113.8104378562596,116.0933877735413,118.12220424444085,119.9012934616088,121.84097826621277,123.79219115011249,125.94950650497617,128.00213762979374,130.13639774045402,131.9329901466738,134.12642583945455,136.13575169783613,137.9915191895551,139.87135415060044,141.97812214040655,143.88719406219133,146.0729497437676,148.09676512875268,150.09200994923106,152.02922753671848,154.01512327488987,156.13869470474884,157.84954464852632,160.1231827085582,162.18904047110308,164.11503840706197,165.94761997228304,167.98782641409446,169.92231346692512,172.08346668776255,174.01583602182018,175.96248587522558,178.12319140819815,179.81190848300338,181.9942897715805,184.16485362608344,186.15371942711366,188.05459850504693,190.01823587020644,191.8152998790343,194.1805788785281,195.83866403177376,199.58771040422326]}], {"showlegend":true,"xaxis":{"tickvals":[150.0],"ticks":"inside","tickmode":"array","domain":[0.08063575386410031,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["150"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.006,0.007,0.008,0.009000000000000001],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.006","0.007","0.008","0.009"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>The two shapes are basically identical and do not look like straight lines. How does this reconcile with the fact that $f(x)=1/x$ has a horizontal asymptote $y=0$?</p><form name="WeaveQuestion" data-id="Nmqxlmae" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_eAfrU93m" value="1"><div class="markdown"><p>The graph is always decreasing, hence it will eventually reach $-\infty$.</p>
+      <input type="radio" name="radio_Nmqxlmae" value="1"><div class="markdown"><p>The $y$-axis scale shows that indeed the $y$ values are getting close to $0$.</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_eAfrU93m" value="2"><div class="markdown"><p>The horizontal asymptote is not a straight line.</p>
+      <input type="radio" name="radio_Nmqxlmae" value="2"><div class="markdown"><p>The graph is always decreasing, hence it will eventually reach $-\infty$.</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_eAfrU93m" value="3"><div class="markdown"><p>The $y$-axis scale shows that indeed the $y$ values are getting close to $0$.</p>
+      <input type="radio" name="radio_Nmqxlmae" value="3"><div class="markdown"><p>The horizontal asymptote is not a straight line.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="eAfrU93m_message"></div>
+<div id="Nmqxlmae_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_eAfrU93m']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_Nmqxlmae']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#eAfrU93m_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Nmqxlmae_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#eAfrU93m_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Nmqxlmae_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -578,150 +664,232 @@ $("input:radio[name='radio_eAfrU93m']").on("change", function() {
 <h6>Question</h6><p>The amount of drug in a bloodstream after $t$ hours is modeled by the rational function</p>$$~
 r(t) = \frac{50t^2}{t^3 + 20}, \quad t \geq  0.
 ~$$
-<p>What is the amount of the drug after $1$ hour?</p><form name='WeaveQuestion' data-id='dCofsvUA' data-controltype='numeric'>
+<p>What is the amount of the drug after $1$ hour?</p><form name='WeaveQuestion' data-id='o7lZ8iqp' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="dCofsvUA" type="number" class="form-control">
+<input id="o7lZ8iqp" type="number" class="form-control">
 
 </div>
   
-<div id='dCofsvUA_message'></div>
+<div id='o7lZ8iqp_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#dCofsvUA').on('change', function() {
+$('#o7lZ8iqp').on('change', function() {
   correct = Math.abs(this.value - 2.380952380952381) <= 0.001;
 
   if(correct) {
-     $('#dCofsvUA_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#o7lZ8iqp_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#dCofsvUA_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#o7lZ8iqp_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>What is the amount of drug in the bloodstream after 24 hours?</p><form name='WeaveQuestion' data-id='woIaBpwC' data-controltype='numeric'>
+<p>What is the amount of drug in the bloodstream after 24 hours?</p><form name='WeaveQuestion' data-id='QbTS2Feu' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="woIaBpwC" type="number" class="form-control">
+<input id="QbTS2Feu" type="number" class="form-control">
 
 </div>
   
-<div id='woIaBpwC_message'></div>
+<div id='QbTS2Feu_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#woIaBpwC').on('change', function() {
+$('#QbTS2Feu').on('change', function() {
   correct = Math.abs(this.value - 2.0803236058942502) <= 0.001;
 
   if(correct) {
-     $('#woIaBpwC_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#QbTS2Feu_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#woIaBpwC_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#QbTS2Feu_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>What is more accurate: the peak amount is</p><form name="WeaveQuestion" data-id="SH1762qv" data-controltype="radio">
+<p>What is more accurate: the peak amount is</p><form name="WeaveQuestion" data-id="jsIIF9Ae" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SH1762qv" value="1"><div class="markdown"><p>between 0 and 8 hours</p>
+      <input type="radio" name="radio_jsIIF9Ae" value="1"><div class="markdown"><p>between 0 and 8 hours</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SH1762qv" value="2"><div class="markdown"><p>between 8 and 16 hours</p>
+      <input type="radio" name="radio_jsIIF9Ae" value="2"><div class="markdown"><p>after one day</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SH1762qv" value="3"><div class="markdown"><p>after one day</p>
+      <input type="radio" name="radio_jsIIF9Ae" value="3"><div class="markdown"><p>between 8 and 16 hours</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_SH1762qv" value="4"><div class="markdown"><p>between 16 and 24 hours</p>
+      <input type="radio" name="radio_jsIIF9Ae" value="4"><div class="markdown"><p>between 16 and 24 hours</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="SH1762qv_message"></div>
+<div id="jsIIF9Ae_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_SH1762qv']").on("change", function() {
+$("input:radio[name='radio_jsIIF9Ae']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#SH1762qv_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#jsIIF9Ae_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#SH1762qv_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#jsIIF9Ae_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>This graph has </p><form name="WeaveQuestion" data-id="WzEQbVnq" data-controltype="radio">
+<p>This graph has </p><form name="WeaveQuestion" data-id="RFrUvRZf" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_WzEQbVnq" value="1"><div class="markdown"><p>a horizontal asymptote $y=0$</p>
+      <input type="radio" name="radio_RFrUvRZf" value="1"><div class="markdown"><p>a horizontal asymptote $y=0$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_WzEQbVnq" value="2"><div class="markdown"><p>a slant asymptote with slope $50$</p>
+      <input type="radio" name="radio_RFrUvRZf" value="2"><div class="markdown"><p>a vertical asymptote with $x = 20^{1/3}$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_WzEQbVnq" value="3"><div class="markdown"><p>a vertical asymptote with $x = 20^{1/3}$</p>
+      <input type="radio" name="radio_RFrUvRZf" value="3"><div class="markdown"><p>a slant asymptote with slope $50$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_WzEQbVnq" value="4"><div class="markdown"><p>a horizontal asymptote $y=20$</p>
+      <input type="radio" name="radio_RFrUvRZf" value="4"><div class="markdown"><p>a horizontal asymptote $y=20$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="WzEQbVnq_message"></div>
+<div id="RFrUvRZf_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_WzEQbVnq']").on("change", function() {
+$("input:radio[name='radio_RFrUvRZf']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#WzEQbVnq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#RFrUvRZf_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#WzEQbVnq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#RFrUvRZf_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h5>Question</h5><p>The (low-order) Pade apprximation for $\sin(x)$ was seen to be $(x - 7/60 \cdot x^3)/(1 + 1/20 \cdot x^2)$. The graph showed that this approximation was fairly close  over $[-\pi, \pi]$. Without graphing would you expect the behaviour of the function and its approximation to be similar for <em>large</em> values of $x$?</p><form name="WeaveQuestion" data-id="ERINhirL" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_ERINhirL" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_ERINhirL" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="ERINhirL_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_ERINhirL']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#ERINhirL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#ERINhirL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>Why?</p><form name="WeaveQuestion" data-id="1ipzrsXH" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_1ipzrsXH" value="1"><div class="markdown"><p>The $\sin(x)$ osciallates, but the rational function has a slant asymptote</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_1ipzrsXH" value="2"><div class="markdown"><p>The $\sin(x)$ osciallates, but the rational function has a non-zero horizontal asymptote</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_1ipzrsXH" value="3"><div class="markdown"><p>The $\sin(x)$ osciallates, but the rational function has a horizontal asymptote of $0$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_1ipzrsXH" value="4"><div class="markdown"><p>The $\sin(x)$ osciallates, but the rational function eventually follows $7/60 \cdot x^3$</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="1ipzrsXH_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_1ipzrsXH']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#1ipzrsXH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#1ipzrsXH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

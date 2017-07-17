@@ -42,7 +42,7 @@ It is important to note that this sketch would not include *all* the pairs $(x,f
 
 `Julia` has several different options for rendering graphs, all in
 external packages. We will focus in these notes on the `Plots`
-package, which provides an common interface to several different
+package, which provides a common interface to several different
 plotting backends. 
 
 As such, we begin by loading the `Plots` package (which must have been
@@ -131,8 +131,8 @@ through composition.
 Making a graph with `Plots` is easy, but producing a graph that is
 informative can be a challenge, as the choice of a viewing window can
 make a big difference in what is seen. For example, trying to make a
-graph of $f(x) = \tan(x)$ will result in a bit of a mess below, as the
-viewing window crosses several places where the function blows up:
+graph of $f(x) = \tan(x)$, as below, will result in a bit of a mess below---the
+chosen viewing window crosses several places where the function blows up:
 
 ```
 f(x) = tan(x)
@@ -140,7 +140,9 @@ plot(f, -10, 10)
 ```
 
 
-Though this graph shows the asymptote structure and periodicity, it doesn't give much instight into each period.
+Though this graph shows the asymptote structure and periodicity, it
+doesn't give much insight into each period or even into the fact that
+the function is periodic.
 
 ## The details of graph making
 
@@ -157,63 +159,15 @@ to curve the lines connecting points based on an analysis of the
 function. As `Julia` doesn't consider this, the points are connected
 with straight lines like a dot-to-dot puzzle.
 
-### Creating $x$ values
+We can use `linspace` to create the $x$ values and broadcasting to create the $y$ values.
 
-The mechanics of creating a dot-to-dot plot are useful to know. The set of $x$ values
-between $a$ and $b$ can be generated through a range. Suppose $n=250$
-points between $0$ and $2\pi$ are desired. Then we have
+For example, if we were to plot $f(x) = \sin(x)$ over $[0,2\pi]$ using $10$ points, we might do:
 
 ```
-a, b, n = 0, 2pi, 250
-xs = a:(b-a)/(n-1):b
+f(x) = sin(x)
+xs = linspace(0, 2pi, 10)  # add 10, as default is higher
+ys = f.(xs)
 ```
-
-will create a recipe to cover 250 evenly spaced points between
-$[a,b]$. An alternative function to create a similar collection of
-points is provided by `linspace` through the call `linspace(a, b, n)`.
-The `linspace` function is usually more convenient for the task
-of plotting.
-
-### Creating $y$ values
-
-To create the $y$ values can be done many different ways, we will discuss two. The first is through a comprehension:
-
-```
-ys = [f(x) for x in xs]
-```
-
-Recall, the notation above mirrors the definition of a set of points, $\{f(x): x \text{ in } xs\}$.
-
-```
-note(L"""
-
-The style employed here is to use plural variable names for a collection
-of values, such as the vector of $y$ values and singular names when a
-single value is being referred to, hence "`x in xs`".
-
-""")
-```
-
-The second style is to use the a "dot." Julia has an alternative
-syntax for calling a function whereby the function is applied (mapped)
-over each different value, techically named "broadcasting." Instead of writing `f(xs)`, which may not be defined, an extra dot is inserted, as with `f.(xs)`:
-
-```
-f.(xs)
-```
-
-If the dot is too subtle, the `map` function does the same task of
- applying the specified function over a collection of values:
-
-```
-ys = map(f, xs)
-```
-
-(Usage of the `map` function also follows the form `action(function, args...)`.)
-
-Either way, it isn't too much work to create the $y$ values from the $x$ values.
-
-### Plotting points and connecting them
 
 Finally, to plot the set of points and connect with lines. If the collection of points are specified in place of a function, the graph is produced:
 
@@ -222,7 +176,11 @@ plot(xs, ys)
 ```
 
 This plots the points as pairs and then connects them in order using
-straight lines. Basically, it creates a dot-to-dot graph.
+straight lines. Basically, it creates a dot-to-dot graph. The above
+graph looks primitive, as it doesn't utilize enought points. A
+solution might be to just use more than 10 points. In `Plots` an
+algorithm is utilized that adds more points when the function is more
+"curvy" and otherwise uses fewer points.
 
 #### NaN values
 
@@ -245,7 +203,7 @@ ys[xs .== 0.0] = NaN
 plot(xs, ys)
 ```
 
-By using an odd number of points, we hsould have that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`. 
+By using an odd number of points, we should have that $0.0$ is amongst the `xs`. The next to last line replaces the $y$ value that would be infinite with `NaN`. 
 
 Alternatively, you might modify the function itself to return `NaN` for values close to $0$:
 
@@ -398,6 +356,25 @@ current graph, though it is implicit. Both `plot!`, `scatter!`, and
 """)
 ```
 
+### Additional arguments to modify a graphic
+
+The `Plots` package provides many arguments for modifying a graphic, here we mention just a few:
+
+* `plot(..., title="main title", xlab="x axis label", ylab="y axis label")`: add title and label information to a graphic
+* `plot(..., color="green")`: this argument can be used to adjust the color of the drawn figure (color can be a string or symbol)
+* `plot(..., linewidth=5)`: this argument can be used to adjust the width of drawn lines
+* `plot(..., xlims=(a,b), ylims=(c,d)`: either or both `xlims` and `ylims` can be used to control the viewing window
+* `plot(..., legend=false)`: by default, different layers will be indicated with a legend, this will turn off this feature
+
+For plotting points with `scatter` or `scatter!` the markers can be adjusted via
+
+* `scatter(..., markersize=5)`: increase marker size
+* `scatter(..., marker=:square)`: change the marker (uses a symbol, not a string to specify)
+
+Of course, zero, one or more of these can be used on any given call to `plot`, `plot!`, `scatter` or `scatter!`.
+
+
+
 ## Parametric graphs
 
 If we have two functions $f(x)$ and $g(x)$ there are a few ways to
@@ -432,7 +409,7 @@ for some value of $x$, and in fact multiple values of $x$, since $x +
 Making the parametric plot is similar to creating a plot using lower
 level commands. There is a function to generate a sequence of value to
 approximate the $x$ values used (`xs`), a set of commands to create
-the corresponding function values (e.g., `map(f,xs)`), and some
+the corresponding function values (e.g., `f.(xs)`), and some
 instruction on how to represent the values, in this case with lines
 connecting the points.
 
@@ -486,7 +463,7 @@ same rate.
 ##### Example: Etch A Sketch
 
 [Etch A sketch](http://en.wikipedia.org/wiki/Etch_A_Sketch) is a
-drawing toy where a two knobs control the motion of a pointer, one
+drawing toy where two knobs control the motion of a pointer, one
 knob controlling the $x$ motion, the other the $y$ motion. The trace
 of the movement of the pointer is recorded until the display is
 cleared by shaking. Shake to clear is now a motion incorporated by some smart-phone apps.
@@ -530,8 +507,8 @@ Parametric plots can describe a richer set of curves than can plots of
 functions. Plots of functions must pass the "vertical-line test", as
 there can be at most one $y$ value for a given $x$ value. This is not
 so for parametric plots, as the circle example above shows. Plotting sines and cosines this
-way is the basis for the popular
-[Spirograph](http://en.wikipedia.org/wiki/Spirograph) toy. The curves
+way is the basis for the once popular
+[Spirograph](http://en.wikipedia.org/wiki/Spirograph#Mathematical_basis) toy. The curves
 drawn there are parametric plots where the functions come from rolling
 a smaller disc either around the outside or inside of a larger disc.
 
@@ -550,7 +527,7 @@ plot(g, f, 0, max((R-r)/r, r/(R-r))*2pi)
 
 In the above, one can fix $R=1$. Then different values for `r` and
 `rho` will produce different graphs. These graphs will be periodic if
-$(R-r)/r$ is a rational.
+$(R-r)/r$ is a rational. (Nothing about these equations requires $\rho < r$.)
 
 ## Questions
 
@@ -654,7 +631,7 @@ numericq(val, .25)
 ###### Question
 
 Graphing both `f` and the line $y=0$ can be done through
-`[f, x->0]`. This helps focus on the *zeros* of `f`. When
+`[f, zero]`. This helps focus on the *zeros* of `f`. When
 `f(x)=log(x)-2`, plot `f` and the line $y=0$.  Identify the lone zero.
 
 ```
@@ -668,20 +645,31 @@ numericq(val, .5)
 The fact that only a finite number of points are used in a graph can
 introduce artifacts. An example can appear when plotting
 [sinusoidal](http://en.wikipedia.org/wiki/Aliasing#Sampling_sinusoidal_functions)
-functions. An example is the graph of `f(x) = sin(500*pi*x)` over `[0,1]`. Make the graph. What do you see:
+functions. An example is the graph of `f(x) = sin(500*pi*x)` over `[0,1]`.
+
+Make its graph using 250 evenly spaced points, as follows:
+
+```noout
+xs = linspace(0, 1, 250)
+f(x) = sin(500*pi*x)
+plot(xs, f.(xs))
+```
 
 ```
 choices = [L"It oscillates wildly, as the period is $T=2\pi/(500 \pi)$ so there are 250 oscillations.",
 	"It should oscillate evenly, but instead doesn't oscillate very much near 0 and 1",
-	L"It looks like the graph of $f(x) = \sin(2\pi x)$."]
+	L"Oddly, it looks exactly like the graph of $f(x) = \sin(2\pi x)$."]
 ans = 3
 radioq(choices, ans)
 ```
 
-Does the graph of `f(x)=sin(500*pi*x)` look like the same function over the interval $[0,2\pi]$ as it does over $[0,1]$?
+The algorithm to plot a function works to avoid aliasing issues. Does the graph generated by `plot(f, 0, 1)` look the same, as the one above?
 
 ```
-choices = ["Yes", "No"]
+choices = ["Yes",
+"No, but is still looks pretty bad, as there aren't enough points used to capture the 250 periods",
+"No, the graph shows clearly all 250 periods."
+]
 ans = 2
 radioq(choices, ans)
 ```
@@ -695,9 +683,9 @@ the function over the specified interval $[a,b]$. For some functions
 this can produce poor graphs, especially when there is a vertical
 asymptote. Here are two ways to restrict this with `Plots`:
 
-- Add an argument `ylim = (m, M)` where `m` and `M` are the min and maximum of the range you wish to show.
+- Add an argument `ylims = (m, M)` where `m` and `M` are the min and maximum of the range you wish to show.
 
-- trim the $y$ values returned by the function so that if they are bigger than 10, say, they are not shown. For this, a function like following can be useful:
+- trim the $y$ values returned by the function so that if they are bigger than 10, say, they are not shown. For this, a function like the following can be useful:
 
 ```
 trim(f; c=10) =  x -> abs(f(x)) > c ? NaN : f(x)
@@ -731,14 +719,14 @@ f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
 xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
-plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
+plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi, aspect_ratio=:equal)
 ```
 
 ```
 choices = [
 "Four sharp points, like a star",
 "Four petals, like a flower",
-"A circle",
+"An ellipse",
 "A straight line"
 ]
 ans = 2
@@ -749,39 +737,59 @@ radioq(choices, ans)
 
 ###### Question
 
-Make this plot for the specific values of the parameters `r` and `rho`. What shape best describes it?
+For these next questions, we use this function:
+
+```
+function spirograph(R, r, rho)
+  f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
+  g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
+
+  plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi, aspect_ratio=:equal)
+end
+```
+
+Make this plot for the following specific values of the parameters `R`, `r`, and `rho`. What shape best describes it?
+
+```verbatim
+R, r, rho = 1, 3/4, 1/4
+```
+
+```
+choices = [
+"Four sharp points, like a star",
+"Four petals, like a flower",
+"An ellipse",
+"A straight line",
+"None of the above"
+]
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+
+Make this plot for the following specific values of the parameters `R`, `r`, and `rho`. What shape best describes it?
 
 ```verbatim
 R, r, rho = 1, 1/2, 1/4
-f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
-g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
-
-plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 ```
 choices = [
 "Four sharp points, like a star",
 "Four petals, like a flower",
-"A circle",
-"A straight line"
+"An ellipse",
+"A straight line",
+"None of the above"
 ]
 ans = 3
-radioq(choices, ans)
+radioq(choices, ans,keep_order=true)
 ```
 
 
-
-###### Question
-
-Make this plot for the specific values of the parameters `r` and `rho`. What shape best describes it?
+Make this plot for the specific values of the parameters `R`, `r`, and `rho`. What shape best describes it?
 
 ```verbatim
 R, r, rho = 1, 1/4, 1
-f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
-g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
-
-plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi)
 ```
 
 ```
@@ -789,8 +797,31 @@ choices = [
 "Four sharp points, like a star",
 "Four petals, like a flower",
 "A circle",
-"A straight line"
+"A straight line",
+"None of the above"
 ]
 ans = 2
-radioq(choices, ans)
+radioq(choices, ans, keep_order=true)
 ```
+
+
+
+Make this plot for the specific values of the parameters `R`, `r`, and `rho`. What shape best describes it?
+
+```verbatim
+R, r, rho = 1, 1/8, 1/4
+```
+
+```
+choices = [
+"Four sharp points, like a star",
+"Four petals, like a flower",
+"A circle",
+"A straight line",
+"None of the above"
+]
+ans = 5
+radioq(choices, ans, keep_order=true)
+```
+
+

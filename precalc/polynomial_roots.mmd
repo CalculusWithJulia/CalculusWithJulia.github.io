@@ -1,9 +1,5 @@
 # Roots of a polynomial
 
-```nocode, noout
-using Plots
-plotly()
-```
 
 The
 [roots](http://en.wikipedia.org/wiki/Properties_of_polynomial_roots)
@@ -15,14 +11,10 @@ two roots, $0$ and $1$. A simple graph verifies this:
 using Plots
 f(x) = x^2 - x
 plot(f, -2, 2)
+plot!(zero)
 ```
 
-The graph crosses the $x$-axis at both $0$ and $1$. If highlighting of these points is of interest, these intersections can be made more explicit  by adding the line $f(x)=0$ to the graph, as follows.)
-
-```
-plot(f, -2, 2)
-plot!(zero)          # or plot!(x -> 0)
-```
+The graph crosses the $x$-axis at both $0$ and $1$.
 
 What is known about polynomial roots? Some simple questions might be:
 
@@ -34,7 +26,7 @@ We look at such questions here.
 
 
 We begin with a comment that ties together two concepts related to
-polynomials. It allows us to speak of roots or factors interchangebly:
+polynomials. It allows us to speak of roots or factors interchangeably:
 
 
 > The [factor theorem](http://en.wikipedia.org/wiki/Factor_theorem)
@@ -123,12 +115,16 @@ floating point issues are accounted for. `Julia` has a built-in method
 to compute polynomial evaluations this way.
 
 
-The `SymPy` package can carry out polynomial long division. This nieve
-attempt to divide won't "just work" though:
+The `SymPy` package can carry out polynomial long division. We load the package and define a variable that is assumed to be a real number:
 
 ```
 using SymPy
-x = @vars x real=true)
+@vars x real=true
+```
+
+This nieve attempt to divide won't "just work" though:
+
+```
 (x^4 + 2x^2 + 5) / (x-2)
 ```
 
@@ -142,7 +138,7 @@ For this task, `divrem` is available:
 q, r = divrem(x^4 + 2x^2 + 5, x - 2)
 ```
 
-The answer is the tuple of the quotient and remainder. The quotient is found with `div` or `÷` and the remainder with `rem`.
+The answer is a tuple containing the quotient and remainder. The quotient itself could be found with `div` or `÷` and the remainder with `rem`.
 
 ```
 
@@ -192,7 +188,7 @@ coefficient and $p$ is a factor of the constant.
 An immediate consequence is that if the polynomial with integer
 coefficients is monic, then any rational root must be an integer.
 
-This gives a finite -- though possibly large -- set of values that can
+This gives a finite---though possibly large---set of values that can
 be checked to exhaust the possibility of a rational root. By
 hand this can be tedious, though may be speeded up using synthetic
 division. It is one of the mainstays of high school algebra.
@@ -200,20 +196,20 @@ division. It is one of the mainstays of high school algebra.
 
 However, one of the great triumphs of computer algebra is the ability
 to factor polynomials with integer (or rational) coefficients over the
-rational nunbers. This is typically done by first factoring over
+rational numbers. This is typically done by first factoring over
 modular numbers (akin to those on a clock face) and has nothing to do
 with the rational root test.
 
 `SymPy` can quickly find such a factorization, even
 for quite large polynomials.
 
-for example, factoring $p = 2x^4 + x^3 -19x^2 -9x +9$. This has
+For example, factoring $p = 2x^4 + x^3 -19x^2 -9x +9$. This has
 *possible* rational roots of plus or minus $1$ or $2$ divided by $1$,
-$3$, or $9$ -- $12$ possible answers for this modest question. By hand
+$3$, or $9$---$12$ possible answers for this modest question. By hand
 that can be a bit of work, but `factor` does it without fuss:
 
 ```
-p = 2x^4 +  x^3 -19x^2 -9x +9
+p = 2x^4 + x^3 - 19x^2 - 9x + 9
 factor(p)
 ```
 
@@ -294,7 +290,7 @@ polynomials may be solvable by radicals, just not all of them.)
 
 
 
-Finding roots with `SymPy` can be also  with its `solve`
+Finding roots with `SymPy` can be also  through its `solve`
 function, a function which also has a more general usage, as it can solve
 simple expressions or more than one expression. Here we illustrate
 that `solve` can easily handle quadratic expressions:
@@ -413,7 +409,7 @@ p = 8x^4 - 8x^2  + 1
 rts = solveset(p)
 ```
 
-The `rts` object does not allow immediate access to its elements. For that, as `rts` is a finite set, `elements` will work:
+The `rts` object does not allow immediate access to its elements. For that, as `rts` is a finite set, `elements` will work to return a vector:
 
 ```
 elements(rts)
@@ -433,7 +429,7 @@ equation and look for the roots. This feeling is perhaps motivated by the exampl
 textbooks to be worked by hand, which necessarily focus on smallish
 solutions. But, in general, without some sense of where the roots are,
 an informative graph itself can be hard to produce. That is, technology doesn't
-displace thinking -- it only supplements it.
+displace thinking---it only supplements it.
 
 Take for example, the polynomial $(x-20)^5 - (x-20) + 1$. In this form
 we might think the roots are near 20. However, were we presented with
@@ -526,7 +522,7 @@ $p$ flipped through the $y$ axis. But the coefficients of $q$ are the
 same as $p$, except for the odd-indexed coefficients ($a_1, a_3,
 \dots$) have a changed sign.  Continuing with our example, for $q(x) = -x^5 +
 x + 1$ we get the new sign pattern `-`, `+`, `+` which yields one sign
-change. That is there *must* be a negative real root, and indeed there
+change. That is, there *must* be a negative real root, and indeed there
 is, $x \approx -1.1673$.
 
 For another example, if we looked at $f(x) = x^5 - 100x^4 + 4000x^3 -
@@ -577,6 +573,25 @@ from which it follows that $|x| \leq h$, as desired.
 For our polynomial $x^5 -x + 1$ we have the sum above is $3$. The lone
 real root is approximately $-1.1673$ which satisfies $|-1.1673| \leq
 3$.
+
+## Other numeric methods
+
+The `PolynomialZeros` package offers an alternative to using `SymPy`
+to find roots of polynomial functions. Its `poly_roots` functions
+takes a function and a argument specifying a domain---one of `Over.C`
+(complex), `Over.R` (real), `Over.Q` (rational), or `Over.Z`
+(integer). The domain argument narrows the found roots to that
+domain. This package leverages others, but also provides a function to
+solve over the reals which uses an algorithm employing both
+Descartes's rule and a Cauchy-like bound. It assumes the polynomial
+has no double roots, though an argument can passed on that restricts
+that assumption.
+
+```
+using PolynomialZeros
+f(x) = x^5 - x - 1
+poly_roots(f, Over.R)
+```
 
 ## Questions
 

@@ -8,7 +8,7 @@ when wind effects are not known. A two-dimensional picture represents
 the trajectory with $y$ as the height and $x$ the distance from the
 shooter. The projectile itself has three main quantities of
 interest: its position, its velocity and its acceleration. Each in
-turn has two components -- one in the $x$ direction and one in the
+turn has two components---one in the $x$ direction and one in the
 $y$.
 
 
@@ -29,13 +29,14 @@ $$~
 ~$$
 
 
-
 {{{xva_trajectory}}}
 
-We have used the notation $\langle x,~ y \rangle$ to collect the two
-values into a single object, which we indicate through a label on the
-variable name. These are vectors, and we shall see they find use far
-beyond this application.
+Don't spend time thinking about the formulas if they are
+unfamiliar. The point emphasized here is that we have used the
+notation $\langle x,~ y \rangle$ to collect the two values into a
+single object, which we indicate through a label on the variable
+name. These are vectors, and we shall see they find use far beyond
+this application.
 
 
 
@@ -45,7 +46,7 @@ the distance formula $\sqrt{(x_1 - x_0)^2 + (y_1 - y_0)^2}$.  A line
 segment can be given a direction by assigning an initial point and a
 terminal point. A directed line segment has both a direction and a
 magnitude. A vector is an abstraction where just these two properties
--- a direction and a magnitude -- are intrinsic. While a directed line
+-- a direction and a magnitude---are intrinsic. While a directed line
 segment can be represented by a vector, a single vector describes all
 such line segments found by translation. That is, how the the vector
 is located when visualized is for convenience, it is not a characteristic of
@@ -77,7 +78,7 @@ Two operations on vectors are fundamental.
   factor of $\lvert c \rvert$ and switches the direction of the vector
   by 180 degree when $c < 0$. A *unit vector* is one with magnitude 1,
   and, except for the $\vec{0}$ vector, can be formed from $\vec{v}$ by dividing
-  $\vec{v}$ by its magnitude. A unit vector gives the direction of a vector and its norm the magnitude.
+  $\vec{v}$ by its magnitude. A vector's two parts are summarized by its direction given by a unit vector gives and its norm given by the magnitude.
 
 
 
@@ -108,7 +109,7 @@ vectors in two dimensions are $e_x = \langle 1,~ 0 \rangle$ and $e_y =
 \langle 0,~ 1 \rangle$. Any two dimensional vector can be written
 uniquely as $a e_x + b e_y$ for some pair of scalars $a$ and $b$ (or as, $\langle a, b \rangle$). This
 is true more generally where the two vectors are not the standard unit
-vectors -- they can be *any* two non-parallel vectors.
+vectors---they can be *any* two non-parallel vectors.
 
 
 
@@ -185,16 +186,13 @@ In `Julia` there are many uses for vectors outside of physics
 applications. A vector in `Julia` is just a one-dimensional collection
 of similarly typed values. Such objects find widespread usage. For example:
 
-- In plotting graphs with `Julia`, vectors are used to hold the $x$
-and $y$ coordinates of a collection of points to plot and connect with
-straight lines. There can be hundreds of such points in a plot.
+- In plotting graphs with `Julia`, vectors are used to hold the $x$ and $y$ coordinates of a collection of points to plot and connect with straight lines. There can be hundreds of such points in a plot.
 
-- Vectors are a a natural container to hold the roots of a polynomials.
+- Vectors are a natural container to hold the roots of a polynomial or zeros of a function.
 
 - Vectors may be used to record the state of an iterative process.
 
-- Vectors are naturally used to represent a data set, such as arise
-when collecting survey data.
+- Vectors are naturally used to represent a data set, such as arise when collecting survey data.
 
 Creating higher-dimensional vectors is similar to creating a
 two-dimensional vector, we just include more components:
@@ -213,7 +211,7 @@ values can naturally arise, some applications are even naturally
 represented in terms of vectors of vectors. Look at the output of these two vectors:
 
 ```
-["one", "two", "three"]  # Array{T, 1} is shorthand for Vector{T}. Here T -- the type -- is ASCIIString
+["one", "two", "three"]  # Array{T, 1} is shorthand for Vector{T}. Here T---the type---is String
 ```
 
 ```
@@ -393,8 +391,139 @@ and `similar` to make a similar-sized vector (with no particular
 values assigned).
 
 
+## Applying functions element by element to values in a vector
+
+Functions such as `sum` or `length` are known as *reductions* as they reduce the "dimensionality" of the data: a vector is in some sense $1$-dimensional, the sum or length $0$-dimensional.  Applying a reduction is straightforward, it is just a regular function call.
+
+Other desired operations with vectors act differently. Rather than reduce a collection of values using some formula, the goal is to apply some formula to *each* of the values, returning a modified vector. A simple example might be to square each element, or subtract the average value from each element. An example comes from statistics. When computing a variance, we start with data $x_1, x_2, \dots, x_n$ and along the way form the values $(x_1-\bar{x})^2, (x_2-\bar{x})^2, \dots, (x_n-\bar{x})^2$.
+
+Such things can be done in *many* differents ways. Here we describe three, but will primarily utilize the first.
+
+### Broadcasting a function call
+
+If we have a vector, `xs`, and a function, `f`, to apply to each value, there is a simple means to achieve this task. By adding a "dot" between the function name and the parenthesis that enclose the arguments, instructs `Julia` to "broadcast" the function call. The details allow for more flexibility, for this purpose, broadcasting will take each value in `xs` and apply `f` to it, returning a vector of the same size as `xs`. For example, the following will square each value in a vector:
+
+```
+xs = [1, 1, 3, 4, 7]
+f(x) = x^2
+f.(xs)
+```
+
+The task of subtracting a number then squaring would be handled with a function like:
+
+```
+f(x, c) = (x-c)^2
+```
+
+Can we use this to compute the values above? Yes:
+
+```
+f.(xs, mean(xs))
+```
+
+That succint notation hides some neat details. The term "broadcast"
+implies that the containers for `xs` and `mean(xs)` are matched (if
+possible), in this case, the scalar number `mean(xs)` is broadcast
+into a vector and then the two vectors have subtraction performed, the
+squaring. In addition, this is all done in a performant manner.
+
+### The map function
+
+The `map` function is very much related to broadcasting and similarly named functions are found in many different programming languages. (The "dot" broadcast is mostly limited to `Julia` and based on a similar usage of a dot in `MATLAB`.) For those familiar with other languages, using `map` may seem more natural. Here is an example:
+
+```
+f(x) = x^2
+map(f, xs)    # [x1, x2, ..., xn] -> [f(x1), f(x2), ..., f(xn)]
+```
+
+### Comprehensions
+
+In mathematics, set notation is often used to describe elements in a set.
+
+For example, the first 5 cubed numbers can be described by:
+
+$$~
+\{x^3: x \text{ in } 1, 2,\dots, 5\}
+~$$
+
+Comprehension notation is similar. The above could be created in `Julia` with:
+
+```
+xs = [1,2,3,4,5]
+[x^3 for x in xs ]
+```
 
 
+Something similar could be done with two lines, as:
+
+```
+f(x) = x^3
+f.(xs)
+```
+
+The comprehension has the advantage of working with an expression of `x`, and not a pre-defined or anonomously defined function.
+
+
+Another typical example might include a condition, such as, the numbers divisible by $7$ between $1$ and $100$. Set notation might be:
+
+$$~
+\{x: rem(x, 7) = 0 \text{ for } x \text{ in } 1, 2, \dots, 100\}.
+~$$
+
+This would be read: "the set of $x$ such that the remainder on division by $7$ is $0$ for all x in $1, 2, \dots, 100$."
+
+In `Julia`, a comprehension can include an `if` classes to mirror,
+somewhat, the math notation. For example, the above would become
+(using `1:100` as a means to create the numbers $1,2,\dots, 100$, as will be described in a later section):
+
+```
+[x for x in 1:100 if rem(x,7) == 0]
+```
+
+
+Comprehensions can be a convenient means to describe a collection of numbers, especially when no function is defined, but the simplicity of the broadcast notion leads to its more common use in these notes.
+
+
+##### Example: creating a "T" table for creating a graph
+
+The process of plotting a function is usually first taught by generating a "T" table: values of $x$ and corresponding values of $y$. These pairs are then plotted on a Cartesian grid and the points are connected with lines to form the graph. Generating a "T" table in `Julia` is easy: create the $x$ values, then create the $y$ values for each $x$.
+
+To be concrete, let's generate $7$ points to plot $f(x) = x^2$ over $[-1,1]$.
+
+The first task is to create the `xs`. We will see later, more convenient ways to generate patterned data using either the range operator or `linspace`, but for now, we do this by hand:
+
+```
+a,b, n = -1, 1, n
+d = (b-a)/(n-1)
+xs = [a, a+d, a+2d, a+3d, a+4d, a+5d, a+6d]  # 7 points
+```
+
+To get the corresponding $y$ values, we can use a "dot":
+
+```
+f(x) = x^2
+ys = f.(xs)
+```
+
+Vectors can be compared together by combining them into a separate container, as follows:
+
+```
+[xs ys]
+```
+
+(If there is a space between objects they are horizontally combined. In our construction of vectors using `[]` we used a comma for vertical combination. More generally we should use a `;` for vertical concatenation.)
+
+
+
+```
+note(L"""
+
+The style generally employed here is to use plural variable names for a collection
+of values, such as the vector of $y$ values and singular names when a
+single value is being referred to, leading to expressions like "`x in xs`".
+
+""")
+```
 
 ## Questions
 
@@ -504,4 +633,46 @@ v = [1,1,2,3,5,8,13,21]
 val = prod(v)
 numericq(val)
 ```
+
+###### Question
+
+If `xs=[1,2,3,4]` and `f(x) = x^2` which of these will not produce the vector `[1,4,9,16]`?
+
+```
+choices = [q"f.(xs)", q"map(f, xs)", q"[f(x) for x in xs]", "All three of them work"]
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+###### Question
+
+Let $f(x) = \sin(x)$ and $g(x) = \cos(x)$. In the interval $[0, 2\pi]$ the zeros of $g(x)$ are given by
+
+```
+zs = [pi/2, 3pi/2]
+```
+
+If `f(x) = sin(x)` what construct will give the function values of $f$ at the zeros of $g$?
+
+```
+choices = [q"f(zs)", q"f.(zs)", q"f(.zs)", q".f(zs)"]
+ans = 2
+radioq(choices, ans)
+```
+
+###### Question
+
+If `zs = [1,4,9,16]` which of these commands will return `[1.0, 2.0, 3.0, 4.0]`?
+
+```
+choices = [
+q"sqrt(zs)",
+q"sqrt.(zs)",
+q"zs^(1/2)",
+q"zs^(1./2)"
+]
+ans = 2
+radioq(choices, ans)
+```
+
 

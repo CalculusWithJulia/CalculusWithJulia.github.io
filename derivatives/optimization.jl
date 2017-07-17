@@ -61,5 +61,27 @@ perimeter_area_graphic = gif_to_data(imgfile, caption)
 # perimeter_area_graphic = gif_to_data(imgfile, caption)
 
                             
+lhopital_40 = gif_to_data("./fcarc-may2016-fig40-300.gif", L"""
+
+Image number $40$ from l'Hopital's calculus book (the first). Among all the cones that can be inscribed in a sphere, determine which one has the largest lateral area. (From \url{http://www.ams.org/samplings/feature-column/fc-2016-05}.)
+
+
+""")
+
+                            
+lhopital_43 = gif_to_data("./fcarc-may2016-fig43-250.gif", L"""
+
+Image number $43$ from l'Hopital's calculus book (the first). A
+traveler leaving location $C$ to go to location $F$ must cross two
+regions separated by the straight line $AEB$. We suppose that in the
+region on the side of $C$, he covers distance $a$ in time $c$, and
+that on the other, on the side of $F$, distance $b$ in the same time
+$c$. We ask through which point $E$ on the line $AEB$ he should pass,
+so as to take the least possible time to get from $C$ to $F$? (From
+\url{http://www.ams.org/samplings/feature-column/fc-2016-05}.)
+
+
+""")
+
 
 end

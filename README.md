@@ -52,8 +52,7 @@ The use of functions within calculus is widespread. This section shows how the b
 
 - [Functions](precalc/functions.html)
 
-A graphing calculator makes it very easy to produce a graph. Within `Julia`, the add-on `Gadfly` package, used through the `Plots` package,k
-makes it even easier.
+A graphing calculator makes it very easy to produce a graph. `Julia`, using the `Plots` package, makes it even easier and more flexible.
 
 - [Graphs of Functions](precalc/plotting.html)
 

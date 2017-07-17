@@ -11,9 +11,9 @@ function make_taylor_plot(u, a, b, k)
     k = 2k
     plot(u, a, b, title="plot of T_$k", linewidth=5, legend=false, size=fig_size, ylim=(-2,2.5))
     if k == 1
-        plot!(zero, a, b)
+        plot!(zero, linspace(a, b,100))
     else
-        plot!(taylor(u, x, 0, k), a, b)
+        plot!(taylor(u, x, 0, k), linspace(a, b, 100))
     end
 end
 
@@ -33,7 +33,7 @@ gif(anim, imgfile, fps = 1)
 
 caption = L"""
 
-Illustration of Taylor polynomial of degree $k$, $T_k(x)$, and its graphcial similarity to the graph of the function $1 - cos(x)$.
+Illustration of the Taylor polynomial of degree $k$, $T_k(x)$, at $c=0$ and its graph overlayed on that of the function $1 - \cos(x)$.
 
 """
 

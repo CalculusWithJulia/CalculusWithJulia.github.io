@@ -1,13 +1,37 @@
 # Taylor Polynomials and other Approximating Polynomials
 
-The tangent line may be thought of as the "best" linear approximation to a function at a point $c$. What would be the best "quadratic" approximation? The best $n$th-degree polynomial approximation. We will see in this section that the Taylor Polynomial is the appropriate generalization of the the tangent line.
+The tangent line was seen to be the "best" linear approximation to a
+function at a point $c$. Approximating a function by a linear function
+gives an easier to use approximation at the expense of accuracy. It
+suggests a tradeoff between ease and accuracy. Is there a way to gain more accuracy at the expense of ease?
+
+Quadratic functions are still fairly easy to work with. Is it possible to find the best "quadratic"
+approximation to a function at a point $c$.
+
+More generally, for a given $n$, what would be the best polynomial of
+degree $n$ to approximate $f(x)$ at $c$?
+
+We will see in this section how the Taylor polynomial answers these
+questions, and is the appropriate generalization of the tangent
+line approximation.
 
 
 {{{taylor_animation}}}
 
-## Secant line and the tangent line approximation
+## The secant line and the tangent line 
 
-To motivate, we have two related formulas. Suppose we have a function $f(x)$ which is defined in a neighborhood of $c$ and has as many derivatives as we care to take at $c$. 
+To motivate, we have two related formulas. Suppose we have a function
+$f(x)$ which is defined in a neighborhood of $c$ and has as many
+derivatives as we care to take at $c$.
+
+
+The secant line connecting $(c, f(c))$ and $(c+h, f(c+h))$ for a value of $h>0$ is given in point-slope form by
+
+$$~
+sl(x) = f(c) + \frac{(f(c+h) - f(c))}{h} \cdot (x-c).
+~$$
+
+The slope is the familiar approximation to the derivative: $(f(c+h)-f(c))/h$.
 
 The *tangent line* to the graph of $f(x)$ at $x=c$ is described by the function
 
@@ -15,31 +39,36 @@ $$~
 tl(x) = f(c) + f'(c) \cdot(x - c).
 ~$$
 
-We have seen earlier that the Mean Value Theorem will imply that there exists some $\xi$ between $x$ and $c$ for which:
+The secant line is important here, as it approximates the tangent
+line, which in turn is important, as it is the linear function that
+best approximates the function at the point $(c, f(c))$. This is
+quantified by the *Mean Value Theorem* which states that there exists
+some $\xi$ between $x$ and $c$ for which:
 
 $$~
 f(x) - tl(x) = \frac{f''(\xi)}{2} \cdot (x-c)^2.
 ~$$
 
-The secant line for a value of $h>0$ is given by
 
-$$~
-sl(x) = f(c) + \frac{(f(c+h) - f(c))}{h} \cdot (x-c).
-~$$
-
-This is similar, only the slope of the secant line is replaced by the slope of the tangent at $c$ in the first formula.
+(The term "best" is deserved, as any other straight line will differ
+at least in an $(x-c)$ term, which in general is larger than an
+$(x-c)^2$ term for $x$ "near" $c$.)
 
 
-Let's take a small detour to define some notation. Instead of writing our two points as $c$ and $c+h$, let's use $x_0$ and $x_1$. For any set of points $x_0, x_1, \dots$, let $m$ be the smallest of them and $M$ the largest.
+The secant line also has an interpretation that will generalize---it is the smallest order polynomial that goes through the points $(c,f(c))$ and $(c+h, f(c+h))$. This is obvious from the construction---as this is how the slope is derived---but from the formula itself requires showing $tl(c) = f(c)$ and $tl(c+h) = f(c+h)$. The former is straightforward, as $(c-c) = 0$, so clearly $tl(c) = f(c)$. The latter requires a bit of algebra.
 
-Define the **divided differences** of $f$ inductively, as follows:
+
+Now, we take a small detour to define some notation. Instead of
+writing our two points as $c$ and $c+h$, let's use $x_0$ and
+$x_1$. For any set of points $x_0, x_1, \dots, x_n$,
+define the **divided differences** of $f$ inductively, as follows:
 
 $$~
 \begin{align}
 f[x_0] &= f(x_0) \\
 f[x_0, x_1] &= \frac{f[x_1] - f[x_0]}{x_1 - x_0}\\
 \cdots &\\
-f[x_0, x_1, x_2, \dots, x_n] &= \frac{f[x_1, \dots, x_n] - f[x_0, x_1, x_2, \dots, x_{n-1}]}{M-m}.
+f[x_0, x_1, x_2, \dots, x_n] &= \frac{f[x_1, \dots, x_n] - f[x_0, x_1, x_2, \dots, x_{n-1}]}{x_n - x_0}.
 \end{align}
 ~$$
 
@@ -47,23 +76,24 @@ f[x_0, x_1, x_2, \dots, x_n] &= \frac{f[x_1, \dots, x_n] - f[x_0, x_1, x_2, \dot
 We see the first two values look familiar, and to generate more we just take certain ratios akin to those formed when finding a secant line.
 
 
-With this notation the secant line can be reexpressed as:
+With this notation the secant line can be re-expressed as:
 
 $$~
 sl(x) = f[c] + f[c, c+h] \cdot (x-c)
 ~$$
 
-If we think of $f[c, c+h]$ as be an approximate *first* derivative, we have an even stronger relationship to the tangent line.
+If we think of $f[c, c+h]$ as an approximate *first* derivative, we
+have an even stronger parallel between a secant line $x=c$ and the
+tangent line at $x=c$.
 
 To see that this isn't far-fetched, we investigate with `SymPy`. First we create a recursive function to compute the divided differences:
 
 ```
 divided_differences(f, x) = f(x)
 function divided_differences(f, x, xs...)
-   xis = vcat(x, xs...)
-   m, M = minimum(xis), maximum(xis)
-   (divided_differences(f, xis[2:end]...) - divided_differences(f, xis[1:end-1]...)) / (M-m)
-end			   
+    xs = sort(vcat(x, xs...))
+    (divided_differences(f, xs[2:end]...) - divided_differences(f, xs[1:end-1]...)) / (xs[end] - xs[1])
+end	
 ```
 
 With `SymPy` we have, using $u$ in place of $f$:
@@ -83,54 +113,125 @@ We can take a limit and see the familiar (yet differently represented) value of 
 limit(ex, h => 0)
 ```
 
-Before proceeding, let's look at one more:
+Now, let's look at:
 
 ```
-ex = divided_differences(u, c-h, c, c+h)
+ex = divided_differences(u, c, c+h, c+2h)
+simplify(ex)
 ```
 
-Not pretty, but the limit is:
+Not so bad after simplification. The limit shows this to be an approximation to the second derivative divided by $2$:
 
 ```
 limit(ex, h => 0)
 ```
 
-Well, if you recognize $(1/2) \cdot u''(c)$, that is.
+(The expression is, up to a divisor of $2$, the second order forward
+[difference equation](http://tinyurl.com/n4235xy), a well-known
+approximation to $f''$.)
 
-In general, we have this [theorem](http://tinyurl.com/zjogv83):
 
-> Suppose $m=x_0 < x_1 < x_2 < \cdots < x_n= M$ *and* $f$ has $n$ continuous derivatives then there exists a value $\xi$ where $m \leq \xi \leq M$ satisfying
+This relationship between higher-order divided differences and higher-order derivatives generalizes. This is expressed in this
+[theorem](http://tinyurl.com/zjogv83):
+
+> Suppose $x_0,x_1, x_2, \dots, x_n$ are distinct points with $m$ and $M$ being the smallest and largest of them. If $f$ has $n$
+> continuous derivatives then there exists a value $\xi$ where $m <\xi<M$ satisfying:
+
 $$~
 f[x_0, x_1, \dots, x_n] = \frac{1}{n!} \cdot f^{(n)}(\xi).
 ~$$
 
 This immediately applies to the above, where we parameterized by $h$:
-$x_0=c-h, x_1=c, x_2 = c+h$. For then, as $h$ goes to $0$, it must be that $m, M
+$x_0=c, x_1=c+h, x_2 = c+2h$. For then, as $h$ goes to $0$, it must be that $m, M
 \rightarrow c$, and so the limit of the divided differences must
 converge to $(1/2!) \cdot f^{(2)}(c)$, as $f^{(2)}(\xi)$ converges to $f^{(2)}(c)$.
 
+A proof based on Rolle's theorem appears in the appendix.
 
 
 ## Quadratic approximations
 
-Why the fuss? The answer comes from the from a fact due to Newton about *interpolating* polynomials. Consider a function $f$ and $n+1$ points $x_0$, $x_1, \dots, x_n$. Then an interpolating polynomial is *the* polynomial of least degree that goes through each point $(x_i, f(x_i)$.
-
-For $x_0=c$ and $x_1=c+h$, this is just the secant line approximation. We want to consider 3 points, which we take to be $c-h$, $c$, and $c+h$. The [Newton form](https://en.wikipedia.org/wiki/Newton_polynomial) of such a polynomial can be written:
+Why the fuss? The answer comes from a result of Newton on
+*interpolating* polynomials. Consider a function $f$ and $n+1$ points
+$x_0$, $x_1, \dots, x_n$. Then an interpolating polynomial is *the*
+polynomial of least degree that goes through each point $(x_i,
+f(x_i))$. The [Newton form](https://en.wikipedia.org/wiki/Newton_polynomial) of such a
+polynomial can be written as:
 
 $$~
-f[x_0] + f[x_0,x_1] \cdot (x-x_0) + f[x_0, x_1, x_2] \cdot (x-x_0) \cdot (x-x_1).
+f[x_0] + f[x_0,x_1] \cdot (x-x_0) + f[x_0, x_1, x_2] \cdot (x-x_0) \cdot (x-x_1) + \cdots + f[x_0, x_1, \dots, x_n] \cdot (x-x_0)\cdot \cdots \cdot (x-x_{n-1}).
 ~$$
 
+The case $n=0$ gives the value $f[x_0] = f(c)$, which can be interpreted as the slope-$0$ line that goes through the point $(c,f(c))$.
 
-If we let $x_0 = c-h$, $x_1=c$ and $x_2=c+h$, then as $h$ goes to zero, this becomes:
+We are familiar with the case $n=1$, with $x_0=c$ and $x_1=c+h$, this becomes our secant-line formula:
+
+$$~
+f[c] + f[c, c+h](x-c).
+~$$
+
+As mentioned, we can verify directly that it
+interpolates the points $(c,f(c))$ and $(c+h, f(c+h))$. He we let `SymPy` do the algebra:
+
+```
+p = divided_differences(u, c) + divided_differences(u, c, c+h) * (x-c)
+p(x => c) - u(c)
+```
+
+and
+
+```
+p(x => c+h) - u(c+h)
+```
+
+
+Now for something new. Take the $n=2$ case with
+$x_0 = c$, $x_1 = c + h$, and $x_2 = c+2h$. Then the interpolating polynomial is:
+
+$$~
+f[c] + f[c, c+h](x-c) + f[c, c+h, c+2h](x-c)(x-(c+h)).
+~$$
+
+We add the next term to our previous polynomial and simplify
+
+```
+p = p + divided_differences(u, c, c+h, c+2h)*(x-c)*(x-(c+h))
+simplify(p)
+```
+
+We can check that this interpolates the three points. Notice that at
+$x_0=c$ and $x_1=c+h$, the last term, $f[x_0, x_1,
+x_2]\cdot(x-x_0)(x-x_1)$, vanishes, so we already have the polynomial
+interpolating there. Only  
+value $x_2=c+2h$ remains to be checked:
+
+```
+p(x => c+2h) - u(c+2h)
+```
+
+Hmm, doesn't seem correct---that was supposed to be $0$. The issue isn't the math, it is that SymPy needs to be encouraged to simplify:
+
+```
+simplify(p(x => c+2h) - u(c+2h))
+```
+
+By contrast, at the point $x=c+3h$ we have no guarantee of interpolation, and indeed don't, as this expression is non-zero:
+
+```
+simplify(p(x => c+3h) - u(c+3h))
+```
+
+Interpolating polynomials are of interest in their own right,  but for now we want to use them as motivation for the best polynomial approximation of a certain degree for a function. Motivated by how the secant line leads to the tangent line, we note that coefficients of the quadratic interpolating polynomial above have limits as $h$ goes to $0$, leaving this polynomial:
 
 $$~
 f(c) + f'(c) \cdot (x-c) + \frac{1}{2!} \cdot f''(c) (x-c)^2.
 ~$$
 
+This is clearly related to the tangent line approximation of $f(x)$ at
+$x=c$, but carrying an extra quadratic term.
 
-
-This is clearly related to the tangent line, but has an extra quadratic term. Here we visualize with the function $\cos(x)$ at $c=0$.
+Here we visualize the approximations with
+the function $f(x) = \cos(x)$ at $c=0$.
 
 ```
 f(x) = cos(x)
@@ -138,16 +239,23 @@ a, b = -pi/2, pi/2
 c = 0
 h = 1/4
 
-fp = N(diff(f(x), x)(x => c))
-fpp = N(diff(f(x), x, x)(x => c))
+fp = -sin(c)  # by hand, or use diff(f), ...
+fpp = -cos(c)
+
 
 p = plot(f, a, b, linewidth=5, legend=false, color=:blue)
-plot!(p, x -> f(c) + fp*(x-c), a, b, color=:green, alpha=0.25, linewidth=5);                      # tangent line is flat
-plot!(p, x -> f(c) + fp*(x-c) + (1/2)*fpp*(x-c)^2, a, b, color=:green, alpha=0.25, linewidth=5);  # a parabola
+plot!(p, x->f(c) + fp*(x-c);  color=:green, alpha=0.25, linewidth=5)                     # tangent line is flat
+plot!(p, x->f(c) + fp*(x-c) + (1/2)*fpp*(x-c)^2; color=:green, alpha=0.25, linewidth=5)  # a parabola
 p
 ```
 
-The mean value theorem, as in the case of the tangent line, will guarantee the existence of $\xi$ between $c$ and $c+h$, for which
+This graph illustrates that the extra quadratic term can track the
+curvature of the function, whereas the tangent line itself can't. So,
+we have a polynomial which is a "better" approximation, is it the best
+approximation?
+
+
+The mean value theorem, as in the case of the tangent line, will guarantee the existence of $\xi$ between $c$ and $x$, for which
 
 $$~
 f(x) - \left(f(c) + f'(c) \cdot(x-c) + (1/2)\cdot f''(c) \cdot (x-c)^2 \right) =
@@ -166,16 +274,17 @@ f0 = divided_differences(f, x0)
 fd = divided_differences(f, x0, x1)
 fdd = divided_differences(f, x0, x1, x2)
 
-p = plot(f, a, b,                 color=:blue, linewidth=5, legend=false)
-plot!(p, x -> f0 + fd*(x-x0),     color=:green, alpha=0.25, linewidth=5);
-plot!(p, x -> f0 + fd*(x-x0) + fdd * (x-x0)*(x-x1),   color=:green, alpha=0.25, linewidth=5);
-p
+plot(f, a, b,                  color=:blue, linewidth=5, legend=false)
+plot!(x -> f0 + fd*(x-x0),     color=:green, alpha=0.25, linewidth=5);
+plot!(x -> f0 + fd*(x-x0) + fdd * (x-x0)*(x-x1),   color=:green, alpha=0.25, linewidth=5);
 ```
 
-Though similar, the graphs aren't identical. For example, in the
+Though similar, the graphs aren't identical, as the interpolating
+polynomials aren't the best approximations.  For example, in the
 tangent-line graph the parabola only intersects the cosine graph at
-$x=0$, whereas for the secant-line graph, by definition the parabola
-intersects the graph at least 3 times (at $x_0, x_1,$ and $x_2$).
+$x=0$, whereas for the secant-line graph---by definition---the
+parabola intersects the graph at least 3 times (at $x_0$, $x_1$, and
+$x_2$).
 
 
 
@@ -243,27 +352,104 @@ $$~
 
 The solution to this "equation" can be written (in some
 parameterization) as $\theta(t)=A\cos \left(\omega t+\phi
-\right)$. This motion is the well-studied simple [hormonic
+\right)$. This motion is the well-studied simple [harmonic
 oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator), a
 model for a simple pendulum.
 
-## Interpolating polynomials
+## The Taylor polynomial of degree $n$
 
-The Newton form of an interpolating polynomial appears to follow a
-pattern, and indeed it does. If $x_0$, $x_1, \dots, x_n$ are distinct
-points, then the following polynomial will be *the* polynomial with
-smallest degree that intersects the graph of $f$ at each of the
-points:
+
+Starting with the Newton form of the interpolating polynomial of smallest degree:
 
 $$~
 f[x_0] + f[x_0,x_1] \cdot (x - x_0) + f[x_0, x_1, x_2] \cdot (x - x_0)\cdot(x-x_1) +
 \cdots + f[x_0, x_1, \dots, x_n] \cdot (x-x_0) \cdot \cdots \cdot (x-x_{n-1}).
 ~$$
 
-This polynomial has degree at most $n$; it may be less, as when $f[x_0, x_1, \dots, x_n]$ happens to be $0$.
+and taking $x_i = c + i\cdot h$, for a given $n$, we have in the limit as $h > 0$ goes to zero that coefficients of this polynomial converge to the coefficients of the *Taylor Polynomial of degree n*:
 
-Here is one way to create a function implementing the above. It
-requires a vector of points:
+$$~
+f(c) + f'(c)\cdot(x-c) + \frac{f''(c)}{2!}(x-c)^2 + \cdots + \frac{f^{(n)}(c)}{n!} (x-c)^n
+~$$
+
+
+
+This polynomial will be a good approximation to the function $f$, near
+$c$. The error will be given---again by an application of the Mean
+Value Theorem---by $(1/(n+1)!) \cdot f^{(n+1)}(\xi) \cdot (x-c)^n$ for some $\xi$ between $c$ and $x$.
+
+
+
+The Taylor polynomial for $f$ about $c$ of degree $n$ can be computed
+by taking $n$ derivatives. For such a task, the computer is very
+helpful. In `SymPy` the `series` function will compute the Taylor
+polynomial for a given $n$. For example, here is the series expansion
+to 10 terms of the function $\log(1+x)$ about $c=0$:
+
+
+```
+@vars x
+c, n = 0, 10
+l = series(log(1 + x), x, c, n+1)
+```
+
+A pattern can be observed.
+
+
+
+Using `series`, we can see Taylor polynomials for several familiar functions:
+
+
+```
+series(1/(1-x), x, 0, 10)   # sum x^i for i in 0:n
+```
+
+```
+series(exp(x), x, 0, 10)    # sum x^i/i! for i in 0:n
+```
+
+```
+series(sin(x), x, 0, 10)    # sum (-1)^i * x^(2i+1) / (2i+1)! for i in 0:n
+```
+
+
+```
+series(cos(x), x, 0, 10)    # sum (-1)^i * x^(2i) / (2i)! for i in 0:n
+```
+
+Each of these has a pattern that can be expressed quite succinctly if the denominator is recognized as $n!$.
+
+
+The output of `series` includes a big "Oh" term, which identifies the
+scale of the error, but also gets in the way of using the
+output. `SymPy` provides the `removeO` function to strip this.
+
+
+However, we will define our own function to compute Taylor polynomials from a function. This returns a function, not a symbolic object:
+
+```
+using Roots # for D
+function taylor_poly(f, c=0, n=2)
+     x -> sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 0:n)
+end	 
+```
+
+With a function, we can compare values.
+For example, here we see the difference between the Taylor polynomial and the answer for a small value of $x$:
+
+```
+a = .1
+f(x) = log(1+x)
+Tn = taylor_poly(f, 0, 5)
+Tn(a) - f(a)
+```
+
+
+### Plotting
+
+Let's now visualize a function and the two approximations---the Taylor
+polynomial and the interpolating polynomial. We use this function to
+generate the interpolating polynomial as a function:
 
 ```
 function newton_form(f, xs)
@@ -281,16 +467,23 @@ end
 To see a plot, we have
 
 ```
-xs = [1,2,3,4,5]
-plot(sin, 0, 2pi)
-plot!(newton_form(sin, xs))
+f(x) = sin(x)
+c, h, n = 0, 1/4, 4
+int_poly = newton_form(f, [c + i*h for i in 0:n])
+tp = taylor_poly(f, c, n)
+
+plot(sin, -pi, pi; linewidth=5)
+plot!(int_poly, color=:green)
+plot!(tp, color=:red)
 ```
 
-To get a better sense, we plot the differences here:
+To get a better sense, we plot the residual differences here:
 
 ```
-g(x) = sin(x) - newton_form(sin, xs)(x)
-plot(g, 1, 5)
+d1(x) = f(x) - int_poly(x)
+d2(x) = f(x) - tp(x)
+plot(d1, -pi, pi, color=:blue)
+plot!(d2, color=:green)
 ```
 
 The graph should be $0$ at each of the the points in `xs`, which we
@@ -298,115 +491,169 @@ can verify in the graph above. Plotting over a wider region shows a
 common phenomenon that these polynomials approximate the function near
 the values, but quickly deviate away:
 
-```
-plot(sin, -2, 2pi)
-plot!(newton_form(sin, xs))
-```
-
-
-
-## The Taylor polynomial approximation
-
-
-If we take a "limit" with the $x_0, x_1, x_2, \cdots, x_n$ squeezing in on a given value $c$, and we use the limit fact about divided differences, we get the Taylor polynomial about $c$ of degree $n$:
-
-$$~
-T_n(x) = f(c) + f'(c) \cdot (x-c) + \frac{f''(c)}{2!}\cdot(x-c)^2 + \cdots +
-\frac{f^{(n)}(c)}{n!}\cdot(x-c)^n
-~$$
-
-This polynomial will be a good approximation to the function $f$, near $c$. The error will be given -- again by an application of the Mean Value Theorem -- by $(1/(n+1)!) \cdot f^{(n+1)}(\xi) \cdot (x-c)^n$.
-
-
-
-The Taylor polynomial for $f$ about $c$ of degree $n$ can be computed by taking $n$ derivatives. For such a task, the computer is very helpful. In `SymPy` the `series` function will compute this. For example, here is the series expansion to 10 terms of the function $\log(1+x)$ about $c=0$:
-
-```
-@vars x
-c, n = 0, 10
-l = series(log(1 + x), x, c, n+1)
-```
-
-A pattern can be observed. The output of `series` includes a big "Oh" term, which identifies the error, but also gets in the way of the output. `SymPy` provides the `removeO` function to strip this. 
-
-```
-Tn = removeO(l)
-```
-
-With the big "O" gone, this object can be used as any other SymPy object. For example, here we see the difference between the Taylor polynomial and the answer for a small value of $x$:
-
-```
-a = .1
-Tn(x=>a) - log(1 + .1)
-```
-
-
-
-
-Using `series`, we can see Taylor polynomials for several familiar functions:
-
-```
-series(exp(x), x, 0, 10)
-```
-
-
-```
-series(sin(x), x, 0, 10)
-```
-
-
-```
-series(cos(x), x, 0, 10)
-```
-
-```
-series(1/(1-x), x, 0, 10)
-```
-
-Each of these has a pattern that can be expressed quite succinctly. The only thing to be seen is the denominator for many of the above is $n!$.
-
-
-### Plotting
-
-For plotting, the big "O" notation is cumbersome. Here is a helper function to strip that off. As well, it parameterizes the value by the degree of the polynomial, and not the order of the eror term, as `series` does:
-
-```
-taylor(f, x, c, n) = removeO(series(f, x, c, n+1))
-```
-
-
-(This could also be defined directly through: `taylor(f, x, c, n) = sum(diff(f,x,k)(c) * (x-c)^k / factorial(k) for k=0:n)`.)
 
 In this graph we make a plot of the Taylor polynomial for different sizes of $n$:
 
 
 ```
-u = 1 - cos(x)
+f(x) = 1 - cos(x)
 a, b = -pi, pi
-plot(u, a, b, linewidth=5)
-plot!(taylor(u, x, 0, 2))
-plot!(taylor(u, x, 0, 4))
-plot!(taylor(u, x, 0, 6))
+plot(f, a, b, linewidth=5)
+plot!(taylor_poly(f, 0, 2))
+plot!(taylor_poly(f, 0, 4))
+plot!(taylor_poly(f, 0, 6))
 ```
 
-Though all are good approximations near $c=0$, for larger values of $n$, the resulting Taylor polynomial is a good approximations for a wider range of values.
+Though all are good approximations near $c=0$, as more terms are
+included, the Taylor polynomial becomes a better approximation over a wider
+range of values.
+
+
+##### Example: Period of an orbiting satellite
+
+Kepler's third [law](http://tinyurl.com/y7oa4x2g) of planetary motion states:
+
+> The square of the orbital period of a planet is directly proportional to the cube of the semi-major axis of its orbit.
+
+In formulas, $P^2 = a^3 \cdot (4\pi^2) / (G\cdot(M + m))$, where $M$ and $m$ are the respective masses. Suppose a satellite is in low earth orbit with a constant height, $a$. Use a Taylor polynomial to approximate the period using Kepler's third law to relate the quantities.
+
+Suppose $R$ is the radius of the earth and $h$ the height above the earth assuming $h$ is much smaller than $R$. The mass $m$ of a satellite is negligible to that of the earth, so $M+m=M$ for this purpose. We have:
+
+$$~
+P = \frac{2\pi}{\sqrt{G\cdot M}} \cdot (h+R)^{3/2} =  \frac{2\pi}{\sqrt{G\cdot M}} \cdot R^{3/2} \cdot (1 + h/R)^{3/2} = P_0 \cdot  (1 + h/R)^{3/2},
+~$$
+
+where $P_0$ collects terms that involve the constants.
+
+We can expand $(1+x)^{3/2}$ to fifth order, to get:
+
+$$~
+(1+x)^{3/2} \approx 1 + \frac{3x}{2} + \frac{3x^2}{8} - \frac{1x^3}{16} + \frac{3x^4}{128} -\frac{3x^5}{256}
+~$$
+
+Our approximation becomes:
+
+$$~
+P \approx P_0 \cdot (1 + \frac{3(h/R)}{2} + \frac{3(h/R)^2}{8} - \frac{(h/R)^3}{16} + \frac{3(h/R)^4}{128} - \frac{3(h/R)^5}{256}).
+~$$
+
+Typically, if $h$ is much smaller than $R$ the first term is enough giving a formula like $P \approx P_0 \cdot(1 + \frac{3h}{2R})$.
+
+
+A satellite phone utilizes low orbit satellites to relay phone communications. The [Iridium](http://www.kddi.com/english/business/cloud-network-voice/satellite/iridium/mobile/) system uses satellites with an elevation $h=780km$. The radius of the earth is $3,959$ miles, the mass of the earth is $5.972 × 10^{24} kg$, and the gravitational [constant](https://en.wikipedia.org/wiki/Gravitational_constant), $G$ is $6.67408 \cdot 10^{-11}$ $m^3/(kg \cdot s^2)$.
+
+Compare the approximate value with 1 term to the exact value.
+
+```
+G = 6.67408e-11
+h = 780 * 1000
+R =  3959 * 1609.34   # 1609 meters per mile
+M = 5.972e24
+P0, hR = (2pi)/sqrt(G*M) * R^(3/2), h/R
+
+Preal = P0 * (1 + hR)^(3/2)
+P1 = P0 * (1 + 3*hR/2)
+Preal, P1
+```
+
+With terms out to the fifth power, we get a better approximation:
+
+```
+P5 = P0 * (1 + 3*hR/2 + 3*hR^2/8 - hR^3/16 + 3*hR^4/128 - 3*hR^5/256)
+```
+
+The units of the period above are in seconds. That answer here is about 100 minutes:
+
+```
+Preal/60
+```
+
+When $h$ is much smaller than $R$ the approximation with 5th order is
+really good, and serviceable with just 1 term. Next we check if this
+is the same when $h$ is larger than $R$.
+
+----
+
+The height of a [GPS satellite](http://www.gps.gov/systems/gps/space/) is about $12,550$ miles. Compute the period of a circular orbit and compare with the estimates.
+
+```
+h = 12250 * 1609.34   # 1609 meters per mile
+hR = h/R
+
+Preal = P0 * (1 + hR)^(3/2)
+P1 = P0 * (1 + 3*hR/2)
+P5 = P0 * (1 + 3*hR/2 + 3*hR^2/8 - hR^3/16 + 3*hR^4/128 - 3*hR^5/256)
+
+Preal, P1, P5
+```
+
+We see the Taylor polynomial underestimates badly in this case. A reminder
+that these approximations are locally good, but may not be good on all
+scales. Here $h \approx 3R$. We can see from this graph
+of $(1+x)^{3/2}$ and its 5th degree Taylor polynomial $T_5$ that it is a bad approximation when $x > 2$.
+
+```nocode
+f1(x) = (1+x)^(3/2)
+p2(x) = 1 + 3x/2 + 3x^2/8 - x^3/16 + 3x^4/128 - 3x^5/256
+plot(f1, -1, 3, linewidth=4)
+plot!(p2)
+```
+
+----
+
+Finally, we show how to use the `Unitful` package to work with the
+units. This package allows us to define different units, carry these
+units through computations, and convert between similar units with
+`uconvert`. In this example, we define several units, then show how
+they can then be used as constants.
+
+```
+using Unitful
+m, mi, kg, s, hr = u"m", u"mi", u"kg", u"s", u"hr"
+
+G = 6.67408e-11 * m^3 / kg / s^2
+h = uconvert(m, 12250 * mi)   # unit convert miles to meter
+R = uconvert(m,  3959 * mi)
+M = 5.972e24 * kg
+
+P0, hR = (2pi)/sqrt(G*M) * R^(3/2), h/R
+Preal = P0 * (1 + hR)^(3/2)    # in seconds
+```
+
+We see `Preal` has the right units---the units of mass and distance cancel leaving a measure of time---but it is hard to sense how long this is. Converting to hours, helps us see the satellite orbits about twice per day:
+
+```
+uconvert(hr, Preal)  # ≈ 11.65 hours
+```
+
 
 
 ##### Example Computing $\log(x)$
 
-Where exactly does the value assigned to $\log(2)$ come from? The
-value needs to be computed. But how? One can see details of a possible
-way
-[here](https://github.com/musm/Amal.jl/blob/master/src/log.jl). First,
-there is usually a reduction stage, and for this function values of
-$k$ and $f$ are found so that $x = 2^k \cdot (1+f)$ *and* $\sqrt{2}/2 <
-1+f < \sqrt{2}$. If these are found, then $\log(x) = k \cdot \log(2) +
-\log(1+f)$. The first value can easily be computed, the second then
-*reduces* the problem to an interval. Now, for this problem a further
-trick is utilized, writing $s= f/(2+f)$ so that $\log(1+f) = \log(1+s)
-- \log(1-s)$.
+Where exactly does the value assigned to $\log(5)$ come from? The
+value needs to be computed. At some level, many questions resolve down
+to the basic operations of addition, subtraction, multiplication, and
+division. Preferably not the latter, as division is slow. Polynomials
+then should be fast to compute, and so computing logarithms using a
+polynomial becomes desirable.
 
-Here, we can find a Taylor series. Let's go out to degree $19$ and use `SymPy` to do the work:
+But how? One can see details of a possible
+way
+[here](https://github.com/musm/Amal.jl/blob/master/src/log.jl).
+
+First, there is usually a reduction stage. In this phase, the problem
+is transformed in a manner to one involving only a fixed interval of values. For this
+function values of $k$ and $m$ are found so that $x = 2^k \cdot (1+m)$
+*and* $\sqrt{2}/2 < 1+m < \sqrt{2}$. If these are found, then $\log(x)$ can be computed with
+$k \cdot \log(2) + \log(1+m)$. The first value---a multiplication---can easily be
+computed using  pre-computed value of $\log(2)$, the second then *reduces* the problem to an interval.
+
+
+Now, for this problem a further
+trick is utilized, writing $s= f/(2+f)$ so that
+$\log(1+m)=\log(1+s)-\log(1-s)$.  $\log(1+s) - \log(1-s)$ for some small range of $s$ values then makes it possible to compute $\log(x)$ for any real $x$.
+
+To compute $\log(1\pm s)$, we can find a Taylor series. Let's go out to degree $19$ and use `SymPy` to do the work:
 
 ```
 @vars s
@@ -415,26 +662,19 @@ b = series(log(1 - s), s, 0, 19)
 a - b
 ```
 
-This is rexpressed as $2s + s \cdot p$:
+This is re-expressed as $2s + s \cdot p$ with $p$ given by:
 
 ```
 p = cancel((removeO(a-b)-2s)/s)
 ```
 
-Now, $2s = f - s\cdot f = f - (1/2)f^2 + s\cdot(1/2)f^2$, so the above can be reworked to be either:
+Now, $2s = m - s\cdot m$, so the above can be reworked to be $\log(1+m) = m - s\cdot(m-p)$.
 
-$$~
-\begin{align}
-\log(1+f) &=  f - s \cdot (f-p) \quad f \text{ is not too large}\\
-\log(1+f) &= f - (\frac{1}{2}f^2 - s \cdot (\frac{1}{2}f^2 + p)) \quad \text{better accuracy}
-\end{align}
-~$$
 
-For small values of $f$ (near $0$), the first can be used, the latter
-is for bigger values. This is like the difference between the accuracy
-of the tangent line approximation or the quadratic approximation.
+(For larger values of $m$, a similar, but different approximation, can be used to minimize floating point errors.)
 
-How big can the error be between these *approximations* and $\log(1+f)$? We plot to see how big $s$ can be:
+
+How big can the error be between this *approximations* and $\log(1+m)$? We plot to see how big $s$ can be:
 
 ```
 @vars u
@@ -455,13 +695,29 @@ The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of 
 
 Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done. 
 
+To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$. 
 
-The actual code is a bit different, as the Taylor polynomial isn't
+```
+k, m = 2, 0.25
+s = m / (2+m)
+p = 2 * sum(s^(2i)/(2i+1) for i in 1:8)  # where the polynomial approximates the logarithm...
+
+log(1 + m), m - s*(m-p), log(1 + m) - ( m - s*(m-p))
+```
+
+The two values differ by less than $10^{-16}$ as advertised. Re-assembling then, we compare the computed values:
+
+```
+k * log(2) + (m - s*(m-p)), log(5)
+```
+
+
+The actual  code is different, as the Taylor polynomial isn't
 used. The Taylor polynomial is a great approximation near a point, but
-hthere might be better approximations for all values in an interval.
+there might be better approximations for all values in an interval.
 In this case there is, and that is used in the production
 setting. This makes things a bit more efficient, but the basic idea
-remains -- for a prescribed accuracy, a polynomial approximation can
+remains---for a prescribed accuracy, a polynomial approximation can
 be found over a given interval, which can be cleverly utilized to
 solve for all applicable values.
 
@@ -644,5 +900,85 @@ f(k) = 1/factorial(k) * exp(1/2) * (1/2)^k
 (f(14) > 1e-16 && f(15) < 1e-16) && numericq(15)
 ```
 
+* The function $f(x) = (1 - x + x^2) \cdot e^x$ has a Taylor polynomial about 0 such that all coefficients are rational numbers. Is it true that the numerators are all either 1 or prime? (From the 2014 [Putnam](http://kskedlaya.org/putnam-archive/2014.pdf) exam.)
 
+Here is one way to get all the values bigger than 1:
+
+```
+@vars x
+ex = (1 - x + x^2)*exp(x)
+Tn = removeO(series(ex, x, 0, 100))
+ps = coeffs(Poly(Tn))
+qs = numer.(ps)
+qs = qs[qs .> 1]
+```
+
+Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use `sympy_meth.(:isprime, qs)`).
+
+Are they all prime or $1$?
+
+```
+yesnoq(true)
+```
+
+## Appendix
+
+We mentioned two facts that could use a proof: the Newton form of the interpolating polynomial and the mean value theorem for divided differences.
+
+A [proof](https://www.math.uh.edu/~jingqiu/math4364/interpolation.pdf) of the Newton form can be done knowing that the interpolating polynomial is unique and can be expressed either as $g(x)=a_0 + a_1 (x-x_0) + \cdots + a_n (x-x_0)\cdot\cdots\cdot(x-x_{n-1})$ *or* in this reversed form
+$h(x)=b_0 + b_1 (x-x_n) + b_2(x-x_n)(x-x_{n-1}) + \cdots + b_n (x-x_n)(x-x_{n-1})\cdot\cdots\cdot(x-x_1)$. These two polynomials are of degree $n$ at most and have $u(x) = h(x)-g(x)=0$, by uniqueness. So the coefficients of $u(x)$ are $0$. We have that the coefficient of $x^n$ must be $a_n-b_n$ so $a_n=b_n$. Our goal is to express $a_n$ in terms of $a_{n-1}$ and $b_{n-1}$. Focusing on the $x^{n-1}$ term, we have:
+
+$$~
+b_n(x-x_n)(x-x_{n-1})\cdot\cdots\cdot(x-x_1) - a_n\cdot(x-x_0)\cdot\cdots\cdot(x-x_{n-1})=
+a_n [(x-x_1)\cdot\cdots\cdot(x-x_{n-1})] [(x- x_n)-(x-x_0)] =
+-a_n \cdot(x_n - x_0) x^{n-1} + p_{n-2},
+~$$
+
+where $p_{n-2}$ is a polynomial of at most degree $n-2$. (The expansion of $(x-x_1)\cdot\cdots\cdot(x-x_{n-1}))$ leaves $x^{n-1}$ plus some lower degree polynomial.) Similarly, we have
+$a_{n-1}(x-x_0)\cdot\cdots\cdot(x-x_{n-2}) = a_{n-1}x^{n-1} + q_{n-2}$ and
+$b_{n-1}(x-x_n)\cdot\cdots\cdot(x-x_2) = b_{n-1}x^{n-1}+r_{n-2}$. Combining, we get that the $x^{n-1}$ term of $u(x)$ is
+
+$$~
+(b_{n-1}-a_{n-1}) - a_n(x_n-x_0) = 0.
+~$$
+
+On rearranging, this yields $a_n = (b_{n-1}-a_{n-1}) / (x_n - x_0)$. By *induction*---that $a_i=f[x_0, x_1, \dot, x_i]$ and $b_i = f[x_n, x_{n-1}, \dots, x_{n-i}$ which has trivial base case---this is $(f[x_1, \dots, x_n] - f[x_0,\dots x_{n-1}])/(x_n-x_0)$.
+
+Now, assuming the Newton form is correct, a
+[proof](http://tinyurl.com/zjogv83) of the mean value theorem for
+divided differences comes down to Rolle's theorem. Starting from the
+Newton form of the polynomial and expanding in terms of
+$1, x, \dots, x^n$ we see that
+$g(x) = p_{n-1}(x) + f[x_0, x_1, \dots,x_n]\cdot x^n$,
+where now $p_{n-1}(x)$ is a
+polynomial of degree  at most $n-1$. That is, the coefficient of
+$x^n$ is $f[x_0, x_1, \dots, x_n]$. Consider  the function $h(x)=f(x) - g(x)$.
+It has zeros $x_0, x_1, \dots, x_n$.
+
+By Rolle's theorem, between any two such zeros $x_i, x_{i+1}$, $0 \leq i < n$ there must be a zero of the derivative of $h(x)$, say $\xi^1_i$. So $h'(x)$ has zeros $\xi^1_0 < \xi^1_1 < \dots < \xi^1_{n-1}$.
+
+
+We visualize this with $f(x) = \sin(x)$ and $x_i = i$ for $i=0, 1, 2, 3$, The $x_i$ values are indicated with circles, the $\xi^1_i$ values indicated with squares:
+
+```nocode
+using Roots
+f(x) = sin(x)
+xs = 0:3
+dd = divided_differences
+g(x) = dd(f,0) + dd(f, 0,1)*x + dd(f, 0,1,2)*x*(x-1) + dd(f, 0,1,2,3)*x*(x-1)*(x-2)
+h1(x) = f(x) - g(x)
+cps = fzeros(Roots.D(h1), -1, 4)
+plot(h1, -1/4, 3.25, linewidth=3)
+scatter!(xs, h1.(xs))
+scatter!(cps, h1.(cps), markersize=3, marker=:square)
+```
+
+
+
+Again by Rolle's theorem, between any pair of adjacent zeros $\xi^1_i, \xi^1_{i+1}$ there must be a zero $\xi^2_i$ of $h''(x)$. So there are $n-1$ zeros of $h''(x)$. Continuing, we see that there will be
+$n+1-3$ zeros of $h^{(3)}(x)$,
+$n+1-4$ zeros of $h^{4}(x)$, $\dots$,
+$n+1-(n-1)$ zeros of $h^{n-1}(x)$, and finally
+$n+1-n$ ($1$) zero of $h^{(n)}(x)$. Call this last zero $\xi$. It satisfies $x_0 \leq \xi \leq x_n$. Further,
+$0 = h^{(n)}(\xi) = f^{(n)}(\xi)  - g^{(n)}(\xi)$. But $g$ is a degree $n$ polynomial, so the $n$th derivative is the coefficient of $x^n$ times $n!$. In this case we have $0 = f^{(n)}(\xi) - f[x_0, \dots, x_n] n!$. Rearranging yields the result.
 

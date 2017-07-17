@@ -3,12 +3,14 @@
 QuadGK
 SymPy fix
 bookdown prot
+Roots and polynomials
 
 - finish up
 - trig integrals?
 - polar coordinates
 
-
+Nice historical problems here
+http://www.ams.org/samplings/feature-column/fc-2016-05
 
 
 

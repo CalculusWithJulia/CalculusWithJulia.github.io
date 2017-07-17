@@ -121,7 +121,7 @@ From this we can solve as before.
 ```
 alert("""
 
-Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept -- area -- has one function name, though there may be different ways to compute the area, so there is more than one implementation.
+Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept---area---has one function name, though there may be different ways to compute the area, so there is more than one implementation.
 
 """)
 ```
@@ -216,7 +216,8 @@ derivative.
 
 ```
 using Roots			# provides D
-plot(D(A), 5.5, 5.7) 
+Base.ctranspose(f::Function) = D(f) # provides f' notation
+plot(A', 5.5, 5.7) 
 ```
 
 We confirm that the critical point is around $5.6$.
@@ -234,7 +235,7 @@ not the original function.
 We see from the graph that $[0, 20/(1+\pi/2)]$ will provide a bracket, as there is only one relative maximum:
  
 ```
-x = fzero(D(A), 0, 20/(1+pi/2))
+x = fzero(A', 0, 20/(1+pi/2))
 ```
 
 The value `x` is the critical point, and in this case gives
@@ -282,7 +283,7 @@ As an aside, compare the steps involved above for a symbolic solution to those o
 A(w, h) = w*h + pi*(w/2)^2 / 2
 h(w)    = (20 - w - pi * w/2) / 2
 A(w)    =  A(w, h(w))
-fzero(D(A), 0, 20/(1+pi/2))  # 40 / (pi + 4)
+fzero(A', 0, 20/(1+pi/2))  # 40 / (pi + 4)
 ```
 
 They are similar, except we solved for `h0` symbolically, rather than by hand, when we solved for `h(w)`.
@@ -291,7 +292,7 @@ They are similar, except we solved for `h0` symbolically, rather than by hand, w
 
 Many maximization and minimization problems involve triangles, which
 in turn use trigonometry in their description. Here is an example, the
-"ladder corner problem." (There are many other [ladder](http://www.mathematische-basteleien.de/ladder.htm) problems.
+"ladder corner problem." (There are many other [ladder](http://www.mathematische-basteleien.de/ladder.htm) problems.)
 
 
 A ladder is to be moved through a two-dimensional hallway which has a
@@ -299,7 +300,7 @@ bend and gets narrower after the bend. The hallway is 8 feet wide then
 5 feet wide. What is the longest such ladder that can be navigated
 around the corner?
 
-The figure shows a ladder of length $l_1 + l_2$ that got stuck -- it
+The figure shows a ladder of length $l_1 + l_2$ that got stuck---it
 was too long.
 
 
@@ -346,7 +347,7 @@ l(t) = l(l1(t), l2(t))		# or simply l(t) = 8/sin(t) + 5/cos(t)
 
 Our goal is to minimize this function for all angles between $0$ and $90$ degrees, or $0$ and $\pi/2$ radians.
 
-This is not a continuous function on a closed interval -- it is
+This is not a continuous function on a closed interval---it is
 undefined at the endpoints. That being said, a quick plot will
 convince us that the minimum occurs at a critical point and there is
 only one critical point in $(0, \pi/2)$.
@@ -359,7 +360,7 @@ plot(l, delta, pi/2 - delta)
 The minimum occurs between 0.5 and 1.0 radians, a bracket for the derivative:
 
 ```
-x = fzero(D(l), 0.5, 1.0)
+x = fzero(l', 0.5, 1.0)
 ```
 
 So the minimum of the function $l$ is 
@@ -376,7 +377,7 @@ Ethan Hunt, a top secret spy, has a mission to chase a bad guy. Here
 is what we know:
 
 * Ethan likes to run. He can run at 10 miles per hour.
-* He can drive a car -- usually some concept car by BMW -- at 30 miles per hour, but only on the road.
+* He can drive a car---usually some concept car by BMW---at 30 miles per hour, but only on the road.
   
 For his mission, he needs to go 10 miles west and 5 miles north. He
 can do this by:
@@ -424,7 +425,7 @@ It appears to be around 8.3. We now use `fzero` to refine our
 guess at the critical point using $[7,9]$ as a bracket:
 
 ```
-x = fzero(D(T), 7, 9)
+x = fzero(T', 7, 9)
 ```
 
 Okay, got it. Around 8.23. So is  our minimum time
@@ -445,6 +446,111 @@ Ahh, we see that $T(x)$ is not continous on $[0, 10]$, as it jumps at
 $x=10$ down to an even smaller amount of $1/2$.  It may not look as
 impressive as a miles-long sprint, but Mr. Hunt is advised by Benji to drive
 the whole way.
+
+## Rate times time ... the origin story
+
+{{{lhopital_43}}}
+
+The last example is a modern day illustration of a problem of calculus dating back to l'Hospital. His description is different. Let's change his a bit by taking two points $(0, a)$ and $(L,-b)$, with $a,b,L$ positive values. Above the $x$ axis travel happens at rate $r_0$, and below, travel happens at rate $r_1$, again, both positive. What value $x$ in $[0,L]$ will minimize travel time?
+
+We approach this with `SymPy`:
+
+```
+using SymPy
+@vars a b L x r0 r1 positive=true
+
+d0 = sqrt(x^2 + a^2)
+d1 = sqrt((L-x)^2 + b^2)
+
+t = d0/r0 + d1/r1   # time = distance/rate
+dt = diff(t, x)     # look for critical points
+```
+
+The answer will occur at a critical point or an endpoint, either $x=0$ or $x=L$.
+
+The structure of `dt` is too complicated for simply calling `solve` to find the critical points. Instead we help `SymPy` out a bit. We are solving $a/b + c/d = 0$. These solutions will also be solutions of $(a/b)^2 - (c/d)^2=0$ or even $a^2d^2 - c^2b^2 = 0$. We can get this as follows:
+
+```
+t1, t2 = args(dt)  # args finds arguments to outer function (+ in this case)
+```
+
+And now the equivalent of $a^2d^2 - c^2 b^2$:
+
+```
+eq = numer(t1^2)*denom(t2^2) - denom(t1^2)*numer(t2^2)
+```
+
+This is a polynomial in the `x` variable of degree $4$:
+
+```
+p = Poly(eq, x) # 4th degree
+coeffs(p)
+```
+
+Fourth degree polynomials can be solved. The critical points will be among the 4 solutions given. But the result is complicated.
+The [article](http://www.ams.org/samplings/feature-column/fc-2016-05) from which the figure came states that "In today's textbooks the problem, usually involving a river, involves walking along one bank and then swimming across; this corresponds to setting $g=0$ in l'Hospital's example, and leads to a quadratic equation." Let's see that case, which we can get in our notation by taking $b=0$:
+
+```
+q = p(b=>0)
+factor(q)
+```
+
+We see two terms: one with $x=L$ and another quadratic. For the simple
+case $r_0=r_1$, a straight line is the best solution, and this
+corresponds to $L=0$, which is clear from the formula above, as we
+only the one solution to the following:
+
+```
+solve(q(r1=>r0))
+```
+
+Well, not so fast. We need to check the other endpoint, $x=0$:
+
+```
+ta = t(b=>0, r1=>r0)
+ta(x=>0), ta(x=>L)
+```
+
+The value at $x=L$ is smaller, as $L^2 + a^2 \leq (L+a)^2$.
+
+
+Now, if, say, travel above the line is half as slow as travel above, then $2r_0 = r_1$, and the critical points will be:
+
+```
+out = solve(q(r1 => 2r0), x)
+```
+
+It is hard to tell which would minimize time without more work. To check a case ($a=1, L=2, r_0=1$) we might have
+
+```
+t(r1 =>2r0, b=>0, x=>out[1], a=>1, L=>2, r0 => 1)  # for x=L
+```
+
+Compared to the smaller:
+
+```
+t(r1 =>2r0, b=>0, x=>out[2], a=>1, L=>2, r0 => 1)
+```
+
+What about $x=0$?
+
+```
+t(r1 =>2r0, b=>0, x=>0, a=>1, L=>2, r0 => 1)
+```
+
+The traveler in this case is advised to head to the $x$ axis and then travel along that, as though slower it is shorter. Will this always be true?
+Consider different parameters, say we switch the values of $a$ and $L$:
+
+```
+N.([t(r1 =>2r0, b=>0, x=>u, a=>2, L=>1, r0 => 1) for u in [0, out...]])
+```
+
+Here traveling directly to the point $(L,0)$ is fastest. Though travel
+is slower, the route is more direct and there is no time saved by
+taking the longer route with faster travel.
+
+
+
 
 ## Unbounded domains
 
@@ -468,13 +574,13 @@ Clearly the action is nearer to 1 than 100. We try graphing the
 derivative near that area:
 
 ```
-plot(D(f), 0, 5) 
+plot(f', 0, 5) 
 ```
 
 This shows the value of interest near $0.7$. We use `fzero` with $[0,1]$ as a bracket
 
 ```
-x = fzero(D(f), 0,1)
+x = fzero(f', 0,1)
 ```
 
 The maximum is then at 
@@ -547,7 +653,7 @@ The minimum looks to be around 4cm. We can use `fzero` to zero
 in on the answer:
 
 ```
-r0 = fzero(D(SA), 2.5, 5)
+r0 = fzero(SA', 2.5, 5)
 ```
 
 Okay, $3.837...$ is our computation for $r$. To get $h$, we use:
@@ -562,6 +668,8 @@ This produces a can which is about square in profile. This is not how
 most cans look though. Perhaps our model is too simple, or the cans
 are optimized for some other purpose than minimizing materials.
 
+
+
 ## Questions
 
 ###### Question
@@ -573,9 +681,9 @@ to be 20 units long, what is the maximal area the figure can be?
 ```
 A(a,b) = pi*a*b
 P = 20
-b(a) = 20/pi - a
-A(a) = A(a, b(a))
-x = fzero(D(A), 0, 10)
+b1(a) = 20/pi - a
+A(a) = A(a, b1(a))
+x = fzero(A', 0, 10)
 val = A(x)
 numericq(val)
 ```
@@ -589,9 +697,9 @@ perimeter is 20 units long, what is the maximal area?
 ```
 A(a,b) = pi*a*b
 P = 20
-b(a) = sqrt((P*2/pi)^2 - a^2)
-A(a) = A(a, b(a))
-x = fzero(D(A), 0, 10)
+b1(a) = sqrt((P*2/pi)^2 - a^2)
+A(a) = A(a, b1(a))
+x = fzero(A', 0, 10)
 val = A(x)
 numericq(val)
 ```
@@ -607,7 +715,7 @@ made?
 
 ```
 Ar(y) = (10-2y)*y;
-val = Ar(fzero(D(Ar),  5))
+val = Ar(fzero(Ar',  5))
 numericq(val, 1e-3)
 ```
 
@@ -633,7 +741,7 @@ A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *smallest* per
 ```
 Prim(x,y) = 2x + 2y
 Prim(x) = Prim(x, 20/x)
-xstar = fzero(D(Prim), 5)
+xstar = fzero(Prim', 5)
 val = Prim(xstar)
 numericq(val)
 ```
@@ -674,11 +782,29 @@ function Ar(t)
 	 adj = 10 * cos(t)
 	 2 * opp * adj/2 + opp * 10
 end
-t = fzero(D(Ar), pi/4);	## Has issues with order=8 algorithm, tol > 1e-14 is needed
+t = fzero(Ar', pi/4);	## Has issues with order=8 algorithm, tol > 1e-14 is needed
 val = t * 180/pi;
 numericq(val, 1e-3)
 ```
- 
+
+###### Question Non-Norman windows
+
+Suppose our new "Norman" window has half circular tops at the top and bottom? If the perimeter is fixed at $20$ and the dimensions of the rectangle are $x$ for the width and $y$ for the height.
+
+What is the value of $y$ that maximizes the area?
+
+```
+using Roots
+P = 20
+A(x,y) = x*y + pi * (x/2)^2
+y(x) = (P - pi*x)/2 # P = 2y + 2pi*x/2
+A(x) = A(x,y(x)) 
+x0 = fzero(D(A), 0, 10)
+val = y(x0)
+numericq(val) # 0
+```
+
+
 ###### Question (Thanks https://www.math.ucdavis.edu/~kouba)
 
 A movie screen projects on a wall 20 feet high beginning 10 feet above
@@ -713,7 +839,7 @@ Then $L(t)$ is continuous and has single peak, so the maximum occurs
 at the lone critical point. It turns out that this problem is bit sensitive to an initial condition, so we bracket
 
 ```
-x = fzero(D(L),  [0.1, 0.5])
+x = fzero(L',  [0.1, 0.5])
 ```
 
 Now if $L(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, explain why the same approach won't work:
@@ -721,7 +847,7 @@ Now if $L(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10
 ```
 choices=["It does work and the answer is x = 2.27...",
 	 "L(t) is not continuous on 0 to 10",
-         "L(t) takes its maximum at a boundary point -- not a critical point"];
+         "L(t) takes its maximum at a boundary point---not a critical point"];
 ans = 3;
 radioq(choices, ans)
 ```
@@ -740,7 +866,7 @@ using SymPy
 n = 10
 xs = [symbols("x\$i") for i in 1:n]
 x = symbols("x")
-s(x) = sum([(x-xs[i])^2 for i in 1:n])
+s(x) = sum((x-xs[i])^2 for i in 1:n)
 cps = solve(diff(s(x), x), x)
 """)
 ```
@@ -764,7 +890,7 @@ Minimize the function $f(x) = 2x + 3/x$ over $(0, \infty)$.
 
 ```
 f(x) = 2x + 3/x;
-val = fzero(D(f), 1);
+val = fzero(f', 1);
 numericq(val, 1e-3)
 ```
 
@@ -851,4 +977,35 @@ xstar = fzero(D(d2), 1)
 val = d2(xstar)
 numericq(val)
 ```
+
+###### Question
+
+{{{lhopital_40}}}
+
+The figure above poses a problem about cones in spheres, which can be reduced to a two-dimensional problem. Take a sphere of radius $r=1$, and imagine a secant line of length$l$ connecting $(-r, 0)$ to another point $(x,y)$ with $y>0$. Rotating that line around the $x$ axis produces a cone and its lateral surface is given by $SA=\pi \cdot y \cdot $l$. Write $SA$ as a function of $x$ and solve.
+
+The largest lateral surface area is:
+
+```
+using Roots
+SA(r,l) = pi * r * l
+y(x) = sqrt(1 - x^2)
+l(x) = sqrt((x-(-1))^2 +  y(x)^2)
+SA(x) = SA(y(x), l(x))
+cp = fzero(D(SA), -1, 1)
+val = SA(cp)
+numericq(val)
+```
+
+The surface area of a sphere of radius $1$ is $4\pir^2 = 4 \pi$. This is how many times greater than that of the largest cone?
+
+```
+choices = ["exactly four times",
+L"exactly $\pi$ times",
+L"about $2.6$ times as big",
+"about the same"]
+ans = 1
+radioq(choices, ans)
+```
+
 

@@ -26,14 +26,14 @@ question of whether a limit exists at $c=0$.
 
 A graph shows the issue:
 
-```
+```nocode
 using Plots
 f(x) = sin(1/x)
-plot(f, -1, 1)
+plot(f, linspace(-1, 1, 1000))
 ```
 
 The graph oscillates between $-1$ and $1$ infinitely many times on
-this interval -- so many times, that no matter how close one zooms in,
+this interval---so many times, that no matter how close one zooms in,
 the graph on the screen will fail to capture them all. Graphically,
 there is no single value of $L$ that the function gets close to, as it
 varies between all the values in $[-1,1]$ as $x$ gets close to $0$. A
@@ -61,7 +61,9 @@ The following figure illustrates:
 
 ```
 f(x) = x * sin(1/x)
-plot([f, abs, x -> -abs(x)], -1,1)
+plot(f, -1, 1)
+plot!(abs)
+plot!(x -> -abs(x))
 ```
 
 
@@ -84,9 +86,9 @@ f(x) = abs(x)/x
 plot(f, -2, 2)
 ```
 
-The sharp jump at $0$ is misleading -- again, the plotting algorithm
+The sharp jump at $0$ is misleading---again, the plotting algorithm
 just connects the points, it doesn't handle what is a fundamental
-discontinuity well -- the function is not defined at $0$ and jumps
+discontinuity well---the function is not defined at $0$ and jumps
 from $-1$ to $1$ there. Similarly to our example of $\sin(1/x)$, near
 $0$ the function get's close to both $1$ and $-1$, so will have no
 limit. (Again, just take $\epsilon$ smaller than $1$.)
@@ -191,13 +193,11 @@ plot!(x -> 1-x, 2,3)
 
 Describe the limits at $-1$, $0$, and $1$.
 
-- At $-1$ we see a jump, there is no limit but instead a left limit of 1
-and a right limit appearing to be $1/2$.
+* At $-1$ we see a jump, there is no limit but instead a left limit of 1 and a right limit appearing to be $1/2$.
 
-- At $0$ we see a limit of $1$.
+* At $0$ we see a limit of $1$.
 
-- Finally, at $1$ again there is a jump, so no limit. Instead the left
-limit is about $-1$ and the right limit $1$.
+* Finally, at $1$ again there is a jump, so no limit. Instead the left limit is about $-1$ and the right limit $1$.
 
 
 
@@ -222,13 +222,13 @@ Let's consider some cases.
 
 The function $f(x) = \sin(x)$ will not have a limit at $+\infty$ for
 exactly the same reason that $f(x) = \sin(1/x)$ does not have a limit
-at $c=0$ -- it just oscillates between $-1$ and $1$ so never
+at $c=0$---it just oscillates between $-1$ and $1$ so never
 eventually gets close to a single value.
 
 `SymPy` gives an odd answer here indicating the range of values:
 
 ```
-limit(sin, oo)
+limit(sin(x), x=>oo)
 ```
 
 (We used `SymPy`'s `oo` for $\infty$ and not `Inf`.)
@@ -240,7 +240,7 @@ However, a damped oscillation, such as $f(x) = e^{-x} \sin(x)$ will have a limit
 
 ```
 @vars x real=true
-limit(exp(-x)*sin(x), x, oo)
+limit(exp(-x)*sin(x), x=>oo)
 ```
 
 
@@ -250,7 +250,7 @@ We have rational functions will have the expected limit. In this
 example $m = n$, so we get a horizontal asymptote that is not $y=0$:
 
 ```
-limit((x^2 - 2x +2)/(4x^2 + 3x - 2), x, oo)
+limit((x^2 - 2x +2)/(4x^2 + 3x - 2), x=>oo)
 ```
 ----
 
@@ -302,9 +302,8 @@ The function $f(x)=1/x$ requires us to talk about left and right limits of infin
 
 ```nocode
 f(x) = 1/x
-xs = linspace(1/50, 1)
-plot(f, 1/50, 1, color=color("black"))
-plot!(f, -1, -1/50, color=color("black"))
+plot(f, 1/50, 1,    color=:blue, legend=false)
+plot!(f, -1, -1/50, color=:blue)
 ```
 
 `SymPy` agrees:
@@ -341,8 +340,7 @@ we developed a sequence of sums: $s_n = 1/2 \dot((1/4)^0 + (1/4)^1 + (1/4)^2 +
 only on non-negative integer values of $n$. However, the same idea as
 a limit at infinity can be used to define a limit:
 
-> $\lim_{n \rightarrow \infty} a_n = L$ if for every $\epsilon > 0$
-> there is an $M>0$ where if $n > M$ then $|a_n - L| < \epsilon$.
+> We have $\lim_{n \rightarrow \infty} a_n = L$ if for every $\epsilon > 0$ there is an $M>0$ where if $n > M$ then $|a_n - L| < \epsilon$.
 
 
 `SymPy` is happy to compute limits of sequences, but defining this one is best done with the `summation` function:
@@ -483,7 +481,7 @@ ans = 1
 radioq(choices, ans)
 ```
 
-Find $lim_{x \rightarrow -3-} (x-3)/(x+3)$.
+Find $\lim_{x \rightarrow -3-} (x-3)/(x+3)$.
 
 
 
@@ -498,7 +496,7 @@ radioq(choices, ans)
 Some functions do not have a limit. Make a graph of $\sin(1/x)$ from $0.0001$ to $1$ and look at the output. Why does a limit not exist?
 
 ```
-choices=["The limit does exist -- it is any number from -1 to 1",
+choices=["The limit does exist---it is any number from -1 to 1",
   "Err, the limit does exists and is 1",
   "The function oscillates too much and its y values do not get close to any one value",
   "Any function that oscillates does not have a limit."]

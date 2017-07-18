@@ -8,7 +8,9 @@ plotly()
 
 Continuity for functions is a valued property which carries
 implications. In this section we discuss two: the intermediate value
-theorem and the extreme value theorem.
+theorem and the extreme value theorem. These two theorems speak to
+some fundamental applications of calculus: finding zeros and finding
+extrema of a function.
 
 ## Intermediate Value Theorem
 
@@ -39,31 +41,34 @@ theorem guarantees the existence of a $c$ in $[a,b]$ with $f(c) =
 0$. This was a special case proved by Bolzano first. Such $c$ are
 called *zeros* of the function $f$. 
 
+We use this when a "sign chart" is made. There, for a continuous
+function, between any two consecutive zeros the function can not
+change sign. (Why?) So a "test point" can be used to determine the
+sign of the function over an entire interval.
 
-It also gives us an algorithm -- the *bisection method* to locate the value $c$.
+
+The Bolzano theorem gives an algorithm---the *bisection method*---to locate the value $c$.
 
 {{{bisection_graph}}}
 
 
-Let's call $[a,b]$ a *bracketing* interval if $f(a)$ and $f(b)$ have different signs.
-We remark that this implies $f(a) \cdot f(b) < 0$, as they have different signs.
+Call $[a,b]$ a *bracketing* interval if $f(a)$ and $f(b)$ have different signs.
+We remark that having different signs can be expressed mathematically as $f(a) \cdot f(b) < 0$.
 
-Then we can narrow down where a zero is in $[a,b]$ by following this recipe:
+We can narrow down where a zero is in $[a,b]$ by following this recipe:
 
-- Pick $c = (a+b)/2$, the midpoint
+* Pick $c = (a+b)/2$, the midpoint
 
-- if $f(c) = 0$ we are done.
+* if $f(c) = 0$ we are done.
 
-- Otherwise if must be that either $f(a)\cdot f(c) < 0$ or $f(c) \cdot
-  f(b) < 0$. If $f(a) \cdot f(c) < 0$, then let $b=c$ and
-  repeat. Otherwise, let $a=c$ and repeat.
+* Otherwise if must be that either $f(a)\cdot f(c) < 0$ or $f(c) \cdot f(b) < 0$. If $f(a) \cdot f(c) < 0$, then let $b=c$ and repeat. Otherwise, let $a=c$ and repeat.
 
-At each step we split the interval in half or find a root.
+At each step the bracketing interval is narrowed, indeed split in half, or a zero is found.
 
-For the real numbers this algorithm never stops unless a zero is found.
-However,  we could stop
-when we have a zero or the length of the resulting interval is smaller
-than some agreed upon value. With floating-point numbers it makes sense to consider the same (though this can be made more precise).
+For the real numbers this algorithm never stops unless a zero is
+found. A "limiting" process is used to say that if it doesn't stop, it will converge to some value.
+
+However, using floating point numbers of a fixed size, is different. In this case, due to the ultimate granularity of the approximation of floating point values to the real numbers, the bracketing interval can't be subdivided, that is no $c$ is found over the floating point numbers with $a < c < b$. So there is a natural stopping criteria: stop when there is an exact zero, or when the bracketing interval gets too small.
 
 We can write a relatively simple program to implement this algorithm:
 
@@ -78,6 +83,7 @@ function bisection(f, a, b)
   
   while abs(b-a) > tol
     if f(c) == 0 return(c) end
+
     if f(a) * f(c) < 0
        a, b = a, c
     else
@@ -93,19 +99,19 @@ end
 This function uses a `while` loop to repeat the process of subdividing
 $[a,b]$. A `while` loop will repeat until the condition is no longer `true`.
 The above will stop for reasonably sized floating point values (within $(-100, 100)$, say).
-The value $c$ returned *need not* be a zero. Let's see:
+The value $c$ returned *need not* be an exact zero. Let's see:
 
 ```
 c = bisection(sin, 3, 4)
 ```
 
-This value of $c$ is a floating-point approximation to $\pi$, but is not a zero:
+This value of $c$ is a floating-point approximation to $\pi$, but is not *quite* a zero:
 
 ```
 sin(c)
 ```
 
-(Even $\pi$ is not a "zero$ due to floating point issues.)
+(Even `pi` itself is not a "zero" due to floating point issues.)
 
 
 ### The fzero function.
@@ -132,7 +138,7 @@ guarantee that the answer will be a zero or the product of the
 function value at the floating point values just to the left and right
 will be negative. No specification of a tolerance is needed.
 
-### Examples
+##### Example
 
 The polynomial $f(x) = x^5 - x + 1$ has a zero between $-2$ and $-1$. Find it.
 
@@ -190,7 +196,8 @@ The equation $\cos(x) = x$ has just one solution, as can be seen in this plot:
 ```
 f(x) = cos(x)
 g(x) = x
-plot([f, g], -pi, 1pi)
+plot(f, -pi, 1pi)
+plot!(g)
 ```
 
 Find it.
@@ -226,7 +233,8 @@ might produce 10-20 bags of trash a month (yes, that seems too much!)
 we plot in that range:
 
 ```
-plot([plan1, plan2], 10, 20)
+plot(plan1, 10, 20)
+plot!(plan2)
 ```	      
 
 
@@ -292,10 +300,11 @@ plot(j, 0, 500)
 ```
 
 Well, we haven't even seen the peak yet. Better to do a little spade
-work first. This is a quadratic equation, so we can use the `roots` function:
+work first. This is a quadratic function, so we can use `poly_roots` from `PolynomialZeros` to find the roots:
 
 ```
-roots(j) 
+using PolynomialZeros
+poly_roots(j)
 ```
 
 
@@ -310,15 +319,11 @@ plot(j, 0, 1250)
 As for the model with wind resistance,  a quick plot over the same interval, $[0, 1250]$ yields:
 
 ```
-Verbatim("plot(y, 0, 1250)")
-```
-
-```
-Outputonly("DomainError")
+plot(y, 0, 1250)
 ```
 
 Oh, "Domain Error." Of course, when the argument to the logarithm is negative we will have issues.
-We don't have the simplicity of using `roots` to find out the answer, so we solve for when $a-\gamma^2 x$ is $0$:
+We don't have the simplicity of using `poly_roots` to find out the answer, so we solve for when $a-\gamma^2 x$ is $0$:
 
 ```
 gamma = 1
@@ -326,14 +331,14 @@ a = 200 * cos(pi/4)
 b = a/gamma^2
 ```
 We try on the reduced interval avoiding
-the obvious _asymptote_ at `b`  by subtracting $1$:
+the obvious *asymptote* at `b`  by subtracting $1$:
 
 ```
 plot(y, 0, b - 1) 
 ```
 
 
-Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we solve:
+Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we cam solve:
 
 ```
 x1 = fzero(y, b/2, b-1/10)
@@ -346,13 +351,48 @@ Finally, we plot both graphs at once to see that it was a very windy
 day indeed.
 
 ```
-plot([j, u -> u <= x1 ? y(u) : NaN] , 0, 1250)
+plot(j, 0, 1250)
+plot!(y, 0, x1)
 ```
+
+##### Example: bisection and non-continuity
+
+The Bolzano theorem about continuous function $f$, when applicable,
+yields an algorithm to find a guaranteed zero. However, the algorithm
+itself does not know that the function is continuous or not, only that
+the function changes sign. As such, it can produce answers that are
+not "zeros."
+
+For example, let $f(x) = 1/x$. Clearly the interval $[-1,1]$ is a
+"bracketing" interval as $f(x)$ changes sign between $a$ and $b$. What
+does the algorithm yield:
+
+```
+f(x) = 1/x
+x0 = fzero(f, -1, 1)
+```
+
+
+
+The function is not defined at the answer, but we do have the fact
+that just to the left of the answer (`prevfloat`) and just to the
+right of the answer (`nextfloat`) the function changes sign:
+
+```
+sign(f(prevfloat(x0))), sign(f(nextfloat(x0)))
+```
+
+So, the "bisection method" can find points where the function crosses
+$0$, either by continuity or by jumping over the $0$.  (A `jump`
+discontinuity at $x=c$ is defined by the left and right limits of $f$
+at $c$ existing but being unequal. The algorithm can find $c$ when
+this type of function jumps over $0$.)
+
 
 ### The fzeros function
 
-The bisection method suggests a means to search for all zeros within
-an interval: split it into many small intervals and for each that is a
+The bisection method suggests a naive means to search for all zeros within
+an interval: split the interval into many small intervals and for each that is a
 bracketing interval find a zero. This simple description has three
 flaws: it might miss values where the function doesn't't actually
 cross the $x$ axis; it might miss values where the function just dips
@@ -360,7 +400,7 @@ to the other side; and it might miss multiple values in the same small
 interval.
 
 Still, with some engineering, this can be a useful approach, save the
-caveats. It is implemented in the `fzeros` function. The function is
+caveats. This idea is implemented in the `fzeros` function. The function is
 called like `fzero`, as in `fzeros(f, a, b)` but here the interval
 $[a,b]$ is not necessarily a bracketing interval.
 
@@ -380,14 +420,31 @@ fzeros(f, -10, 10)
 
 (Here $-10$ and $10$ were arbitrarily chosen. Cauchy's method could be used to be more systematic.)
 
-The output of `fzeros` is a vector of values. To check that each value
-is an approximate zero can be done with the "." syntax:
+
+##### Solving f(x) = g(x)
+
+Use `fzeros` to find when $e^x = x^5$ in the interval $[-20, 20]$. Verify the answers.
+
+To proceed with `fzeros`, we define $f(x) = e^x - x^5$, as $f(x) = 0$ precisely when $e^x = x^5$.
+The zeros are then found with:
 
 ```
-f(x) = e^x - x^5
-zs = fzeros(f, -15, 15)
+f(x) = exp(x) - x^5
+zs = fzeros(f, -20, 20)
+```
+
+
+The output of `fzeros` is a vector of values. To check that each value
+is an approximate zero can be done with the "." (broadcast) syntax:
+
+
+```
 f.(zs)
 ```
+
+(For a continuous function this should be the case that the values
+returned by `fzeros` are approximate zeros. Bear in mind that if $f$ is not
+continous the algorithm might find jumping points that are not zeros.)
 
 
 ## Extreme value theorem
@@ -397,9 +454,14 @@ of $f(x)$ over an interval $I$ to be a value $f(c)$, $c$ in $I$, where
 $f(x) \leq f(c)$ for any $x$ in $I$. Similarly, an *absolute minimum* of
 $f(x)$ over an interval $I$ can be defined.
 
-The extreme value theorem discusses an assumption that ensures such a value exists.
+This chart illustrates the two concepts.
 
-> The *extreme value theorem*: If $f(x)$ is continuous in a closed
+{{{hardrock_profile}}}
+
+
+The extreme value theorem discusses an assumption that ensures such values exist.
+
+> The *extreme value theorem*: If $f(x)$ is continuous over a closed
 >  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
 >  minimum over $[a,b]$.
 
@@ -415,14 +477,14 @@ The extreme value theorem is an important theoretical tool for
 investigating maxima and minima of functions.
 
 
-### Examples
+##### Example
 
 The function $f(x) = \sqrt{1-x^2}$ is continuous on the interval
 $[-1,1]$ (in the sense above). It then has an absolute maximum, we can
 see to be $1$ occuring at an interior point $0$. The absolute minimum
 is $0$, it occurs at each endpoint.
 
-----
+##### Example
 
 The function $f(x) = x \cdot e^{-x}$ on the closed interval $[0, 5]$ is continuous. Hence it has an absolute maximum, which a graph shows to be $0.4$. It has an absolute minimum, clearly the value $0$ occuring at the endpoint.
 
@@ -431,14 +493,14 @@ f(x) = x * exp(-x)
 plot(f, 0, 5)
 ```
 
-----
+##### Example
 
 The tangent function does not have a *guarantee* of absolute maximum
 or minimum over $(-\pi/2, \pi/2)$, as it is not *continous* at the
-endpoints. In fact, it doesn't -- it has vertical asymptotes at each.
+endpoints. In fact, it doesn't---it has vertical asymptotes at each.
 
 
----- 
+##### Example
 
 The function $f(x) = x^{2/3}$ over the interval $[-2,2]$ has cusp at $0$. However, it is continuous on this closed interval, so must have an absolute maximum and absolute minimum. They can be seen from the graph to occur at the endpoints and the cusp at $x=0$, respectively:
 
@@ -455,7 +517,7 @@ plot(f, -2, 2)
 
 ###### Question 
 
-There is negative root in the interval $[-10, 0]$ for the function
+There is negative zero in the interval $[-10, 0]$ for the function
 $f(x) = e^x - x^4$. Find its value numerically:
 
 ```
@@ -467,7 +529,7 @@ numericq(val, 1e-3)
 
 ###### Question 
 
-There is  root in the interval $[0, 5]$ for the function
+There is  zero in the interval $[0, 5]$ for the function
 $f(x) = e^x - x^4$. Find its value numerically:
 
 ```
@@ -475,33 +537,6 @@ f(x) = exp(x) - x^4
 val = fzero(f, 0, 5);
 numericq(val, 1e-3)
 ```
-
-###### Question
-
-The function `fzeros` for *polynomial* functions finds the real
-roots. For non-polynomial functions it will search for all zeros that
-*cross* the $x$ axis in the interval $[a,b]$. How many zeros does this
-find?
-
-```
-Verbatim("""
-f(x) = exp(x) - x^4
-fzeros(f, -20, 20)
-""")
-```
-
-```
-f(x) = exp(x) - x^4
-vals = fzeros(f, -20, 20)
-numericq(length(vals), 0)
-```
-
-
-(The `fzeros` function simply partitions `[a,b]` into many different
-intervals then looks for zeros in each. If the subinterval is a
-bracket, it is guaranteed to find a zero. Otherwise, the zeros in the
-subinterval may possibly escape detection. A graph should accompany
-its usage to ensure none are missed.)
 
 ###### Question
 
@@ -519,15 +554,20 @@ numericq(val, 1e-3)
 
 ###### Question
 
-The `airy` function has infinitely many negative roots, as the
+The `airyai` function has infinitely many negative roots, as the
 function oscillates when $x < 0$ and *no* positive roots. Find the
 *second largest root* using the graph to bracket the answer, and then
-solving.
-
-
+solve.
 
 ```
-val = fzero(airy, -5, -4);
+using SpecialFunctions
+plot(airyai, -10, 10)
+```
+
+The second largest root is:
+
+```
+val = fzero(airyai, -5, -4);
 numericq(val, 1e-8)
 ```
 
@@ -656,7 +696,7 @@ radioq(choices, 2, keep_order=true)
 The extreme value theorem has two assumptions: a continuous function
 and a *closed* interval. Which of the following examples fails to
 satisfy the consequence of the  extreme value theorem because the interval is not closed?
-(The consequence -- the existence of an absolute maximum and minimum -- can happen even if the theorem does not apply.)
+(The consequence---the existence of an absolute maximum and minimum---can happen even if the theorem does not apply.)
 
 ```
 choices = [

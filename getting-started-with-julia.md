@@ -4,16 +4,20 @@ Julia is a freely available open-source programming language aimed at technical 
 
 As it is open source, indeed with a liberal MIT license, it can be
 installed for free on many types of computers (though not phones or
-tablets). There are some web sites that provide access to `Julia`:
+tablets). 
 
-[JuliaBox](http://www.juliabox.org) provides a web-based interface to `Julia`
-built around `IJulia`. An account is needed and can be requested.
 
-[Sagemath](http://cloud.sagemath.org) provides another web-based solution and an `Jupyter` front end, as well. This is free for most use.
-
+We recommend taking advantage of
+[JuliaBox](http://www.juliabox.org), which  provides a web-based interface to `Julia`
+built around `Jupyter`, a wildly succesful platform for interacting
+with different open-source software programs. For JuliaBox, a Google account is needed. 
 
 
 ### Installing Julia locally
+
+Julia Box is great and convenient, but it but may not be available to
+you. In that case, installing `Julia` is a not-so-difficult option.
+
 
 Binaries of `Julia` are provided at
 [julialang.org](http://julialang.org/downloads/). Julia has an
@@ -39,10 +43,10 @@ A command is typed following the *prompt*. An example might be `2 + 2`. To send 
 ```verbatim
                _
    _       _ _(_)_     |  A fresh approach to technical computing
-  (_)     | (_) (_)    |  Documentation: http://docs.julialang.org
+  (_)     | (_) (_)    |  Documentation: https://docs.julialang.org
    _ _   _| |_  __ _   |  Type "?help" for help.
   | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 0.4.1 (2015-11-08 10:33 UTC)
+  | | |_| | | | (_| |  |  Version 0.6.0 (2017-06-19 13:05 UTC)
  _/ |\__'_|_|_|\__'_|  |  Official http://julialang.org/ release
 |__/                   |  x86_64-apple-darwin13.4.0
 
@@ -88,24 +92,20 @@ notebook()
 offerings of base `Julia`. The above showed how to add two packages to
 a system. In these notes, we will rely on a few packages. These will
 need to be installed. The following commands will download and install the
-needed packages:
+main packages we reference:
 
 ```verbatim
 Pkg.update()
 Pkg.add("Plots")
-Pkg.add("Gadfly")
-Pkg.add("PyCall")
 Pkg.add("SymPy")
 Pkg.add("Roots")
 Pkg.add("ImplicitEquations")
-Pkg.add("PyPlot")
 """)
 ```
 
-The `SymPy` package and the `PyPlot` package require some add-ons for
-the `Python` environment. These should be installed as well, a
-`Python` environment, if not already existing, should be installed
-withe `PyCall` package.
+The `SymPy` package requires some add-ons for the `Python`
+environment, which should be installed automatically if not found on
+your system.
 
 ## The basics of working with IJulia
 
@@ -134,16 +134,15 @@ Comments can be made in a cell. Anything after a `#` will be ignored.
 ```
 
 Graphics are provided by external packages. There is no built-in
-graphing. We primarily use the `Gadfly` package for graphics, but through the `Plots` package.
+graphing. We use the `Plots` package and its default backend. The
+`Plots` package provides a common interface to several different
+backends, so this choice is easily changed. The `GR` backend and
+`plotly` backend are used in these notes.
 
-The plots package is loaded and the `Gadfly` backend is chosen via
 
 ```
 using Plots
-gadfly()
 ```
-
-The choice of `Gadfly` as a backend is optional, the `Plots` package does its best to be backend agnostic.
 
 With that in hand, to make a graph of a function over a range, we follow this pattern:
 

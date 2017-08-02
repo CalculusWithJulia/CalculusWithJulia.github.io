@@ -1,19 +1,21 @@
 # (PART) The derivative of a function {-}
- for Rbookdown
+for Rbookdown
+
+
+
 
 # v0.6
 
-QuadGK
-SymPy fix
+✓ QuadGK
+✓ SymPy fix
 bookdown prot
-Roots and polynomials
+✓ Roots and polynomials
 
-- finish up
+✓ - finish up
 - trig integrals?
-- polar coordinates
+✓ - polar coordinates
 
-Nice historical problems here
-http://www.ams.org/samplings/feature-column/fc-2016-05
+✓ Nice historical problems here http://www.ams.org/samplings/feature-column/fc-2016-05
 
 
 

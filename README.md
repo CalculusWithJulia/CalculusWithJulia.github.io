@@ -19,7 +19,7 @@ Before beginning, we need to get started with Julia. This is akin to going out a
 
 ## Precalculus
 
-Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus review, covers some of the basic materials mathematically, but more importantly illustrates the key computional mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).
+Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus review, covers some of the basic materials mathematically, but more importantly illustrates the key computational mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).
 
 ### Number systems
 
@@ -78,7 +78,7 @@ A rational expression is the ratio of two polynomial expressions. This section c
 
 #### Trigonometric functions
 
-Trigonometric functions are used to describe triangles, circles and oscillatory behaviours. This section provide a brief review.
+Trigonometric functions are used to describe triangles, circles and oscillatory behaviors. This section provide a brief review.
 
 - [Trigonometric Functions](precalc/trig_functions.html)
 
@@ -152,7 +152,6 @@ Integration is not algorithmic, but rather problems can involve an array of tech
 
 ### Applications
 
-# (PART) Applications of the integral {-}
 
 
 Various applications of the integral are presented. The first two sections continue with the idea that an integral is related to area. From there, it is seen that volumes and arc-lengths may be expressed in terms of related integrals.

@@ -2,7 +2,7 @@
 
 (A work in progress...)
 
-## Historical Book
+## Historical Books
 
 * Oeuvres complètes d'Augustin Cauchy. Série 2, tome 4
 Calcul Diferentiel
@@ -52,7 +52,7 @@ http://www.maa.org/external_archive/joma/Volume7/Aktumen/Polygon.html
 * Bressoud - FTC
 http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/
 
-* 
+* ...
 
 ## Websites
 http://www.math.wpi.edu/IQP/BVCalcHist/calc4.html#_Toc407004376

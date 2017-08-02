@@ -17,7 +17,7 @@ y = f(c) + f'(c) \cdot (x - c).
 
 This is written as an equation, though we prefer to work with
 functions within `Julia`. Here we write such a function as an
-operator -- it takes a function `f` and returns a function
+operator---it takes a function `f` and returns a function
 representing the tangent line.
 
 ```
@@ -33,7 +33,9 @@ To illustrate the tangent line, we can make some graphs:
 ```
 using Plots
 f(x) = x^2
-plot([f, tangent(f, -1), tangent(f, 2)], -3, 3)
+plot(f, -3, 3)
+plot!(tangent(f, -1))
+plot!(tangent(f, 2))
 ```
 
 The graph shows that near the point, the line and function are close,
@@ -50,27 +52,30 @@ This section gives some implications of this fact and quantifies what
 
 ##### Example
 
-There are several approximations that are well known in physics:
+There are several approximations that are well known in physics, due to their widespread usage:
 
 * $\sin(x) \approx x$ at $x=0$:
 
 ```
 f(x) = sin(x)
-plot([f, tangent(f, 0)], -pi/2, pi/2)
+plot(f, -pi/2, pi/2)
+plot!(tangent(f, 0))
 ```
 
 * $\log(1 + x) \approx x$ at $x=0$:
 
 ```
 f(x) = log(1 + x)
-plot([f, tangent(f, 0)], -1/2, 1/2)
+plot(f, -1/2, 1/2)
+plot!(tangent(f, 0))
 ```
 
 * $1/(1-x) \approx x$ at $x=0$:
 
 ```
 f(x) = 1/(1-x)
-plot([f, tangent(f, 0)], -1/2, 1/2)
+plot(f, -1/2, 1/2)
+plot!(tangent(f, 0))
 ```
 
 In each of these three cases, a more complicated non-linear function
@@ -96,14 +101,16 @@ The plot shows the tangent line with slope $dy/dx$ and the actual
 change in $y$, $\Delta y$, for some specified $\Delta x$. The small
 gap above the sine curve is the error. We can see that approximating
 the value of $\Delta y = \sin(c+\Delta x) - \sin(c)$ with the often
-easier to compute $f'(c)\Delta x$ -- for small enough values of
-$\Delta x$ --  is not going to be too far off.
+easier to compute $f'(c)\Delta x$---for small enough values of
+$\Delta x$--- is not going to be too far off.
 
 This approximation is known as linearization. It can be used both in
 theoretical computations, and in pratical applications. To see how
-effective it is, we look at some examples:
+effective it is, we look at some examples.
 
-- $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$. Then the values are:
+##### Example
+
+If $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$ then the values are:
 
 ```
 f(x) = sin(x)
@@ -152,7 +159,9 @@ How much in error are we?
 abs(50 - 60/70*60) / (60/70*60) * 100
 ```
 
-That's about $3$ percent. Not bad considering we could have done all the above in our head.
+That's about $3$ percent. Not bad considering we could have done all
+the above in our head while driving without taking our eyes off the
+road to use the calculator on our phone for a division.
 
 ##### Example
 
@@ -188,8 +197,8 @@ of length $l$. The rod swings back and forth making an angle $\theta$
 with the perpendicular. At rest $\theta=0$, swinging $\lvert\theta\rvert \leq \theta_0$
 for some $\theta_0$.
 
-According to [Wikipedia](http://tinyurl.com/yz5sz7e) -- and many
-introductory physics book -- while swinging the angle $\theta$ varies
+According to [Wikipedia](http://tinyurl.com/yz5sz7e)---and many
+introductory physics book---while swinging the angle $\theta$ varies
 with time following this equation:
 
 $$~
@@ -207,12 +216,12 @@ approximation of $\sin(x) \approx x$, noted above, to say that when
 the angle is not too big, we have the pendulum's swing obeying
 $\theta''(t) = -g/l \cdot t$. Without getting too involved in why,
 we can verify that $\theta_0\sin(\sqrt{g/l}\cdot t)$ will be a solution to this
-equation.
+modified equation.
 
 This says the motion is periodic with constant amplitude (assuming frictionless behaviour), as
 the sine function is. More surprisingly, the period is found from $T =
-2\pi/(\sqrt{g/l}) = 2\pi \sqrt{l/g}$. It depends on $l$ -- longer
-"rods" take more time to swing back and forth -- but does not depend
+2\pi/(\sqrt{g/l}) = 2\pi \sqrt{l/g}$. It depends on $l$---longer
+"rods" take more time to swing back and forth---but does not depend
 on the how wide the pendulum is swinging between (provided $\theta_0$
 is not so big the approximation of $\sin(x) \approx x$ fails). This
 latter fact may be surprising, though not to Galileo who discovered
@@ -247,7 +256,8 @@ Can we verify? Let's do so graphically:
 ```
 h(x) = abs(sin(x) - x)
 g(x) = x^2/2
-plot([h, g], -2, 2)
+plot(h, -2, 2)
+plot!(g)
 ```
 
 
@@ -281,7 +291,8 @@ Plotting we verify:
 ```
 h(x) = abs(log(1+x) - x)
 g(x) = x < 0 ? x^2/(2*(1+x)^2) : x^2/2
-plot([h,g], -.5, 2)
+plot(h, -.5, 2)
+plot!(g)
 ```
 
 ### Why is the remainder term as it is?
@@ -306,7 +317,7 @@ satisfies $0 < \xi < e < x$, so is in $[0,x]$.
 ```
 using SymPy
 @vars x
-series(exp(sin(x)),x,0, 2)
+series(exp(sin(x)), x, 0, 2)
 ```
 
 We see the expression $1 + x$ which comes from the fact that `exp(sin(0))` is $1$, and the derivative `exp(sin(0)) * cos(0)` is *also* $1$. But what is the $\mathcal{O}(x^2)$?
@@ -316,7 +327,7 @@ only concerned about the scale as $x$ goes to zero we would say this
 is some well-behaved value (converging to $1 - f''(0)/2$) times
 $x^2$. The [big](http://en.wikipedia.org/wiki/Big_O_notation) "oh"
 notation says just that: were we take this term and divide by $x^2$
-the limit -- if it exists -- would be bounded. A little "oh" (e.g., $\mathcal{o}(x^2)$) would mean
+the limit---if it exists---would be bounded. A little "oh" (e.g., $\mathcal{o}(x^2)$) would mean
 that limit would be $0$.
 
 Big "oh" and little "oh" give us a sense of how good an approximation
@@ -363,13 +374,13 @@ f(x) \cdot g(x) &=  [f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2)] \cdot [g(c) + g'(
 \end{align}
 ~$$
 
-The big "oh" notation just sweeps up many things including any products of it *and* the term $f'(c)\cdot g'(c) \cdot (x-c)^2$. Agin, we see from the product rule that this is just a tangent line approximation for $f(x) \cdot g(x)$.
+The big "oh" notation just sweeps up many things including any products of it *and* the term $f'(c)\cdot g'(c) \cdot (x-c)^2$. Again, we see from the product rule that this is just a tangent line approximation for $f(x) \cdot g(x)$.
 
 In conclusion, basic mathematical operations involving tangent lines can be computed just using the tangent lines when all the accuracy desired is at the tangent line level. This is even true for composition, though there the outer and inner functions may have different "$c$"s.
 
 ```
 note("""
-The `D` operator of the `Roots` package for first derivatives essentially does
+The `D` operator of the `Roots` package (using the `ForwardDiff` package) for first derivatives essentially does
 nothing more than work with the tangent line expression, which for a given function `f` and value `c` is summarized by two numbers `[f(c), f'(c)]`.
 """)
 ```

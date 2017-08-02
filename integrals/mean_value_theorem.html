@@ -34,7 +34,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
 </script>
 <script>
 MathJax.Hub.Config({
@@ -79,7 +79,7 @@ $( document ).ready(function() {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-         <a class="navbar-brand" href="../toc.html">Calculus with Julia</a>
+         
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -103,447 +103,461 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Average of a function and the Mean Value Theorem for integrals</h1><p>Let $f(x)$ be a continuous function over the interval $[a,b]$ with $a < b$.</p><p>The average value of $f$ over $[a,b]$ is defined by:</p>$$~
+<h1>Average of a function and the mean value theorem for integrals</h1><p>Let $f(x)$ be a continuous function over the interval $[a,b]$ with $a < b$.</p><p>The average value of $f$ over $[a,b]$ is defined by:</p>$$~
 \frac{1}{b-a} \int_a^b f(x) dx.
-~$$<p>If $f$ is a constant, this is just the contant value, as would be expected. If $f$ is <em>piecewise</em> linear, then this is the weighted average of these constants.</p><h2>Examples</h2><h5>Average velocity</h5><p>The average velocity between times $a < b$, is simply the change in position during the time interval divided by the change in time. In notation, this would be $(x(b) - x(a)) / (b-a)$. If $v(t) = x'(t)$ is the velocity, then by the second part of the fundamental theorem of calculus, we have, in agreement with the definition above, that:</p>$$~
+~$$
+<p>If $f$ is a constant, this is just the contant value, as would be expected. If $f$ is <em>piecewise</em> linear, then this is the weighted average of these constants.</p><h2>Examples</h2><h5>Average velocity</h5><p>The average velocity between times $a < b$, is simply the change in position during the time interval divided by the change in time. In notation, this would be $(x(b) - x(a)) / (b-a)$. If $v(t) = x'(t)$ is the velocity, then by the second part of the fundamental theorem of calculus, we have, in agreement with the definition above, that:</p>$$~
 \text{average velocity} = \frac{x(b) - x(a)}{b-a} = \frac{1}{b-a} \int_a^b v(t) dt.
-~$$<p>The average speed is the change in <em>total</em> distance over time, which is given by</p>$$~
+~$$
+<p>The average speed is the change in <em>total</em> distance over time, which is given by</p>$$~
 \text{average speed} =  \frac{1}{b-a} \int_a^b \lvert v(t)\rvert dt.
-~$$<p>Let $\bar{v}$ be the average velocity. Then we have $\bar{v} \cdot(b-a) = x(b) - x(a)$, or the change in position can be written as a constant ($\bar{v}$) times the time, as though we had a constant velocity.  This is an old intuition. <a href="http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/">Bressoud</a> comments on the special case known to scholars at Merton College around 1350 that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p><h5>Example</h5><p>What is the average value of $f(x)=\sin(x)$ over $[0, \pi]$?</p>$$~
+~$$
+<p>Let $\bar{v}$ be the average velocity. Then we have $\bar{v} \cdot(b-a) = x(b) - x(a)$, or the change in position can be written as a constant ($\bar{v}$) times the time, as though we had a constant velocity.  This is an old intuition. <a href="http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/">Bressoud</a> comments on the special case known to scholars at Merton College around 1350 that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p><h5>Example</h5><p>What is the average value of $f(x)=\sin(x)$ over $[0, \pi]$?</p>$$~
 \text{average} = \frac{1}{\pi-0} \int_0^\pi \sin(x) dx = \frac{1}{\pi} (-\cos(x)) \big|_0^\pi = \frac{2}{\pi}
-~$$<p>Visually, we have:</p><pre class="sourceCode julia">using Plots
+~$$
+<p>Visually, we have:</p><pre class="sourceCode julia">using Plots
 plotly()
 plot(sin, 0, pi)
-plot!([0, pi], 2/pi * [1,1])</pre>
-    <div id="0fbc110c-990f-4b99-b2d1-e10f39e636a7" style="width:600px;height:400px;"></div>
+plot!(x -> 2/pi)</pre>
+    <div id="45a2c2b0-1031-4944-9883-17500e92f6d7" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('0fbc110c-990f-4b99-b2d1-e10f39e636a7');
-    Plotly.plot(PLOT, [{"yaxis":"y","y":[0.0,0.03172793349806765,0.0634239196565645,0.09505604330418266,0.12659245357374926,0.1580013959733499,0.1892512443604102,0.2203105327865406,0.2511479871810792,0.28173255684142967,0.31203344569848707,0.34202014332566866,0.3716624556603275,0.4009305354066137,0.4297949120891716,0.45822652172741035,0.4861967361004687,0.5136773915734063,0.5406408174555976,0.5670598638627707,0.5929079290546404,0.6181589862206052,0.6427876096865393,0.6667690005162916,0.6900790114821119,0.7126941713788629,0.7345917086575333,0.7557495743542583,0.7761464642917568,0.7957618405308321,0.8145759520503356,0.8325698546347713,0.8497254299495144,0.8660254037844386,0.8814533634475821,0.8959937742913359,0.9096319953545183,0.9223542941045815,0.9341478602651067,0.9450008187146685,0.9549022414440739,0.963842158559942,0.9718115683235417,0.9788024462147787,0.984807753012208,0.9898214418809327,0.9938384644612541,0.9968547759519424,0.998867339183008,0.9998741276738751,0.9998741276738751,0.998867339183008,0.9968547759519424,0.9938384644612541,0.9898214418809328,0.984807753012208,0.9788024462147787,0.9718115683235418,0.963842158559942,0.9549022414440739,0.9450008187146686,0.9341478602651068,0.9223542941045815,0.9096319953545183,0.8959937742913359,0.8814533634475821,0.8660254037844387,0.8497254299495143,0.8325698546347714,0.8145759520503357,0.7957618405308323,0.7761464642917567,0.7557495743542583,0.7345917086575334,0.7126941713788627,0.6900790114821119,0.6667690005162916,0.6427876096865395,0.6181589862206055,0.5929079290546404,0.5670598638627709,0.5406408174555978,0.5136773915734066,0.4861967361004687,0.4582265217274105,0.4297949120891718,0.400930535406614,0.37166245566032796,0.3420201433256693,0.31203344569848696,0.28173255684142967,0.2511479871810793,0.2203105327865408,0.1892512443604105,0.1580013959733499,0.12659245357374938,0.09505604330418288,0.06342391965656484,0.0317279334980681,-3.216245299353273e-16],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,0.03173325912716963,0.06346651825433926,0.09519977738150888,0.12693303650867852,0.15866629563584814,0.19039955476301776,0.22213281389018738,0.25386607301735703,0.28559933214452665,0.3173325912716963,0.34906585039886584,0.3807991095260355,0.4125323686532052,0.44426562778037476,0.4759988869075444,0.5077321460347141,0.5394654051618837,0.5711986642890533,0.6029319234162229,0.6346651825433925,0.6663984416705622,0.6981317007977317,0.7298649599249014,0.761598219052071,0.7933314781792408,0.8250647373064104,0.8567979964335799,0.8885312555607495,0.9202645146879193,0.9519977738150888,0.9837310329422584,1.0154642920694281,1.0471975511965976,1.0789308103237674,1.1106640694509369,1.1423973285781066,1.1741305877052763,1.2058638468324459,1.2375971059596154,1.269330365086785,1.3010636242139546,1.3327968833411243,1.3645301424682938,1.3962634015954634,1.4279966607226333,1.4597299198498028,1.4914631789769726,1.523196438104142,1.5549296972313116,1.5866629563584815,1.618396215485651,1.6501294746128208,1.6818627337399903,1.7135959928671598,1.7453292519943295,1.777062511121499,1.8087957702486686,1.8405290293758385,1.872262288503008,1.9039955476301775,1.9357288067573473,1.9674620658845168,1.9991953250116867,2.0309285841388562,2.0626618432660258,2.0943951023931953,2.126128361520365,2.1578616206475347,2.1895948797747042,2.2213281389018737,2.2530613980290437,2.284794657156213,2.3165279162833827,2.3482611754105527,2.379994434537722,2.4117276936648917,2.443460952792061,2.4751942119192307,2.5069274710464007,2.53866073017357,2.5703939893007397,2.602127248427909,2.633860507555079,2.6655937666822487,2.697327025809418,2.7290602849365877,2.760793544063757,2.7925268031909267,2.824260062318097,2.8559933214452666,2.887726580572436,2.9194598396996057,2.951193098826775,2.982926357953945,3.0146596170811146,3.046392876208284,3.0781261353354537,3.109859394462623,3.1415926535897936],"mode":"lines"},{"yaxis":"y","y":[0.6366197723675814,0.6366197723675814],"showlegend":true,"name":"y2","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(227, 111, 71, 1.000)","shape":"linear"},"x":[0.0,3.141592653589793],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001,0.8],"domain":[0.057305336832895896,0.9901574803149605],"ticktext":["0.0","0.2","0.4","0.6","0.8"],"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)"},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"tickmode":"array","showgrid":true,"tickvals":[0.0,1.0,2.0,3.0],"domain":[0.05905511811023622,0.9934383202099738],"ticktext":["0","1","2","3"],"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+    PLOT = document.getElementById('45a2c2b0-1031-4944-9883-17500e92f6d7');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.015339511014701464,0.03067541242093728,0.17166717434870798,0.3092109495508594,0.38905360195643246,0.4660711028717981,0.528569798326157,0.5883242430613824,0.64976343137182,0.7072222201480519,0.7563636858789748,0.8015668055511774,0.8453874952692148,0.88414893600324,0.9224276439123988,0.953297448140898,0.9743114618127554,0.9891442673157648,0.9969893076459937,0.999969950348809,0.9976603433323025,0.9895650509231215,0.9756317894726576,0.955973171617894,0.9277136899890839,0.892799925717166,0.8536308148768001,0.8089183002652021,0.7568615568015717,0.699491362414812,0.6473736431477508,0.5920349014277694,0.44512104927186746,0.2949169869941366,0.03991632077017152],"type":"scatter","name":"y1","yaxis":"y","x":[0.015340112644426933,0.030680225288853866,0.17252171697354257,0.31436320865823125,0.39960403291889857,0.48484485717956594,0.5569148892483315,0.6289849213170972,0.7072731766942932,0.7855614320714894,0.8577362788103786,0.9299111255492679,1.0072901891756778,1.0846692528020878,1.1743204864101577,1.2639717200182279,1.3436431565239784,1.423314593029729,1.4931792632139245,1.5630439333981199,1.639215177553415,1.71538642170871,1.7920103724793233,1.8686343232499367,1.9533518991288894,2.038069475007842,2.11867611078605,2.1992827465642577,2.2830949451205087,2.3669071436767597,2.437459162487701,2.508011181298642,2.6802832177626836,2.8422240131314496,3.1016657253491733]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814,0.6366197723675814],"type":"scatter","name":"y2","yaxis":"y","x":[0.0454806100142382,0.3241730294343549,0.4916555570390384,0.633259902610778,0.7870819122647132,0.9288921993678096,1.0809278146054573,1.2570759846611745,1.4136156906015391,1.5508869060573454,1.700549378382932,1.851101335868411,2.0175557767283365,2.1759329770773217,2.3406085181699443,2.4792302471426186,2.648471666103869,2.8075635916332,3.0624411934465914]}], {"showlegend":true,"xaxis":{"tickvals":[1.0,2.0,3.0],"ticks":"inside","tickmode":"array","domain":[0.0658209390492855,0.9934383202099738],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.25,0.5,0.75],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <h5>Example</h5><p>What is the average value of the function $f$ which is $1$ between $[0,3]$, $2$ between $(3,5]$ and $1$ between $(5,6]$?</p><p>Though not continuous, $f(x)$ is integrable as it contains only jumps. The integral from $[0,6]$ can be computed with geometry: $3\cdot 3 + 2 \cdot 2 + 1 \cdot 1 = 14$. The average then is $14/(6-0) = 7/3$.</p><h5>Example</h5><p>What is the average value of the function $e^{-x}$ between $0$ and $\log(2)$?</p>$$~
-\text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx = \frac{1}{\log(2)} (-e^{-x}) \big|_0^{\log(2)} =
-\frac{1}{\log(2)} (2 - 1) = \frac{1}{\log(2)}.
-~$$<p>Visualizing, we have</p><pre class="sourceCode julia">plot(x -> exp(-x), 0, log(2))
-plot!([0, log(2)], 1/log(2) * [1,1])</pre>
-    <div id="a2a3915b-b17e-44a5-acfe-27140d6f870a" style="width:600px;height:400px;"></div>
+\text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx
+= \frac{1}{\log(2)} (-e^{-x}) \big|_0^{\log(2)}
+= -\frac{1}{\log(2)} (\frac{1}{2} - 1)
+= \frac{1}{2\log(2)}.
+~$$
+<p>Visualizing, we have</p><pre class="sourceCode julia">plot(x -> exp(-x), 0, log(2))
+plot!(x -> 1/(2*log(2)))</pre>
+    <div id="698f27bb-01eb-4b0d-a339-883ed24a34a6" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('a2a3915b-b17e-44a5-acfe-27140d6f870a');
-    Plotly.plot(PLOT, [{"yaxis":"y","y":[1.0,0.9930229666323774,0.9860946122593678,0.9792145972460014,0.9723825843269529,0.9655982385900087,0.9588612274596486,0.9521712206807431,0.9455278903023637,0.9389309106617063,0.9323799583681274,0.9258747122872905,0.9194148535254241,0.9130000654136894,0.9066300334926565,0.9003044454968895,0.8940229913396387,0.8877853630976403,0.8815912549960212,0.8754403633933097,0.869332386766551,0.8632670256965258,0.8572439828530728,0.8512629629805133,0.845323672883177,0.8394258214110298,0.8335691194454011,0.8277532798848107,0.8219780176308954,0.8162430495744324,0.8105480945814616,0.8048928734795039,0.7992771090438757,0.7937005259840998,0.788162850930409,0.7826638124203471,0.7772031408854596,0.7717805686380808,0.7663958298582101,0.7610486605804827,0.7557387986812282,0.7504659838656222,0.7452299576549261,0.7400304633738157,0.7348672461377994,0.7297400528407232,0.7246486321423627,0.7195927344561034,0.7145721119367044,0.7095865184681496,0.7046357096515821,0.6997194427933247,0.6948374768929814,0.6899895726316243,0.6851754923600618,0.6803950000871885,0.6756478614684166,0.6709338437941886,0.6662527159785693,0.6616042485479177,0.6569882136296381,0.6524043849410093,0.6478525377780926,0.6433324490047159,0.6388438970415357,0.6343866618551748,0.6299605249474366,0.6255652693445933,0.6212006795867503,0.6168665417172837,0.6125626432723523,0.608288773270482,0.6040447222022236,0.5998302820198824,0.5956452461273193,0.5914894093698232,0.5873625680240546,0.5832645197880583,0.5791950637713467,0.5751540004850517,0.5711411318321459,0.5671562610977313,0.5631991929393964,0.5592697333776401,0.5553676897863629,0.551492870883424,0.5476450867212644,0.5438241486775957,0.540029869446153,0.5362620630275144,0.5325205447199813,0.5288051311105255,0.5251156400657974,0.5214518907231978,0.5178137034820122,0.5142008999946059,0.510613303157682,0.5070507371035989,0.5035130271917495,0.5],"showlegend":true,"name":"y1","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(0, 154, 250, 1.000)","shape":"linear"},"x":[0.0,0.00700148667232268,0.01400297334464536,0.021004460016968037,0.02800594668929072,0.035007433361613396,0.042008920033936074,0.04901040670625876,0.05601189337858144,0.06301338005090412,0.07001486672322679,0.07701635339554948,0.08401784006787215,0.09101932674019483,0.09802081341251752,0.10502230008484019,0.11202378675716287,0.11902527342948556,0.12602676010180824,0.13302824677413091,0.14002973344645359,0.14703122011877628,0.15403270679109896,0.16103419346342163,0.1680356801357443,0.175037166808067,0.18203865348038967,0.18904014015271237,0.19604162682503504,0.20304311349735774,0.21004460016968038,0.21704608684200308,0.22404757351432575,0.23104906018664842,0.23805054685897112,0.24505203353129376,0.2520535202036165,0.25905500687593913,0.26605649354826183,0.2730579802205845,0.28005946689290717,0.28706095356522987,0.29406244023755257,0.3010639269098752,0.3080654135821979,0.31506690025452055,0.32206838692684325,0.32906987359916595,0.3360713602714886,0.3430728469438113,0.350074333616134,0.35707582028845664,0.36407730696077933,0.37107879363310203,0.37808028030542473,0.3850817669777474,0.3920832536500701,0.3990847403223928,0.40608622699471547,0.41308771366703806,0.42008920033936076,0.42709068701168346,0.43409217368400616,0.4410936603563288,0.4480951470286515,0.4550966337009742,0.46209812037329684,0.46909960704561954,0.47610109371794224,0.48310258039026494,0.4901040670625875,0.4971055537349102,0.504107040407233,0.5111085270795557,0.5181100137518783,0.525111500424201,0.5321129870965237,0.5391144737688464,0.546115960441169,0.5531174471134916,0.5601189337858143,0.567120420458137,0.5741219071304597,0.5811233938027824,0.5881248804751051,0.5951263671474277,0.6021278538197504,0.6091293404920731,0.6161308271643958,0.6231323138367184,0.6301338005090411,0.6371352871813638,0.6441367738536865,0.6511382605260092,0.6581397471983319,0.6651412338706545,0.6721427205429772,0.6791442072152999,0.6861456938876226,0.6931471805599453],"mode":"lines"},{"yaxis":"y","y":[1.4426950408889634,1.4426950408889634],"showlegend":true,"name":"y2","type":"scatter","xaxis":"x","line":{"width":1,"dash":"solid","color":"rgba(227, 111, 71, 1.000)","shape":"linear"},"x":[0.0,0.6931471805599453],"mode":"lines"}], {"yaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"tickmode":"array","showgrid":true,"tickvals":[0.5,1.0],"domain":[0.057305336832895896,0.9901574803149605],"ticktext":["0.5","1.0"],"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"annotations":[],"width":600,"plot_bgcolor":"rgba(255, 255, 255, 1.000)","showlegend":true,"legend":{"bgcolor":"rgba(255, 255, 255, 1.000)","font":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"bordercolor":"rgba(0, 0, 0, 1.000)"},"xaxis":{"type":"-","titlefont":{"size":15,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"title":"","tickfont":{"size":11,"color":"rgba(0, 0, 0, 1.000)","family":"Helvetica"},"tickmode":"array","showgrid":true,"tickvals":[0.0,0.2,0.4,0.6000000000000001],"domain":[0.05905511811023622,0.9934383202099738],"ticktext":["0.0","0.2","0.4","0.6"],"zeroline":false,"linecolor":"rgba(0, 0, 0, 1.000)","tickcolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","height":400,"margin":{"r":0,"l":0,"b":0,"t":20}});
+    PLOT = document.getElementById('698f27bb-01eb-4b0d-a339-883ed24a34a6');
+    Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.9932537091679455,0.9329910086538161,0.8985490025735416,0.8704225761001543,0.8408661242870591,0.8145076169674478,0.7871655856946868,0.7566328430247939,0.7304942863086576,0.7083172897519052,0.6849048793346111,0.662134047166552,0.6378381687746676,0.6155494048834306,0.5931998164447524,0.5750164946919873,0.5535706479918976,0.5341408018477831,0.5044241089320427],"type":"scatter","name":"y1","yaxis":"y","x":[0.006769149919424832,0.06935971520822208,0.10697403604474018,0.13877646560176607,0.17332281802186952,0.20517149927419048,0.23931665155911683,0.278877159022201,0.31403386943914136,0.34486313631025534,0.37847531264741074,0.4122872553760938,0.4496706817711548,0.485240068693577,0.5222239781507202,0.5533565521753865,0.5913658963301499,0.6270958009055353,0.6843378787853243]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817,0.7213475204444817],"type":"scatter","name":"y2","yaxis":"y","x":[0.010077656709210965,0.0133861634989971,0.043978086074133914,0.07457000864927073,0.0929544789833815,0.11133894931749228,0.12688278500935352,0.14242662070121478,0.17619654540513346,0.20732942897938042,0.24070717050310758,0.27937855734103434,0.29656183980715456,0.3137451222732748,0.3288133125159687,0.3438815027586626,0.36030987485186283,0.376738246945063,0.39326425736369663,0.4097902677823303,0.4280618855668037,0.44633350335127714,0.4637184866271924,0.4811034699031077,0.5172561676593397,0.5476890384836514,0.5848441243388152,0.6197710009165813,0.6757265656717022]}], {"showlegend":true,"xaxis":{"tickvals":[0.2,0.4,0.6000000000000001],"ticks":"inside","tickmode":"array","domain":[0.05100612423447069,0.9934383202099737],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.2","0.4","0.6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"tickvals":[0.6000000000000001,0.7000000000000001,0.8,0.9],"ticks":"inside","tickmode":"array","domain":[0.03762029746281716,0.9901574803149606],"linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","tickangle":0,"titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgba(0, 0, 0, 1.000)","ticktext":["0.6","0.7","0.8","0.9"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<h2>The Mean Value Theorem for Integrals</h2><p>If $f(x)$ is assumed integrable, the average value of $f(x)$ is defined, as above. Re-expressing gives that there exists a $K$ with</p>$$~
+<h2>The mean value theorem for integrals</h2><p>If $f(x)$ is assumed integrable, the average value of $f(x)$ is defined, as above. Re-expressing gives that there exists a $K$ with</p>$$~
 K \cdot (b-a) = \int_a^b f(x) dx.
-~$$<p>When we assume that $f(x)$ is continuous, we can describe $K$ as a value in the range of $f$:</p><blockquote>
-<p><strong>The Mean Value Theorem For Integrals</strong>: Let $f(x)$ be a continuous function on $[a,b]$ with $a < b$. Then there exists $c$ with $a \leq c \leq b$ with 
+~$$
+<p>When we assume that $f(x)$ is continuous, we can describe $K$ as a value in the range of $f$:</p><blockquote>
+<p><strong>The mean value theorem for integrals</strong>: Let $f(x)$ be a continuous function on $[a,b]$ with $a < b$. Then there exists $c$ with $a \leq c \leq b$ with 
 $$ f(c) \cdot (b-a) = \int_a^b f(x) dx.$$
 </p>
 </blockquote><p>The proof comes from the intermediate value theorem and the extreme value theorem. Since $f$ is continuous on a closed interval, there exists values $m$ and $M$ with $f(c_m) = m \leq f(x) \leq M=f(c_M)$, for some $c_m$ and $c_M$ in the interval $[a,b]$. Since $m \leq f(x) \leq M$, we must have:</p>$$~
 m \cdot (b-a) \leq K\cdot(b-a) \leq M\cdot(b-a).
-~$$<p>So in particular $K$ is in $[m, M]$. But $m$ and $M$ correspond to values of $f(x)$, so by the intermediate value theorem, $K=f(c)$ for some $c$ that must lie in between $c_m$ and $c_M$, which means as well that it must be in $[a,b]$.</p><h5>Proof of second part of Fundamental Theorem of Calculus</h5><p>The mean value theorem is exactly what is needed to prove formally the second part of the Fundamental Theorem of Calculus. Again, suppose $f(x)$ is continous on $[a,b]$ with $a < b$. For any $a < x < b$, we define $F(x) = \int_a^x f(u) du$. Then the derivative of $F$ is $f$.</p><p>Let $h>0$. Then consider the forward difference $(F(x+h) - F(x))/h$. Rewriting gives:</p>$$~
+~$$
+<p>So in particular $K$ is in $[m, M]$. But $m$ and $M$ correspond to values of $f(x)$, so by the intermediate value theorem, $K=f(c)$ for some $c$ that must lie in between $c_m$ and $c_M$, which means as well that it must be in $[a,b]$.</p><h5>Proof of second part of Fundamental Theorem of Calculus</h5><p>The mean value theorem is exactly what is needed to prove formally the second part of the Fundamental Theorem of Calculus. Again, suppose $f(x)$ is continous on $[a,b]$ with $a < b$. For any $a < x < b$, we define $F(x) = \int_a^x f(u) du$. Then the derivative of $F$ is $f$.</p><p>Let $h>0$. Then consider the forward difference $(F(x+h) - F(x))/h$. Rewriting gives:</p>$$~
 \frac{\int_a^{x+h} f(u) du - \int_a^x f(u) du}{h}  =\frac{\int_x^{x+h} f(u) du}{h} = f(\xi(h)).
-~$$<p>The value $\xi(h)$ is just the $c$ corresponding to a given value in $[x, x+h]$ guaranteed by the mean value theorem.  We only know that $x \leq \xi(h) \leq x+h$. But this is plenty – it says that $\lim_{h \rightarrow 0+} \xi(h) = x$. Using the fact that $f$ is continuous and the known properties of limits of compositions of functions this gives $\lim_{h \rightarrow 0+} f(\xi(h)) = f(x)$. But this means that the (right) limit of the secant line expression exists and is equal to $f(x)$, which is what we want to prove. Repeating a similar argument when $h < 0$, finishes the proof.</p><p>The basic notion used is simply that for small $h$, this expression is well approximated by the left Riemann sum taken over $[x, x+h]$:</p>$$~
+~$$
+<p>The value $\xi(h)$ is just the $c$ corresponding to a given value in $[x, x+h]$ guaranteed by the mean value theorem.  We only know that $x \leq \xi(h) \leq x+h$. But this is plenty–-it says that $\lim_{h \rightarrow 0+} \xi(h) = x$. Using the fact that $f$ is continuous and the known properties of limits of compositions of functions this gives $\lim_{h \rightarrow 0+} f(\xi(h)) = f(x)$. But this means that the (right) limit of the secant line expression exists and is equal to $f(x)$, which is what we want to prove. Repeating a similar argument when $h < 0$, finishes the proof.</p><p>The basic notion used is simply that for small $h$, this expression is well approximated by the left Riemann sum taken over $[x, x+h]$:</p>$$~
 f(\xi(h)) \cdot h = \int_x^{x+h} f(u) du.
-~$$<h2>Questions</h2><h6>Question</h6><p>Between $0$ and $1$ a function is constantly $1$. Between $1$ and $2$ the function is constantly $2$. What is the average value of the function over the interval $[0,2]$?</p><form name='WeaveQuestion' data-id='1UaGd7CE' data-controltype='numeric'>
+~$$
+<h2>Questions</h2><h6>Question</h6><p>Between $0$ and $1$ a function is constantly $1$. Between $1$ and $2$ the function is constantly $2$. What is the average value of the function over the interval $[0,2]$?</p><form name='WeaveQuestion' data-id='7m764Wss' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="1UaGd7CE" type="number" class="form-control">
+<input id="7m764Wss" type="number" class="form-control">
 
 </div>
   
-<div id='1UaGd7CE_message'></div>
+<div id='7m764Wss_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#1UaGd7CE').on('change', function() {
+$('#7m764Wss').on('change', function() {
   correct = Math.abs(this.value - 1.5) <= 0.001;
 
   if(correct) {
-     $('#1UaGd7CE_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#7m764Wss_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#1UaGd7CE_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#7m764Wss_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Between $0$ and $2$ a function is constantly $1$. Between $2$ and $3$ the function is constantly $2$. What is the average value of the function over the interval $[0,3]$?</p><form name='WeaveQuestion' data-id='0O2GtyPi' data-controltype='numeric'>
+<h6>Question</h6><p>Between $0$ and $2$ a function is constantly $1$. Between $2$ and $3$ the function is constantly $2$. What is the average value of the function over the interval $[0,3]$?</p><form name='WeaveQuestion' data-id='BROa9DZJ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="0O2GtyPi" type="number" class="form-control">
+<input id="BROa9DZJ" type="number" class="form-control">
 
 </div>
   
-<div id='0O2GtyPi_message'></div>
+<div id='BROa9DZJ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#0O2GtyPi').on('change', function() {
+$('#BROa9DZJ').on('change', function() {
   correct = Math.abs(this.value - 1.0) <= 0.001;
 
   if(correct) {
-     $('#0O2GtyPi_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#BROa9DZJ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#0O2GtyPi_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#BROa9DZJ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>What integral will show the intuition of the Merton College scholars that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p><form name="WeaveQuestion" data-id="xl5v38DV" data-controltype="radio">
+<h6>Question</h6><p>What integral will show the intuition of the Merton College scholars that the distance traveled by an object under uniformly increasing velocity starting at $v_0$ and ending at $v_t$ is equal to the distance traveled by an object with constant velocity of $(v_0 + v_t)/2$.</p><form name="WeaveQuestion" data-id="OemprGCF" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_xl5v38DV" value="1"><div class="markdown">$\int_0^t (v(0) + v(u))/2 du = v(0)/2\cdot t + x(u)/2\ \big|_0^t$
+      <input type="radio" name="radio_OemprGCF" value="1"><div class="markdown">$\int_0^t (v(0) + v(u))/2 du = v(0)/2\cdot t + x(u)/2\ \big|_0^t$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_xl5v38DV" value="2"><div class="markdown">$(v(0) + v(t))/2 \cdot \int_0^t du = (v(0) + v(t))/2 \cdot t$
+      <input type="radio" name="radio_OemprGCF" value="2"><div class="markdown">$(v(0) + v(t))/2 \cdot \int_0^t du = (v(0) + v(t))/2 \cdot t$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_xl5v38DV" value="3"><div class="markdown">$\int_0^t v(u) du = v^2/2 \big|_0^t$
+      <input type="radio" name="radio_OemprGCF" value="3"><div class="markdown">$\int_0^t v(u) du = v^2/2 \big|_0^t$
 </div>
     </label>
     </div>
     
 
 
-<div id="xl5v38DV_message"></div>
+<div id="OemprGCF_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_xl5v38DV']").on("change", function() {
+$("input:radio[name='radio_OemprGCF']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#xl5v38DV_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#OemprGCF_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#xl5v38DV_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#OemprGCF_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[-\pi/2, \pi/2]$.</p><form name='WeaveQuestion' data-id='ENXgNPIG' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[-\pi/2, \pi/2]$.</p><form name='WeaveQuestion' data-id='1gbQcgFJ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="ENXgNPIG" type="number" class="form-control">
+<input id="1gbQcgFJ" type="number" class="form-control">
 
 </div>
   
-<div id='ENXgNPIG_message'></div>
+<div id='1gbQcgFJ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#ENXgNPIG').on('change', function() {
+$('#1gbQcgFJ').on('change', function() {
   correct = Math.abs(this.value - 0.6366197723675814) <= 0.001;
 
   if(correct) {
-     $('#ENXgNPIG_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#1gbQcgFJ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#ENXgNPIG_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#1gbQcgFJ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[0, \pi]$.</p><form name='WeaveQuestion' data-id='IlgChQGW' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of $\cos(x)$ over the interval $[0, \pi]$.</p><form name='WeaveQuestion' data-id='gb6wCG6m' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="IlgChQGW" type="number" class="form-control">
+<input id="gb6wCG6m" type="number" class="form-control">
 
 </div>
   
-<div id='IlgChQGW_message'></div>
+<div id='gb6wCG6m_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#IlgChQGW').on('change', function() {
+$('#gb6wCG6m').on('change', function() {
   correct = Math.abs(this.value - 8.779656151956583e-17) <= 0.001;
 
   if(correct) {
-     $('#IlgChQGW_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#gb6wCG6m_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#IlgChQGW_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#gb6wCG6m_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $f(x) = e^{-2x}$ between $0$ and $2$.</p><form name='WeaveQuestion' data-id='bD2SVLS1' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of $f(x) = e^{-2x}$ between $0$ and $2$.</p><form name='WeaveQuestion' data-id='eMsJL57O' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="bD2SVLS1" type="number" class="form-control">
+<input id="eMsJL57O" type="number" class="form-control">
 
 </div>
   
-<div id='bD2SVLS1_message'></div>
+<div id='eMsJL57O_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#bD2SVLS1').on('change', function() {
+$('#eMsJL57O').on('change', function() {
   correct = Math.abs(this.value - 0.24542109027781647) <= 0.001;
 
   if(correct) {
-     $('#bD2SVLS1_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#eMsJL57O_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#bD2SVLS1_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#eMsJL57O_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the average value of $f(x) = \sin(x)^2$ over the $0$, $\pi$.</p><form name='WeaveQuestion' data-id='o2u69iSu' data-controltype='numeric'>
+<h6>Question</h6><p>Find the average value of $f(x) = \sin(x)^2$ over the $0$, $\pi$.</p><form name='WeaveQuestion' data-id='li2eKJYP' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="o2u69iSu" type="number" class="form-control">
+<input id="li2eKJYP" type="number" class="form-control">
 
 </div>
   
-<div id='o2u69iSu_message'></div>
+<div id='li2eKJYP_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#o2u69iSu').on('change', function() {
+$('#li2eKJYP').on('change', function() {
   correct = Math.abs(this.value - 0.5) <= 0.001;
 
   if(correct) {
-     $('#o2u69iSu_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#li2eKJYP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#o2u69iSu_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#li2eKJYP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Which is bigger? The average value of $f(x) = x^{10}$ or the average value of $g(x) = \lvert x \rvert$ over the interval $[0,1]$?</p><form name="WeaveQuestion" data-id="eITkMiLL" data-controltype="radio">
+<h6>Question</h6><p>Which is bigger? The average value of $f(x) = x^{10}$ or the average value of $g(x) = \lvert x \rvert$ over the interval $[0,1]$?</p><form name="WeaveQuestion" data-id="hJDJsP59" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_eITkMiLL" value="1"><div class="markdown"><p>That of $f(x) = x^{10}$.</p>
+      <input type="radio" name="radio_hJDJsP59" value="1"><div class="markdown"><p>That of $g(x) = \lvert x \rvert$.</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_eITkMiLL" value="2"><div class="markdown"><p>That of $g(x) = \lvert x \rvert$.</p>
+      <input type="radio" name="radio_hJDJsP59" value="2"><div class="markdown"><p>That of $f(x) = x^{10}$.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="eITkMiLL_message"></div>
+<div id="hJDJsP59_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_eITkMiLL']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_hJDJsP59']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#eITkMiLL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#hJDJsP59_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#eITkMiLL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#hJDJsP59_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Define a family of functions over the interval $[0,1]$ by $f(x; a,b) = x^a \cdot (1-x)^b$. Which has a greater average, $f(x; 2,3)$ or $f(x; 3,4)$?</p><form name="WeaveQuestion" data-id="N48km8Ll" data-controltype="radio">
+<h6>Question</h6><p>Define a family of functions over the interval $[0,1]$ by $f(x; a,b) = x^a \cdot (1-x)^b$. Which has a greater average, $f(x; 2,3)$ or $f(x; 3,4)$?</p><form name="WeaveQuestion" data-id="PGpdWVgN" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_N48km8Ll" value="1"><div class="markdown">$f(x; 3,4)$
+      <input type="radio" name="radio_PGpdWVgN" value="1"><div class="markdown">$f(x; 2,3)$
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_N48km8Ll" value="2"><div class="markdown">$f(x; 2,3)$
+      <input type="radio" name="radio_PGpdWVgN" value="2"><div class="markdown">$f(x; 3,4)$
 </div>
     </label>
     </div>
     
 
 
-<div id="N48km8Ll_message"></div>
+<div id="PGpdWVgN_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_N48km8Ll']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_PGpdWVgN']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#N48km8Ll_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#PGpdWVgN_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#N48km8Ll_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#PGpdWVgN_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Suppose the average value of $f(x)$ over $[a,b]$ is $100$. What is the average value of $100 f(x)$ over $[a,b]$?</p><form name='WeaveQuestion' data-id='GqunWhaX' data-controltype='numeric'>
+<h6>Question</h6><p>Suppose the average value of $f(x)$ over $[a,b]$ is $100$. What is the average value of $100 f(x)$ over $[a,b]$?</p><form name='WeaveQuestion' data-id='D0XHhWM3' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="GqunWhaX" type="number" class="form-control">
+<input id="D0XHhWM3" type="number" class="form-control">
 
 </div>
   
-<div id='GqunWhaX_message'></div>
+<div id='D0XHhWM3_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#GqunWhaX').on('change', function() {
+$('#D0XHhWM3').on('change', function() {
   correct = Math.abs(this.value - 10000) <= 0;
 
   if(correct) {
-     $('#GqunWhaX_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#D0XHhWM3_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#GqunWhaX_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#D0XHhWM3_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Suppose $f(x)$ is continuous and positive on $[a,b]$.</p><ul>
-<li>Explain why for any $x > a$ it must be that:</li>
+<li><p>Explain why for any $x > a$ it must be that:</p>
+</li>
 </ul>$$~
 F(x) = \int_a^x f(x) dx > 0
-~$$<form name="WeaveQuestion" data-id="VUOymBF0" data-controltype="radio">
+~$$
+<form name="WeaveQuestion" data-id="Gof1CYuy" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_VUOymBF0" value="1"><div class="markdown"><p>Because the mean value theorem says this is $f(c) (x-a)$ and both terms are positive by the assumptions</p>
+      <input type="radio" name="radio_Gof1CYuy" value="1"><div class="markdown"><p>Because the definite integral is only defined for positive area, so it is always positive</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_VUOymBF0" value="2"><div class="markdown"><p>Because the definite integral is only defined for positive area, so it is always positive</p>
+      <input type="radio" name="radio_Gof1CYuy" value="2"><div class="markdown"><p>Because the mean value theorem says this is $f(c) (x-a)$ for some $c$ and both terms are positive by the assumptions</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="VUOymBF0_message"></div>
+<div id="Gof1CYuy_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_VUOymBF0']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_Gof1CYuy']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#VUOymBF0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Gof1CYuy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#VUOymBF0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Gof1CYuy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <ul>
-<li>Explain why $F(x)$ is increasing.</li>
-</ul><form name="WeaveQuestion" data-id="gRoxexQ6" data-controltype="radio">
+<li><p>Explain why $F(x)$ is increasing.</p>
+</li>
+</ul><form name="WeaveQuestion" data-id="yb4zhsQH" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_gRoxexQ6" value="1"><div class="markdown"><p>By the extreme value theorem, $F(x)$ must reach its maximum, hence it must increase.</p>
+      <input type="radio" name="radio_yb4zhsQH" value="1"><div class="markdown"><p>By the intermediate value theorem, as $F(x) > 0$, it must be true that $F(x)$ is increasing</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_gRoxexQ6" value="2"><div class="markdown"><p>By the intermediate value theorem, as $F(x) > 0$, it must be true that $F(x)$ is increasing</p>
+      <input type="radio" name="radio_yb4zhsQH" value="2"><div class="markdown"><p>By the extreme value theorem, $F(x)$ must reach its maximum, hence it must increase.</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_gRoxexQ6" value="3"><div class="markdown"><p>By the fundamental theorem of calculus, part I, $F'(x) = f(x) > 0$, hence $F(x)$ is increasing</p>
+      <input type="radio" name="radio_yb4zhsQH" value="3"><div class="markdown"><p>By the fundamental theorem of calculus, part I, $F'(x) = f(x) > 0$, hence $F(x)$ is increasing</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="gRoxexQ6_message"></div>
+<div id="yb4zhsQH_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_gRoxexQ6']").on("change", function() {
+$("input:radio[name='radio_yb4zhsQH']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#gRoxexQ6_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#yb4zhsQH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#gRoxexQ6_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#yb4zhsQH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>For $f(x) = x^2$, which is bigger: the average of the function $f(x)$ over $[0,1]$ or the geometric mean which is the exponential of the average of the logarithm of $f$ over the same interval?</p><form name="WeaveQuestion" data-id="JZX4wtuj" data-controltype="radio">
+<h6>Question</h6><p>For $f(x) = x^2$, which is bigger: the average of the function $f(x)$ over $[0,1]$ or the geometric mean which is the exponential of the average of the logarithm of $f$ over the same interval?</p><form name="WeaveQuestion" data-id="LlfhdoLX" data-controltype="radio">
 <div class="form-group ">
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_JZX4wtuj" value="1"><div class="markdown"><p>The average of $f$</p>
+      <input type="radio" name="radio_LlfhdoLX" value="1"><div class="markdown"><p>The exponential of the average of $\log(f)$</p>
 </div>
     </label>
     </div>
     
-    <div   class="radio"> 
+    <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_JZX4wtuj" value="2"><div class="markdown"><p>The exponential of the average of $\log(f)$</p>
+      <input type="radio" name="radio_LlfhdoLX" value="2"><div class="markdown"><p>The average of $f$</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="JZX4wtuj_message"></div>
+<div id="LlfhdoLX_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_JZX4wtuj']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_LlfhdoLX']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#JZX4wtuj_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#LlfhdoLX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#JZX4wtuj_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#LlfhdoLX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

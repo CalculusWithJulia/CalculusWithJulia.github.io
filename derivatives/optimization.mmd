@@ -115,7 +115,13 @@ functions:
 A(b) = A(b, h(b))
 ```
 
-From this we can solve as before.
+From this we can solve graphically as before, or numerically, as with:
+
+```
+using Roots			# provides D
+Base.ctranspose(f::Function) = D(f) # provides f' notation
+fzeros(A', 0, 10)
+```
 
 
 ```
@@ -151,8 +157,8 @@ delta = 4
 p = plot(delta+x1*[0, 1,1,0], y1*[0,0,1,1],          linetype=:polygon, fillcolor=:blue, legend=false)
 plot!(p, x2*[0, 1,1,0], y2*[0,0,1,1],                linetype=:polygon, fillcolor=:blue)
 
-plot!(p, delta+x1/2+x1/2*cos(ts), y1+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
-plot!(p, x2/2+x2/2*cos(ts), y2+x2/2*sin.(ts),         linetype=:polygon, fillcolor=:red)
+plot!(p, delta+x1/2+x1/2*cos.(ts), y1+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
+plot!(p, x2/2+x2/2*cos.(ts), y2+x2/2*sin.(ts),         linetype=:polygon, fillcolor=:red)
 p
 ```
 
@@ -215,8 +221,6 @@ $0$ of a function, we plot the derivative using our approximate
 derivative.
 
 ```
-using Roots			# provides D
-Base.ctranspose(f::Function) = D(f) # provides f' notation
 plot(A', 5.5, 5.7) 
 ```
 
@@ -498,7 +502,7 @@ factor(q)
 We see two terms: one with $x=L$ and another quadratic. For the simple
 case $r_0=r_1$, a straight line is the best solution, and this
 corresponds to $L=0$, which is clear from the formula above, as we
-only the one solution to the following:
+only have one solution to the following:
 
 ```
 solve(q(r1=>r0))
@@ -559,8 +563,7 @@ Maximize the function $xe^{-(1/2) x^2}$ over the interval $[0, \infty)$.
 Here the extreme value theorem doesn't technically apply, as we don't
 have a closed interval. However, if we can eliminate the endpoints as
 candidates, then we should be able to convince ourselves the maximum
-must occur at a critical point of $f(x)$. (If not, then convince your
-self for all sufficiently large $M$ the maximum over $[0,M]$ occurs at
+must occur at a critical point of $f(x)$. (If not, then convince yourself for all sufficiently large $M$ the maximum over $[0,M]$ occurs at
 a critical point, not an endpoint. Then let $M$ go to infinity.)
 
 So to approach this problem we first graph it over a wide interval.
@@ -832,22 +835,22 @@ numericq(val, 1e-1)
 A maximum likelihood estimator is a value derived by maximizing a function. For example, if 
 
 ```
-L(t) = t^3 * exp(-3t) * exp(-2t) * exp(-4t) ## 0 <= t <= 10
+Likhood(t) = t^3 * exp(-3t) * exp(-2t) * exp(-4t) ## 0 <= t <= 10
 ```
 
-Then $L(t)$ is continuous and has single peak, so the maximum occurs
+Then `Likhood(t)` is continuous and has single peak, so the maximum occurs
 at the lone critical point. It turns out that this problem is bit sensitive to an initial condition, so we bracket
 
 ```
-x = fzero(L',  [0.1, 0.5])
+x = fzero(Likhood',  [0.1, 0.5])
 ```
 
-Now if $L(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, explain why the same approach won't work:
+Now if $Likhood(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, by graphing, explain why the same approach won't work:
 
 ```
 choices=["It does work and the answer is x = 2.27...",
-	 "L(t) is not continuous on 0 to 10",
-         "L(t) takes its maximum at a boundary point---not a critical point"];
+	 L" $Likhood(t)$ is not continuous on $0$ to $10$",
+         L" $Likhood(t)$ takes its maximum at a boundary point---not a critical point"];
 ans = 3;
 radioq(choices, ans)
 ```
@@ -864,8 +867,8 @@ We approach this using `SymPy` and $n=10$
 Verbatim("""
 using SymPy
 n = 10
+@vars s
 xs = [symbols("x\$i") for i in 1:n]
-x = symbols("x")
 s(x) = sum((x-xs[i])^2 for i in 1:n)
 cps = solve(diff(s(x), x), x)
 """)
@@ -982,7 +985,7 @@ numericq(val)
 
 {{{lhopital_40}}}
 
-The figure above poses a problem about cones in spheres, which can be reduced to a two-dimensional problem. Take a sphere of radius $r=1$, and imagine a secant line of length$l$ connecting $(-r, 0)$ to another point $(x,y)$ with $y>0$. Rotating that line around the $x$ axis produces a cone and its lateral surface is given by $SA=\pi \cdot y \cdot $l$. Write $SA$ as a function of $x$ and solve.
+The figure above poses a problem about cones in spheres, which can be reduced to a two-dimensional problem. Take a sphere of radius $r=1$, and imagine a secant line of length$l$ connecting $(-r, 0)$ to another point $(x,y)$ with $y>0$. Rotating that line around the $x$ axis produces a cone and its lateral surface is given by $SA=\pi \cdot y \cdot l$. Write $SA$ as a function of $x$ and solve.
 
 The largest lateral surface area is:
 
@@ -997,7 +1000,7 @@ val = SA(cp)
 numericq(val)
 ```
 
-The surface area of a sphere of radius $1$ is $4\pir^2 = 4 \pi$. This is how many times greater than that of the largest cone?
+The surface area of a sphere of radius $1$ is $4\pi r^2 = 4 \pi$. This is how many times greater than that of the largest cone?
 
 ```
 choices = ["exactly four times",

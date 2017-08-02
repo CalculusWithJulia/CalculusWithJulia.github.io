@@ -25,29 +25,25 @@ mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus w
     
 
 
-
-mmd("area.mmd")
-mmd("ftc.mmd")
-
-mmd("substitution.mmd")
-mmd("integration_by_parts.mmd") 
-## XXX add in trig integrals (cos()sin() stuff? mx or ^m... XXX
-mmd("partial_fractions.mmd") 
-mmd("improper_integrals.mmd") ## 
-
-## applications
-## XXX Could always add more problems....
-mmd("mean_value_theorem.mmd")
-mmd("area_between_curves.mmd") 
-mmd("center_of_mass.mmd")
-mmd("volumes_slice.mmd") 
-# mmd("volumes_shell.mmd") ## XXX add this in if needed, but not really that excited to now XXX
-mmd("arc_length.mmd") 
-mmd("surface_area.mmd") 
+fnames = [
+          "area",
+          "ftc",
+          
+          "substitution",
+          "integration_by_parts", 
+          "partial_fractions", # XX add in trig integrals (cos()sin() stuff? mx or ^m... XXX
+          "improper_integrals", ## 
+          "mean_value_theorem",
+          "area_between_curves", 
+          "center_of_mass",
+          "volumes_slice", 
+          #"volumes_shell", ## XXX add this in if needed, but not really that excited to now XXX
+"arc_length", 
+"surface_area"
+]
 
 
 
 
-
-
+[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")) for nm in fnames]
 

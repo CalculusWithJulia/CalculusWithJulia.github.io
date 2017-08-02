@@ -119,6 +119,12 @@ $$~
 \frac{\vec{r}'(t)}{\| \vec{r}'(t) \|} = \frac{\langle \cos(t) - t\sin(t),~ 2t\rangle}{\sqrt{(\cos(t) -t\sin(t))^2 + 4t^2}}.
 ~$$
 
+An equation for the tangent line could be:
+
+$$~
+tl(t) = \langle t\cos(t),~t^2 \rangle + \frac{\langle \cos(t) - t\sin(t),~ 2t\rangle}{\sqrt{(\cos(t) -t\sin(t))^2 + 4t^2}} \cdot (t - t_0).
+~$$
+
 ### The second derivative
 
 The second derivative, $\vec{r}''(t)$, can be defined in an analogous manner though this isn't as readily interpreted as the second derivative of a scalar function. Recall, $d^2y/dx^2$ was positive when a function was concave up and negative when concave down (when it exists). The values in $\vec{r}''(t)$ include $x''(t)$ and $y''(t)$ (writing $\vec{r}(t) = \langle x(t),~ y(t) \rangle$.)
@@ -141,7 +147,7 @@ To see that his gives the correct answers for a circle (concave down in quadrant
 
 ```
 using SymPy
-t =  symbols("t", real=true)
+@vars t real=true
 r(t) = [cos(t), sin(t)]
 bottom = r(t)[1]^3
 top = det([diff(r(t), t) diff(r(t),t, 2)]) 
@@ -172,7 +178,7 @@ really slow so we do the hardest work once:
 ```
 using SymPy
 
-a,b,R, t, h = symbols("a,b,R, t,h", real=true)
+@vars a b R t h real=true
 xs = symbols("x1 x2 x3", real=true)
 ys = symbols("y1 y2 y3", real=true)
 ts = [t-h, t, t+h]
@@ -228,7 +234,7 @@ the answer is known.
 If $\vec{r}(t) = \langle x(t), y(t) \rangle$, the curvature at $\vec{r}(t)$ is defined (in two dimensions) by:
 
 $$~
-\kappa = \frac{\lvert x'(t)y''(t) - x''(t)y'(t) \rvert}{\| \vec{r}' \|^3} = \frac{\text{det}[\vec{r}'\quad \vec{r}'']}{\| \vec{r}' \|^3}.
+\kappa = \frac{\lvert x'(t)y''(t) - x''(t)y'(t) \rvert}{\| \vec{r}' \|^3} = \frac{\text{det}([\vec{r}'\quad \vec{r}''])}{\| \vec{r}' \|^3}.
 ~$$
 
 This uses $\text{det}$ to indicate the determinant, in this case a $2 \times 2$ determinant.
@@ -239,7 +245,7 @@ We verify again that the curvature of a circle will depend inversely on its radi
 
 ```
 using SymPy
-R,t =  symbols("R, t", real=true, positive=true)
+@vars R t real=true positive=true)
 r(t) = R * [cos(t), sin(t)]
 rp = diff(r(t), t, 1)
 rpp = diff(r(t), t, 2)
@@ -257,7 +263,7 @@ abs(det([rp rpp])) / norm(rp)^3 |> simplify
 For a less trivial example, we consider the ellipse, given by $(x/a) + (y/b) = t$ and parameterized by $\vec{r}(t) = \langle a \cos(t), b\sin(t) \rangle$. This will have curvature computed as follows:
 
 ```
-a,b = symbols("a,b", real=true)
+@vars a b
 r(t) = [a * cos(t), b * sin(t)]
 rp = diff(r(t), t, 1)
 rpp = diff(r(t), t, 2)
@@ -269,7 +275,7 @@ abs(det([rp rpp])) / norm(rp)^3 |> simplify
 ```
 note(L"""
 
-Curvature can also be expressed in terms of the curve. Suppose $\gamma(s)$ parameterizes the curve in terms of its arc length. (So the length between $s=a$ and $s=b$ is just $b-a$.) Then the  tangent vector $T(s) = \gamma'(s)$ will have unit length -- its magnitude relates to the speed at which the curve is parameterized, and parameterizing by arc length will give a unit speed. Furthermore, as the magnitude of $T$ is constant, its derivative $dT/ds$ will be perpendicular to $T$. The curvature is the magnitude,  $\|dT/ds\|$.
+Curvature can also be expressed in terms of the curve. Suppose $\gamma(s)$ parameterizes the curve in terms of its arc length. (So the length between $s=a$ and $s=b$ is just $b-a$.) Then the  tangent vector $T(s) = \gamma'(s)$ will have unit length---its magnitude relates to the speed at which the curve is parameterized, and parameterizing by arc length will give a unit speed. Furthermore, as the magnitude of $T$ is constant, its derivative $dT/ds$ will be perpendicular to $T$. The curvature is the magnitude,  $\|dT/ds\|$.
 
 """)
 ```
@@ -291,7 +297,7 @@ the path taken.
 WeavePynb.HTMLoutput(out)
 ```
 
-The Pacman game has Mr. or Mrs. Pacman marching around a maze eating dots to gather points while avoiding Blinky, Pinky, Inky, and Clyde. Let's simplify the game a bit and take away those pesky enemies and make the maze a parameterized curve, sort of like the oval in the figure. Further, assume -- unlike the game -- the curve is traveled in only one direction. Our question here is how to model the accumulation of points arising from eating the dots?
+The Pacman game has Mr. or Mrs. Pacman marching around a maze eating dots to gather points while avoiding Blinky, Pinky, Inky, and Clyde. Let's simplify the game a bit and take away those pesky enemies and make the maze a parameterized curve, sort of like the oval in the figure. Further, assume---unlike the game---the curve is traveled in only one direction. Our question here is how to model the accumulation of points arising from eating the dots?
 
 If the dots are uniformly spread out and have equal point values associated to them, then the answer would be approximately the length traveled along the curve times the density of dots per unit distance. In notation, something like this using the formula for arc length of a parameterized curve: $\rho \int_a^b \sqrt{x'(t)^2 + y'(t)^2} dt = \int_a^b \rho \sqrt{x'(t)^2 + y'(t)^2} dt$.
 
@@ -304,7 +310,7 @@ We  are interested in the values of $\rho(x,y)$ along the curve, so really we wa
 
 ```
 note(L"""
-We have both $f(x,y)$ and $f(\vec{r}(t))$ using the same rule for evaluation. Mathematically this is easy to conceptualize, but on the computer a function `f(x,y)` would have two arguments, where as `f(r)` would take $1$. We have seen in `Julia` this is no problem -- we could just define `f(r) = f(r[1], r[2])` and have multiple dispatch iron out the details -- but more generally we would like a way to expand a vector, like `r`, into its components. The "splatting" notation does just this. Splatting is done by following a container by three dots, as in `r...`, That is `f(r...)` would expand `r` and call `f(r[1], f[2])` if `r` has two components.
+We have both $f(x,y)$ and $f(\vec{r}(t))$ using the same rule for evaluation. Mathematically this is easy to conceptualize, but on the computer a function `f(x,y)` would have two arguments, where as `f(r)` would take $1$. We have seen in `Julia` this is no problem---we could just define `f(r) = f(r[1], r[2])` and have multiple dispatch iron out the details---but more generally we would like a way to expand a vector, like `r`, into its components. The "splatting" notation does just this. Splatting is done by following a container by three dots, as in `r...`, That is `f(r...)` would expand `r` and call `f(r[1], f[2])` if `r` has two components.
 """)
 ```
 
@@ -323,7 +329,7 @@ $$~
 ~$$
 
 
-If the functions are integrable -- and they will be if the parameterization uses continuous functions and the functions defining $\rho$ are continuous without dividing by $0$ -- then this is a Riemann sum approximation to the integral $\int_a^b \rho(\vec{r}(t)) \sqrt{x'(t)^2 + y'(t)^2} dt$. With the new notation for $\vec{r}'(t)$, this can also be written more succinctly as $\int_a^b \rho(\vec{r}(t)) \| \vec{r}'(t) \| dt$.  In general, this becomes:
+If the functions are integrable---and they will be if the parameterization uses continuous functions and the functions defining $\rho$ are continuous without dividing by $0$---then this is a Riemann sum approximation to the integral $\int_a^b \rho(\vec{r}(t)) \sqrt{x'(t)^2 + y'(t)^2} dt$. With the new notation for $\vec{r}'(t)$, this can also be written more succinctly as $\int_a^b \rho(\vec{r}(t)) \| \vec{r}'(t) \| dt$.  In general, this becomes:
 
 
 > **The line integral**. If $f(x,y)$, a function of two variables returning a real number,
@@ -371,7 +377,7 @@ An antiderivative can be found by `SymPy`, so we integrate exactly:
 
 ```
 using SymPy
-a,b,t = symbols("a,b,t", real=true)
+@vars a b t real=true
 integrate(a*b*cos(t)*sin(t) *sqrt(a^2*sin(t)^2 + b^2 *cos(t)^2), (t, 0, 2PI))
 ```
 
@@ -541,7 +547,7 @@ The curve described by $\vec{r}(t) = \langle 10t,~ 10t - 16t^2\rangle$ models th
 using Roots
 x(t) = 10t
 y(t) = 10t - 16t^2
-a,b = sort(fzeros(y))
+a,b = sort(fzeros(y, -10, 10))
 f(x,y) = 1
 val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
@@ -554,7 +560,7 @@ Integrate the function $f(x,y) = 1/(y+1)$ over the path of the arrow described b
 ```
 x(t) = 10t
 y(t) = 10t - 16t^2
-a,b = sort(fzeros(y))
+a,b = sort(fzeros(y, -10, 10))
 f(x,y) = 1/(y+1)
 val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)

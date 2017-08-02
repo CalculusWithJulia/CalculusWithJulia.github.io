@@ -3,8 +3,8 @@ using WeavePynb, LaTeXStrings
 
 
 using Plots
-pyplot()
-fig_size=(400, 400)
+gr()
+fig_size=(600, 400)
 
 
 

@@ -41,6 +41,7 @@ f(x,y) = x^2 + y^2
 
 
 ```
+using LaTeXStrings
 note(L"""
 
 This is a function of *two* variables, used here to express one side of an equation. `Julia` makes this easy to do---just make sure two variables are in the signature of `f` when it is defined. Using functions like this, we can express our equation in the form $f(x,y) = c$ or $f(x,y) = g(x,y)$, the latter of which can be expressed as $h(x,y) = f(x,y) - g(x,y) = 0$. That is, only the form $f(x,y)=c$ is needed.
@@ -258,12 +259,12 @@ $$~
 Solving gives:
 
 $$~
-\frac{dy}{dx} = -\frac{4x3 - a^2 \cdot 2x}{a^2 \cdot 2y}.
+\frac{dy}{dx} = -\frac{4x^3 - a^2 \cdot 2x}{a^2 \cdot 2y}.
 ~$$
 
 The point $(3,0)$ can be seen to be a solution to the equation and
 should have a vertical tangent line. This also is reflected in the
-formula, as the denominator is $a^2 2 y$, which is $0$ at this point, whereas the numerator is not.
+formula, as the denominator is $a^2\cdot 2 y$, which is $0$ at this point, whereas the numerator is not.
 
 
 ##### Example
@@ -347,7 +348,7 @@ $$~
 x^3 + y^3  = 3axy.
 ~$$
 
-Setting $a=1$, it has the graph:
+Setting $a=1$ we have the graph:
 
 ```
 a = 1
@@ -406,7 +407,7 @@ u = SymFunction("u")
 Defining a symbolic function is done with the command `SymFunction`. (This
 command's name is slightly modified from that when using SymPy under `Python`.) The object
 `u` is the symbolic function, and `u(x)` a symbolic expression
-involving a function.  This is what we will use to refer to `y`.
+involving a symbolic function.  This is what we will use to refer to `y`.
 
 
 Assume $y$ is a function of $x$, called `u(x)`, this substitution is just a renaming:
@@ -421,11 +422,11 @@ At this point,  we differentiate both sides in `x`:
 ex2 = diff(ex1, x)
 ```
 
-The next step is solve for $dy/dx$ -- the lone answer to the linear equation -- which is done as follows:
+The next step is solve for $dy/dx$---the lone answer to the linear equation---which is done as follows:
 
 ```
 dydx = diff(u(x), x)
-ex3 = solve(ex2, dydx)[1]
+ex3 = solve(ex2, dydx)[1]    # pull out lone answer with [1] indexing
 ```
 
 As this represents an answer in terms of `u(x)`, we replace that term with the original variable:
@@ -456,7 +457,7 @@ plot(Eq(lambdify(H), 0), xlims=(-5,5), ylims=(-5,5))
 plot!(y0 + m * (x-x0))
 ```
 
-Basically all the same steps, as if done "by hand." Some effort could have been saved in plotting, had
+Basically all the same steps as if done "by hand." Some effort could have been saved in plotting, had
 values for the parameters been substituted initially, but not doing so
 shows their dependence in the derivative.
 
@@ -485,7 +486,7 @@ $$~
 3x^2 - (3y^2 \frac{dy}{dx}) = 0.
 ~$$
 
-We could solve for $dy/dx$ at this point -- it always appears as a linear factor -- to get:
+We could solve for $dy/dx$ at this point---it always appears as a linear factor---to get:
 
 $$~
 \frac{dy}{dx} = \frac{3x^2}{3y^2} = \frac{x^2}{y^2}.
@@ -497,7 +498,7 @@ $$~
 6x - (6y \frac{dy}{dx} \cdot \frac{dy}{dx} + 3y^2 \frac{d^2y}{dx^2}) = 0.
 ~$$
 
-Again, if must be that $d^2y/dx$ appears as a linear factor, so we can solve for it:
+Again, if must be that $d^2y/dx^2$ appears as a linear factor, so we can solve for it:
 
 $$~
 \frac{d^2y}{dx^2} = \frac{6x - 6y (\frac{dy}{dx})^2}{3y^2}.
@@ -528,18 +529,18 @@ plot(Eq(F, 3),  xlims=(-3, 3), ylims=(-3, 3))
 ```
 
 
-The same problem can be done symbolically. The steps are similar, though the last step (replacing $x^3 - y^3$) isn't done without explicitly asking.
+The same problem can be done symbolically. The steps are similar, though the last step (replacing $x^3 - y^3$ with $3#) isn't done without explicitly asking.
 
 ```
-SymPy.@vars x y
-u = SymPy.SymFunction("u")
+@vars x y
+u = SymFunction("u")
 
 eqn = F(x,y) - 3
 eqn1 = eqn(y => u(x))
-dydx = SymPy.solve(SymPy.diff(eqn1,x), SymPy.diff(u(x), x))[1]          # 1 soln
-d2ydx2 = SymPy.solve(SymPy.diff(eqn1, x, 2), SymPy.diff(u(x),x, 2))[1]  # 1 soln
-eqn2 = d2ydx2(SymPy.diff(u(x), x) => dydx, u(x) => y)
-SymPy.simplify(eqn2)
+dydx = solve(diff(eqn1,x), diff(u(x), x))[1]          # 1 soln
+d2ydx2 = solve(diff(eqn1, x, 2), diff(u(x),x, 2))[1]  # 1 soln
+eqn2 = d2ydx2(diff(u(x), x) => dydx, u(x) => y)
+simplify(eqn2)
 ```
 
 ## Inverse functions
@@ -554,7 +555,7 @@ which are one-to-one. Strictly increasing or decreasing functions will
 have inverse functions. We call these functions *monotonic*.
 
 The typical example is $f(x) = x^2$. We "know" the inverse would be
-$g(x) = \sqrt{x}$. But this isn't quite right -- the property won't
+$g(x) = \sqrt{x}$. But this isn't quite right---the property won't
 hold for both $x < 0$ and $x > 0$ simultaneously. The trick is to
 *redefine* the function by restricting the domain so that the function
 is monotonic on the domain. For the function $f(x) = x^2$, we can
@@ -575,7 +576,7 @@ The chain rule can be used to give the derivative of an inverse
 function when applied to $f(f^{-1}(x)) = x$. Solving gives,
 $[f^{-1}(x)]' = 1 / f'(g(x))$.
 
-This is great -- if we can remember the rules. If not, sometimes implicit
+This is great---if we can remember the rules. If not, sometimes implicit
 differentiation can also help.
 
 Consider the inverse function for the tangent, which exists when the domain of the tangent function is restricted to $(-\pi/2, \pi/2)$. The function solves $y = \tan^{-1}(x)$ or $\tan(y) = x$. Differentiating this yields:
@@ -584,7 +585,7 @@ $$~
 \sec(y)^2 \frac{dy}{dx} = 1.
 ~$$
 
-But $\sec(y)^2 = 1 + x^2$, as can be seen by right-triangle trigonometry. This yields the formula $[\tan^{-1}(x)]' = 1 / (1 + x^2)$.
+But $\sec(y)^2 = 1 + x^2$, as can be seen by right-triangle trigonometry. This yields the formula $dy/dx = [\tan^{-1}(x)]' = 1 / (1 + x^2)$.
 
 ##### Example
 
@@ -609,7 +610,7 @@ $$~
 \theta'(t) = \frac{x^2}{x^2(t) + y^2(t)} \cdot \frac{y'(t) x(t) - y(t) x'(t)}{x(t))^2} = \frac{y'(t) x(t) - y(t) x'(t)}{x^2(t) + y^2(t)}.
 ~$$
 
-This could have been made easier, had we used the result of the previous example
+This could have been made easier, had we leveraged the result of the previous example
 ## Example from physics
 
 Many problems are best done with implicit derivatives. A video showing
@@ -665,7 +666,7 @@ $$~
 L = \sqrt{x^2 + y^2} + \sqrt{(a-x)^2 + (b-y)^2},
 ~$$
 
-where these are the two hypotenuses in the figure, as computed through
+where these terms come from  the two hypotenuses in the figure, as computed through
 Pythagorean's theorem.
 
 
@@ -733,7 +734,7 @@ We would try to solve `eqn1` for `y` with `solve(eqn1, y)`, but
 numerically using `fzero` from the `Roots` package. We make the above a function of `y` alone
 
 ```
-eqn2 = N(eqn1(a=>3, b=>3, L=>10))
+eqn2 = eqn1(a=>3, b=>3, L=>10)
 ystar = fzero(eqn2, -3)
 ```
 
@@ -919,7 +920,7 @@ radioq(choices, ans)
 
 {{{lhopital_35}}}
 
-The figure above shows a problem appearing in L'Hopital's first calculus book. Given a function defined implicitly by $x^3 + y^3 = axy$  (with $AP=x$, $AM=y$ and $AB=a$) find the point $E$ that maximizes the height. In the [AMS feature column](http://www.ams.org/samplings/feature-column/fc-2016-05) this problem is illustrated and solved in the historical manner, with the comment that the concept of implicit differentiation wouldn't have occured to L'Hopital.
+The figure above shows a problem appearing in L'Hospital's first calculus book. Given a function defined implicitly by $x^3 + y^3 = axy$  (with $AP=x$, $AM=y$ and $AB=a$) find the point $E$ that maximizes the height. In the [AMS feature column](http://www.ams.org/samplings/feature-column/fc-2016-05) this problem is illustrated and solved in the historical manner, with the comment that the concept of implicit differentiation wouldn't have occured to L'Hospital.
 
 Using Implicit differentiation, find when $dy/dx = 0$.
 

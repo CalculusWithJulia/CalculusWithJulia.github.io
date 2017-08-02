@@ -7,13 +7,12 @@ plotly()
 
 
 A function $f(x)$ is Riemann integrable over an interval $[a,b]$ if
-some limit involving Riemann sums is defined. This limit will fail if
+some limit involving Riemann sums exists. This limit will fail to exist if
 $f(x) = \infty$ in $[a,b]$. As well, the Riemann sum idea is undefined if either $a$
-or $b$ (or both) are infinite.
+or $b$ (or both) are infinite, so the limit won't exist in this case.
 
-To work with such cases, the idea of an improper integral is
-introduced with definitions to handle the two cases above:
-singularities in the function and infinite domains.
+To define integrals  with either functions having singularities or infinite domains, the idea of an improper integral is
+introduced with definitions to handle the two cases above.
 
 {{{sqrt_graph}}}
 
@@ -57,6 +56,11 @@ $$~
 \int_{-\infty}^\infty f(x) dx  = \lim_{M \rightarrow -\infty} \int_M^a f(x) dx + \lim_{M \rightarrow \infty} \int_a^M f(x) dx.
 ~$$
 
+```
+note("""When the integral exists, it is said to *converge*. If it doesn't exist, it is said to *diverge*.
+""")
+```
+
 ##### Examples
 
 
@@ -89,7 +93,7 @@ $[a, \infty)$ for any finite $a$. This is because, $F(M) = e^x$ and this has a l
 
 * Let $f(x) = x e^{-x^2}$. This function has an integral over $[0, \infty)$ and more generally $(-\infty, \infty)$. To see, we note that as it is an odd function, the area from $0$ to $M$ is the opposite sign of that from $-M$ to $0$. So $\lim_{M \rightarrow \infty} (F(M) - F(0)) = \lim_{M \rightarrow -\infty} (F(0) - (-F(\lvert M\lvert)))$. We only then need to investigate the one limit. But we can see by substitution with $u=x^2$, that an antiderivative is $F(x) = (-1/2) \cdot e^{-x^2}$. Clearly, $\lim_{M \rightarrow \infty}F(M) = 0$, so the answer is well defined, and the area from $0$ to $\infty$ is just $e/2$. From $-\infty$ to $0$ it is $-e/2$ and the total area is $0$, as the two sides "cancel" out.
 
-* Let $f(x) = \sin(x)$. Even though $\lim_{M \rightarrow \infty} (F(M) - F(-M) ) = 0$, this function is not integrable. The fact is we need both the limit $F(M)$ and $F(-M)$ to exist as $M$ goes to $\infty$. In this case, even though the area cancels if $\infty$ is approached at the same rate, this isn't sufficient to guarantee the two limits exists independently.
+* Let $f(x) = \sin(x)$. Even though $\lim_{M \rightarrow \infty} (F(M) - F(-M) ) = 0$, this function is not integrable. The fact is we need *both* the limit $F(M)$ and $F(-M)$ to exist as $M$ goes to $\infty$. In this case, even though the area cancels if $\infty$ is approached at the same rate, this isn't sufficient to guarantee the two limits exists independently.
 
 
 
@@ -109,17 +113,12 @@ As $M$ goes to $\infty$, this will converge to $1$.
 
 
 
-* The sinc function $f(x) = \sin(\pi x)/(\pi x)$ does not have a nice antiderivative.
-so seeing if the limit exists is a bit of a problem. However, this function is important enough that there is a built-in function, `sinc`, that computes $\int_0^x f(u) du$. We can use this built in to investigate the limit:
+* The sinc function $f(x) = \sin(\pi x)/(\pi x)$ does not have a nice antiderivative.  Seeing if the limit exists is a bit of a problem. However, this function is important enough that there is a built-in function, `Si`, that computes $\int_0^x \sin(u)/u\cdot du$. This function can be used through `sympy"Si"(...)`:
 
 ```
 using SymPy
-@vars x M
-integrate(sinc(x), (x, 0, M))
-```
-
-```
-limit(integrate(sinc(x), (x, 0, M)), M, oo)
+@vars M
+limit(sympy"Si"(M), M => oo)
 ```
 
 ### Numeric integrals
@@ -129,7 +128,7 @@ The `quadgk` function is able to accept `Inf` and `-Inf` as endpoints of the int
 ```
 using QuadGK
 f(x) = exp(-x^2/2)
-quadgk(f, -Inf, Inf)
+QuadGK.quadgk(f, -Inf, Inf)
 ```
 
 (If may not be obvious, but this is $\sqrt{2\pi}$.)
@@ -160,7 +159,7 @@ The cases $f(x) = x^{-n}$ for $n > 0$ are tricky. For $n > 1$, the functions can
 """)
 ```
 
-* Now consider $f(x) = 1/x$. Is this integral defined $\int_0^1 1/x dx$? It will be *if* this limit exists:
+* Now consider $f(x) = 1/x$. Is this integral  $\int_0^1 1/x \cdot dx$ defined? It will be *if* this limit exists:
 
 $$~
 \lim_{M \rightarrow 0+} \int_M^1 \frac{1}{x} dx
@@ -168,7 +167,7 @@ $$~
 = \lim_{M \rightarrow 0+} \log(1) - \log(M) = \infty.
 ~$$
 
-So the function is not integrable around $0$.
+As the limit does not exist, the function is not integrable around $0$.
 
 * `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. This is why this integral produces an imaginary number for an answer, even though we just saw that it is undefined:
 
@@ -189,7 +188,7 @@ But the limit as $M \rightarrow 0$ of $1/M$ is the same going to $\infty$, so th
 ### Numeric integration
 
 So far our use of the `quadgk` function specified the region to
-integrate via `a`, `b`, as in `quadgk(f, a, b)`. In fact, it can
+integrate via `a`, `b`, as in `QuadGK.quadgk(f, a, b)`. In fact, it can
 specify values in between for which the function should not be
 sampled. For example, were we to integrate $1/\sqrt{\lvert x\rvert}$
 over $[-1,1]$, we would want to avoid $0$ as a point to sample. Here
@@ -197,11 +196,11 @@ is how:
 
 ```
 f(x) = 1 / sqrt(abs(x))
-quadgk(f, -1, 0, 1)
+QuadGK.quadgk(f, -1, 0, 1)
 ```
 
-Just trying `quadgk(f, -1, 1)` leads to a `DomainError`, as `0` will
-be one of the points sampled. The general call is like `quadgk(f, a, b, c, d,...)`
+Just trying `QuadGK.quadgk(f, -1, 1)` leads to a `DomainError`, as `0` will
+be one of the points sampled. The general call is like `QuadGK.quadgk(f, a, b, c, d,...)`
 which integrates over $(a,b)$ and $(b,c)$ and $(c,d)$,
 $\dots$. The algorithm is not supposed to evaluate the function at the
 endpoints of the intervals.
@@ -209,15 +208,13 @@ endpoints of the intervals.
 ## Probability applications
 
 A probability density is a function $f(x) \geq 0$ which is integrable
-on $(-\infty, \infty)$ and for which $\int_{-\infty}^\infty f(x) dx =
-0$. The cumulative distribution function is defined by $F(x) =
--\int_{-\infty}^x f(u) du$.
+on $(-\infty, \infty)$ and for which $\int_{-\infty}^\infty f(x) dx =1$. The cumulative distribution function is defined by $F(x)=\int_{-\infty}^x f(u) du$.
 
 Probability densities are good example of using improper integrals.
 
 * Show that $f(x) = (1/\pi) 1/(1 + x^2)$ is a probability density function.
 
-We need to show that the integral exists and is $1$. For this, we use the fact that $1/\pi \tan^{-1}(x)$ is an antiderivative. Then we have:
+We need to show that the integral exists and is $1$. For this, we use the fact that $(1/\pi) \cdot \tan^{-1}(x)$ is an antiderivative. Then we have:
 
 $\lim_{M \rightarrow \infty} F(M) = (1/\pi) \cdot \pi/2$ and as
 $\tan^{-1}(x)$ is odd, we must have $F(-\infty) = \lim_{M \rightarrow
@@ -247,7 +244,7 @@ limit.)
 
 * If $f(x)$ is a probability density, then so is $(1/h) f((x-c)/h)$ for any $c, h > 0$.
 
-Again, by a $u$ substitution with, now, $u(x) = (x-c)/h$, we have $du = 1/h dx$ and the result follows just as before:
+Again, by a $u$ substitution with, now, $u(x) = (x-c)/h$, we have $du = (1/h) \cdot dx$ and the result follows just as before:
 
 
 $$~
@@ -279,7 +276,7 @@ point will not effect the integral as long as the point is finite.
 
 ###### Question
 
-Is $f(x) = 1/x^{100}$ integrable around 0
+Is $f(x) = 1/x^{100}$ integrable around $0$?
 
 ```
 yesnoq("no")
@@ -287,7 +284,7 @@ yesnoq("no")
 
 ###### Question
 
-Is $f(x) = 1/x^{1/3}$ integrable around 0
+Is $f(x) = 1/x^{1/3}$ integrable around $0$?
 
 ```
 yesnoq("yes")
@@ -324,7 +321,7 @@ Compute the integral $\int_0^\infty 1/(1+x^2) dx$.
 ```
 f(x) = 1/(1+x^2)
 a, b= 0, Inf
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -335,7 +332,7 @@ Compute the the integral $\int_1^\infty \log(x)/x^2 dx$.
 ```
 f(x) =log(x)/x^2
 a, b= 1, Inf
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -345,7 +342,7 @@ Compute the integral $\int_0^2 (x-1)^{2/3} dx$.
 
 ```
 f(x) = cbrt((x-1)^2)
-val, _ = quadgk(f , 0, 1, 2)
+val, _ = QuadGK.quadgk(f , 0, 1, 2)
 numericq(val)
 ```
 
@@ -353,8 +350,8 @@ numericq(val)
 
 From the relationship that if $0 \leq f(x) \leq g(x)$ then $\int_a^b f(x) dx \leq \int_a^b g(x) dx$ it can be deduced that
 
-* if $\int_a^\infty f(x) dx$ diverges, the so does $\int_a^\infty g(x) dx$.
-* if $\int_a^\infty g(x) dx$ converges, the so does $\int_a^\infty g(x) dx$.
+* if $\int_a^\infty f(x) dx$ diverges, then so does $\int_a^\infty g(x) dx$.
+* if $\int_a^\infty g(x) dx$ converges, then so does $\int_a^\infty g(x) dx$.
 
 Let $f(x) = \lvert \sin(x)/x^2 \rvert$.
 
@@ -459,7 +456,7 @@ Find $\int_0^1 f(x) dx$.
 ```
 f(x) = 1/pi * 1/sqrt(x*(1-x))
 a, b= 0, 1
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val)
 ```
 

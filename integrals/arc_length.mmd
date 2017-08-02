@@ -15,9 +15,9 @@ A kids' jump rope by Lifeline is comprised of little plastic segments of uniform
 WeavePynb.HTMLoutput(out)
 ```
 
-The length of the jump rope in the picture can be computed by either looking at the packaging it came in, or measuring the length of each plastic segment and multiplying by the number of segments. The former is easier, the latter provides the intuition as to how we can find the length of curves in the $x-y$ plane. The idea is old, [Archimedes](http://www.maa.org/external_archive/joma/Volume7/Aktumen/Polygon.html) used fixed length segments of polygons to approximate $\pi$ using the circumference of circle producing the bounds $3~1/7 > \pi > 3~10/71$.
+The length of the jump rope in the picture can be computed by either looking at the packaging it came in, or measuring the length of each plastic segment and multiplying by the number of segments. The former is easier, the latter provides the intuition as to how we can find the length of curves in the $x-y$ plane. The idea is old, [Archimedes](http://www.maa.org/external_archive/joma/Volume7/Aktumen/Polygon.html) used fixed length segments of polygons to approximate $\pi$ using the circumference of circle producing the bounds $3~\frac{1}{7} > \pi > 3~\frac{10}{71}$.
 
-A more modern application is the algorithm used by GPS devices to record a path taken. However, rather than record times for a fixed distance traveled, the GPS device records position ($(x,y)$ or longitude and latitude at fixed units of time -- similar to how parametric functions are used. The device can then compute distance traveled and speed traveled using some familiar formulas.
+A more modern application is the algorithm used by GPS devices to record a path taken. However, rather than record times for a fixed distance traveled, the GPS device records position ($(x,y)$ or longitude and latitude at fixed units of time---similar to how parametric functions are used. The device can then compute distance traveled and speed traveled using some familiar formulas.
 
 ## Arc length formula
 
@@ -41,7 +41,7 @@ The form of the integral may seem daunting with the square root and
 the derivatives. A more general writing would create a vector out of
 the two functions: $\phi(t) = \langle g(t), f(t) \rangle$. It is
 natural to then let $\phi'(t) = \langle g'(t), f'(t) \rangle$. With
-this, the integrand is just the norm -- or length -- of the
+this, the integrand is just the norm---or length---of the
 derivative, or $L=\int \| \phi'(t) \| dt$. This is similar to the
 distance traveled being the integral of the speed, or the absolute
 value of the derivative of position.
@@ -200,11 +200,11 @@ an approximate numeric answer. We add in a bit to make `f'(t)` call `D(f)(t)` to
 
 ```
 using Roots, QuadGK
-Base.ctranspose(f::Function) = D(f)
-quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
+Base.ctranspose(f::Function) = x -> D(f)(x)
+QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
 ```
 
-We used a numeric approach, but this can be solved by hand and the answer is suprising.
+We used a numeric approach, but this can be solved by hand and the answer is surprising.
 
 ##### Example
 
@@ -256,7 +256,7 @@ compute the length of Johns' catenary in inches:
 a = 13
 b = 118 + a
 f(x) = cat(x, a=13, b=118+13)
-quadgk(x -> sqrt(1 + f'(x)^2), -78/2, 78/2)[1]
+QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -78/2, 78/2)[1]
 ```
 
 ##### Example
@@ -289,7 +289,7 @@ Find the  length of the cable in meters.
 a = 1298/2;
 b = -147;
 f(x) = (-b/a^2)*(x^2 - a^2);
-val, _ = quadgk(x -> sqrt(1 + f'(x)^2), -a, a)
+val, _ = QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -a, a)
 val
 ```
 
@@ -322,7 +322,7 @@ An antiderivative isn't forthcoming through `SymPy`, so we take a numeric approa
 
 
 ```
-quadgk(t -> sqrt(g'(t)^2 + f'(t)^2), 0, 2pi)[1]
+QuadGK.quadgk(t -> sqrt(g'(t)^2 + f'(t)^2), 0, 2pi)[1]
 ```
 
 The answer seems like a floating point approximation of $24$, which  suggests that  this integral is tractable. Pursuing this, the integrand simplifies:
@@ -398,7 +398,7 @@ But, despite it not being too daunting, this integral is not tractable through o
 
 ```
 a, b= 1, 2
-s(u) = quadgk(t -> sqrt(a^2 * sin(t)^2 + b^2 * cos(t)^2), 0, u)[1]
+s(u) = QuadGK.quadgk(t -> sqrt(a^2 * sin(t)^2 + b^2 * cos(t)^2), 0, u)[1]
 ```
 
 This  has a graph, which does not look familiar, but we can see is monotonically increasing, so will have an inverse function:
@@ -449,7 +449,7 @@ Now find the actual length of the curve numerically:
 
 ```
 a,b = 0, 1
-val, _ = quadgk(x -> sqrt(1 + f'(x)^2), a, b)
+val, _ = QuadGK.quadgk(x -> sqrt(1 + exp(x)^2), a, b)
 numericq(val)
 ```
 
@@ -460,7 +460,7 @@ Find the length of the graph of $f(x) = x^{3/2}$ between $0$ and $4$.
 ```
 f(x) = x^(3/2)
 a, b = 0, 4
-val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(1 + f'(x)^2), a, b)
 numericq(val)
 ```
 
@@ -472,7 +472,7 @@ A [pursuit](http://www-history.mcs.st-and.ac.uk/Curves/Pursuit.html) curve is a 
 ```
 f(x) = x^2 - log(x)
 a, b= 1/10, 2
-val, _ = quadgk( x -> sqrt(1 + (f)(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(1 + (f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -485,7 +485,7 @@ Find the length of the graph of $f(x) = \tan(x)$ between $-\pi/4$ and $\pi/4$.
 ```
 f(x) = tan(x)
 a, b= -pi/4, pi/4
-val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(1 + f'(x)^2), a, b)
 numericq(val)
 ```
 
@@ -502,7 +502,7 @@ Find the length of the graph of the function $g(x) =\int_0^x \tan(x)dx$ between 
 ```
 fp(x) = tan(x)
 a, b = 0, pi/4
-val, _ = quadgk(x -> sqrt(1 + fp(x)^2), a, b)
+val, _ = QuadGK.quadgk(x -> sqrt(1 + fp(x)^2), a, b)
 numericq(val)
 ```
 
@@ -530,7 +530,7 @@ boat has traveled between $x=1$ and $x=a$ using `quadgk`.
 ```
 a = 12
 f(x) = g(x, a);
-val =quadgk(x -> sqrt(1 + D(f)(x)^2), 1, a)[1];
+val = QuadGK.quadgk(x -> sqrt(1 + D(f)(x)^2), 1, a)[1];
 numericq(val, 1e-3)
 ```
 
@@ -553,7 +553,7 @@ A curve is parameterized by $g(t) = t + \sin(t)$ and $f(t) = \cos(t)$. Find the 
 g(t) = t + sin(t)
 f(t) = cos(t)
 a, b = 0, pi
-val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -566,7 +566,7 @@ a curve  parameterized by $g(t) = \cos(t)^3$ and $f(t) = \sin(t)^3$. Find the ar
 g(t) = cos(t)^3
 f(t) = sin(t)^3
 a, b = 0, 2pi
-val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -578,7 +578,7 @@ A curve is parameterized by $g(t) = (2t + 3)^{2/3}/3$ and $f(t) = t + t^2/2$, fo
 g(t) = (2t+3)^(2/3)/3
 f(t) = t + t^2/2
 a, b = 0, 3
-val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -591,6 +591,6 @@ The cycloid is parameterized by $g(t) = a(t - \sin(t))$ and $f(t) = a(1 - \cos(t
 g(t) = t - sin(t)
 f(t) = 1 - cos(t)
 a, b = 0, 2pi
-val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```

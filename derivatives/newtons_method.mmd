@@ -35,7 +35,7 @@ x = x//2 + 1//x
 x, x^2.0
 ```
 
-Our estimate improved from something which squared to $4$ down to something which squares to $2.25$. A big improvements, but there is still more to come.
+Our estimate improved from something which squared to $4$ down to something which squares to $2.25$. A big improvement, but there is still more to come.
 
 
 ```
@@ -71,8 +71,8 @@ x = x/2 + 1/x   # 1.414213562373095,  1.9999999999999996
 x = x/2 + 1/x   # 1.414213562373095,  1.9999999999999996
 ```
 
-We see that the algorithm -- to the precision offered by floating
-point numbers -- has resulted in an answer `1.414213562373095`. This
+We see that the algorithm---to the precision offered by floating
+point numbers---has resulted in an answer `1.414213562373095`. This
 answer is an *approximation* to the actual answer. Approximation is necessary,
 as $\sqrt{2}$ is an irrational number and so can never be exactly
 represented in floating point. That being said, we see that the value
@@ -97,7 +97,9 @@ using Plots
 f(x) = x^3 - 2x - 5
 fp(x) = 3x^2 - 2
 c = 2
-p = plot([f, x->f(2) + fp(2)*(x-2), zero], 1.75, 2.25, legend=false)
+p = plot(f, 1.75, 2.25, legend=false)
+plot!(x->f(2) + fp(2)*(x-2))
+plot!(zero)
 scatter!(p, [c], [f(c)], color=:orange, markersize=3)
 Outputonly(p)
 ```
@@ -125,9 +127,18 @@ x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}.
 ~$$
 
 
-That is starting from $2$, we get:
+We will use automatic derivatives, as possible:
 
 ```
+using Roots
+Base.ctranspose(f::Function) = x -> D(f)(x)
+```
+
+
+With this, the algorithm above starting from $2$ becomes:
+
+```
+
 x0 = 2
 x1 = x0 - f(x0)/f'(x0)
 ```
@@ -170,15 +181,23 @@ call $x_4$ an *approximate zero* of $f(x)$.
 
 On the computer, we know that actual convergence will likely never
 occur, but accuracy to a certain tolerance will happen quite
-quickly. In the example above, we kept track of the previous
-values. This is unnecessary if only the answer is sought. In that case,
-the update step can use the same variable:
+quickly.
+
+
+
+In the example above, we kept track of the previous values. This is
+unnecessary if only the answer is sought. In that case, the update
+step can use the same variable:
 
 ```
-x = x - f(x) / fp(x)
+x = 2                     # x0
+x = x - f(x) / f'(x)      # x1
+x = x - f(x) / f'(x)      # x2
+x = x - f(x) / f'(x)      # x3
+x = x - f(x) / f'(x)      # x4
 ```
 
-The assignment will update `x` using the previous value of `x`.
+As see above, the assignment will update the value bound to `x` using the previous value of `x` in the computation.
 
 We implement the algorithm by repeating the step until either we
 converge or it is clear we won't converge. For good guesses and most
@@ -203,11 +222,14 @@ method.
 
 ## Examples
 
+##### Example: visualizing convergence
+
 This  graphic demonstrates the method and the rapid convergence:
 
 {{{newtons_method_example}}}
 
 
+##### Example: numeric not algebraic
 
 For the function $f(x) = \cos(x) - x$, we see that SymPy can not solve symbolically for a zero:
 
@@ -221,13 +243,12 @@ We can find a numeric solution, even though there is no closed-form answer. Here
 
 ```
 f(x) = cos(x) - x
-fp(x) = -sin(x) - 1
 x = .5
-x = x - f(x)/fp(x)  # 0.7552224171056364
-x = x - f(x)/fp(x)  # 0.7391416661498792
-x = x - f(x)/fp(x)  # 0.7390851339208068
-x = x - f(x)/fp(x)  # 0.7390851332151607
-x = x - f(x)/fp(x)
+x = x - f(x)/f'(x)  # 0.7552224171056364
+x = x - f(x)/f'(x)  # 0.7391416661498792
+x = x - f(x)/f'(x)  # 0.7390851339208068
+x = x - f(x)/f'(x)  # 0.7390851332151607
+x = x - f(x)/f'(x)
 ```
 
 This answer is close, to machine tolerance it produces $0.0$:
@@ -265,10 +286,10 @@ some other means!
 
 
 Trying again, we simplify the update step for a related function:
-$f(x) = 1/x - q$ and then one step of the process is:
+$f(x) = 1/x - q$ with $f'(x) = -1/x^2$ and then one step of the process is:
 
 $$~
-x_{i+1} = -qx^2_i + 2x_i.
+x_{i+1} = x_i - (1/x_i - q)/(-1/x_i^2) = -qx^2_i + 2x_i.
 ~$$
 
 Now for $q$ in the interval $[1/2, 1]$ we want to get a *good* initial
@@ -278,7 +299,8 @@ graphically that this is a reasonable initial approximation to $1/q$:
 ```
 g(q) = 1/q
 h(q) = 1/17 * (48 - 32q)
-plot([g,h], 1/2, 1)
+plot(g, 1/2, 1)
+plot!(h)
 ```
 
 
@@ -304,15 +326,16 @@ For $q = 0.80$, to find $1/q$ using the above we have
 
 ```
 q = 0.80
-x = (1/17) * (48 - 32q)
+x = (48/17) - (32/17)*q
 x = -q*x*x + 2*x
 x = -q*x*x + 2*x
 x = -q*x*x + 2*x
 x = -q*x*x + 2*x
 ```
 
-Timing this shows the method to be slightly faster than a regular
-division.
+This method has basically $18$ multiplication and addition operations
+for one division, so it naively would seem slower, but timing this
+shows the method is competitive with a regular division.
 
 ## A function
 
@@ -362,8 +385,7 @@ f(x) = x^5 - 5^x
 We can find the derivative, but in this example will let the `D` function from the `Roots` package do so for us:
 
 ```
-using Roots
-alpha = nm(f, D(f), 2)
+alpha = nm(f, f', 2)
 alpha, f(alpha)
 ```
 
@@ -403,11 +425,11 @@ fzero(f, x0)
 Compare to this related call which uses the bisection method:
 
 ```
-fzero(f, [0, 1])           ## [0,1] must be a bracketing interval
+fzero(f, 0, 1)           ## [0,1] must be a bracketing interval
 ```
 
 For this example both give the same answer, but the bisection method
-is a bit more inconvenient as a bracket must be pre-specified.
+is a bit more inconvenient as a bracketing interval must be pre-specified.
 
 
 ##### Example: intersection of two graphs
@@ -554,23 +576,26 @@ convergence is linear with $\lvert e_{i+1}\rvert \approx (k-1)/k
 
 
 
+
+
+
 ## Questions
 
 ###### Question
 
 Look at this graph with $x_0$ marked with a point:
 
-```
-p = plot(airy, -3.3, 0);
+```nocode
+p = plot(airy, -3.3, 0, legend=false);
 plot!(p, zero, -3.3, 0);
 scatter!(p, [-3], [0], color=:orange, markersize=5);
-annotate!(p, [(-3, .2, "x₀")])
+annotate!(p, [(-3, 0, text("x₀", :below))])
 ```
 
 If one step of Newton's method was used, what would be the value of $x_1$?
 
 ```
-choices = [L"-2.338", L"-1.800", L"-1.020", L"0.355"]
+choices = [L"-2.800", L"-2.338",  L"-0.020", L"0.355"]
 ans = 1
 radioq(choices, ans, keep_order=true)
 ```
@@ -579,13 +604,13 @@ radioq(choices, ans, keep_order=true)
 
 ###### Question
 
-Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $x^+$ be the zero.
+Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $c$ be the zero.
 
 ```nocode
 p = plot(x -> x^2 - 2, .75, 2.2, legend=false);
 plot!(p, zero,                   color=:green);
 scatter!(p, [1],[0],             color=:orange, markersize=5);
-annotate!(p, [(1,.2, "x₀"), (sqrt(2), .2, "x⁺")]);
+annotate!(p, [(1,.2, "x₀"), (sqrt(2), .2, "c")]);
 p
 ```
 
@@ -594,9 +619,9 @@ What can be said about $x_1$?
 
 ```
 choices = [
-L"It must be $x_1 > x^*$",
+L"It must be $x_1 > c$",
 L"It must be $x_1 < x_0$",
-L"It must be $x_0 < x_1 < x^*$"
+L"It must be $x_0 < x_1 < c$"
 ]
 ans = 1
 radioq(choices, ans)
@@ -604,13 +629,13 @@ radioq(choices, ans)
 
 ###### Question
 
-Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $x^+$ be the zero.
+Look at this graph of some concave up $f(x)$ with initial point $x_0$ marked. Let $c$ be the zero.
 
 ```nocode
 p = plot(x -> x^2 - 2, .75, 2.2, legend=false);
 plot!(p, zero, .75, 2.2, color=:green);
 scatter!(p, [2],[0], color=:orange, markersize=5);
-annotate!(p, [(2,.2, "x₀"), (sqrt(2), .2, "x⁺")]);
+annotate!(p, [(2,.2, "x₀"), (sqrt(2), .2, "c")]);
 p
 ```
 
@@ -619,9 +644,24 @@ What can be said about $x_1$?
 
 ```
 choices = [
-L"It must be $x_1 < x^*$",
+L"It must be $x_1 < c$",
 L"It must be $x_1 > x_0$",
-L"It must be $x^+ < x_1 < x_0$"
+L"It must be $c < x_1 < x_0$"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+
+###### Question
+
+Suppose $f(x)$ is concave up and we have the tangent line representation: $f(x) = f(c) + f'(c)\cdot(x-c) + f''(\xi)/2 \cdot(x-c)^2$. Explain why it must be that the graph of $f(x)$ lies on or *above* the tangent line.
+
+```
+choices = [
+L"As $f''(\xi)/2 \cdot(x-c)^2$ is non-negative, we must have $f(x) - (f(c) + f'(c)\cdot(x-c)) \geq 0$.",
+L"As $f''(\xi) < 0$ it must be that $f(x) - (f(c) + f'(c)\cdot(x-c)) \geq 0$.",
+L"This isn't true. The function $f(x) = x^3$ at $x=0$ provides a counterexample"
 ]
 ans = 1
 radioq(choices, ans)
@@ -967,8 +1007,8 @@ The equation $x^2 + x\cdot y + y^2 = 1$ is a rotated ellipse.
 
 ```nocode
 using ImplicitEquations
-f(x,y) = x^2 + x*y + y^2 - 1
-plot(Eq(f, 0), (-2,2), (-2,2))
+f(x,y) = x^2 + x * y + y^2 - 1
+plot(ImplicitEquations.Eq(f, 0), xlims=(-2,2), ylims=(-2,2))
 ```
 
 Can we find which point on its graph has the largest $y$ value?
@@ -981,7 +1021,7 @@ function findy(x)
 end
 ```
 
-For a *fixed* x, this solve for $y$ in the equation: $F(y) = x^2 + x*y + y^2 - 1 = 0$. It should be that $(x,y)$ is a solution:
+For a *fixed* x, this solve for $y$ in the equation: $F(y) = x^2 + x \cdot y + y^2 - 1 = 0$. It should be that $(x,y)$ is a solution:
 
 ```
 x = .75
@@ -998,10 +1038,91 @@ yp(x) = (findy(x + 1e-6) - findy(x)) / 1e-6
 Using `fzero`, find the value $x$ which maximizes `yp`. Use this to find the point $(x,y)$ with largest $y$ value.
 
 ```
-xstar = fzero(yp, 0)
+xstar = fzero(yp, 0.5)
 ystar = findy(xstar)
 choices = [L"(-0.577, 1.155)", L"(0,0)", L"(0, -0.577)", L"(0.577, 0.577)"]
 ans = 1
 radioq(choices, ans)
 ```
+
+###### Question
+
+In the last problem we used an *approximate* derivative in place of the derivative. This can introduce an error due to the approximation. Will this be true if we replace the derivative in Newton's method with an approximation? In general, this can often be done *but* the convergence can be *slower* and the sensitivity to a poor initial guess even greater.
+
+Three common approximations are given by the
+difference quotient for a fixed $h$: $f'(x_i) \approx (f(x_i+h)-f(x_i))/h$;
+the secant line approximation: $f'(x_i) \approx (f(x_i) - f(x_{i-1})) / (x_i - x_{i-1})$; and the
+Steffensen approximation $f'(x_i) \approx (f(x_i + f(x_i)) - f(x_i)) / f(x_i)$ (using $h=f(x_i)$).
+
+
+Let's revisit the $4$-step convergence of Newton's method to the root of $f(x) = 1/x - q$ when $q=0.8$. Will these methods be as fast?
+
+```
+q = 0.8
+xstar = 1.25 # q = 4/5 --> 1/q = 5/4
+f(x) = 1/x - q
+```
+
+
+Let's define the above approximations for a given `f`:
+
+```
+delta = 1e-6
+secant_approx(x0,x1) = (f(x1) - f(x0)) / (x1 - x0)
+diffq_approx(x0, h) = secant_approx(x0, x0+h)
+steff_approx(x0) = diffq_approx(x0, f(x0))
+```
+
+Then using the difference quotient would look like:
+
+```
+x1 = 42/17 - 32/17*q
+x1 = x1 - f(x1) / diffq_approx(x1, delta)   # |x1 - xstar| = 0.06511395862036995
+x1 = x1 - f(x1) / diffq_approx(x1, delta)   # |x1 - xstar| = 0.003391809999860218; etc
+```
+
+The Steffensen method would look like:
+
+```
+x1 = 42/17 - 32/17*q
+x1 = x1 - f(x1) / steff_approx(x1)   # |x1 - xstar| = 0.011117056291670258
+x1 = x1 - f(x1) / steff_approx(x1)   # |x1 - xstar| = 3.502579696146313e-5; etc.
+```
+
+And the secant method like:
+
+```
+x1 = 42/17 - 32/17*q
+x0 = x1 - delta # we need two initial values
+x0, x1 = x1, x1 - f(x1) / secant_approx(x0, x1)   # |x1 - xstar| = 8.222358365284066e-6
+x0, x1 = x1, x1 - f(x1) / secant_approx(x0, x1)   # |x1 - xstar| = 1.8766323799379592e-6; etc.
+```
+
+Repeat each of the above algorithms until `abs(x1 - 1.25)` is `0` (which will happen for this problem, though not in general). Record the steps.
+
+* Does the difference quotient need *more* than $4$ steps?
+
+```
+yesnoq(false)
+```
+
+* Does the secant method need *more* than $4$ steps?
+
+```
+yesnoq(true)
+```
+
+* Does the Steffensen method need *more* than 4 steps?
+
+```
+yesnoq(false)
+```
+
+All methods work quickly with this well-behaved problem. In general
+the convergence rates are slightly different for each, with the
+Steffensen method matching Newton's method and the difference quotient
+method being slower in general. All can be more sensitive to the initial guess.
+
+
+
 

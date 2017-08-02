@@ -19,7 +19,7 @@ Some relationships are easiest to describe in terms of derivatives. For example:
 * Newton's law of [cooling](http://tinyurl.com/z4lmetp). This
   describes the temperature change in an object due to a difference in
   temperature with the object's surroundings. The formula being,
-  $T'(t) = -r \left(T(t) - T_a \rigth)$, where $T(t)$ is temperature at time $t$
+  $T'(t) = -r \left(T(t) - T_a \right)$, where $T(t)$ is temperature at time $t$
   and $T_a$ the ambient temperature.
 
 * [Hooke's law](http://tinyurl.com/kbz7r8l) relates force on an object to the position on the object, through $F = k x$. This is appropriate for many systems involving springs. Combined with Newton's law $F=ma$, this leads to an equation that $x$ must satisfy: $m x''(t) = k x(t)$.
@@ -121,7 +121,7 @@ U'(t) = -r U(t), \quad U(0) = U_0.
 ~$$
 
 
-This shows that the rate of change of $U$ depends on $U$. Large postive values indicate a negative rate of change -- a push back towards the orgin, and large negative values of $U$ indicate a positive rate of change -- again, a push back towards the origin. We shouldn't be surprised to either see a steady decay towards the origin, or oscillations about the origin.
+This shows that the rate of change of $U$ depends on $U$. Large postive values indicate a negative rate of change---a push back towards the origin, and large negative values of $U$ indicate a positive rate of change---again, a push back towards the origin. We shouldn't be surprised to either see a steady decay towards the origin, or oscillations about the origin.
 
 What will we find? This equation is different from the previous two
 equations, as the function $U$ appears on both sides. However, we can
@@ -148,7 +148,7 @@ T(t) - T_a = (T_0 - T_a) e^{-rt}.
 
 In words, the initial difference in temperature of the object and the environment exponentially decays to $0$.
 
-That is, as $t > 0$ goes to $\infty$, the right hand will go to $0$ for $r > 0$, so $T(t) \rightarrow T_a$ -- the temperature of the object will reach the ambient temperature. The rate of this is largest when the difference between $T(t)$ and $T_a$ is largest, so when objects are cooling the statement "hotter things cool faster" is appropriate.
+That is, as $t > 0$ goes to $\infty$, the right hand will go to $0$ for $r > 0$, so $T(t) \rightarrow T_a$---the temperature of the object will reach the ambient temperature. The rate of this is largest when the difference between $T(t)$ and $T_a$ is largest, so when objects are cooling the statement "hotter things cool faster" is appropriate.
 
 
 A graph of the solution for $T_0=200$ and $T_a=72$ and $r=1/2$ is made
@@ -302,23 +302,39 @@ As seen, separable equations are approached by moving the "$y$" terms to one sid
 Rather than go over these various families, we demonstrate that `SymPy` can solve many of these equations symbolically.
 
 
-The `solve` function in `SymPy` solves equations for unknown *variables*. As a differential equation involves an unknown *function* there is a different function, `dsolve`. The basic idea is to describe the differential equation using a symbolic function and then call `dsolve` to solve the expression.
+The `solve` function in `SymPy` solves equations for unknown
+*variables*. As a differential equation involves an unknown *function*
+there is a different function, `dsolve`. The basic idea is to describe
+the differential equation using a symbolic function and then call
+`dsolve` to solve the expression.
 
-Here is an example for the *logistic equation*
+Symbolic functions are defined by `SymFunction`:
+
+```
+using SymPy
+u = SymFunction("u")
+```
+
+
+We will use this to sole the following, known as the *logistic equation*:
 
 $$~
 u'(x) = a u(1-u), \quad a > 0
 ~$$
 
-Before beginning, we look at the form of the equation. When $u=0$ or $u=1$ the rate of change is $0$, so we expect the function might be bounded within that range. If not, when $u$ gets bigger than $1$, then the slope is negative and when $u$ gets less than $0$, the slope is positive, so there will atleast be a drift back to the range $[0,1]$. Let's see exactly what happens.
+Before beginning, we look at the form of the equation. When $u=0$ or
+$u=1$ the rate of change is $0$, so we expect the function might be
+bounded within that range. If not, when $u$ gets bigger than $1$, then
+the slope is negative and when $u$ gets less than $0$, the slope is
+positive, so there will at least be a drift back to the range
+$[0,1]$. Let's see exactly what happens. We define some variables,
+restricting `a` to be positive:
 
-We first load `SymPy` and then create a symbolic variable and function:
+
 
 ```
-using SymPy
-x, y = symbols("x, y")
-a = symbols("a", positive=true)
-u = SymFunction("u")
+@vars x y
+@vars a positive=true
 ```
 
 
@@ -328,13 +344,19 @@ Our equation can be specified by an expression equaling $0$:
 eqn = u'(x) - a * u(x) * (1 - u(x))
 ```
 
-Note that we evaluate the symbolic function at the variable `x` through the use of `u(x)` in the expression. Finally, we call `dsolve` to find a solution (if possible):
+In the above, we evaluate the symbolic function at the variable `x`
+through the use of `u(x)` in the expression. Finally, we call `dsolve`
+to find a solution (if possible):
 
 ```
 out = dsolve(eqn)
 ```
 
-This answer -- to a first-order equation -- has one free constant, `C_1`, which can be solved for from an initial condition. We can see that when $a > 0$, as $x$ goes to positive infinity the solution goes to $1$, and when $x$ goes to $-$ infinity, the solution goes to $0$ and otherwise is trapped in between, as expected.
+This answer---to a first-order equation---has one free constant,
+`C_1`, which can be solved for from an initial condition. We can see
+that when $a > 0$, as $x$ goes to positive infinity the solution goes
+to $1$, and when $x$ goes to negative infinity, the solution goes to $0$
+and otherwise is trapped in between, as expected.
 
 Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
 
@@ -367,7 +389,7 @@ Hooke's law relates the force on an object to its position via $F=ma = -kx$, or 
 Suppose $k > 0$. Then we can solve, similar to the above, with:
 
 ```
-k, m = symbols("k, m", positive=true)
+@vars k m positive=true
 eqn = u''(x) + k/m*u(x)
 dsolve(eqn)
 ```
@@ -377,10 +399,12 @@ two integrations are needed in the solution.
 
 Suppose the spring were started by pulling it down to a bottom and
 releasing. The initial position at time $0$ would be $a$, say, and
-initial velocity $0$. Here we get the solution:
+initial velocity $0$. Here we get the solution specifying initial
+conditions on the function and its derivative (expressed through
+`u'`):
 
 ```
-a = symbols("a", positive=true)
+@vars a positive=true
 dsolve(eqn, x, (u, 0, -a), (u', 0, 0))
 ```
 
@@ -431,14 +455,14 @@ will it take if there are no forces outside of gravity acting on it?
 What about if the force is uniform along length of the chain, like a
 suspension bridge? How will the shape differ then?
 
-Let $y(x)$ describe the chain at position $x$, with $0 \leq X \leq L$,
+Let $y(x)$ describe the chain at position $x$, with $0 \leq x \leq L$,
 say. We consider first the case of the chain with no force save
-gravity. Let $w(x)$ be the density of the chain at $x$.
+gravity. Let $w(x)$ be the density of the chain at $x$, taken below to be a constant.
 
-The chain is in equlibrium, so tension, $T(x)$, in the chain will be
+The chain is in equilibrium, so tension, $T(x)$, in the chain will be
 in the direction of the derivative. Let $V$ be the vertical component
 and $H$ the horizontal component. With only gravity acting on the
-chain, the value of $H$ will be a constant. The value of $W$ will vary
+chain, the value of $H$ will be a constant. The value of $V$ will vary
 with position.
 
 At a point $x$, there is $s(x)$ amount of chain with weight $w \cdot s(x)$. The tension is in the direction of the tangent line, so:
@@ -472,28 +496,31 @@ y''(x) = \frac{w}{H} \sqrt{1 + y'(x)}.
 This equation can be solved exactly, though with some work, as a direct approach fails:
 
 ```
-using SymPy
-x, w, H = symbols("x, w, H", positive=true)
 u = SymFunction("u")
+@vars x w H positive=true
 out = dsolve(u''(x) - w/H * sqrt(1 + u'(x)^2))
 ```
 
+To help `SymPy` out we break the problem into steps. For the first step we solve for the derivative.
 Let $u = y'$, then we have $u'(x) = (w/H)\sqrt{1 + u(x)^2}$:
 
 ```
 out = dsolve(u'(x) - w/H * sqrt(1 + u(x)^2))
 ```
 
-So $y'(x) = \sinh(C_1 + w \cdot x/H)$. This can be solved by direct integration as there is no $u(x)$ term on the right hand side.
+So $y'(x) = \sinh(C_1 + w \cdot x/H)$. This can be solved by direct
+integration as there is no $u(x)$ term on the right hand
+side. Repurposing `u` to represent `y` now, we have the equation and solution:
 
 ```
-out1 = dsolve(u'(x) - rhs(out))
+eqn = u'(x) - rhs(out)
+out1 = dsolve(eqn)
 ```
 
 The shape is a hyperbolic cosine, known as the catenary.
 
 
-If the chain has a uniform load, sufficient to make the weight of the chain neglible, then how does the above change? Then the vertical tension comes from $Udx$ and not $w ds$, so the equation becomes instead:
+If the chain has a uniform load, sufficient to make the weight of the chain negligible, then how does the above change? Then the vertical tension comes from $Udx$ and not $w ds$, so the equation becomes instead:
 
 $$~
 \frac{Udx}{H} = d(y'(x)).
@@ -512,24 +539,26 @@ $$~
 x''(t) = 0, \quad y''(t) = -g.
 ~$$
 
-That is, the $x$ position -- where no forces act -- has $0$ acceleration, and the $y$ position -- where the force of gravity acts -- has constant acceleration, $-g$, where $g=9.8m/sec^2$ is the gravitational constant. These equations can be solved to give:
+That is, the $x$ position---where no forces act---has $0$ acceleration, and the $y$ position---where the force of gravity acts---has constant acceleration, $-g$, where $g=9.8m/sec^2$ is the gravitational constant. These equations can be solved to give:
 
 $$~
 x(t) = x_0 + v_0 \cos(\alpha) t, \quad y(t) = y_0 + v_0\sin(\alpha)t - \frac{1}{2}g \cdot t^2.
 ~$$
 
 
-Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(x)$:
+Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(x)$. Here are all the steps:
 
 ```
-x0, y0, v0, alpha, g = symbols("x0, y0, v0, alpha, g",real=true)
-x, y, t = symbols("x,  y, t")
-y = y0 + v0 * sin(alpha) * t - 1//2 * g * t^2
-ts = solve(x - (x0 + v0 * cos(alpha) *t), t)[1]
-y(t=> ts)
+@vars x0 y0 v0 alpha g real=true
+@vars x y t
+u = SymFunction("u")
+a1 = dsolve(u''(t) + 0, t, (u, 0, x0), (u', 0, v0 * cos(alpha)))
+a2 = dsolve(u''(t) - g, t, (u, 0, y0), (u', 0, v0 * sin(alpha)))
+ts = solve(x - rhs(a1), t)[1]
+y = simplify(rhs(a2)(t => ts))
 ```
 
-The answer is a quadratic polyonmial in $x$ which gives the familiar
+Though messy, it can be seen that the answer is a quadratic polynomial in $x$ yielding the familiar
 parabolic motion for a trajectory.
 
 
@@ -588,7 +617,7 @@ For example, in a previous example we found a solution to  $y'(x) = x\cdot y(x)$
 x, y = symbols("x, y")
 x0, y0 = 1, 1
 F(x, y) = y*x
-plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5))
+plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5), n=20)
 f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
 plot!(f,  linewidth=5)
 ```
@@ -600,7 +629,7 @@ The plots are also useful for illustrating solutions for different initial condi
 
 
 ```
-p = plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5))
+p = plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5), n=20)
 for y0 in -4:4
   f(x) =  y0*exp(-x0^2/2) * e^(x^2/2)
   plot!(p, f, x0, 2, linewidth=5)
@@ -609,8 +638,8 @@ p
 ```
 
 Such solutions are called [integral
-curves](https://en.wikipedia.org/wiki/Integral_curve). It is clear
-from the graph that the slope field is tangent to the graph of any
+curves](https://en.wikipedia.org/wiki/Integral_curve). 
+These graphs illustrate the fact that the slope field is tangent to the graph of any
 integral curve.
 
 
@@ -641,7 +670,7 @@ x = symbols("x")
 dsolve(u'(x) - (1-x)/u(x))
 ```
 
-The two answers track positive and negative solutions. For the initial condition, $u(-1)=1$, we have the second one is approriate: $u(x) = \sqrt{C_1 - x^2 + 2x}$. At $-1$ this gives: $1 = \sqrt{C_1-3}$, so $C_1 = 4$.
+The two answers track positive and negative solutions. For the initial condition, $u(-1)=1$, we have the second one is appropriate: $u(x) = \sqrt{C_1 - x^2 + 2x}$. At $-1$ this gives: $1 = \sqrt{C_1-3}$, so $C_1 = 4$.
 
 This value is good for what values of $x$?
 
@@ -733,33 +762,6 @@ numericq(val)
 
 ##### Question
 
-At time $0$ a tank contains 10 gallons of water containing $1/2$ pound of salt in a solution. Water containing a salt concentration is added at 1 gallon/minute. The concentration is time dependent and satisfies $q(t) = (1 + \sin(t))/100$. Water leaves the tank at 2 gallons/minute.
-
-The volume of the tank at time $t$ is $v(t)=10-t$, as $dv/dt = -1$. So it takes 10 minute to empty the tank. During these 10 minutes, the amount of salt in the tank, $c(t)$, satisfies:
-
-$$~
-\Delta c = q(t) \cdot 1 \cdot \Delta t - \frac{c(t)}{v(t)} \cdot 2 \Delta t.
-~$$
-
-This suggests that the following differential equation should hold:
-
-$$~
-\frac{dc}{dt} = q(t) - 2\frac{c(t)}{v(t)}, \quad c(0) = 1/2
-~$$
-
-What is the amount of salt at time $t=5$?
-
-```
-q(t) = (1 + sin(t))//100
-v(t) = 10 - t
-eqn = u'(x) - (q(x) - 2*u(x)/v(x))
-out = dsolve(eqn, x, (u, 0, 1//2))
-val = N(rhs(out)(5))
-numericq(val)
-```
-
-##### Question
-
 Suppose $u(x)$ satisfies:
 
 $$~
@@ -791,7 +793,25 @@ x = symbols("x")
 eqn = diff(x^2*u'(x), x)
 out = dsolve(eqn, x, (u, 1, 2), (u, 10, 1)) |> rhs
 out(5)  # 10/9
-choices = ["10/9", "3/2", "9/10", "8/9"]
+choices = [L"10/9", L"3/2", L"9/10", L"8/9"]
+ans = 1
+radioq(choices, ans)
+```
+
+
+##### Question
+
+The example with projectile motion in a medium has a parameter
+$\gamma$ modeling the effect of air resistance. If `y` is the
+answer---as would be the case if the example were copy-and-pasted
+in---what can be said about `limit(y, gamma=>0)`?
+
+```
+choices = [
+"The limit is a quadratic polynomial in `x`, mirroring the first part of that example.",
+"The limit does not exists, but the limit to `oo` gives a quadratic polynomial in `x`, mirroring the first part of that example.",
+"The limit does not exist, as there is a singularity, as seen by setting `gamma=0`."
+]
 ans = 1
 radioq(choices, ans)
 ```

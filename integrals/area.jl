@@ -2,26 +2,30 @@ module area
 
 using WeavePynb, LaTeXStrings
 using Plots
-pyplot()
-fig_size = (400, 400)
+gr()
+fig_size = (600, 400)
 
 
 f(x) = x^2
 colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
 
 ## Area of parabola
+
+## Area of parabola
 function make_triangle_graph(n)
     title = "Area of parabolic cup ..."
-    n==1 && (title = "Area = 1/2")
-    n==2 && (title = "Area = previous + 1/8")
-    n==3 && (title = "Area = previous + 2*(1/8)^2")
-    n==4 && (title = "Area = previous + 4*(1/8)^3")
-    n==4 && (title = "Area = previous + 8*(1/8)^4")
-    n==5 && (title = "Area = previous + 16*(1/8)^5")
-    n==6 && (title = "Area = previous + 32*(1/8)^6")
+    n==1 && (title = "\$\\textrm{Area = }1/2\$")
+    n==2 && (title = "\$\\textrm{Area = previous }+ 1/8\$")
+    n==3 && (title = "\$\\textrm{Area = previous }+ 2*(1/8)^2\$")
+    n==4 && (title = "\$\\textrm{Area = previous }+ 4*(1/8)^3\$")
+    n==5 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
+    n==6 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
+    n==7 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
 
 
-    plt = plot(f, 0, 1, legend=false, size = fig_size, linewidth=2, title=title)
+
+    plt = plot(f, 0, 1, legend=false, size = fig_size, linewidth=2)
+    annotate!(plt, [(0.05, 0.9, text(title,:left))])  # if in title, it grows funny with gr
     n >= 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linetype=:polygon, fill=colors[1], alpha=.2)
     n == 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linewidth=2)
     for k in 2:n
@@ -37,7 +41,8 @@ function make_triangle_graph(n)
 end
 
 
-n = 5
+
+n = 7
 anim = @animate for i=1:n
     make_triangle_graph(i)
 end

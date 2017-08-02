@@ -5,13 +5,8 @@ using Plots
 plotly()
 ```
 
-```
-using WeavePynb
-## From http://www.wpclipart.com/signs_symbol/roadside_symbols/roadside_3/seesaw.png.html (public domain)
-out = gif_to_data("figures/seesaw.png", L""" A silhouette of two children on a seesaw. The seesaw can be balanced only if the distance from the central point for each child reflects their relative weights, or masses, through the formula $d_1m_1 = d_2 m_2$. This means if the two children weigh the same the balance will tip in favor of the child farther away, and if both are the same distance, the balance will tip in favor of the heavier.
-""")
-WeavePynb.HTMLoutput(out)
-```
+
+{{{seesaw_figure}}}
 
 The game of seesaw is one where children earn an early appreciation for the effects of distance and relative weight. For children with equal weights, the seesaw will balance if they sit an equal distance from the center (on opposite sides, of course). However, with unequal weights that isn't the case. If one child weighs twice as much, the other must sit twice as far.
 
@@ -34,11 +29,11 @@ $$~
 w_1 \cdot (x_1 - \bar{\text{cm}}) + w_2 \cdot (x_2 - \bar{\text{cm}}) + \cdots + w_n \cdot (x_n - \bar{\text{cm}}) = 0.
 ~$$
 
-The center of mass is a balance of the weighted signed distances. This property of the center of mass being a balancing point makes it of intrinsic interest and -- in the case of sufficient symmetry -- easy to find.
+The center of mass is a balance of the weighted signed distances. This property of the center of mass being a balancing point makes it of intrinsic interest and can be---in the case of sufficient symmetry---easy to find.
 
 ##### Example
 
-A set of weights sits on a dumbell rack. They are spaced 1 foot apart starting with the 5, then the 10-, 15-, 25-, and 35-pound weights. Where is the center of mass?
+A set of weights sits on a dumbbell rack. They are spaced 1 foot apart starting with the 5, then the 10-, 15-, 25-, and 35-pound weights. Where is the center of mass?
 
 We begin by letting $m_1=5$, $m_2=10$, $m_3=15$, $m_4=25$ and $m_5=35$. Our positions will be labeled $x_i = i-1$, so the five-pound weight is at position $0$ and the $35$-pound one at $4$. The center of mass is then given by:
 
@@ -65,7 +60,8 @@ This graph shows that the figure is symmetric:
 ```
 using Plots
 f(x) = 1 - abs(x)
-plot([f, zero], -1.5, 1.5)
+plot(f, -1.5, 1.5)
+plot!(zero)
 ```
 
 As the center of mass should be a balancing value, we would guess intuitively that the center of mass in the $x$ direction will be $x=0$.
@@ -126,7 +122,8 @@ What about the center of mass of the triangle formed by the line $x=-1$, the $x$
 
 ```
 f(x) = (1-x)/2
-plot([f, zero], -1, 1)
+plot(f, -1, 1)
+plot!(zero)
 ```
 
 The formulas give:
@@ -146,7 +143,8 @@ The center of mass (in the $x$ direction) can be seen to be close to $x=1/2$:
 ```
 f(x) = 1 - x^2
 g(x) = (x-1)^2 -2
-plot([f,g], -3, 3)
+plot(f, -3, 3)
+plot!(g)
 ```
 
 To find it, we need to find the intersection points, then integrate. We do so numerically.
@@ -154,9 +152,9 @@ To find it, we need to find the intersection points, then integrate. We do so nu
 ```
 using Roots, QuadGK
 h(x) = f(x) - g(x)
-a,b = fzeros(h)  # h is a polynomial function, so specifying an interval is not needed
-top, _ = quadgk(x -> x*h(x), a, b)
-bottom, _ = quadgk(h, a, b)
+a,b = fzeros(h, -3, 3) 
+top, _ = QuadGK.quadgk(x -> x*h(x), a, b)
+bottom, _ = QuadGK.quadgk(h, a, b)
 cm = top / bottom
 ```
 
@@ -168,7 +166,7 @@ note("""
 There are a few tricks above. 
 First, it proves convenient to use the `->` notation for an anonymous function above, as our function `h` is not what is being integrated all the time, but some simple modification. If this isn't palatable, a new function could be defined and passed along to `quadgk`.
 
-Second, the `_` is just one way to ignore the second value returned by `quadgk` (the error). The `_` is a valid variable name, which we use as one whose value is unimportant. Alternatively, we could have employed indexing, as with `quadgk(h, a, b)[1]`.
+Second, the `_` is just one way to ignore the second value returned by `quadgk` (the error). The `_` is a name which can be used when the value is unimportant. Alternatively, we could have employed indexing, as with `quadgk(h, a, b)[1]`.
 
 """)
 ```
@@ -211,7 +209,9 @@ phi(u) = exp(2(k-1)) - exp(2(k-u))
 f(u) = max(0, phi(u))
 g(u) = min(f(u+1), f(k))
 
-plot([f, g, zero], 0, k)
+plot(f, 0, k)
+plot!(g)
+plot!(zero)
 ```
 
 (This is basically the graph of $\phi(u)$ and the graph of its shifted value $\phi(u+1)$, only truncated on the top and bottom.)
@@ -220,12 +220,12 @@ The center of mass of this figure is found with:
 
 ```
 h(x) = g(x) - f(x)
-top, _ = quadgk(x -> x*h(x), 0, k)
-bottom, _ = quadgk(h, 0, k)
+top, _ = QuadGK.quadgk(x -> x*h(x), 0, k)
+bottom, _ = QuadGK.quadgk(h, 0, k)
 top/bottom
 ```
 
-This figure has constant slices of length $1$ for fixed values of $y$. If we were to approximate the values with blocks of height $1$, then the center of mass would be to the left of $1$ -- for any $k$, but the top most block would have an overhang to the right of $1$ -- out to a value of $k$. That is, this figure should balance:
+This figure has constant slices of length $1$ for fixed values of $y$. If we were to approximate the values with blocks of height $1$, then the center of mass would be to the left of $1$---for any $k$, but the top most block would have an overhang to the right of $1$---out to a value of $k$. That is, this figure should balance:
 
 ```
 u(i) = 1/2*(2k - log(e^(2(k-1)) - i))
@@ -245,7 +245,7 @@ See this [paper](https://math.dartmouth.edu/~pw/papers/maxover.pdf) and its refe
 
 ## The $y$ direction.
 
-We can talk about the center of mass in the $y$ direction too. The approximating picture uses horizontal rectangles -- not vertical ones -- and if we describe them by $f(y)$, then the corresponding formulas would be
+We can talk about the center of mass in the $y$ direction too. The approximating picture uses horizontal rectangles---not vertical ones---and if we describe them by $f(y)$, then the corresponding formulas would be
 
 $$~
 \text{center of mass} = \text{cm}_y = \frac{\int_a^b y f(y) dy}{\int_a^b f(y) dy}.
@@ -303,7 +303,7 @@ plot(f, -1, 1)
 
 ($f(x)$ is even, so $xf(x)$ will be odd.)
 
-However, the value for cm$_y$ will -- like the last problem -- be around $1/3$. The exact value comes from noting that our slices in the $y$ direction come from solving for $x$ in $y=\sqrt{1-x^2}$, or $x = \pm \sqrt{1-y^2}$, if $f(y) = 2\sqrt{1 - y^2}$. The value is then:
+However, the value for cm$_y$ will---like the last problem---be around $1/3$. The exact value comes from noting that our slices in the $y$ direction come from solving for $x$ in $y=\sqrt{1-x^2}$, or $x = \pm \sqrt{1-y^2}$, if $f(y) = 2\sqrt{1 - y^2}$. The value is then:
 
 $$~
 \text{cm}_y = \frac{\int_{0}^1 y 2 \sqrt{1 - y^2}dy}{\int_{0}^1 2\sqrt{1-y^2}} =
@@ -321,7 +321,7 @@ A picture shows that this could be complicated, especially for $y > 0$, as we ne
 ```
 a,b = 0, 2pi
 ts = linspace(a, b)
-p = plot(t -> 2cos(t), t->2sin(t), a, b, legend=false);
+p = plot(t -> 2cos(t), t->2sin(t), a, b, legend=false, aspect_ratio=:equal);
 plot!(p, cos.(ts), 1 + sin.(ts), linetype=:polygon, color=:red);
 plot!(p, [-sqrt(3), sqrt(3)], [-1,-1], color=:orange);
 plot!(p, [-sqrt(3), -1],      [1,1],   color=:orange);
@@ -342,8 +342,8 @@ We use this to compute:
 
 ```
 f(y) = y < 0 ? 2*sqrt(4 - y^2) : 2* (sqrt(4 - y^2)- sqrt(1 - (y-1)^2))
-top, _ = quadgk( y -> y * f(y), -2, 2)
-bottom, _ = quadgk( f, -2, 2)
+top, _ = QuadGK.quadgk( y -> y * f(y), -2, 2)
+bottom, _ = QuadGK.quadgk( f, -2, 2)
 top/bottom
 ```
 
@@ -358,8 +358,8 @@ Find the center of mass in the $x$ variable for the region bounded by parabola $
 ```
 f(x) = sqrt(4 - x)
 a, b = 0, 4
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -373,8 +373,8 @@ Find the center of mass in the $x$ variable of the region in the first and fourt
 f(x) = 3 * sqrt(1 - (x/2)^2)
 a, b= 0, 2
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -387,8 +387,8 @@ Find the center of mass of the region in the first quadrant bounded by the funct
 f(x) = x^3 * (1-x)^4
 a, b= 0, 1
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -408,8 +408,8 @@ k, lambda = 2, 2
 f(x) = (k/lambda) * (x/lambda)^(k-1) * exp(-(x/lambda)^k)
 a, b = 0, Inf
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -431,8 +431,8 @@ m, s = 2, 4
 f(x) = 1/(4s) * sech((x-m)/2s)^2
 a,b = -Inf, Inf
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -446,8 +446,8 @@ f(y) = 2*sqrt(1 - y^2)
 a, b = 3/4, 1
 
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -460,8 +460,8 @@ Find the center of mass in the $y$ direction of the area bounded by the cosine c
 f(y) = 2*acos(y)
 a, b= 0, 1
 
-top, _ = quadgk(x -> x*f(x), a,b)
-bottom, _ = quadgk(f, a,b)
+top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
+bottom, _ = QuadGK.quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -470,17 +470,17 @@ numericq(val)
 
 A penny, nickel, dime and quarter are stacked so that their right most edges align and are centered so that the center of mass in the $y$ direction is $0$. Find the center of mass in the $x$ direction.
 
-```
+```nocode
 ds = [0.75, 0.835, 0.705, 0.955]
 rs = ds/2
 xs = rs[4] - rs
 ts = linspace(0,2pi)
-p = plot(legend=false);
+p = plot(legend=false, aspect_ratio=:equal);
 for i in 1:4
-  plot!(p, xs[i] + rs[i]*cos(ts), rs[i]*sin(ts));
+  plot!(p, xs[i] + rs[i]*cos.(ts), rs[i]*sin.(ts));
 end
 
-Outputonly(p)
+p
 ```
 
 You will need some specifications, such as these from the [US Mint](http://www.usmint.gov/about_the_mint/?action=coin_specifications)

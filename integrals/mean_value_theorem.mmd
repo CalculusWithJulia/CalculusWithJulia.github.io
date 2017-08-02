@@ -1,4 +1,4 @@
-# Average of a function and the Mean Value Theorem for integrals
+# Average of a function and the mean value theorem for integrals
 
 ```nocode, noout
 using Plots
@@ -68,7 +68,7 @@ Visually, we have:
 using Plots
 plotly()
 plot(sin, 0, pi)
-plot!([0, pi], 2/pi * [1,1])
+plot!(x -> 2/pi)
 ```
 
 ##### Example
@@ -83,18 +83,20 @@ Though not continuous, $f(x)$ is integrable as it contains only jumps. The integ
 What is the average value of the function $e^{-x}$ between $0$ and $\log(2)$?
 
 $$~
-\text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx = \frac{1}{\log(2)} (-e^{-x}) \big|_0^{\log(2)} =
-\frac{1}{\log(2)} (2 - 1) = \frac{1}{\log(2)}.
+\text{average} = \frac{1}{\log(2) - 0} \int_0^{\log(2)} e^{-x} dx
+= \frac{1}{\log(2)} (-e^{-x}) \big|_0^{\log(2)}
+= -\frac{1}{\log(2)} (\frac{1}{2} - 1)
+= \frac{1}{2\log(2)}.
 ~$$
 
 Visualizing, we have
 
 ```
 plot(x -> exp(-x), 0, log(2))
-plot!([0, log(2)], 1/log(2) * [1,1])
+plot!(x -> 1/(2*log(2)))
 ```
 
-## The Mean Value Theorem for Integrals
+## The mean value theorem for integrals
 
 If $f(x)$ is assumed integrable, the average value of $f(x)$ is
 defined, as above. Re-expressing gives that there exists a $K$ with
@@ -105,7 +107,7 @@ K \cdot (b-a) = \int_a^b f(x) dx.
 
 When we assume that $f(x)$ is continuous, we can describe $K$ as a value in the range of $f$:
 
-> **The Mean Value Theorem For Integrals**: Let $f(x)$ be a continuous
+> **The mean value theorem for integrals**: Let $f(x)$ be a continuous
 > function on $[a,b]$ with $a < b$. Then there exists $c$ with $a \leq c \leq b$ with
 > $$~ f(c) \cdot (b-a) = \int_a^b f(x) dx.~$$
 
@@ -139,7 +141,7 @@ $$~
 
 The value $\xi(h)$ is just the $c$ corresponding to a given value in $[x, x+h]$
 guaranteed by the mean value theorem.  We only know that $x \leq \xi(h) \leq x+h$. But
-this is plenty -- it says that $\lim_{h \rightarrow 0+} \xi(h) =
+this is plenty---it says that $\lim_{h \rightarrow 0+} \xi(h) =
 x$. Using the fact that $f$ is continuous and the known properties of
 limits of compositions of functions this gives $\lim_{h \rightarrow
 0+} f(\xi(h)) = f(x)$. But this means that the (right) limit of the
@@ -163,7 +165,7 @@ Between $0$ and $1$ a function is constantly $1$. Between $1$ and $2$ the functi
 ```
 f(x) = x < 1 ? 1.0 : 2.0
 a,b = 0, 2
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val/(b-a))
 ```
 
@@ -176,7 +178,7 @@ Between $0$ and $2$ a function is constantly $1$. Between $2$ and $3$ the functi
 ```
 f(x) = x < 2 ? 1.0 : 2.0
 a, b= 0, 2
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val/(b-a))
 ```
 
@@ -207,7 +209,7 @@ Find the average value of $\cos(x)$ over the interval $[-\pi/2, \pi/2]$.
 ```
 f(x) = cos(x)
 a,b = -pi/2,pi/2
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 val = val/(b-a)
 numericq(val)
 ```
@@ -220,7 +222,7 @@ Find the average value of $\cos(x)$ over the interval $[0, \pi]$.
 ```
 f(x) = cos(x)
 a,b = 0, pi
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 val = val/(b-a)
 numericq(val)
 ```
@@ -232,7 +234,7 @@ Find the average value of $f(x) = e^{-2x}$ between $0$ and $2$.
 ```
 f(x) = exp(-2x)
 a, b = 0, 2
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 val = val/(b-a)
 numericq(val)
 ```
@@ -245,7 +247,7 @@ Find the average value of $f(x) = \sin(x)^2$ over the $0$, $\pi$.
 ```
 f(x) = sin(x)^2
 a, b = 0, pi
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 val = val/(b-a)
 numericq(val)
 ```
@@ -276,8 +278,8 @@ choices = [
 L"f(x; 2,3)",
 L"f(x; 3,4)"
 ]
-n1, _ = quadgk(x -> x^2 *(1-x)^3, 0, 1)
-n2, _ = quadgk(x -> x^3 *(1-x)^4, 0, 1)
+n1, _ = QuadGK.quadgk(x -> x^2 *(1-x)^3, 0, 1)
+n2, _ = QuadGK.quadgk(x -> x^3 *(1-x)^4, 0, 1)
 ans = 1 + (n1 < n2)
 radioq(choices, ans)
 ```
@@ -302,7 +304,7 @@ F(x) = \int_a^x f(x) dx > 0
 
 ```
 choices = [
-L"Because the mean value theorem says this is $f(c) (x-a)$ and both terms are positive by the assumptions",
+L"Because the mean value theorem says this is $f(c) (x-a)$ for some $c$ and both terms are positive by the assumptions",
 "Because the definite integral is only defined for positive area, so it is always positive"
 ]
 ans = 1
@@ -328,8 +330,8 @@ For $f(x) = x^2$, which is bigger: the average of the function $f(x)$ over $[0,1
 ```
 f(x) = x^2
 a,b = 0, 1
-val1 = quadgk(f, a, b)[1] / (b-a)
-val2 = exp(quadgk(x -> log(f(x)), a, b)[1] / (b - a))
+val1 = QuadGK.quadgk(f, a, b)[1] / (b-a)
+val2 = exp(QuadGK.quadgk(x -> log(f(x)), a, b)[1] / (b - a))
 
 choices = [
 L"The average of $f$",

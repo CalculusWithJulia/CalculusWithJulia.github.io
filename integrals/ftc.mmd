@@ -109,7 +109,7 @@ $$~
 ~$$
 
 
-With these heuristics, we know have:
+With these heuristics, we now have:
 
 > **The Fundamental Theorem of Calculus**
 >
@@ -144,7 +144,7 @@ one.
 
 The major use of the FTC is the computation of $\int_a^b f(x)
 dx$. Rather then resort to Riemann sums or geometric arguments, there
-is an alternative -- find a function $F$ with $F'(x) = f(x)$ and compute $F(b) - F(a)$.
+is an alternative---find a function $F$ with $F'(x) = f(x)$ and compute $F(b) - F(a)$.
 
 Some examples:
 
@@ -190,13 +190,12 @@ $$~
 
 ### An alternate notation for $F(b) - F(a)$
 
-The expression $F(b) - F(a)$ is often written in this compacted form:
+The expression $F(b) - F(a)$ is often written in this more compact form:
 
 $$~
-\int_a^b f(x) dx = F(b) - F(a) = F(x)\big|_{x=a}^b,
+\int_a^b f(x) dx = F(b) - F(a) = F(x)\big|_{x=a}^b, \text{ or just expr}\big|_{x=a}^b.
 ~$$
 
-or just $\text{expr}\big|_{x=a}^b$.
 
 
 The vertical bar is used for the *evaluation* step, in this case the
@@ -214,14 +213,13 @@ $$~
 F(x) \big|_{x=a}^b = -F(x) \big|_{x=b}^a.
 ~$$
 
-This says nothing more than $F(b)-F(a) = -F(a) - (-F(b))$, but finds use when minus signs are involved.
+This says nothing more than $F(b)-F(a) = -F(a) - (-F(b))$, though more compactly.
 
 ## The indefinite integral
 
 A function $F(x)$ with $F'(x) = f(x)$ is known as an
 *antiderivative* of $f$. For a given $f$, there are infinitely many
-antiderivatives: if $F(x)$ is one, then so is $G(x) = F(x) + C$. But --
-due to the mean value theorem -- all antiderivatives for $f$ differ at
+antiderivatives: if $F(x)$ is one, then so is $G(x) = F(x) + C$. But---due to the mean value theorem---all antiderivatives for $f$ differ at
 most by a constant.
 
 The **indefinite integral** of $f(x)$ is denoted by:
@@ -271,17 +269,17 @@ Whereas this call computes the "area" under $f(x)$ between `a` and `b`:
 integrate(sin, 0, pi)
 ```
 
-Those integrated function objects, we can also integrate expressions, though here we must specify the variable:
+In the last two example, function objects were integrated. We can also integrate expressions, though in this usage we must specify the variable:
 
 ```
 x, n = symbols("x,n", real=true)
 integrate(x^n, x)          # indefinite integral
 ```
 
-For a specific expression we have
+For a definite integral we have
 
 ```
-integrate(acos(1-x), x, 0, 2)
+integrate(acos(1-x), (x, 0, 2))
 ```
 
 ## Rules of integration
@@ -486,7 +484,7 @@ We need to figure out when this is $0$. For that, we use some numeric math.
 
 ```
 using Roots, QuadGK
-F(x) = exp(-x^2) * quadgk(t -> exp(t^2), 0, x)[1]
+F(x) = exp(-x^2) * QuadGK.quadgk(t -> exp(t^2), 0, x)[1]
 Fp(x) = -2x*F(x) + 1
 cps = fzeros(Fp, -4,4)
 ```
@@ -496,14 +494,14 @@ $F''(x) = [-2xF(x) + 1]' = -2F(x) + -2x(-2xF(x) + 1)$, so
 
 ```
 Fpp(x) = -2F(x) + 4x^2*F(x) - 2x
-[Fpp(x) for x in cps]
+Fpp.(cps)
 ```
 
-The first value being positive says there is a relative minimum at $-0.924139$, at $0.924139$ there is a local maximum.
+The first value being positive says there is a relative minimum at $-0.924139$, at $0.924139$ there is a relative maximum.
 
 ##### Example
 
-From the familiar formula rate $\times$ time $=$ distance, we "know",
+From the familiar formula rate $\times$ time $=$ distance, we "know,"
 for example, that a car traveling 60 miles an hour for one hour will
 have traveled 60 miles. This allows us to translate statements about
 the speed (or more generally velocity) into statements about position
@@ -600,7 +598,7 @@ end
 ```
 
 This has the advantage that each "dot" still represents a calorie
-burned, so that a use can still count the dots to see the total burned
+burned, so that a user can still count the dots to see the total burned
 in the past 10 minutes.
 
 
@@ -621,11 +619,11 @@ say, 5 high, they were now 3 high and 2 high. It "looked" like they
 were doing less work! What to do?
 
 The users actually were not responding to the number of dots, which
-hadn't changed, but rather the *area* that they represented -- and
+hadn't changed, but rather the *area* that they represented---and
 this shrank in half. (It is much easier to visualize area than count dots when tired.)
 How to adjust for that?
 
-Well our engineer knew -- double the dots and count each as half a
+Well our engineer knew---double the dots and count each as half a
 calorie. This makes the "area" constant.  She also generalized letting
 `n` be the number of updates per minute, in anticipation of even
 further improvements in the display technology:
@@ -640,7 +638,7 @@ Then the "area" represented by the dots stays fixed over this time frame.
 
 The engineer then thought a bit more, as the form of her answer seemed
 familiar. She decides to parameterize it in terms of $t$ and found with
-$h=1/n$: `c(t) = (C(t) - C(t-h))/h`. Ahh -- the derivative
+$h=1/n$: `c(t) = (C(t) - C(t-h))/h`. Ahh---the derivative
 approximation. But then what is the "area"? It is no longer just the
 sum of the dots, but in terms of the functions she finds that each
 column represents $c(t)\cdot h$, and the sum is just $c(t_1)h +
@@ -710,7 +708,7 @@ Find the value of $\int_0^1 (1-x^2/2 + x^4/24) dx$.
 ```
 f(x) = 1 - x^2/2 + x^4/24
 a, b = 0, 1
-val, _ = quadgk(f, a, b)
+val, _ = QuadGK.quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -762,7 +760,7 @@ A particle has velocity $v(t) = 2t^2 - t$ between $0$ and $1$. If $x(0) = 0$, fi
 
 ```
 v(t) = 2t^2 - t
-f(x) = quadgk(v, 0, x)[1] - 0
+f(x) = QuadGK.quadgk(v, 0, x)[1] - 0
 numericq(f(1))
 ```
 
@@ -773,7 +771,7 @@ A particle has acceleration given by $\sin(t)$ between $0$ and
 $\pi$. If the initial velocity is $v(0) = 0$, find $v(\pi/2)$.
 
 ```
-f(x) = quadgk(sin, 0, x)[1] - 0
+f(x) = QuadGK.quadgk(sin, 0, x)[1] - 0
 numericq(f(pi/2))
 ```
 
@@ -798,7 +796,7 @@ p1 = plot(g1, 0, 5)
 Outputonly(p1)
 ```
 
-* The velocity of the particle is positive over
+* The velocity of the particle is positive over:
 
 ```
 choices = [
@@ -811,7 +809,7 @@ ans = 4
 radioq(choices, ans, keep_order=true)
 ```
 
-* The position of the particle is $0$ at $t=0$ and
+* The position of the particle is $0$ at $t=0$ and:
 
 ```
 choices = [
@@ -830,7 +828,7 @@ val = 4
 numericq(val)
 ```
 
-* On the interval $[2,3]$
+* On the interval $[2,3]$:
 
 ```
 choices = [
@@ -902,7 +900,7 @@ $A(x)$. This figure illustrates the labeling for some function:
 ```
 f(x) = x^(2/3)
 x = 2
-A(x) = quadgk(f, 0, x)[1]
+A(x) = QuadGK.quadgk(f, 0, x)[1]
 m=f(x)
 T = x - A(x)/f(x)
 Q = f(x)

@@ -16,9 +16,9 @@ function make_triangle_graph(n)
     n==2 && (title = "\$\\textrm{Area = previous }+ 1/8\$")
     n==3 && (title = "\$\\textrm{Area = previous }+ 2*(1/8)^2\$")
     n==4 && (title = "\$\\textrm{Area = previous }+ 4*(1/8)^3\$")
-    n==4 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
-    n==5 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
-    n==6 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
+    n==5 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
+    n==6 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
+    n==7 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
 
 
 
@@ -39,7 +39,7 @@ function make_triangle_graph(n)
 end
 
 
-n = 5
+n = 7
 anim = @animate for i=1:n
     make_triangle_graph(i)
 end

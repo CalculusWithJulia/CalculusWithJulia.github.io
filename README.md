@@ -120,7 +120,7 @@ The tangent line to the graph of a function at a point has slope given through t
 
 - [Newton's Method](derivatives/newtons_method.html)
 
-- [L'Hopital's Rule](derivatives/lhopitals_rule.html)
+- [L'Hospital's Rule](derivatives/lhopitals_rule.html)
 
 The derivative finds use outside of the traditional way of specifying a function or relationship. These two sections look at some different cases.
 
@@ -128,7 +128,9 @@ The derivative finds use outside of the traditional way of specifying a function
 
 - [Related Rates](derivatives/related_rates.html)
 
+A generalization of the tangent line as the "best" approximation to a function by a line leads to the concept of the Taylor polynomial.
 
+- [Taylor polynomials](derivatives/taylor_series_polynomials.html)
 
 ## Integration
 
@@ -149,6 +151,9 @@ Integration is not algorithmic, but rather problems can involve an array of tech
 - [Improper Integrals](integrals/improper_integrals.html)
 
 ### Applications
+
+# (PART) Applications of the integral {-}
+
 
 Various applications of the integral are presented. The first two sections continue with the idea that an integral is related to area. From there, it is seen that volumes and arc-lengths may be expressed in terms of related integrals.
 

@@ -5,11 +5,15 @@ mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus w
 ## uncomment to generate just .md files
 mmd(fname) = mmd_to_md(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus with Julia")
 
-mmd("limits.mmd")
-mmd("limits_extensions.mmd")
+fnames = [
+          "limits.mmd",
+          "limits_extensions.mmd",
+          #
+          "continuity.mmd",
+          "intermediate_value_theorem.mmd"
+          ]
 
-mmd("continuity.mmd")
-mmd("intermediate_value_theorem.mmd")
 
 
 
+[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")) for nm in fnames]

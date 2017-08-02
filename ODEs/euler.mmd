@@ -6,13 +6,13 @@ plotly()
 using Roots
 ```
 
-Let's look at the differential equation:
+Consider the differential equation:
 
 $$~
-y'(x) = y(x) \cdot  x, \quad y(1)=1
+y'(x) = y(x) \cdot  x, \quad y(1)=1,
 ~$$
 
-We can solve this with `SymPy` through:
+which ca be solved with `SymPy`:
 
 ```
 using SymPy
@@ -31,30 +31,32 @@ out = dsolve(u'(x) - F(u(x),x), x, (u, x0, y0))
 ```
 
 
-We can plot this solution over the slope field through
+Plotting this solution over the slope field
 
 ```
-Plot(VectorField((x,y) -> F(y,x))
+plot(VectorField((x,y) -> F(y,x)), xlims=(0,2.5), ylims=(0,10), n=15)
 plot!(rhs(out),  linewidth=5)
 ```
 
 
-We see that the vectors that are drawn seem to be tangent to the graph of the solution.
+we see that the vectors that are drawn seem to be tangent to the graph
+of the solution. This is no coincidence, the tangent lines to integral
+curves are in the direction of the slope field.
 
 
 What if the graph of the solution were not there, could we use this
-fact to *approximately* reconstruct the graph?
+fact to *approximately* reconstruct the solution?
 
 That is, if we stitched together pieces of the slope field, would we
 get a curve that was close to the actual answer? 
 
 {{{euler_graph}}}
 
-This illustration suggests the answer is yes, let's see. The solution
+The illustration suggests the answer is yes, let's see. The solution
 is drawn over $x$ values $1$ to $2$. Let's try piecing together $5$
 pieces between $1$ and $2$ and see what we have.
 
-The vectors are *scaled* versions of the vector `[1, F(y,x)]`. The `1`
+The slope-field vectors are *scaled* versions of the vector `[1, F(y,x)]`. The `1`
 is the part in the direction of the $x$ axis, so here we would like
 that to be $0.2$ (which is $(2-1)/5$. So our vectors would be `0.2 *
 [1, F(y,x)]`. To allow for generality, we use `h` in place of the
@@ -120,7 +122,7 @@ plot(exp(-1/2)*exp(x^2/2), x0, 2)
 plot!(xs, ys)
 ```
 
-Not bad. We wouldn't expect this to be exact -- due to the concavity
+Not bad. We wouldn't expect this to be exact---due to the concavity
 of the solution, each step is an underestimate. However, we see it is
 an okay approximation and would likely be better with a smaller $h$. A
 topic we pursue in just a bit.
@@ -128,7 +130,7 @@ topic we pursue in just a bit.
 Rather than type in the above command each time, we wrap it all up in
 a function.  The inputs are $n$, $a=x_0$, $b=x_n$, $y_0$, and, most
 importantly, $F$. The output is massaged into a function through a
-call to `linterp`, rather than two vectors. The `linterp` function just
+call to `linterp`, rather than two vectors. The `linterp` function we define below just
 finds a function that linearly interpolates between the points and is
 `NaN` outside of the range of the $x$ values:
 
@@ -147,7 +149,7 @@ function linterp(xs, ys)
 end        
 ```
 
-With that, here is our function:
+With that, here is our function to find an approximate solution to $y'=F(y,x)$ with initial condition:
 
 ```
 function euler(F, x0, xn, y0, n)
@@ -211,7 +213,7 @@ Each step introduces an error. The error in one step is known as the
 *local truncation error* and can be shown to be about equal to $1/2
 \cdot h^2 \cdot f''(x_{n})$ assuming $y$ has 3 or more derivatives.
 
-The total error, or more typically, *global truncation error*, is the
+The total error, or more commonly, *global truncation error*, is the
 error between the actual answer and the approximate answer at the end
 of the process. It reflects an accumulation of these local errors. This
 error is *bounded* by a constant times $h$. Since it gets smaller as
@@ -219,7 +221,7 @@ $h$ gets smaller in direct proportion, the Euler method is called
 *first order*.
 
 Other, somewhat more complicated, methods have global truncation errors that
-involve higher powers of $h$ -- that is for the same size $h$, the
+involve higher powers of $h$---that is for the same size $h$, the
 error is smaller. In analogy is the fact that Riemann sums have
 error that depends on $h$, whereas other methods of approximating the
 integral have smaller errors. For example, Simpson's rule had error
@@ -227,6 +229,12 @@ related to $h^4$. So, the Euler method may not be employed if there
 is concern about total resources (time, computer, ...), it is
 important for theoretical purposes in a manner similar to the role of the Riemann
 integral.
+
+In the examples, we will see that for many problems the simple Euler
+method is satisfactory, but not always so. The task of numerically
+solving differential equations is not a one-size-fits-all one. In the
+following, a few different modifications are presented to the basic
+Euler method, but this just scratches the surface of the topic.
 
 ## Examples
 
@@ -284,7 +292,7 @@ The approximate value given by the Euler method is
 
 ```
 x0, xn, y0 = 0, 2, 1
-plot(VectorField((x,y) -> F(y,x)), xlims=(x0,xn), ylims=(0,5))
+plot(VectorField((x,y) -> F(y,x)), xlims=(x0,xn), ylims=(0,5), n=15)
 plot!(removeO(rhs(out)),  linewidth=5)
 
 u = euler(F, x0, xn, y0, 10)
@@ -315,7 +323,17 @@ WeavePynb.HTMLoutput(out)
 
 Restrict our attention to the $x$-$y$ plane, and consider a path,
 between the point $(0,A)$ and $(B,0)$. Let $y(x)$ be the distance from
-$A$, so $y(0)=0$ and at the end $y$ will be $A$. Which path is best?
+$A$, so $y(0)=0$ and at the end $y$ will be $A$.
+
+
+[Galileo](http://www-history.mcs.st-and.ac.uk/HistTopics/Brachistochrone.html)
+knew the straight line was not the curve, but incorrectly thought the
+answer was a part of a circle.
+
+{{{galileo_picture}}}
+
+
+This simulation also suggests that a curved path is better than the shorter straight one:
 
 
 {{{brach_graph}}}
@@ -323,21 +341,7 @@ $A$, so $y(0)=0$ and at the end $y$ will be $A$. Which path is best?
 
 
 
-
-[Galileo](http://www-history.mcs.st-and.ac.uk/HistTopics/Brachistochrone.html)
-knew the straight line was not the curve, but incorrectly thought the
-answer was a part of a circle.
-
-```
-using WeavePynb
-out = gif_to_data("figures/galileo.gif", """
-As early as 1638, Galileo showed that an object falling along `AC` and then `CB` will fall faster than one traveling along `AB`, where `C` is on the arc of a circle.
-From the [History of Math Archive](http://www-history.mcs.st-and.ac.uk/HistTopics/Brachistochrone.html).
-""")
-WeavePynb.HTMLoutput(out)
-```
-
-The solution can be
+Now, the natural question is which path is best?  The solution can be
 [reduced](http://mathworld.wolfram.com/BrachistochroneProblem.html) to
 solving this equation for a positive $c$:
 
@@ -440,7 +444,7 @@ this:
 F(y,x) = -5y
 x0, xn, y0 = 0, 2, 1
 u = euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-plot(VectorField((x,y) -> F(y,x)), xlims=(0, 2), ylims=(-5, 5))
+plot(VectorField((x,y) -> F(y,x)), xlims=(0, 2), ylims=(-5, 5), n=15)
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```
@@ -463,7 +467,7 @@ The implicit, backward Euler method does not have this issue, as we can see here
 
 ```
 u = back_euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-plot(VectorField((x,y) -> F(y,x)),  xlims=(0, 2), ylims=(-1, 1))
+plot(VectorField((x,y) -> F(y,x)),  xlims=(0, 2), ylims=(-1, 1), n=15)
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```
@@ -539,7 +543,7 @@ not as dramatic as before. The oscillatory nature of the pendulum is
 seen, but in the Euler solution, the amplitude grows, which would
 necessarily mean energy is being put into the system.  A familiar
 instance of a pendulum would be a child on a swing. Without pumping
-the legs -- putting energy in the system -- the height of the swing's
+the legs---putting energy in the system---the height of the swing's
 arc will not grow.  Though we now have oscillatory motion, this growth
 indicates the solution is still not quite right. The issue is likely
 due to each step mildly overcorrecting and resulting in an overall
@@ -658,7 +662,7 @@ Modify the `euler2` function to implement the Euler-Cromer method. What do you s
 
 ```
 choices = [
-"The same as before -- the amplitude grows",
+"The same as before---the amplitude grows",
 "The solution is identical to that of the approximation found by linearization of the sine term",
 "The solution has a constant amplitude, but its period is slightly *shorter* than that of the approximate solution found by linearization",
 "The solution has a constant amplitude, but its period is slightly *longer* than that of the approximate solution found by linearization"]

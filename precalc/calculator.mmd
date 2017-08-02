@@ -560,6 +560,49 @@ often suggest a proper alternative.
 """)
 ```
 
+##### Example
+
+Did Homer Simpson disprove [Fermat's Theorem](http://www.npr.org/sections/krulwich/2014/05/08/310818693/did-homer-simpson-actually-solve-fermat-s-last-theorem-take-a-look)?
+
+Fermat's theorem states there are no solutions over the integers to $a^n + b^n = c^n$ when $n > 2$. In the photo accompanying the linked article, we see:
+
+$$~
+3987^{12} + 4365^{12} - 4472^{12}.
+~$$
+
+If you were to do this on most calculators, the answer would be
+$0$. Were this true, it would show that there is at least one solution
+to $a^{12} + b^{12} = c^{12}$ over the integers---hence Fermat would be wrong. So is it $0$?
+
+Well, let's try something with `Julia` to see. Being clever, we check if $(3987^{12} + 4365^{12})^{1/12} = 4472$:
+
+```
+(3987^12 + 4365^12)^(1/12)
+```
+
+Not even close. Case closed. But wait? This number to be found must be *at least* as big as $3987$ and we got $28$. Doh! Something can't be right. Well, maybe integer powers are being an issue. (The largest $64$-bit integer is less than $10^{19}$ and we can see that $(4\cdot 10^3)^{12}$ is bigger than $10^{36})$. Trying again using floating point values for the base, we see:
+
+
+```
+(3987.0^12 + 4365.0^12)^(1/12)
+```
+
+Ahh, we see something really close to $4472$, but not exactly. Why do
+most calculators get this last part wrong? It isn't that they don't
+use floating point, but rather the difference between the two numbers:
+
+```
+(3987.0^12 + 4365.0^12)^(1/12) - 4472
+```
+
+is less than $10^{-9}$ so on display with $8$ digits may be rounded to $0$.
+
+Moral: with `Julia` and with calculators, we still have to be mindful not to blindly accept an answer.
+
+
+
+
+
 
 ## Questions
 

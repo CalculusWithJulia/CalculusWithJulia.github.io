@@ -7,3 +7,11 @@ mmd(fname) = mmd_to_md(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus wit
 
 mmd("odes.mmd")
 mmd("euler.mmd")
+
+
+fnames = [
+          "odes",
+          "euler"
+          ]
+
+[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")) for nm in fnames]

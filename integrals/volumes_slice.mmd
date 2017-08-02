@@ -6,15 +6,7 @@ plotly()
 using QuadGK
 ```
 
-```
-using WeavePynb
-out = gif_to_data("figures/michelin-man.jpg", """
-
-Hey Michelin Man, how much does that costume weigh?
-
-""")
-WeavePynb.HTMLoutput(out)
-```
+{{{michelin_man}}}
 
 An ad for a summer job says work as the Michelin Man! Sounds
 promising, but how much will that costume weigh? A very hot summer may
@@ -56,7 +48,7 @@ the cross-sectional area is just that of a circle, or $\pi r^2$.
 
 ## Solids of revolution
 
-We begin with some examples of a special class of solids -- solids of
+We begin with some examples of a special class of solids---solids of
 revolution. These have an axis of symmetry from which the slabs are
 then just circular disks.
 
@@ -93,9 +85,9 @@ The formula is for a rotation around the $x$-axis, but can easily be generalized
 
 For a numeric example, we consider the original Red
 [Solo](http://en.wikipedia.org/wiki/Red_Solo_Cup) Cup. The dimensions
-of the cup were basically: a top diameter of $d_1 = 3~ 3/4$
-inches, a bottom diameter of $d_0 = 2~ 1/2$ inches and a height of $h =
-4~ 3/4$ inches.
+of the cup were basically: a top diameter of $d_1 = 3~ \frac{3}{4}$
+inches, a bottom diameter of $d_0 = 2~ \frac{1}{2}$ inches and a height of $h =
+4~ \frac{3}{4}$ inches.
 
 The central axis is straight down. If we rotate the cup so this is the $x$-axis, then we can get
 
@@ -115,7 +107,7 @@ This is
 using QuadGK
 d0, d1, h = 2.5, 3.75, 4.75
 rad(x) = d0/2 + (d1/2 - d0/2)/h * x
-vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)
+vol, _ = QuadGK.quadgk(x -> pi * rad(x)^2, 0, h)
 ```
 
 So $36.9 \text{in}^3$. How many ounces is that? It is useful to know
@@ -131,7 +123,7 @@ vol / 231 * 128
 
 Full it is about $20$ ounces, though this doesn't really account for the volume taken up by the bottom of the cup, etc.
 
-Before Solo "squared" the cup, the Solo cup had markings that --  [some thought](http://www.snopes.com/food/prepare/solocups.asp) -- indicated certain volume amounts.
+Before Solo "squared" the cup, the Solo cup had markings that---[some thought](http://www.snopes.com/food/prepare/solocups.asp)---indicated certain volume amounts.
 
 ```
 out = gif_to_data("figures/red-solo-cup.jpg", "Markings on the red Solo cup indicated various volumes")
@@ -148,7 +140,7 @@ So we need to solve $v \cdot (231/128) = \int_0^h\pi r(x)^2 dx$ for $h$ when $v=
 Let's express volume as a function of $h$:
 
 ```
-Vol(h) = quadgk(x -> pi * rad(x)^2, 0, h)[1]
+Vol(h) = QuadGK.quadgk(x -> pi * rad(x)^2, 0, h)[1]
 ```
 
 Then to solve we have:
@@ -196,11 +188,11 @@ $V = \pi/3\cdot h^3\tan(\theta)^2$.
 
 ##### Example
 
-[Gabriel's](http://tinyurl.com/8a6ygv) horn is a geometric figure of mathematics -- but not the real world -- which has infinite height, but not volume! The figure is found by rotating the curve $y=1/x$ around the $x$ axis from $1$ to $\infty$. If the volume formula holds, what is the volume of this "horn?"
+[Gabriel's](http://tinyurl.com/8a6ygv) horn is a geometric figure of mathematics---but not the real world---which has infinite height, but not volume! The figure is found by rotating the curve $y=1/x$ around the $x$ axis from $1$ to $\infty$. If the volume formula holds, what is the volume of this "horn?"
 
 ```
 rad(x) = 1/x
-vol, _ = quadgk(x -> pi*rad(x)^2, 1, Inf)
+vol, _ = QuadGK.quadgk(x -> pi*rad(x)^2, 1, Inf)
 ```
 
 That is a value very reminiscent of $\pi$, which it is as $\int_1^\infty 1/x^2 dx = -1/x\big|_1^\infty=1$.
@@ -241,7 +233,7 @@ rad(h) = d(h)/2
 The volume in cm$^3$ is then:
 
 ```
-V, _ = quadgk(h -> pi * rad(h)^2, 0, 50)
+V, _ = QuadGK.quadgk(h -> pi * rad(h)^2, 0, 50)
 ```
 
 For the actual shoot, the vase is to be filled with ash, to simulate a
@@ -252,7 +244,7 @@ centimeter thick
 We need to subtract $0.5$ from the radius and `a` then recompute:
 
 ```
-V_int, _ = quadgk(h -> pi * (rad(h) - 1/2)^2, 1/2, 50)
+V_int, _ = QuadGK.quadgk(h -> pi * (rad(h) - 1/2)^2, 1/2, 50)
 ```
 
 A liter of volume is $1000 \text{cm}^3$. So this is about $68$ liters, or more than 15
@@ -301,7 +293,7 @@ The answer comes by integrating:
 ```
 Rad(x) = sqrt(1 - (x-1)^2)
 rad(x) = x
-V, _ = quadgk(x -> pi*(Rad(x)^2 - rad(x)^2), 0, 1)
+V, _ = QuadGK.quadgk(x -> pi*(Rad(x)^2 - rad(x)^2), 0, 1)
 ```
 
 ## Solids with known cross section
@@ -317,11 +309,11 @@ The difference, of course, is that cross sections now have area $d^2$, as oppose
 ```
 d0, d1, h = 2.5, 3.75, 4.75
 d(x) = d0 + (d1 - d0)/h * x
-vol, _ = quadgk(x -> d(x)^2, 0, h)
+vol, _ = QuadGK.quadgk(x -> d(x)^2, 0, h)
 vol / 231 * 128
 ```
 
-This shape would have more volume -- the cross sections are bigger. Presumably
+This shape would have more volume---the cross sections are bigger. Presumably
 the dimensions have changed. Without going out and buying a cup, let's
 assume the cross-sectional diameter remained the same, not the
 diameter. This means the largest dimension is the same. The cross
@@ -384,7 +376,7 @@ this is a trivial observation, as the functions giving the
 cross-sectional area are identical. Still, it can be surprising.
 Consider a sphere with an interior cylinder bored out of it.  (The
 [Napkin](http://tinyurl.com/o237v83) ring problem.) The bore has
-height $h$ -- for larger radius spheres this means very wide bores.
+height $h$---for larger radius spheres this means very wide bores.
 
 
 ```nocode
@@ -446,7 +438,7 @@ $A(F)$ is the area of the plane figure. In short, the distance
 traveled by the centroid times the area.
 
 This can make some computations trivial. For example, we can make
-torus (or donut) by rotating the circle $(x-2)^2 + y^2 = 1$ about the
+a torus (or donut) by rotating the circle $(x-2)^2 + y^2 = 1$ about the
 $y$ axis. As the centroid is clearly $(2, 0)$, with $r=2$ in the above
 formula, and the area of the circle is $\pi 1^2$, the volume of the
 donut is $2\pi(2)(\pi) = 4\pi^2$.
@@ -483,7 +475,7 @@ Two facts are useful:
 ```
 gft = 7.48052
 rad(h) = 5 + (3/15)*h
-a,err = quadgk(h -> pi*rad(h)^2, 0, 15)
+a,err = QuadGK.quadgk(h -> pi*rad(h)^2, 0, 15)
 val = a*gft
 numericq(val, 1e1)
 ```
@@ -515,7 +507,7 @@ $$~
 r(h) = 3 + \frac{1}{5}h, \quad 0 \leq h \leq b;
 ~$$
 
-and a curved edge one:
+and a curved-edge one:
 
 $$~
 s(h) = 3 + \log(1 + h), \quad 0 \leq h \leq b
@@ -527,8 +519,8 @@ The following functions find the volume as a function of height, $h$:
 ```
 r1(h) = 3 + h/5
 s1(h) = 2 + log(1 + h)
-r_vol(h) = quadgk(x -> pi*r1(x)^2, 0, h)[1]
-s_vol(h) = quadgk(x -> pi*s1(x)^2, 0, h)[1]
+r_vol(h) = QuadGK.quadgk(x -> pi*r1(x)^2, 0, h)[1]
+s_vol(h) = QuadGK.quadgk(x -> pi*s1(x)^2, 0, h)[1]
 ```
 
 * For the straight-sided glass find $h$ so that the volume is $450$.
@@ -632,7 +624,7 @@ axis around the $x$ axis. What is the volume of this ellipsoid? Find it numerica
 
 ```
 f(x) = 3*sqrt( 1 - (x/2)^2 )
-val, _ = quadgk(x -> pi * f(x)^2, -2, 2)
+val, _ = QuadGK.quadgk(x -> pi * f(x)^2, -2, 2)
 numericq(val)
 ```
 
@@ -662,7 +654,7 @@ axis. Find the volume of the solid.
 Ra(x) = sqrt(x)
 ra(x) = 1
 a,b=1,2
-val, _ = quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
+val, _ = QuadGK.quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
 numericq(val)
 ```
 
@@ -678,7 +670,7 @@ plot([x->x^3 - 1, x -> x-1], 0, 1)
 Ra(y) = cbrt(y+1)
 ra(y) = y + 1
 a,b = 0, 1
-val, _ = quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
+val, _ = QuadGK.quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
 numericq(val)
 ```
 
@@ -691,7 +683,7 @@ Rotate the region bounded by $y=e^x$, the line $x=\log(2)$ and the first quadran
 ```
 a, b = 0, exp(log(2))
 ra(y) = log(2) - log(y)
-val, _ = quadgk(y -> pi * ra(y)^2, a, b)
+val, _ = QuadGK.quadgk(y -> pi * ra(y)^2, a, b)
 numericq(val)
 ```
 
@@ -729,7 +721,7 @@ With this, find the volume.
 
 ```
 a, b = 0, sqrt(2)
-val, _ = quadgk(u -> pi*rad(u)^2, a, b)
+val, _ = QuadGK.quadgk(u -> pi*rad(u)^2, a, b)
 numericq(val)
 ```
 
@@ -741,6 +733,6 @@ Repeat (find the volume) only this time with the function $f(x) = x^{20}$.
 f(x) = x^20
 xval(u) = fzero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), 0,sqrt(2))
 rad(u) = sqrt((u*cos(theta) - xval(u))^2 + (u*sin(theta) - f(xval(u)))^2)
-val, _ = quadgk(u -> pi*rad(u)^2, a, b)
+val, _ = QuadGK.quadgk(u -> pi*rad(u)^2, a, b)
 numericq(val)
 ```

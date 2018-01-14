@@ -856,6 +856,238 @@ fzero(f'', 0, 10)
 
 We pass in the function object, `f''`, and not the evaluated function.
 
+
+##### Example: Details on symbolic derivatives
+
+The ability to breakdown an expression into operations and their
+arguments is necessary when trying to apply the differentiation
+rules. Such rules are applied from the outside in. Identifying
+the proper "outside" function is usually most of the battle when finding derivatives.
+
+The `SymPy` program has a function that can identify the outside 
+function  of a symbolic expression. Basic math expressions can be parsed as a
+function being called with one or more arguments. The function
+`SymPy.funcname` will return the function, and `args` will return the
+arguments.
+
+To illustrate, we define some variables and look at the operations:
+
+```
+using SymPy
+funcname = SymPy.funcname # funcname is not exported
+@vars x y z
+```
+
+This shows how addition is identified:
+
+```
+ex = x + y + z
+funcname(ex)
+```
+
+The arguments are all three variables being added:
+
+```
+args(ex)
+```
+
+Similarly, with expressions of a single variable
+
+```
+ex = x^2 + sin(x) + sqrt(x^2 + 2)
+funcname(ex)
+```
+
+and now the arguments are the expressions being added:
+
+```
+args(ex)
+```
+
+When addition is the "outside" function, the next step would be to apply the sum rule. 
+
+What about multiplication?
+
+```
+ex = x * y * z
+funcname(ex)
+```
+
+and
+
+```
+args(ex)
+```
+
+Like addition, multiplication is not just a binary operation, as it
+is typicaly viewed mathematically. The output of `args` can be 2 or more expressions.
+
+
+The power rule is an easy to use derivative rule. SymPy recognizes when the "outer" function is a power:
+
+```
+ex = x^4
+funcname(ex)
+```
+
+The power rule would be used *if* the variable is not in the exponent, of course, as here.
+
+Exploring the quotient rule offers a surprise:
+
+```
+ex = x/y
+funcname(ex)
+```
+
+The surprise? We may have expected division, but see multiplication. SymPy uses a
+different form to represent division, which can be gleaned from
+looking at the resulting arguments:
+
+```
+args(ex)
+```
+
+
+And the expression `1/y` is really a power:
+
+```
+ex = 1/y
+funcname(ex)
+```
+
+So the quotient rule would be implemented here as a combination of the product rule and the power rule.
+
+To differentiate, we need to recursively apply derivative rules,
+peeling back one level at a time. When would you stop? When a number
+or a free symbol is encountered, as with:
+
+```
+funcname(x)
+```
+
+or
+
+```
+funcname(Sym(3))
+```
+
+In each of these cases, `args` returns an empty container:
+
+```
+args(x), args(Sym(3))
+```
+
+
+
+We can put all this together to create a function to differentiate an
+expression. This function will be called `diffex` (to distinguish
+itself from the more powerful, built-in, `diff` function). The first
+task for `diffex` is to identify the wrapping, outside function, if any, and
+apply the corresponding rule to the arguments. Julia's `Val` types are
+used ini the following to specialize based on the type of "outside" function. This is
+technical, but is exactly what is needed as different types of
+functions need different rules of differentiation.
+
+```
+function diffex(ex)
+    n = length(free_symbols(ex))
+    n == 0 && return Sym(0)
+    n > 1 && error("This is a simple example, use diff")
+    _diff(Val{Symbol(funcname(ex))}, args(ex)...)
+end
+```
+
+This function identifies the number of symbols in the expression to
+differentiate. If none, $0$ is returned; if more than one, an error is
+thrown, and if one, the outside function is identified.
+
+For sums, we want the sum rule. This is the sum of the individual derivatives, simply implemented as:
+
+```
+_diff(::Type{Val{:Add}}, args...) = sum(diffex.(args))
+```
+
+The product rule is a bit more advanced. We use a formula derived from
+*logarithmic* differntiation: if $f = f_1 \cdot f_2 \cdots f_n$
+then $f' = \sum f'_i/f_i \cdot f$:
+
+```
+function _diff(::Type{Val{:Mul}}, args...)
+    xs = collect(args)
+    f = prod(xs)
+    sum(diffex(fi)/fi * f for fi in xs)
+end
+```
+
+The power rule has three cases that could be considered depending on
+where the variable exists (in the base, exponent, or both). The
+following avoids this by reexpressing $a^b = exp(b \ln(a))$ and then
+applying the *chain* rule:
+
+```
+_diff(::Type{Val{:Pow}}, a, b) = powsimp(a^b * diffex(b * log(a)))
+```
+
+The `powsimp` function is used to encourage SymPy to simplify $a^b/b$ into $a^{b-1}$, which may not otherwise occur.
+
+Now to catch some special cases. First, when we encounter the symbol, we want to return `1`, as $d/dx[x] = 1$:
+
+```
+_diff(::Type{Val{:Symbol}}) = Sym(1)
+```
+
+For numbers the derivative is $0$. As there are quite a few number
+types, we define a catch all distinguishing them by the fact that the
+`args` call is empty.
+
+
+```
+_diff(::Any) = Sym(0)
+```
+
+Now for some specific functions. Here is where the chain rule comes
+in. For example, the derivative when the `log` function is encoutered
+has an extra product of `diffex(ex)`:
+
+```
+_diff(::Type{Val{:log}}, ex) =  1/ex * diffex(ex)
+```
+
+Similarly, here is the rule for `exp`:
+
+```
+_diff(::Type{Val{:exp}}, ex) = exp(ex) * diffex(ex)
+```
+
+Finally, we define values for some trigonometric functions. Many more special
+cases, as these, would be needed to fully implement this approach:
+
+```
+_diff(::Type{Val{:sin}}, ex) =  cos(ex)   * diffex(ex)
+_diff(::Type{Val{:cos}}, ex) = -sin(ex)   * diffex(ex)
+_diff(::Type{Val{:tan}}, ex) =  sec(ex)^2 * diffex(ex)
+```
+
+
+Here we try it out:
+
+```
+diffex(x^5 + x^4 + x^3 + x^2 + x + 1)
+```
+
+
+```
+diffex(sin(x^2) + cos(1/x))
+```
+
+And
+
+```
+diffex(x^x * exp(x))
+```
+
+
+
 ## Questions
 
 ###### Question

@@ -8,7 +8,7 @@ plotly()
 An historic problem in the history of math was to find the area under
 the graph of $f(x)=x^2$ between $[0,1]$.
 
-
+    
 
 There isn't a ready-made formula for the area of this
 shape, as there is for a triangle or a square. However,
@@ -29,7 +29,7 @@ A = 1/2 + 1/8 + 2 \cdot (1/8)^2 + 4 \cdot (1/8)^3 + \cdots
 ~$$
 
 This value is $2/3$, so the area under the curve would be
-$1/3$. Forget about this specific value---which through more modern machinery becomes uneventful---and focus for a minute on the
+$1/3$. Forget about this specific value -- which through more modern machinery becomes uneventful -- and focus for a minute on the
 method: a problem is solved by a suggestion of an infinite process, in
 this case the creation of more triangles to approximate the
 unaccounted for area. This is the so-call method of
@@ -55,7 +55,7 @@ Cauchy and Weierstrass put the idea on a firm footing.
 
 To make things more precise, we begin by discussing the limit of a univariate function as $x$ approaches $c$.
 
-Informally, if a limit exists it is the value that $f(x)$ gets close to as $x$ gets close to, but not equal to, $c$.
+Informally, if a limit exists it is the value that $f(x)$ gets close to as $x$ gets close to---but not equal to---$c$.
 
 The modern formulation is due to Weirstrass:
 
@@ -63,6 +63,7 @@ The modern formulation is due to Weirstrass:
 > there exists a real $\delta > 0$ such that for all real $x$, $0 < \lvert x − c \rvert < \delta$
 > implies $\lvert f(x) − L \rvert < \epsilon$. The notation used is $\lim_{x \rightarrow c}f(x) = L$.
 
+We comment on this later.
 
 
 Cauchy begins his incredibly influential
@@ -100,7 +101,7 @@ xs = [1/10^i for i in 1:5]
 [xs f.(xs)]
 ```
 
-However viewed, this is an approximate value for the actual answer---which is $e$. Cauchy 
+However viewed, this is an approximate value for the actual answer -- which is $e$. Cauchy 
 demonstrates this value with a fair amount of work.
 
 These two cases illustrate that though the definition of the limit
@@ -148,7 +149,7 @@ defined.
 
 ## Graphical approaches to limits
 
-Let's return to the function $f(x) = \sin(x)/x$. This function was studied by Euler as part of his solution to the [Basel](http://en.wikipedia.org/wiki/Basel_problem) problem. He knew that near $0$, $\sin(x) \approx x$, so the ratio close to $1$ if $x$ is near $0$. Hence, the intuition is $\lim_{x \rightarrow 0} \sin(x)/x = 1$, as Cauchy wrote. We can verify this limit graphically two ways. First, a simple graph shows no issue at $0$:
+Let's return to the function $f(x) = \sin(x)/x$. This function was studied by Euler as part of his solution to the [Basel](http://en.wikipedia.org/wiki/Basel_problem) problem. He knew that near $0$, $\sin(x) \approx x$, so the ratio is close to $1$ if $x$ is near $0$. Hence, the intuition is $\lim_{x \rightarrow 0} \sin(x)/x = 1$, as Cauchy wrote. We can verify this limit graphically two ways. First, a simple graph shows no issue at $0$:
 
 ```
 using Plots
@@ -159,7 +160,7 @@ plot(f, -pi/2, pi/2)
 The $y$ values of the graph seem to go to $1$ as the $x$ values get
 close to 0. (That the graph looks defined at $0$ is due to the fact
 that the points sampled to graph do not include $0$. Otherwise, since
-`f(0)` is `NaN` there would be no lines connecting to the value with
+`f(0)` is `NaN`, there would be no lines connecting to the value with
 `x=0`.)
 
 We can also verify Euler's intuition through this graph:
@@ -206,7 +207,7 @@ plot(f, c - delta, c + delta)
 
 The graph looks "continuous." In fact, the value $c=2$ is termed a
 *removable singularity* as redefining $f(x)$ to be $-0.2$ when
-$x=2$ results in a continuous function.
+$x=2$ results in a "continuous" function.
 
 As an aside, we can redefine `f` using the "ternary operator":
 
@@ -378,10 +379,10 @@ For example, the limit at $0$ of $(1-\cos(x))/x^2$ is easily handled:
 using SymPy
 @vars x real=true
 f(x) = (1 - cos(x)) / x^2
-limit(f(x), x, 0)		# f(x) is a symbolic expression when x is
+limit(f(x), x=>0)		# f(x) is a symbolic expression when x is
 ```
 
-There is also an "operator" version of `limit` for univariate functions, where only a function object and `c` need be passed:
+As a convenience, there is also an "operator" version of `limit` for univariate functions, where only a function object and `c` need be specified:
 
 ```
 limit(f, 0)
@@ -439,7 +440,7 @@ not exactly $0$ as it should be, as `pi/2` is rounded. This minor
 difference is important. If we try and correct for this by using `PI` we have:
 
 ```
-limit(f(x), x, PI/2)
+limit(f(x), x=>PI/2)
 ```
 
 The value is not right, as this simple graph suggests the limit is in fact $-1$:
@@ -450,7 +451,7 @@ plot(f, c - pi/4, c + pi/4)
 
 The difference between `pi` and `PI` can be significant, and though
 usually `pi` is silently converted to `PI`, it doesn't happen here as
-the division by `2` happens first, which turns the symbol into a
+the division by `2` happens first, which turns the symbol into an approximate
 floating point number. Hence, `SymPy` is giving the correct answer for
 the problem it is given, it just isn't the problem we wanted to look
 at.
@@ -459,7 +460,7 @@ Trying again, being more aware of how `pi` and `PI` differ, we have:
 
 ```
 f(x) = cos(x) / (x - PI/2)
-limit(f(x), x, PI/2)
+limit(f(x), x => PI/2)
 ```
 
 ## Rules for limits
@@ -475,9 +476,9 @@ rules = [L"\lim_{x \rightarrow c} (a \cdot f(x) + b \cdot g(x)) = a \cdot
   g(x)",
   L"\lim_{x \rightarrow c} f(x) \cdot g(x) = \lim_{x \rightarrow c}
   f(x) \cdot \lim_{x \rightarrow c} g(x)",
-  L"$\lim_{x \rightarrow c} f(x) / g(x) = \lim_{x \rightarrow c} f(x) /
+  L" $\lim_{x \rightarrow c} f(x) / g(x) = \lim_{x \rightarrow c} f(x) /
   \lim_{x \rightarrow c} g(x)$ -- provided $\lim_{x \rightarrow c} g(x) \neq 0$",
-  L"$\lim_{x \rightarrow c} (f \circ g)(x) = \lim_{x \rightarrow L}
+  L" $\lim_{x \rightarrow c} (f \circ g)(x) = \lim_{x \rightarrow L}
   f(x)$, where $\lim_{x \rightarrow c}g(x) = L$"]
 descr = [""" This says that limits involving sums, differences or scalar
   multiples of functions can be computed by first doing the individual
@@ -631,7 +632,7 @@ illustrated below, a value of $\delta=\epsilon^{1/3}$ is used for $c=0$:
 From the graph, find the limit:
 
 $$~
-L = \lim_{x->1}  \frac{x^2−3x+2}{x^2−6x+5}
+L = \lim_{x\rightarrow 1}  \frac{x^2−3x+2}{x^2−6x+5}
 ~$$
 
 
@@ -781,11 +782,11 @@ easy to see by the "squeeze theorem" that the limit at $x=0$ is
 $0$. Why?
 
 ```
-choices=["""The functions g and h both have a limit of 0 at x=0 and the function f is in
-between both g and h, so must to have a limit of 0.
+choices=[L"""The functions $g$ and $h$ both have a limit of $0$ at $x=0$ and the function $f$ is in
+between both $g$ and $h$, so must to have a limit of $0$.
 """,
-         "The functions g and h squeeze each other as g(x) > h(x)",
-         "The function f has no limit -- it oscillates too much near 0"]
+	L"The functions $g$ and $h$ squeeze each other as $g(x) > h(x)$",
+         L"The function $f$ has no limit -- it oscillates too much near $0$"]
 ans = 1
 radioq(choices, ans)
 ```

@@ -127,7 +127,7 @@ fzeros(A', 0, 10)
 ```
 alert("""
 
-Look at the last equation. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a generic function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are used, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept---area---has one function name, though there may be different ways to compute the area, so there is more than one implementation.
+Look at the last definition of `A`. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a *generic* function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are passed in, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept---area---has one function name, though there may be different ways to compute the area, so there is more than one implementation.
 
 """)
 ```
@@ -140,14 +140,15 @@ approach can be a bit more tedious, but the graphical one mostly
 satisfying, though we do use  a numerical algorithm to find
 an exact final answer.
 
-Let a "Norman" window consist of a rectangular window of top length
-$x$ and side length $y$ and a half circle on top. The goal is to
-maximize the area for a fixed value of the perimeter. Again, assume this perimeter is 20
+Let a "[Norman](https://en.wikipedia.org/wiki/Norman_architecture)"
+window consist of a rectangular window of top length $x$ and side
+length $y$ and a half circle on top. The goal is to maximize the area
+for a fixed value of the perimeter. Again, assume this perimeter is 20
 units.
 
 This figure shows two such windows, one with base length given by
 $x=4$, the other with base length given by $x=3$. The one with base
-length $4$ seems to have much bigger area.
+length $4$ seems to have much bigger area, what value of $x$ will lead to the largest area?
 
 ```nocode
 ts = linspace(0, pi)
@@ -164,7 +165,7 @@ p
 
 For this problem, we have two equations.
 
-The area is the area of the rectangle plus the area of the half circle ($\pi r^2/2$).
+The area is the area of the rectangle plus the area of the half circle ($\pi r^2/2$ with $r=x/2$).
 
 $$~
 A = xy + \pi(x/2)^2/2
@@ -232,7 +233,7 @@ Rather than zoom in graphically, we now use a root-finding algorithm,
 to find a more precise value. We know that the maximum will occur at a
 critical point, a zero of the derivative. The `fzero`
 function from the `Roots` package provides a non-linear root-finding
-algorithm similar to Newton's method. The only thing to keep
+algorithm based on the bisection method. The only thing to keep
 track of is that solving $f'(x) = 0$ means we use the derivative and
 not the original function.
 
@@ -254,7 +255,7 @@ function. The value and maximum area is then given by:
 
 (Compare this answer to the previous, is the square the figure of
 greatest area for a fixed perimeter, or just the figure amongst all
-rectangles?)
+rectangles? See [Isoperimetric inequality](https://en.wikipedia.org/wiki/Isoperimetric_inequality) for an answer.)
 
 #### A symbolic approach
 
@@ -315,8 +316,8 @@ plot!(p, [0,14.53402874075368], [12.1954981558864, 0], linewidth=3)
 plot!(p, [0,5], [8,8], color=:orange)
 plot!(p, [5,5], [0,8], color=:orange)
 annotate!(p, [(13, 1/2, "θ"),
-              (2.5, 11, "l1"), (10, 5, "l2"), (2.5, 7.0, "l1 * cos(θ)"),
-	      (5.1, 5, "l2 * sin(θ)")])
+              (2.5, 11, "l2"), (10, 5, "l1"), (2.5, 7.0, "l2 * cos(θ)"),
+	      (5.1, 5, "l1 * sin(θ)")])
 ```
 
 
@@ -455,7 +456,12 @@ the whole way.
 
 {{{lhopital_43}}}
 
-The last example is a modern day illustration of a problem of calculus dating back to l'Hospital. His description is different. Let's change his a bit by taking two points $(0, a)$ and $(L,-b)$, with $a,b,L$ positive values. Above the $x$ axis travel happens at rate $r_0$, and below, travel happens at rate $r_1$, again, both positive. What value $x$ in $[0,L]$ will minimize travel time?
+The last example is a modern day illustration of a problem of calculus
+dating back to l'Hospital. His parameterization is a bit
+different. Let's change his by taking two points $(0, a)$ and
+$(L,-b)$, with $a,b,L$ positive values. Above the $x$ axis travel
+happens at rate $r_0$, and below, travel happens at rate $r_1$, again,
+both positive. What value $x$ in $[0,L]$ will minimize the total travel time?
 
 We approach this with `SymPy`:
 
@@ -472,30 +478,39 @@ dt = diff(t, x)     # look for critical points
 
 The answer will occur at a critical point or an endpoint, either $x=0$ or $x=L$.
 
-The structure of `dt` is too complicated for simply calling `solve` to find the critical points. Instead we help `SymPy` out a bit. We are solving $a/b + c/d = 0$. These solutions will also be solutions of $(a/b)^2 - (c/d)^2=0$ or even $a^2d^2 - c^2b^2 = 0$. We can get this as follows:
+The structure of `dt` is too complicated for simply calling `solve` to find the critical points. Instead we help `SymPy` out a bit. We are solving an equation of the form $a/b + c/d = 0$. These solutions will also be solutions of $(a/b)^2 - (c/d)^2=0$ or even $a^2d^2 - c^2b^2 = 0$. This follows as solutions to $u+v=0$, also solve $(u+v)\cdot(u-v)=0$, or $u^2 - v^2=0$. Setting $u=a/b$ and $v=c/d$ completes the comparison.
+
+We can get these terms---$a$, $b$, $c$, and $d$---as follows:
 
 ```
-t1, t2 = args(dt)  # args finds arguments to outer function (+ in this case)
+t1, t2 = args(dt)  # args finds arguments to the outer function (+ in this case)
 ```
 
-And now the equivalent of $a^2d^2 - c^2 b^2$:
+The equivalent of $a^2d^2 - c^2 b^2$ is found using `numer` and
+`denom` to access the numerator and denominator of the fractions:
 
 ```
-eq = numer(t1^2)*denom(t2^2) - denom(t1^2)*numer(t2^2)
+ex = numer(t1^2)*denom(t2^2) - denom(t1^2)*numer(t2^2)
 ```
 
 This is a polynomial in the `x` variable of degree $4$:
 
 ```
-p = Poly(eq, x) # 4th degree
-coeffs(p)
+coeffs(ex, x)  # a0 + a1⋅x + a2⋅x^2 + a3⋅x^3 + a4⋅x^4
 ```
 
-Fourth degree polynomials can be solved. The critical points will be among the 4 solutions given. But the result is complicated.
-The [article](http://www.ams.org/samplings/feature-column/fc-2016-05) from which the figure came states that "In today's textbooks the problem, usually involving a river, involves walking along one bank and then swimming across; this corresponds to setting $g=0$ in l'Hospital's example, and leads to a quadratic equation." Let's see that case, which we can get in our notation by taking $b=0$:
+Fourth degree polynomials can be solved. The critical points of the
+original equation will be among the 4 solutions given. However, the result
+is complicated.  The
+[article](http://www.ams.org/samplings/feature-column/fc-2016-05) from
+which the figure came states that "In today's textbooks the problem,
+usually involving a river, involves walking along one bank and then
+swimming across; this corresponds to setting $g=0$ in l'Hospital's
+example, and leads to a quadratic equation." Let's see that case,
+which we can get in our notation by taking $b=0$:
 
 ```
-q = p(b=>0)
+q = ex(b=>0)
 factor(q)
 ```
 
@@ -505,7 +520,7 @@ corresponds to $L=0$, which is clear from the formula above, as we
 only have one solution to the following:
 
 ```
-solve(q(r1=>r0))
+solve(q(r1=>r0), x)
 ```
 
 Well, not so fast. We need to check the other endpoint, $x=0$:
@@ -518,7 +533,7 @@ ta(x=>0), ta(x=>L)
 The value at $x=L$ is smaller, as $L^2 + a^2 \leq (L+a)^2$.
 
 
-Now, if, say, travel above the line is half as slow as travel above, then $2r_0 = r_1$, and the critical points will be:
+Now, if, say, travel above the line is half as slow as travel along, then $2r_0 = r_1$, and the critical points will be:
 
 ```
 out = solve(q(r1 => 2r0), x)
@@ -530,7 +545,7 @@ It is hard to tell which would minimize time without more work. To check a case 
 t(r1 =>2r0, b=>0, x=>out[1], a=>1, L=>2, r0 => 1)  # for x=L
 ```
 
-Compared to the smaller:
+Compared to the smaller ($x=\sqrt{3}a/3$):
 
 ```
 t(r1 =>2r0, b=>0, x=>out[2], a=>1, L=>2, r0 => 1)
@@ -542,16 +557,23 @@ What about $x=0$?
 t(r1 =>2r0, b=>0, x=>0, a=>1, L=>2, r0 => 1)
 ```
 
-The traveler in this case is advised to head to the $x$ axis and then travel along that, as though slower it is shorter. Will this always be true?
-Consider different parameters, say we switch the values of $a$ and $L$:
+The value of $x=\sqrt{3}a/3$ minimizes time
+The traveler in this case is advised to head to the $x$ axis at $x=\sqrt{3}a/3$  and then travel along the $x$ axis.
+
+
+
+Will this approach always be true?  Consider different parameters, say we
+switch the values of $a$ and $L$ so $a > L$:
 
 ```
-N.([t(r1 =>2r0, b=>0, x=>u, a=>2, L=>1, r0 => 1) for u in [0, out...]])
+pts = [0, out...]
+vals = N.([t(r1 =>2r0, b=>0, x=>u, a=>2, L=>1, r0 => 1) for u in pts])
+[pts vals]
 ```
 
 Here traveling directly to the point $(L,0)$ is fastest. Though travel
 is slower, the route is more direct and there is no time saved by
-taking the longer route with faster travel.
+taking the longer route with faster travel for part of it.
 
 
 
@@ -583,7 +605,7 @@ plot(f', 0, 5)
 This shows the value of interest near $0.7$. We use `fzero` with $[0,1]$ as a bracket
 
 ```
-x = fzero(f', 0,1)
+x = fzero(f', 0, 1)
 ```
 
 The maximum is then at 
@@ -652,11 +674,11 @@ is somewhere near a real life answer, or around 3-5 cms in radius:
 plot(SA, 2, 10)
 ```
 
-The minimum looks to be around 4cm. We can use `fzero` to zero
-in on the answer:
+The minimum looks to be around $4$cm and is clearly between $3$ and
+$5$. We can use `fzero` to zero in on the value of the critical point:
 
 ```
-r0 = fzero(SA', 2.5, 5)
+r0 = fzero(SA', 3, 5)
 ```
 
 Okay, $3.837...$ is our computation for $r$. To get $h$, we use:

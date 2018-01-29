@@ -1,6 +1,9 @@
 module intermediate_value_theorem
 
-using Plots; gr(); fig_size=(400, 400)
+using Plots;
+#gr();
+pyplot()
+fig_size=(400, 400)
 using WeavePynb, LaTeXStrings
 
 
@@ -111,7 +114,7 @@ Trajectories of potential cannonball fires with air-resistance included. (http:/
 
 imgfile = "hardrock-100.png"
 hardrock_profile =  gif_to_data(imgfile, """
-Elevation profile of the  Hardrock 100 ultramarathon. Treating the profile as a function, the absolute maximum is just about 14,000 feet and the absolute minimum about 7600 feet. These are of interest to the runner for different reasons. Also of interest would be each local maxima---the peaks of the graph---and the total elevation climbed---this so important/unforgettable it makes it into the chart's title.
+Elevation profile of the  Hardrock 100 ultramarathon. Treating the profile as a function, the absolute maximum is just about 14,000 feet and the absolute minimum about 7600 feet. These are of interest to the runner for different reasons. Also of interest would be each local maxima and local minima---the peaks and valleys of the graph---and the total elevation climbed---the latter so important/unforgettable its value makes it into the chart's title.
                              """)
 
 

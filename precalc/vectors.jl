@@ -9,7 +9,10 @@ end
 fig_size = (400, 300)
 
 using Plots
-gr()
+using Measures
+const px = 0.26mm
+#gr()
+pyplot()
 
 x0 = [0, 64]
 v0 = [20, 0]

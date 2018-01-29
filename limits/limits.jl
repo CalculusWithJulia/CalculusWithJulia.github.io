@@ -1,7 +1,8 @@
 module limits
 
 using Plots;
-gr() #pyplot();
+#gr()
+pyplot();
 fig_size=(400, 300)
 using WeavePynb, LaTeXStrings
 
@@ -12,13 +13,20 @@ colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
 ## Area of parabola
 function make_triangle_graph(n)
     title = "Area of parabolic cup ..."
-    n==1 && (title = "\$\\textrm{Area = }1/2\$")
-    n==2 && (title = "\$\\textrm{Area = previous }+ 1/8\$")
-    n==3 && (title = "\$\\textrm{Area = previous }+ 2*(1/8)^2\$")
-    n==4 && (title = "\$\\textrm{Area = previous }+ 4*(1/8)^3\$")
-    n==5 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
-    n==6 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
-    n==7 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
+    # n==1 && (title = "\$\\textrm{Area = }1/2\$")
+    # n==2 && (title = "\$\\textrm{Area = previous }+ 1/8\$")
+    # n==3 && (title = "\$\\textrm{Area = previous }+ 2*(1/8)^2\$")
+    # n==4 && (title = "\$\\textrm{Area = previous }+ 4*(1/8)^3\$")
+    # n==5 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
+    # n==6 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
+    # n==7 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
+    n==1 && (title = "\${Area = }1/2\$")
+    n==2 && (title = "\${Area = previous }+ 1/8\$")
+    n==3 && (title = "\${Area = previous }+ 2*(1/8)^2\$")
+    n==4 && (title = "\${Area = previous }+ 4*(1/8)^3\$")
+    n==5 && (title = "\${Area = previous }+ 8*(1/8)^4\$")
+    n==6 && (title = "\${Area = previous }+ 16*(1/8)^5\$")
+    n==7 && (title = "\${Area = previous }+ 32*(1/8)^6\$")
 
 
 
@@ -100,7 +108,7 @@ caption = L"""
 Demonstration of $\epsilon$-$\delta$ proof of $\lim_{x \rightarrow 0}
 x^3 = 0$. For any $\epsilon>0$ (the orange lines) there exists a
 $\delta>0$ (the red lines of the box) for which the function $f(x)$
-does not leave the top or bottom of the box (except possible at the
+does not leave the top or bottom of the box (except possibly at the
 edges). In this example $\delta^3=\epsilon$.
 
 """

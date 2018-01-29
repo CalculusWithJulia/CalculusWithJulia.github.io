@@ -9,7 +9,7 @@ plotly()
 Continuity for functions is a valued property which carries
 implications. In this section we discuss two: the intermediate value
 theorem and the extreme value theorem. These two theorems speak to
-some fundamental applications of calculus: finding zeros and finding
+some fundamental applications of calculus: finding zeros of a function and finding
 extrema of a function.
 
 ## Intermediate Value Theorem
@@ -26,11 +26,12 @@ intricately connected with the definition of continuity, now it is a
 consequence.
 
 The basic proof starts with a set of points in $[a,b]$: $C = \{x
-\text{ in } [a,b] \text{ with } f(x) \leq y\}$. The set is not empty (as
-$a$ is in $C$) so it *must* have a largest value, call it $c$ (this
-requires the completeness property of the real numbers).  But it can be shown that $\lim_{x
-\rightarrow c-} f(x) =f(c) \leq y$ and $\lim_{y \rightarrow c+}f(x)
-=f(c) \geq y$, which forces $f(c) = y$.
+\text{ in } [a,b] \text{ with } f(x) \leq y\}$. The set is not empty
+(as $a$ is in $C$) so it *must* have a largest value, call it $c$
+(this requires the completeness property of the real numbers).  By
+continuity of $f$, it can be shown that $\lim_{x \rightarrow c-} f(x)
+= f(c) \leq y$ and $\lim_{y \rightarrow c+}f(x) =f(c) \geq y$, which
+forces $f(c) = y$.
 
 
 ### Bolzano and the bisection method
@@ -38,16 +39,16 @@ requires the completeness property of the real numbers).  But it can be shown th
 Suppose we have a continuous function $f(x)$ on $[a,b]$ with $f(a) <
 0$ and $f(b) > 0$. Then as $f(a) < 0 < f(b)$, the intermediate value
 theorem guarantees the existence of a $c$ in $[a,b]$ with $f(c) =
-0$. This was a special case proved by Bolzano first. Such $c$ are
-called *zeros* of the function $f$. 
+0$. This was a special case of the intermediate value theorem proved
+by Bolzano first. Such $c$ are called *zeros* of the function $f$.
 
-We use this when a "sign chart" is made. There, for a continuous
-function, between any two consecutive zeros the function can not
+We use this fact when a building a "sign chart" of a continous function.
+Between any two consecutive zeros the function can not
 change sign. (Why?) So a "test point" can be used to determine the
 sign of the function over an entire interval.
 
 
-The Bolzano theorem gives an algorithm---the *bisection method*---to locate the value $c$.
+Here, we use the Bolzano theorem to give an algorithm---the *bisection method*---to locate the value $c$ under the assumption $f$ is continous on $[a,b]$ and changes sign between $a$ and $b$.
 
 {{{bisection_graph}}}
 
@@ -57,18 +58,26 @@ We remark that having different signs can be expressed mathematically as $f(a) \
 
 We can narrow down where a zero is in $[a,b]$ by following this recipe:
 
-* Pick $c = (a+b)/2$, the midpoint
+* Pick a midpoint of the interval, for concreteness $c = (a+b)/2$.
 
-* if $f(c) = 0$ we are done.
+* If $f(c) = 0$ we are done, having found a zero in $[a,b]$.
 
-* Otherwise if must be that either $f(a)\cdot f(c) < 0$ or $f(c) \cdot f(b) < 0$. If $f(a) \cdot f(c) < 0$, then let $b=c$ and repeat. Otherwise, let $a=c$ and repeat.
+* Otherwise if must be that either $f(a)\cdot f(c) < 0$ or $f(c) \cdot f(b) < 0$. If $f(a) \cdot f(c) < 0$, then let $b=c$ and repeat the above. Otherwise, let $a=c$ and repeat the above.
 
-At each step the bracketing interval is narrowed, indeed split in half, or a zero is found.
+At each step the bracketing interval is narrowed, indeed split in half
+as defined, or a zero is found.
 
 For the real numbers this algorithm never stops unless a zero is
-found. A "limiting" process is used to say that if it doesn't stop, it will converge to some value.
+found. A "limiting" process is used to say that if it doesn't stop, it
+will converge to some value.
 
-However, using floating point numbers of a fixed size, is different. In this case, due to the ultimate granularity of the approximation of floating point values to the real numbers, the bracketing interval can't be subdivided, that is no $c$ is found over the floating point numbers with $a < c < b$. So there is a natural stopping criteria: stop when there is an exact zero, or when the bracketing interval gets too small.
+However, using floating point numbers leads to differences from the
+real-number situation. In this case, due to the ultimate granularity of the
+approximation of floating point values to the real numbers, the
+bracketing interval eventually can't be subdivided, that is no $c$ is found over
+the floating point numbers with $a < c < b$. So there is a natural
+stopping criteria: stop when there is an exact zero, or when the
+bracketing interval gets too small.
 
 We can write a relatively simple program to implement this algorithm:
 
@@ -138,6 +147,13 @@ guarantee that the answer will be a zero or the product of the
 function value at the floating point values just to the left and right
 will be negative. No specification of a tolerance is needed.
 
+
+```
+note("""
+The name `fzero` comes from MATLAB. There is a more "Julian" style, that is a bit more verbose: `find_zero(f, (a,b), Bisection())`. Where with `fzero` bisection is implicitly used from passing two numbers to `fzero`, `find_zero` makes `Bisection` explicit. As there are many other underlying algorithms for `find_zero`, being explicit can be a good thing.
+""")
+```
+
 ##### Example
 
 The polynomial $f(x) = x^5 - x + 1$ has a zero between $-2$ and $-1$. Find it.
@@ -148,7 +164,7 @@ c = fzero(f, -2, -1)
 (c, f(c))
 ```
 
-We see as before that $f(c)$ is not quite $0$. (But you can check that `f(nextfloat(c))` is positive.)
+We see, as before, that $f(c)$ is not quite $0$. (But you can check that `f(prevfloat(c))` is negative, while `f(c)` is seen to be positive.)
 
 
 ##### Example
@@ -196,7 +212,7 @@ The equation $\cos(x) = x$ has just one solution, as can be seen in this plot:
 ```
 f(x) = cos(x)
 g(x) = x
-plot(f, -pi, 1pi)
+plot(f, -pi, pi)
 plot!(g)
 ```
 
@@ -357,11 +373,14 @@ plot!(y, 0, x1)
 
 ##### Example: bisection and non-continuity
 
-The Bolzano theorem about continuous function $f$, when applicable,
-yields an algorithm to find a guaranteed zero. However, the algorithm
-itself does not know that the function is continuous or not, only that
-the function changes sign. As such, it can produce answers that are
-not "zeros."
+The Bolzano theorem assumes a continuous function $f$, and when
+applicable, yields an algorithm to find a guaranteed zero. However,
+the algorithm itself does not know that the function is continuous or
+not, only that the function changes sign. As such, it can produce
+answers that are not "zeros" when used with discontinuous
+functions. However, this can still be fruitful, as the algorithm will
+yield information about crossing values of $0$, possibly at
+discontinuities.
 
 For example, let $f(x) = 1/x$. Clearly the interval $[-1,1]$ is a
 "bracketing" interval as $f(x)$ changes sign between $a$ and $b$. What
@@ -382,7 +401,7 @@ right of the answer (`nextfloat`) the function changes sign:
 sign(f(prevfloat(x0))), sign(f(nextfloat(x0)))
 ```
 
-So, the "bisection method" can find points where the function crosses
+So, the "bisection method" applied here finds a point where the function crosses
 $0$, either by continuity or by jumping over the $0$.  (A `jump`
 discontinuity at $x=c$ is defined by the left and right limits of $f$
 at $c$ existing but being unequal. The algorithm can find $c$ when
@@ -444,22 +463,25 @@ f.(zs)
 
 (For a continuous function this should be the case that the values
 returned by `fzeros` are approximate zeros. Bear in mind that if $f$ is not
-continous the algorithm might find jumping points that are not zeros.)
+continous the algorithm might find jumping points that are not zeros and may not even be in the domain of the function.)
 
 
 ## Extreme value theorem
+
+The Extreme Value Theorem is another consequence of continuity.
 
 To discuss the extreme value theorem, we define an *absolute maximum*
 of $f(x)$ over an interval $I$ to be a value $f(c)$, $c$ in $I$, where
 $f(x) \leq f(c)$ for any $x$ in $I$. Similarly, an *absolute minimum* of
 $f(x)$ over an interval $I$ can be defined.
 
-This chart illustrates the two concepts.
+This chart of the [Hardrock 100](http://hardrock100.com/) illustrates the two concepts.
 
 {{{hardrock_profile}}}
 
 
-The extreme value theorem discusses an assumption that ensures such values exist.
+The extreme value theorem discusses an assumption that ensures such
+absolute maximum and absolute minimum values exist.
 
 > The *extreme value theorem*: If $f(x)$ is continuous over a closed
 >  interval $[a,b]$ then $f$ has an absolute maximum and an absolute
@@ -470,8 +492,8 @@ continuous at $a$ and left continuous at $b$.)
 
 The assumption that $[a,b]$ includes its endpoints (it is closed)  is crucial to make a
 guarantee. There are functions which are continuous on open intervals
-for which this is not true. For example, $f(x) = 1/x$ on $(0,1)$. This
-will have no smallest value or largest value, as defined above.
+for which this result is not true. For example, $f(x) = 1/x$ on $(0,1)$. This
+function will have no smallest value or largest value, as defined above.
 
 The extreme value theorem is an important theoretical tool for
 investigating maxima and minima of functions.
@@ -481,12 +503,12 @@ investigating maxima and minima of functions.
 
 The function $f(x) = \sqrt{1-x^2}$ is continuous on the interval
 $[-1,1]$ (in the sense above). It then has an absolute maximum, we can
-see to be $1$ occuring at an interior point $0$. The absolute minimum
+see to be $1$ occurring at an interior point $0$. The absolute minimum
 is $0$, it occurs at each endpoint.
 
 ##### Example
 
-The function $f(x) = x \cdot e^{-x}$ on the closed interval $[0, 5]$ is continuous. Hence it has an absolute maximum, which a graph shows to be $0.4$. It has an absolute minimum, clearly the value $0$ occuring at the endpoint.
+The function $f(x) = x \cdot e^{-x}$ on the closed interval $[0, 5]$ is continuous. Hence it has an absolute maximum, which a graph shows to be $0.4$. It has an absolute minimum, clearly the value $0$ occurring at the endpoint.
 
 ```
 f(x) = x * exp(-x)
@@ -496,8 +518,8 @@ plot(f, 0, 5)
 ##### Example
 
 The tangent function does not have a *guarantee* of absolute maximum
-or minimum over $(-\pi/2, \pi/2)$, as it is not *continous* at the
-endpoints. In fact, it doesn't---it has vertical asymptotes at each.
+or minimum over $(-\pi/2, \pi/2)$, as it is not *continuous* at the
+endpoints. In fact, it doesn't have either extrema -- it has vertical asymptotes at each.
 
 
 ##### Example
@@ -634,9 +656,9 @@ function, but later will be known as the derivative. (The `D` operator is loaded
 Let $v_0= 390$. The three times in question can be found from the zeros of `f` and `D(f)`. What are they?
 
 ```
-choices = ["(0.0, 12.1875, 24.375)",
-	"(-4.9731, 0.0, 4.9731)",
-	"(0.0, 625.0, 1250.0)"]
+choices = [L"(0.0, 12.1875, 24.375)",
+	L"(-4.9731, 0.0, 4.9731)",
+	L"(0.0, 625.0, 1250.0)"]
 ans = 1
 radioq(choices, ans)
 ```
@@ -672,9 +694,9 @@ ground.
 t0 = 0.0
 tf = fzero(h, 10, 20)
 ta = fzero(D(h), t0, tf)
-choices = ["(0, 13.187, 30.0)",
-	"(0, 32.0, 390.0)",
-	"(0, 2.579, 13.187)"]
+choices = [L"(0, 13.187, 30.0)",
+	L"(0, 32.0, 390.0)",
+	L"(0, 2.579, 13.187)"]
 ans = 3
 radioq(choices, ans)
 ```
@@ -817,9 +839,29 @@ radioq(choices, ans)
 
 ##### Question
 
-The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibarations of rods. Using `fzeros`, what is the largest zero in the interval $[0, 6\pi]$?
+The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibrations of rods. Using `fzeros`, what is the largest zero in the interval $[0, 6\pi]$?
 
 ```
 val = maximum(fzeros(x -> cos(x) * cosh(x) - 1, 0, 6pi))
 numericq(val)
 ```
+
+##### Question
+
+A parametric equation is specified by a parameterization $(f(t), g(t)), a \leq t \leq b$. The parameterization will be continuous if and only if each function is continuous.
+
+Suppose $k_x$ and $k_y$ are positive integers and $a, b$ are positive numbers, will the [Lissajous](https://en.wikipedia.org/wiki/Parametric_equation#Lissajous_Curve) curve given by $(a\cos(k_x t), b\sin(k_y t))$ be continuous?
+
+```
+yesnoq(true)
+```
+
+Here is a sample graph for $a=1, b=2, k_x=3, k_y=4$:
+
+```
+a,b = 1, 2
+k_x, k_y = 3, 4
+plot(t -> a * cos(k_x *t), t-> b * sin(k_y * t), 0, 4pi)
+```
+
+

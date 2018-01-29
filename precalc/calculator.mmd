@@ -5,7 +5,7 @@ multiply, divide, and take square roots. Using such a simple thing is
 certainly familiar for any reader of these notes. Indeed, a
 familiarity with a *graphing* calculator is expected. `Julia` makes
 these familiar tasks just as easy, offering numerous conveniences along the
-way. Here we describe how.
+way. In this section we describe how.
 
 The following image is the calculator that Google presents upon searching for "calculator." 
 
@@ -79,8 +79,8 @@ In `Julia`, the same symbol, "`-`", is used for each:
 
 An expression like $6 - -3$, subtracting minus three from six, must be handled with some care.  With the
 Google calculator, the expression must be entered with accompanying
-parentheses: $6 -(-3)$. In `Julia`, parentheses are not needed, but a
-space is between the two minus signs:
+parentheses: $6 -(-3)$. In `Julia`, parentheses may be used, but are not needed. However, if omitted, a
+space is required between the two minus signs:
 
 ```
 6 - -3
@@ -182,7 +182,7 @@ A right triangle has sides $a=11$ and $b=12$. Find the length of the
 The calculator must use some rules to define how it will evaluate its instructions when two or more operations are involved. We know mathematically, that when $1 + 2 \cdot 3$ is to be evaluated the multiplication is  done first then the addition.
 
 With the Google Calculator, typing `1 + 2 x 3 =` will give the value
-$7$, but *if* we evaluate the `+` sign first, via `1 + 2 = x 3 =` the
+$7$, but *if* we evaluate the `+` sign first, via `1`  `+` `2` `=` `x` `3` `=` the
 answer will be 9, as that will force the addition of `1+2` before
 multiplying. The more traditional way of performing that calculation
 is to use *parentheses* to force an evaluation. That is,
@@ -320,9 +320,6 @@ often implied.
 """)
 ```
 
-
-
-
 ### Infix, postfix, and prefix notation
 
 The factorial button on the Google Button creates an expression like
@@ -364,21 +361,53 @@ Whereas, `e` is is not simply the character `e`, but *rather* a unicode characte
 ```
 
 ```
-note(L"""Up until v"0.7.0" `e` was just "e", but afterwards it is defined through the name `\euler`. This isn't such an inconvenience, as expression like $e^x$ are done with the `exp` function, as in `exp(x)`.
+note(L"""Up until v"0.7.0" `e` was just "e", but afterwards it is defined through the name `\euler`. This isn't such an inconvenience, as expressions like $e^x$ are best done using the `exp` function, as in `exp(x)`.
 """)
 ```
 
 
-Mathematically these are irrational values with decimal expansions that do not repeat. `Julia` represents them internally with additional accuracy beyond that which is displayed. Math constants can be used as though they were numbers, such is done with this expression:
+Mathematically these are irrational values with decimal expansions that do not repeat. `Julia` represents these values internally with additional accuracy beyond that which is displayed. Math constants can be used as though they were numbers, such is done with this expression:
 
 ```
 ℯ^(1/(2*pi))
 ```
 
 ```
-alert("""In most cases. There are occasional (basically rare) spots where using `pi` by itself causes an eror where `1pi` will not. The reason is `1pi` will create a floating point value from the irrational object, `pi`.
+alert("""In most cases. There are occasional (basically rare) spots where using `pi` by itself causes an eror where `1*pi` will not. The reason is `1*pi` will create a floating point value from the irrational object, `pi`.
 """)
 ```
+
+
+### Numeric literals
+
+For some special cases, Julia implements *multiplication* without a
+multiplication symbol. This is when the value on the left is a number,
+as in `2pi`, which has an equivalent value to `2*pi`. *However* the
+two are not equivalent, in that multiplication with *numeric literals*
+does not have the same precedence as regular multiplication---it is
+higher. This has practical importance when used in division or
+powers. For instance, these two are **not** the same:
+
+```
+1/2pi, 1/2*pi
+```
+
+Why? Because the first `2pi` is performed before division, as multiplication with numeric literals  has higher precedence than reguluar multiplication, which is at the same level as division.
+
+To confuse things even more, consider
+
+```
+2pi^2pi
+```
+
+Is this the same as `2 * (pi^2) * pi` or `(2pi)^(2pi)`?. The former would be the case is powers had higher precedence than literal multiplication, the latter would be the case were it the reverse. In fact, the correct answer is `2 * (pi^(2*pi))`:
+
+```
+2pi^2pi, 2 * (pi/2) * pi, (2pi)^(2pi), 2 * (pi^(2pi))
+```
+
+This follows usual mathematical convention, but is a source of potential confusion. It can be best to be explicit about multiplication, save for the simplest of cases.
+
 
 ## Functions
 
@@ -404,6 +433,40 @@ $-1$ is often a source of confusion and is not supported by `Julia`.) Similarly,
 are `asind`, `acos`, `acosd`, `atan`, and `atand` functions available
 to the `Julia` user.
 
+The following table summarizes the above:
+
+```
+using DataFrames
+using WeavePynb
+calc = [
+L" $+$, $-$, $\times$, $\div$",
+L"x^y",
+L"\sqrt{}, \sqrt[3]{}",
+L"e^x",
+L" $\ln$, $\log$",
+L"\sin, \cos, \tan, \sec, \csc, \cot",
+"In degrees, not radians",
+L"\sin^{-1}, \cos^{-1}, \tan^{-1}",
+L"n!",
+]
+
+
+julia = [
+"`+`, `-`, `*`, `/`",
+"`^`",
+"`sqrt`, `cbrt`",
+"`exp`",
+"`log`, `log10`",
+"`sin`, `cos`, `tan`, `sec`, `csc`, `cot`",
+"`sind`, `cosd`, `tand`, `secd`, `cscd`, `cotd`",
+"`asin`, `acos`, `atan`",
+"`factorial`"
+]
+
+WeavePynb.table(DataFrame(Calculator=calc, Julia=julia))
+```
+
+
 
 
 Using a function is very straightforward. A function is called using parentheses, in a manner visually similar to how a function is called mathematically. So if we consider the `sqrt` function, we have:
@@ -414,6 +477,14 @@ sqrt(4), sqrt(5)
 
 The function is referred to by name (`sqrt`) and called with parentheses. Any arguments are passed into the function using commas to separate values, should there be more than one. When there are numerous values for a function, the arguments may need to be given in a specific order or may possibly be specified with *keywords*.
 
+Some more examples:
+
+```
+exp(2), log(10), sqrt(100), 10^(1/2)
+```
+
+
+
 ```
 note("""
 
@@ -422,27 +493,27 @@ used for grouping, and now we see they are used to indicate a function
 is being called. These are familiar from their parallel usage in
 traditional math notation. In `Julia`, a third usage is common, the
 making of a "tuple," or a container of different objects, for example
-`(1,e, pi)`. In these notes, the output of multiple commands separated by commas is a printed tuple.
+`(1, sqrt(2), pi)`. In these notes, the output of multiple commands separated by commas is a printed tuple.
 
 """)
 ```
 
+
 `Julia`'s design embraces *polymorphism*, a term to indicate that the same function may have different implementations and the one ultimately called depends on the number and types of the arguments. Polymorphism is also commonly referred to as *multiple dispatch*. This is a great convenience for the user who only needs to remember one function name for related uses, that may differ only in technicalities.  For example, there are about $200$ methods implemented for the generic function `+`. This may be expected from mathematical analogy: the details of the operation of addition are different for integers, than rational numbers, than polynomials, though all can be added.
 
 
-The power operator, `^`, provides a concrete example. For integer bases there is a different implementation than there is for real bases. When the base is an integer, only those powers that will produce an integer are allowed. This is why `2^(-1)` gives a domain error
+The power operator, `^`, provides a concrete example. For integer bases there is a different implementation than there is for real bases. When the base is an integer, the answer may or may not be an integer:
 
 ```
-2^(-1)
+2^(-1), 2^2
 ```
 
-However, the similar looking value:
+However, for floating point bases the answer is always a floating point number
 
 ```
-2.0^(-1)
+2.0^(-1), 2.0^2
 ```
 
-produces an answer, as `2.0` is a floating point value, and floating point values can be used to represent rational (and irrational) values.
 
 
 
@@ -514,18 +585,6 @@ sqrt(-1)
 ```
 
 For integer or real-valued inputs, the `sqrt` function expects non-negative values, so that the output will always be a real number.
-
-Surprisingly at first, the expression `2^-1` will also yield a domain error:
-
-
-```
-2^-1
-```
-
-Unlike the calculator, `Julia` makes a distinction between integer and
-non-integer values. Julia expects that for integer exponents with
-integer bases, the answer will be an integer and the answer in this
-expression, $1/2$, is not. The actual error message gives some indication of how to workaround this.
 
 There are other types of errors. Overflow is a common one on most
 calculators. The value of $1000!$ is actually *very* large (over 2500

@@ -43,7 +43,7 @@ x
 ```
 
 
-Just typing a variable name (without a trailing semicolon) causes the assigned values to be displayed.
+Just typing a variable name (without a trailing semicolon) causes the assigned value to be displayed.
 
 
 Variable names can be reused, as here, where we redefine `x`:
@@ -56,7 +56,7 @@ x = 2
 `Julia` is referred to as a "dynamic language" which means (in most
 cases) that a variable can be reassigned with a value of a different
 type, as we did with `x` where first it was assigned to a floating
-point values then an integer. (Though we meet some cases---generic functions--- where `Julia`
+point value then to an integer value. (Though we meet some cases---generic functions--- where `Julia`
 balks at reassigning a variable if the type if different.)
 
 
@@ -101,7 +101,7 @@ a = v0 * cosd(theta)
 (g/(k*a) + tand(theta))* x + (g/k^2) * log(1 - k/a*x)
 ```
 
-By defining a new variable `a` to represent a value that is repeated a few times in the expression, the last command is greatly simplified. Doing so makes it much easier to check against the expression to compute. 
+By defining a new variable `a` to represent a value that is repeated a few times in the expression, the last command is greatly simplified. Doing so makes it much easier to check for accuracy against the expression to compute. 
 
 ##### Example
 
@@ -120,7 +120,7 @@ This looks nearly identical to the mathematical expression, but we inserted `*` 
 
 ### Numeric literals
    
-`Julia` conveniently allows for numeric
+As previously mentioned, `Julia` conveniently allows for numeric
 [literals](http://julia.readthedocs.org/en/latest/manual/integers-and-floating-point-numbers/#numeric-literal-coefficients)
 to imply multiplication. That is, numeric coefficients need not have a
 multiplication sign. (Of course, we can't write `xy` to mean `x * y`,
@@ -155,9 +155,9 @@ is not an equation:
 x = x^2
 ```
 
-What happens instead, is the right hand side is evaluated (`x` is
+What happens instead? The right hand side is evaluated (`x` is
 squared), the result is stored and bound to the variable `x` (so that
-`x` has the value `4` and not `2`; finally the value computed on the
+`x` will end up pointing to the new value `4` and not the old one `2`); finally the value computed on the
 right-hand side is returned and in this case displayed, as there is no
 trailing semicolon to suppress the output.
 
@@ -201,7 +201,7 @@ visible within the `Main` module.
 
 ```
 note("""
-The `whos` function will list the variables currently defined in the
+The `varinfo` function will list the variables currently defined in the
 main workspace. There is no mechanism to delete a single variable.
 """)
 ```
@@ -224,7 +224,7 @@ as in `Base.sin(pi)`. This uses the convention
 ## Variable names
 
 `Julia` has a very wide set of possible
-[names](http://docs.julialang.org/en/release-0.3/manual/variables/#allowed-variable-names)
+[names](https://docs.julialang.org/en/stable/manual/variables/#Allowed-Variable-Names-1)
 for variables. Variables are case sensitive and their names can
 include many
 [Unicode](http://en.wikipedia.org/wiki/List_of_Unicode_characters)
@@ -264,27 +264,41 @@ such as `\:snowman:[tab]` or `\:koala:[tab]`
 """)
 ```
 
+##### Example
+
+As mentioned, the value of $e$ is bound to the unicode value `\euler[tab]` and not the letter `e`:
+
+```
+ℯ
+```
+
+This isn't quite true. The `MathConstants` module defines `e`, as well as a few other values accessed via unicode:
+
+```
+Base.MathConstants.e, Base.MathConstants.γ, Base.MathConstants.ϕ, Base.MathConstants.catalan
+```
+
 
 ## Constant variables
 
 If a variable is not to be changed it can be declared
 constant. Declaring variables constant can help `Julia` speed up some
 computations. For example, `pi` is defined to be a constant by base
-`Julia`. The `const` keyword is used to mark a value a constant. Here
-we define a constant variable `MAX`:
+`Julia`. The `const` keyword is used to mark a value a constant, though not within a function body. Here
+we define a constant global variable `MAX`:
 
 ```
 const MAX = 10
 ```
 
-Trying to redefine `MAX` will raise a warning.
+Trying to redefine `MAX` will raise a warning, though is permitted.
 
 ## Tuple assignment
 
 For convenience, `Julia` allows the definition of more than one variable at a time. The syntax is similar:
 
 ```
-a,b,c = 1,2,3
+a, b, c = 1, 2, 3
 ```
 
 This sets `a=1`, `b=2`, and `c=3`, as suggested. This construct relies
@@ -297,7 +311,7 @@ the right, the names are assigned one by one.
 The value on the right hand side is evaluated, then the assignment occurs. The following exploits this to swap the values assigned to `a` and `b`:
 
 ```
-a,b = b,a
+a, b = b, a
 ```
 
 #### Example, finding the slope
@@ -460,6 +474,25 @@ choices = [
 q"a=1, b=2, c=3",
 q"a,b,c = 1,2,3",
 q"a=1; b=2; c=3"]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+The fact that assignment *always* returns the value of the right hand side *and* the fact that the `=` sign associates from right to left means that the following idiom:
+
+```verbatim
+x = y = z = 3
+```
+
+Will always:
+
+```
+choices = ["Assign all three variables at once to a value of 3",
+"Create 3 linked values that will stay synced when any value changes",
+"Throw an error"
+]
 ans = 1
 radioq(choices, ans)
 ```

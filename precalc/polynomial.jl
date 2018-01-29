@@ -5,7 +5,8 @@ using WeavePynb
 using LaTeXStrings
 using SymPy
 using Plots
-gr() #pyplot()
+#gr()
+pyplot()
 fig_size = (400, 300)
 
 

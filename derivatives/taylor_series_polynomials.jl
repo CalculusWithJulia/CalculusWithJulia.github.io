@@ -3,7 +3,8 @@ module taylor_series_polynomials
 using WeavePynb, LaTeXStrings
 using Plots
 using SymPy
-gr()
+#gr()
+pyplot()
 fig_size = (600, 400)
 
 taylor(f, x, c, n) = removeO(series(f, x, c, n+1))

@@ -18,7 +18,7 @@ can be viewed as part of the complex numbers.
 
 
 Calculators typically have just one type of number---floating point
-values. These model the real numbers. `Julia`, on othe other hand, has
+values. These model the real numbers. `Julia`, on other other hand, has
 a rich type system, and within that has many different number
 types. There are types that model each of the four main systems above,
 and within each type, specializations for how these values are stored.
@@ -34,7 +34,7 @@ we have these different styles:
 1, 1.0, 1//1, 1 + 0im
 ```
 
-The basic number types in `Julia` are `Int`, `Float64`, `Rational` and `Complex`, though in fact there are many more. This distinction is important, as the type of number dictates how it will be stored and how precisely the stored value can be expected to be  to the mathematical value it models.
+The basic number types in `Julia` are `Int`, `Float64`, `Rational` and `Complex`, though in fact there are many more, and the last two aren't even *concrete* types. This distinction is important, as the type of number dictates how it will be stored and how precisely the stored value can be expected to be  to the mathematical value it models.
 
 Though there are explicit constructors for these types, these notes
 avoid them unless necessary, as`Julia`'s parser can distinguish these
@@ -70,7 +70,7 @@ Now in nearly all cases, the differences are not noticed. Take for instance this
 
 The sum of an integer, a floating point number and rational number returns a floating point number without a complaint.
 
-This is  because behind the scenes, `Julia` will often "promote" a type to match, so for example to compute `1 + 1.25` the integer `1` will be promoted toa floating point value and the two values are then added. Similarly, with `2.25 + 3//2`, where the fraction is promoted to the floating point value `1.5` and addition is carried out.
+This is  because behind the scenes, `Julia` will often "promote" a type to match, so for example to compute `1 + 1.25` the integer `1` will be promoted to a floating point value and the two values are then added. Similarly, with `2.25 + 3//2`, where the fraction is promoted to the floating point value `1.5` and addition is carried out.
 
 As floating point numbers are approximations, some values are not quite what they would be mathematically:
 
@@ -83,23 +83,8 @@ These values are *very* small numbers, but not exactly $0$, as they are mathemat
 ----
 
 The only  common issue is with powers. `Julia` tries to keep a
-predictable output from the input types (not their values). Here are the three main cases
+predictable output from the input types (not their values). Here are the two main cases
 that arise where this can cause unexpected results:
-
-* integer bases and negative integer exponents. In `Julia` the expression `m^n` for `m` and `n` integers can only return an integer. However, when `n` is negative, the mathematical result is typically a non-integer fraction. So `Julia` throws a domain error:
-
-```
-2^(-1)
-```
-
-The workaround is to use a floating point value for either the base or the exponent:
-
-```
-2.0^(-1), 2^(-1.0)
-```
-
-This annoyance could be avoided, but isn't to make these commonly used
-values faster to compute.
 
 
 * integer bases and integer exponents can *easily* overflow. Not only `m^n` is always an integer, it is always an integer with a fixed storage size computed from the sizes of `m` and `n`. So the powers can quickly get too big. This can be especially noticeable on older $32$-bit machines, where too big is $2^{32} = 4,294,967,296$. On $64$-bit machines, this limit is present but much bigger.
@@ -110,7 +95,7 @@ Rather than give an error though, `Julia` gives seemingly arbitrary answers, as 
 2^62, 2^63
 ```
 
-Again, this could be worked around, but it isn't, as it
+This could be worked around, but it isn't, as it
 would slow down this basic computation. So, it is up to the user to be
 aware of cases where their integer values can grow to big. Again, use
 floating point numbers in this domain, as they have more room, at
@@ -123,14 +108,20 @@ the cost of often being approximate values.
 sqrt(-1.0)
 ```
 
-This is because for real-valued inputs `Julia` expects to return a real-valued output. Of course, this is true in mathematics until the complex numbers are introduced. Similarly in `Julia`---to take square roots of negative numbers, start with complex numbers:
+This is because for real-valued inputs `Julia` expects to return a
+real-valued output. Of course, this is true in mathematics until the
+complex numbers are introduced. Similarly in `Julia`---to take square
+roots of negative numbers, start with complex numbers:
 
 ```
 sqrt(-1.0 + 0im)
 ```
 
 
-
+note("""
+At one point, `Julia` had an issue with a third type of power:
+integer bases and negative integer exponents. For example `2^(-1)`. This is now special cased. Historically, the desire to keep a predictable type for the ouput (integer) led to defining this case as a domain error.
+""")
 
 
 ## Some more details.
@@ -147,7 +138,7 @@ However, a specific value is an instance of a *concrete* type. A
 concrete type will also include information about how the value is
 stored. For example, the *integer* `1` could be stored using $64$ bits
 as a signed integers, or, should storage be a concern, as an $8$ bits 
-signed or even unsigned integer. If storage
+signed or even unsigned integer, etc.. If storage
 isn't an issue, but exactness at all scales is, then it can be stored in a manner
 that allows for the storage to grow using "big" numbers.
 
@@ -401,14 +392,14 @@ of the translation between the two. Ultimately `Julia` calls a compiler to creat
 the instructions. A basic premise is the shorter the instructions, the
 faster they are to process. Shorter instructions can come about by
 being more explicit about what types of values the instructions
-concern. Explictness means, there is no need to reason about what a
+concern. Explicitness means, there is no need to reason about what a
 value can be. When `Julia` can reason about the type of value involved
 without having to reason about the values themselves, it can work with
 the compiler to produce shorter lists of instructions.
 
 So knowing the type of the output of a function can be a big
 advantage. In `Julia` this is known as *type stability*. In the
-standard `Julia` library, thisis a primary design consideration.
+standard `Julia` library, this is a primary design consideration.
 
 
 ##### Example: closure
@@ -432,7 +423,7 @@ The integers are also closed under multiplication, which for integer values can 
 
 However, the integers are not closed under division---even if you put
 aside the pesky issue of dividing by $0$. For that, the rational
-numbers must be introduced. So aside form division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.
+numbers must be introduced. So aside from division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.
 
 Powers are defined for positive integers in a simple enough manner
 
@@ -445,7 +436,7 @@ which is left undefined mathematically (though it is also defined as
 `1` within `Julia`). We can extend the above to include negative
 values of $a$, but what about negative values of $n$? We can't say the
 integers are closed under powers, as the definition consistent with
-the rules that $a^(-n) = 1/a^n$ requires rational numbers to be
+the rules that $a^{(-n)} = 1/a^n$ requires rational numbers to be
 defined.
 
 Well, in the above `a` could be a rational number, is `a^n` closed for
@@ -454,11 +445,11 @@ rational numbers? No again. Though it is fine for $n$ as an integer
 answered within the rationals. For this, we need to introduce the
 *real* numbers. It is mentioned that
 [Aristotle](http://tinyurl.com/bpqbkap) hinted at the irrationality of
-the square root of $2$. Do define terms like $a^{1/n}$ for integer
+the square root of $2$. To define terms like $a^{1/n}$ for integer
 values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is
 used. Such solutions require the irrational numbers to have solutions
 in general. Hence the need for the real numbers (well, algebraic
-numbers atleast, though once the exponent is no longer a rational
+numbers at least, though once the exponent is no longer a rational
 number, the full set of real numbers are needed.)
 
 So, save the pesky cases, the real numbers will be closed under
@@ -486,20 +477,20 @@ avoid checking for overflow.
 
 Another example, the division of two integers will always be a number
 of the same type---floating point, as that is the only type that
-ensures the answer will always fit within. (The explict use of
+ensures the answer will always fit within. (The explicit use of
 rationals notwithstanding.) So even if two integers are the input and
 their answer *could* be an integer, in `Julia` it will be a floating
 point number, (cf. `2/1`).
 
 Hopefully this helps explain the subtle issues around powers: in
-`Julia` an integer raised to an integer must be an integer. Again this
-is for speed. But this means the exponent in this case *must* be a
-non-negative integer. Hence, `2^(-1)` is an error. However since a
-real number raised to a real number makes sense always when the base
-is non-negative, as long as real numbers are used as outputs, the
-expressions `2.0^(-1)` and `2^(-1.0)` are computed and real numbers
-(floating points) are returned. For type stability, even though
-$2.0^1$ could be an integer, a floating point answer is returned.
+`Julia` an integer raised to an integer should be an integer, for
+speed, though certain cases are special cased, like `2^(-1)`.  However
+since a real number raised to a real number makes sense always when
+the base is non-negative, as long as real numbers are used as outputs,
+the expressions `2.0^(-1)` and `2^(-1.0)` are computed and real
+numbers (floating points) are returned. For type stability, even
+though $2.0^1$ could be an integer, a floating point answer is
+returned.
 
 As for negative bases, `Julia` could always return complex numbers,
 but in addition to this being slower, it would be irksome to users. So
@@ -606,4 +597,18 @@ Is `(2/10 + 6/10) + 7/10` equal to `2/10 + (6/10 + 7/10)`?
 yesnoq(false)
 ```
 
+###### Question
+
+The following *should* compute `2^(-1)`, which if entered directly will return `0.5`. Does it?
+
+```verbatim
+a, b = 2, -1
+a^b
+```
+
+```
+yesnoq(false)
+```
+
+(This shows the special casing that is done when powers use literal numbers.)
 

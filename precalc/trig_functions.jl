@@ -3,7 +3,8 @@ module trig_functions
 using WeavePynb
 using LaTeXStrings
 using Plots
-gr() #pyplot()
+#gr()
+pyplot()
 fig_size = (400, 300)
 
 function plot_angle(m)

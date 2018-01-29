@@ -6,13 +6,30 @@ plotly()
 ```
 
 
+The figure illustrates a means to *sketch* a sine curve -- identify as
+many of the following values as you can: asymptotic behaviour, periodic
+behaviour, vertical asymptotes, $y$ intercept, $x$ intercepts, local
+peaks and valleys (extrema). With these, a sketch fills in between the
+points/lines associated with these values. 
+
+
+
+{{{ sketch_sin_plot }}}
+
+
+Though this approach is most useful for hand-sketches, the underlying
+concepts are important for properly framing graphs made with the
+computer. 
+
 We can easily make a graph of a function over a specified
 interval. What is not always so easy is to pick an interval that shows
-off the feature of interest. In the section on [rational](../precalc/rational_functions.html) functions there was a
+off the feature of interest. In the section on
+[rational](../precalc/rational_functions.html) functions there was a
 discussion about how to draw graphs for rational functions so that
 horizontal and vertical asymptotes can be seen. These are properties
-of the "large." In this section, we build on this but concentrate now on
-more local properties of a function: zeros, relative maxima, and relative minima.
+of the "large." In this section, we build on this, but concentrate now
+on more local properties of a function.
+
 
 ## Positive and increasing on an interval
 
@@ -24,7 +41,7 @@ Of course, we  define *negative* in a parallel manner. The intermediate value th
 
 > A function, $f$, is (strictly) *increasing* on an interval $I$ if for any $a < b$ it must be that $f(a) < f(b)$.
 
-The word strictly is related to the inclusion of the $<$ precluding the possibility of a function being flat for a bit that the $\leq$ inequality would allow.
+The word strictly is related to the inclusion of the $<$ precluding the possibility of a function being flat over an interval that the $\leq$ inequality would allow.
 
 A parallel definition with $a < b$ implying $f(a) > f(b)$ would be used for a *strictly decreasing* function.
 
@@ -41,10 +58,11 @@ only when the second function `g` is positive.
 ```
 using Plots
 function plotif(f, g, a, b)
-   p = plot(f, a, b, linewidth=5, color=:blue, legend=false)
-   plot!(p, x -> g(x) >= 0 ? f(x) : NaN, a, b, linewidth=5, color=:red)
-   p
-end	
+       xs = linspace(a,b,251)
+       p = plot(xs, f.(xs), linewidth=5, color=:blue, legend=false)
+       plot!(p, xs, (x -> g(x) >= 0 ? f(x) : NaN).(xs), linewidth=5, color=:red)
+       p
+end
 ```
 
 To see where a function is positive, we simply pass the function
@@ -66,6 +84,20 @@ plotif(sin, cos, -2pi, 2pi)
 Maybe surprisingly, we see that the increasing parts of the sine curve are now
 highlighted. Of course, the cosine is the derivative of the sine
 function, now we discuss that this is no coincidence.
+
+## Relative extrema
+
+When a function changes from increasing to decreasing, or decreasing to increasing, it will have a peak or a valley. We call such points relative extrema. A definition may be:
+
+> The function $f(x)$ has a *relative  maximum* at $x$ if the value $f(x)$ is an *absolute maximum* for some open interval containing $x$. Similarly, a *relative minimum* is defined.
+
+If $x$ is a relative maximum, then there is some $a < x < b$ with $f(u) \leq f(x)$ for any $u \in (a,b)$. This does not say there is an absolute maximum over any interval $I$ at $x$, but rather there is some (open) interval for which $f(x)$ is an absolute maximum.
+
+
+[Fermat's](http://tinyurl.com/nfgz8fz) theorem implies that any local
+extrema must occur at a critical point of the function $f(x)$.
+
+
 
 ## The relationship of the derivative and increasing
 
@@ -107,7 +139,8 @@ though there is no guarantee the limit will be positive.
 So, to visualize where a function is increasing, we can just pass in
 the derivative as the masking function in our `plotif` function, as long as we are wary about places with $0$ derivative (flat spots).
 
-For example,
+For example, here we see where a more complicated function is
+increasing by passing in its derivative to `plotif`:
 
 ```
 using Roots                           # for D
@@ -118,15 +151,15 @@ plotif(f, f', -2, 2)
 
 ### First derivative test
 
-We know from Fermat that relative maxima and minima occur at
-*critical* points. But what is not true is that all critical points
+We know since Fermat that relative maxima and minima occur at
+*critical* points. But what is **not** true is that all critical points
 correspond to relative maxima and minima. Again, $f(x)=x^3$ provides
 the example at $x=0$. This is a critical point, but clearly not a
 relative maximum or minimum---it is just a slight pause for a
 strictly increasing function.
 
-When will a critical point correspond to a relative maximum? That
-answer can be answered by considering the first derivative.
+When will a critical point correspond to a relative maximum or minimum? That
+question can be answered by considering the first derivative.
 
 > *The first derivative test*: If $c$ is a critical point for $f(x)$ and
 > *if* $f'(x)$ changes sign at $x=c$, then $f(c)$ will be either a
@@ -162,6 +195,56 @@ changes from increasing to decreasing or vice versa.
 
 ##### Example
 
+Produce a graph of the function $f(x) = x^4 -13x^3 + 56x^2-92x + 48$.
+
+We identify this as a fourth-degree polynomial with postive leading
+coefficient. Hence it will eventually look $U$-shaped. If we graph
+over a too-wide interval, that is all we will see. Rather, we do some
+work to produce a graph that shows the zeros, peaks, and valleys of
+$f(x)$. To do so, we need to know the extent of the zeros. We can try
+some theory, but instead we just guess and if that fails, will work harder:
+
+```
+f(x) = x^4 - 13x^3 + 56x^2 -92x + 48
+rts = fzeros(f, -10, 10)
+```
+
+As we found $4$ roots, we know by the fundamental theorem of algebra we have them all. This means, our graph need not focus on values much larger than $6$ or much smaller than $1$.
+
+To know where the peaks and valleys are, we look for the critical points:
+
+```
+cps = fzeros(f', 1, 6)
+```
+
+Because we have the $4$ distinct zeros, we must have the peaks and
+valleys appear in an interleaving manner, so a search over $[1,6]$
+finds all three critical points and without checking, they must
+correspond to relative extrema.
+
+We finally check that if we were to just use $[0,7]$ as a domain to
+plot over that the function doesn't get too large to mask the
+oscillations. This could happen if the $y$ values at the end points
+are too much larger than the $y$ values at the peaks and valleys, as
+only so many pixels can be used within a graph. For this we have:
+
+```
+f.([0, cps..., 7])
+```
+
+The values at $0$ and at $7$ area a bit large, and since we know the
+graph is eventually $U$-shaped, this offers no insight. So we narrow
+the range a bit for the graph:
+
+```
+plot(f, 0.5, 6.5)
+```
+
+
+
+
+##### Example
+
 Find all the relative maxima and minima of the function $f(x) =
 \sin(\pi \cdot x) \cdot (x^3 - 4x^2 + 2)$ over the interval $[-2, 2]$.
 
@@ -184,16 +267,19 @@ check that all the critical points are accounted for by graphing the
 derivative:
 
 ```
-plot([f', zero], -2, 2)
+plot(f', -2, 2, legend=false)
+plot!(zero)
+scatter!(cps, 0*cps)
 ```
 
-We see the five zeros as stored in `cps` and note that at each the function clearly crosses the $x$ axis.
+We see the six zeros as stored in `cps` and note that at each the
+function clearly crosses the $x$ axis.
 
 From this last graph of the derivative we can also characterize the
 graph of $f$: The left-most critical point coincides with a relative minimum
 of $f$, as the derivative changes sign from negative to
 positive. The critical points then alternate relative maximum,
-relative minimum, relative maximum, and finally relative minimum.
+relative minimum, relative maximum, relative, minimum, and finally relative maximum.
 
 ##### Example
 
@@ -204,7 +290,7 @@ We will apply the same approach, but need to get a handle on how large
 the values can be. The function is a composition of three
 functions. We should expect that the only critical points will occur
 when the interior polynomial, $x^2-1$ has values of interest, which is
-around $-1$ to $1$. So we look on the interval $[-2, 2]$:
+around the interval $(-1, 1)$. So we look to the slightly wider interval $[-2, 2]$:
 
 ```
 f(x) = sqrt(abs(x^2 - 1))
@@ -222,8 +308,9 @@ We can then pick intermediate values to test for positive or negative
 values:
 
 ```
-test_pts = [-2, -1/2, 1/2, 2]
-f'.(test_pts)
+pts = union(-2, cps, 2)  # this includes the endpoints (a, b) and the critical points
+test_pts = pts[1:end-1] + diff(pts)/2 # midpoints of intervals between pts
+[test_pts sign.(f'.(test_pts))]
 ```
 
 Reading this we have:
@@ -234,6 +321,15 @@ Reading this we have:
 
 - the derivative changes sign from negative to postive at $x=1$, so $f(x)$ will have a relative minimum.
 
+Just for fun, we define a function to print `+` or `-` instead of just using `sign`:
+
+```
+plus_or_minus(x, tol=1e-12) = x > tol ? "+" : (x < -tol ? "-" : "0")
+[test_pts plus_or_minus.(f'.(test_pts))]
+```
+
+
+
 We did this all without graphs. But, let's look at the graph of the derivative:
 
 ```
@@ -242,8 +338,8 @@ plot(f', -2, 2)
 
 We see asymptotes at $x=-1$ and $x=1$! These aren't zeroes of $f'(x)$,
 but rather where $f'(x)$ does not exist. The conclusion is correct --
-each of $-1$, $0$ and $1$ are critical points---but not for the same
-reason.
+each of $-1$, $0$ and $1$ are critical points with the identified characterization---but not for the 
+reason that they are all zeros.
 
 ```
 plot(f, -2, 2)
@@ -275,7 +371,8 @@ We get values of $0$ and $2\pi$. Let's look at the derivative at these points:
 At $x=0$ we have to the left and right signs found by
 
 ```
-fp.([-1/10, 1/10])
+vals = fp.([-1/10, 1/10])
+[vals plus_or_minus.(vals)]
 ```
 
 Both are negative. The derivative does not change sign at $0$, so the critical point is neither a relative minimum or maximum.
@@ -283,7 +380,8 @@ Both are negative. The derivative does not change sign at $0$, so the critical p
 What about at $2\pi$? We do something similar:
 
 ```
-fp.(2*pi + [-1/10,  1/10])
+vals = fp.(2*pi + [-1/10,  1/10])
+[vals plus_or_minus.(vals)]
 ```
 
 Again, both negative. The function $f(x)$ is just decreasing near
@@ -299,86 +397,42 @@ We see that at $0$ and $2\pi$ there are "pauses" as the function
 decreases. We should also see that this pattern repeats. The critical
 points found by `solve` are only those within a certain domain. Any
 value that satisfies $\cos(x) - 1 = 0$ will be a critical point, and
-there are infinitely many of these of the form $k \cdot 2\pi$ for $k$
+there are infinitely many of these of the form $n \cdot 2\pi$ for $n$
 an integer.
+
+
+As a comment, the `solveset` function, which is replacing `solve`,
+returns the entire collection of zeros:
+
+```
+solveset(fp)
+```
 
 ##### Example
 
-Graph  the function
+Suppose you know $f'(x) = (x-1)\cdot(x-2)\cdot (x-3) = x^3 - 6x^2 +
+11x - 6$ and $g'(x) = (x-1)\cdot(x-2)^2\cdot(x-3)^3 = x^6 -14x^5
++80x^4-238x^3+387x^2-324x+108$.
 
-$$~
-f(x) = \frac{(x-1)\cdot(x-3)^2}{x \cdot (x-2)}.
-~$$
+How would the graphs of $f(x)$ and $g(x)$ differ, as they share identical critical points?
 
-Not much to do here if you are satisfied with a graph that only gives insight into the asymptotes of this rational function:
+The graph of $f(x)$---a function we do not have a formula for---can have its critical points characterized by the first derivative test. As the derivative changes sign at each, all critical points correspond to relative maxima. The sign pattern is negative/positive/negative/positive so we have from left to right a relative minimum, a relative maximum, and then a relative minimum.
 
-```
-f(x) = ( (x-1)*(x-3)^2 ) / (x * (x-2) )
-plot(f, -10, 10)
-```
+For the graph of $g(x)$ we can apply the same analysis. Thinking for a
+moment, we see as the factor $(x-2)^2$ comes as a power of $2$, the
+derivative of $g(x)$ will not change sign at $x=2$, so there is no
+relative extreme value there. However, at $x=3$ the factor has an odd
+power, so the derivative will change sign at $x=3$. So, as $g'(x)$ is
+positive for large *negative* values, there will be a relative maximum
+at $x=1$ and, as $g'(x)$ is positive for large *positive* values, a
+relative minimum at $x=3$.
 
-We can see the slant asymptote and hints of vertical asymptotes, but,
-we'd like to see more of the basic features of the graph.
-
-Previously, we have discussed rational functions and their
-asymptotes. This function has numerator of degree 3 and denominator of
-degree 2, so will have a slant asymptote. As well, the zeros of the
-denominator, $0$ and $-2$, will lead to vertical asymptotes. To get
-all those into one graph, we used a function to trim the large $y$ values:
-
-```
-trim(f, M=20) = x -> abs(f(x)) > M ? NaN : f(x)
-plot(trim(f), -10, 10)
-```
-
-In addition, we want to make sure we include the zeros of
-$f(x)$. These are the zeros of the numerator, or $1$ and $3$.
-
-As well, we want to make sure the relative minima are shown. These are the critical points of $f$, and are found with:
-
-```
-cps = fzeros(f', -4, 4)
-```
-
-
-
-The values of $f$ at the critical points are:
-
-```
-f.(cps)
-```
-
-Its $0$. In general we don't want to trim these values off when plotting, so we will use 20, not the default of 10, when trimming.
-
-We check that $(0,f(0))$ is a relative minimum, by checking values of the derivative to the left and right:
-
-```
-[sign(f'(x)) for x in [2.5, 3.5]]  # 
-```
-
-We see the pattern negative to positive that indicates a minimum.
-
-Similarly, we can see that the other critical point is a relative maximum:
-
-```
-[sign(f'(x)) for x in cps[1] + [-.1, .1]]
-```
-
-
-At this point, we make our final graph, adjusting the $x$-range to show some of the slant asymptote:
-
-```
-plot(trim(f, 20), -5, 7)
-```
-
-Getting more of the vertical asymptotes shown can be done with
-lower-level plotting, but this clearly shows the key features of
-interest and requires not much more than identifying where the points
-of interest are so we can see them clearly.
+The latter is consistent with a $7$th degree polynomial with positive leading coefficient. It is intuitive that since $g'(x)$ is a $6$th degree polynomial, $g(x)$ will be a $7$th degree one, as the power rule applied to a polynomial results in a polynomial of lesser degree by one.
 
 ## Concavity
 
-Consider the function $f(x) = x^2$. Over this function we draw some secant lines:
+Consider the function $f(x) = x^2$. Over this function we draw some
+secant lines for a few pairs of $x$ values:
 
 ```nocode
 f(x) = x^2
@@ -397,7 +451,7 @@ line between any two points $a$ and $b$ will lie above the graph over $[a,b]$.
 
 This is a special property not shared by all functions. Let $I$ be an open interval.
 
-> **Concave up**: A function $f(x)$ is concave up on $I$ if for any $a < b$ in $I$ the secant line between $a$ and $b$ lies above the graph of $f(x)$ over $[a,b]$.
+> **Concave up**: A function $f(x)$ is concave up on $I$ if for any $a < b$ in $I$, the secant line between $a$ and $b$ lies above the graph of $f(x)$ over $[a,b]$.
 
 A similar definition exists for *concave down* where the secant lines
 lie below the graph.  Notationally, concave up says $f(a) + (f(b) -
@@ -415,27 +469,30 @@ derivative.
 A proof of this makes use of the same trick used to establish the mean
 value theorem from Rolle's theorem. Let $g(x) = f(x) - (f(a) + M \cdot
 (x-a)$, where $M$ is the slope of the secant line between $a$ and
-$b$. If $f'(x)$ is increasing, then so is $g'(x) = f'(x) + M$. Concave
-up means $g(x) \leq 0$. Suppose that there is a value where $g(x) > 0$
-in $[a,b]$. We show this can't be. Then assuming $g'(x)$ always exists, after some work,
+$b$. By construction $g(a) = g(b) = 0$. If $f'(x)$ is increasing, then
+so is $g'(x) = f'(x) + M$. Concave up means $g(x) \leq 0$. Suppose to
+the contrary that there is a value where $g(x) > 0$ in $[a,b]$. We
+show this can't be. Assuming $g'(x)$ always exists, after some work,
 Rolle's theorem will ensure there is a value where $g'(c) = 0$ and
-$(c,g(c))$ is a relative maximum. The first derivative test then
+$(c,g(c))$ is a relative maximum, and as we know there is at least one
+positive value, it must be $g(c) > 0$. The first derivative test then
 ensures that $g'(x)$ will increase to the left of $c$ and decrease to
-the right of $c$. But this can't happen as $g'(x)$ is assumed to be
-increasing on the interval.
+the right of $c$, since $c$ is at a critical point and not an
+endpoint. But this can't happen as $g'(x)$ is assumed to be increasing
+on the interval.
 
 Similarly, if a function has a decreasing derivative on $I$ then it
 will be concave down on $I$.
 
 
-The relationship between increasing functions and their derivatives
+The relationship between increasing functions and their derivatives---if $f'(x) > 0 $ on $I$ it is increasing on $I$---
 gives this second characterization of concavity when the second
 derivative exists:
 
 > If $f''(x)$ exists and is positive on $I$, then $f(x)$ is concave up on $I$.
 
 This follows,  as we can think of $f''(x)$ as just the first derivative
-of the function $f'(x)$, so the assumption will force $f'(x)$ to be
+of the function $f'(x)$, so the assumption will force $f'(x)$ to exist and be
 increasing, and hence $f(x)$ to be concave up.
 
 ##### Example
@@ -459,7 +516,7 @@ As well, between the zeros we should have the sign pattern `+`, `-`, and `+`, as
 
 ```
 ps = [0, 1, 4]
-sign.(f''.(ps))
+[ps plus_or_minus.(f''.(ps))]
 ```
 
 ### Second derivative test
@@ -480,8 +537,8 @@ so must go from negative to positive at the critical point.
 The second derivative test is *inconclusive* when $f''(c)=0$. No such
 general statement exists, as there isn't enough information. For
 example, the function $f(x) = x^3$ has $0$ as a critical point,
-$f''(0)=0$ and the value is not a relative maximum or minimum. On the
-other hand $f(x)=x^4$ has $0$ as a critical point, $f''(0)=0$ and is a
+$f''(0)=0$ and the value does not correspond to a relative maximum or minimum. On the
+other hand $f(x)=x^4$ has $0$ as a critical point, $f''(0)=0$  is a
 relative minimum.
 
 ##### Example
@@ -493,10 +550,17 @@ f(x) = x^5 - 2x^4 + x^3
 cps = fzeros(f', -3, 3)
 ```
 
+The critical point $x=0$ is masked by floating point issues. Here we work around that:
+
+```
+cps = [0.0, 0.6, 1.0]
+```
+
 We can check the sign of the second derivative for each critical point:
 
 ```
-f''.(cps)
+vals = f''.(cps)
+[cps plus_or_minus.(vals)]
 ```
 
 That $f''(0.6) < 0$ implies that at $0.6$, $f(x)$ will have a relative
@@ -516,7 +580,7 @@ plotif(f, f'', -0.25, 1.25)
 For the graph we see that $0$ **is** not a relative maximum or minimum. We could have seen this numerically by checking the first derivative test, and noting there is no sign change:
 
 ```
-sign.(f'.([-0.1, 0.1]))
+plus_or_minus.(f'.([-0.1, 0.1]))
 ```
 
 ### Inflection points
@@ -549,6 +613,77 @@ fzeros(f'', -3, 3)
 ```
 
 (The `fzeros` function may return points which are not inflection points. It primarily returns points where $f''(x)$ changes sign, but may also find points where $f''(x)$ is $0$ yet does not change sign at $x$.)
+
+
+##### Example
+
+Graph  the function
+
+$$~
+f(x) = \frac{(x-1)\cdot(x-3)^2}{x \cdot (x-2)}.
+~$$
+
+Not much to do here if you are satisfied with a graph that only gives insight into the asymptotes of this rational function:
+
+```
+f(x) = ( (x-1)*(x-3)^2 ) / (x * (x-2) )
+plot(f, -10, 10)
+```
+
+We can see the slant asymptote and hints of vertical asymptotes, but,
+we'd like to see more of the basic features of the graph.
+
+Previously, we have discussed rational functions and their
+asymptotes. This function has numerator of degree 3 and denominator of
+degree 2, so will have a slant asymptote. As well, the zeros of the
+denominator, $0$ and $-2$, will lead to vertical asymptotes.
+
+To identify how wide a viewing window should be, for the rational
+function the asymptotic behaviour is determined after the concavity is
+done changing and we are past all relative extrema, so we should take an interval that include all
+potential inflection points and critical points:
+
+```
+cps = fzeros(f', -10, 10)
+poss_ips = fzero(f'', -10, 10)
+extrema(union(cps, poss_ips))
+```
+
+So a range over $[-5,5]$ should display the key features including the slant asymptote.
+
+Previously we used this function to avoid the distortion that vertical asymptotes can have:
+
+```
+trim(f, M=20) = x -> abs(f(x)) > M ? NaN : f(x)
+```
+
+producing
+
+```
+plot(trim(f), -5, 5)
+```
+
+This is a graphic where the algorithmic choice of plotting points fails to produce a good graphic. To override this, we choose many points manually over the domain:
+
+```
+xs = linspace(-5, 5, 601)
+plot(xs, trim(f).(xs))
+```
+
+With these adjustments, we can now clearly see in the graph the two zeros at $x=1$ and $x=3$, the vertical asymptotes at $x=0$ and $x=2$, and the slant asymptote.
+
+
+```
+note("""
+
+The expression `trim(f).(xs)` might appear a bit opaque as to its
+intent. To break it down, the part `trim(f)` returns a function that
+has its large values replaced by `NaN`. This function is then
+broadcast over the values in `xs`, as expressed by the "`.`" before the parentheses
+in the call to the function `trim(f)`.
+
+""")
+```
 
 ##### Example
 
@@ -690,7 +825,7 @@ Consider this graph
 
 ```
 f(x) = (x-2)* (x-2.5)*(x-3) / ((x-1)*(x+1))
-p = plot(f, -20, -1-.3, legend=false, xlim=(-20, 20), color=:blue)
+p = plot(f, -20, -1-.3, legend=false, xlim=(-15, 15), color=:blue)
 plot!(p, f, -1 + .2, 1 - .02, color=:blue)
 plot!(p, f, 1 + .05, 20, color=:blue)
 Outputonly(p)
@@ -865,19 +1000,34 @@ yesnoq("yes")
 ###### Question
 
 ```nocode
-xs = linspace(0,1)
-plot(xs, 1 + 0*xs, color=:blue)
-plot!(-xs, -1 + 0*xs, color=:blue)
+fp(x) = (x-1)*(x-2)^2*(x-3)^2
+plot(fp, 0, 4)
 ```
 
-This plot shows the graph of $f'(x)$. What is a possible function for $f(x)$?
+This plot shows the graph of $f'(x)$. What is true about the critical points and their characterization?
 
 ```
 choices = [
-L"f(x) = \lvert x \rvert / x",
-L"f(x) = \lvert x \rvert",
-L"f(x) = x^{1/3}"]
-ans=2
+L"The critical points are at $x=1$ (a relative minimum), $x=2$ (not a relative extrema), and $x=3$ (not a relative extrema).",
+L"The critical points are at $x=1$ (a relative maximum), $x=2$ (not a relative extrema), and $x=3$ (not a relative extrema).",
+L"The critical points are at $x=1$ (a relative minimum), $x=2$ (not a relative extrema), and $x=3$ (a relative minimum.",
+L"The critical points are at $x=1$ (a relative minimum), $x=2$ (a relative minimum), and $x=3$ (a relative minimum).",
+]
+ans=1
+radioq(choices, ans)
+```
+
+##### Question
+
+You know $f''(x) = (x-1)^3$. What do you know about $f(x)$?
+
+```
+choices = [
+L"The function is concave down over $(-\infty, 1)$ and concave up over $(1, \infty)",
+L"The function is decreasing over $(-\infty, 1)$ and increasing over $(1, \infty)",
+L"The function is negative over $(-\infty, 1)$ and positive over $(1, \infty)",
+]
+ans = 1
 radioq(choices, ans)
 ```
 
@@ -909,10 +1059,10 @@ lgrowth(t) = K * P0 * a^t / (K + P0*(a^t-1))
 plot([egrowth, lgrowth], 0, 5)
 ```
 
-Does a plot over $[0,50]$ show similar behaviour?
+Does a plot over $[0,50]$ show qualitatively	 similar behaviour?
 
 ```
-yesnoq(false)
+yesnoq(true)
 ```
 
 Exponential growth has $P''(t) = P_0 a^t \log(a)^2 > 0$, so has no inflection point. By plotting over a sufficiently wide interval, can you answer: does the logistic growth model have an inflection point?
@@ -939,3 +1089,67 @@ L"The limit is $P_0$"]
 ans = 1
 radioq(choices, ans)
 ```
+
+##### Question
+
+The plotting algorithm for plotting functions  starts with a small
+initial set of points over the specified interval ($21$) and then
+refines those sub-intervals where the second derivative is determined
+to be large.
+
+Why are sub-intervals where the second derivative is large different than those where the second derivative is small?
+
+```
+choices = [
+"The function will increase (or decrease) rapidly when the second derivative is large, so there needs to be more points to capture the shape",
+"The function will have more curvature when the second derivative is large, so there  needs to be more points to capture the shape",
+"The function will be much larger (in absolute value) when the second derivative is large, so there needs to be more points to capture the shape",
+]
+ans = 2
+radioq(choices, ans)
+```
+
+##### Question
+
+Is there a nice algorithm to identify what domain a function should be
+plotted over to produce an informative graph?
+[Wilkinson](https://www.cs.uic.edu/~wilkinson/Publications/plotfunc.pdf)
+has some suggestions. (Wilkinson is well known to the `R` community as
+the specifier of the grammar of graphics.) It is mentioned that
+"finding an informative domain for a given function depends on at least
+three features: periodicity, asymptotics, and monotonicity."
+
+Why would periodicity matter?
+
+```
+choices = [
+"An informative graph only needs to show one or two periods, as others can be inferred.",
+"An informative graph need only show a part of the period, as the rest can be inferred.",
+L"An informative graph needs to show several periods, as that will allow proper computation for the $y$ axis range."]
+ans = 1
+radioq(choices, ans)
+```
+
+Why should asymptotics matter?
+
+```
+choices = [
+L"A vertical asymptote can distory the $y$ range, so it is important to avoid too-large values",
+L"A horizontal asymptote must be plotted from $-\infty$ to $\infty$",
+"A slant asymptote must be plotted over a very wide domain so that it can be identified."
+]
+ans = 1
+radioq(choices, ans)
+```
+
+Monotonicity means increasing or decreasing. This is important for what reason?
+
+```
+choices = [
+"For monotonic regions, a large slope or very concave function might require more care to plot",
+"For monotonic regions, a function is basically a straight line",
+"For monotonic regions, the function will have a vertical asymptote, so the region should not be plotted"
+]
+ans = 1
+radioq(choices, ans)
+```		 

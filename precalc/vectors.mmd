@@ -472,7 +472,7 @@ $$~
 
 This would be read: "the set of $x$ such that the remainder on division by $7$ is $0$ for all x in $1, 2, \dots, 100$."
 
-In `Julia`, a comprehension can include an `if` classes to mirror,
+In `Julia`, a comprehension can include an `if` clause to mirror,
 somewhat, the math notation. For example, the above would become
 (using `1:100` as a means to create the numbers $1,2,\dots, 100$, as will be described in a later section):
 
@@ -493,8 +493,8 @@ To be concrete, let's generate $7$ points to plot $f(x) = x^2$ over $[-1,1]$.
 The first task is to create the `xs`. We will see later, more convenient ways to generate patterned data using either the range operator or `linspace`, but for now, we do this by hand:
 
 ```
-a,b, n = -1, 1, n
-d = (b-a)/(n-1)
+a,b, n = -1, 1, 7
+d = (b-a) // (n-1)
 xs = [a, a+d, a+2d, a+3d, a+4d, a+5d, a+6d]  # 7 points
 ```
 
@@ -572,7 +572,7 @@ numericq(val)
 Which of the following is the unit vector in the direction of $\vec{v} = \langle 3,~ 4 \rangle$?
 
 ```
-choices = [q"[3,4]", q"[0.6, 0.8]", q"[1.0, 1.33333]", q"[1,1]"]
+choices = [q"[3, 4]", q"[0.6, 0.8]", q"[1.0, 1.33333]", q"[1, 1]"]
 ans = 2
 radioq(choices, ans)
 ```
@@ -583,7 +583,7 @@ radioq(choices, ans)
 What vector is in the same direction as $\vec{v} = \langle 3,~ 4 \rangle$ but is 10 times as long?
 
 ```
-choices = [q"[3,4]", q"[30, 40]", q"[ 9.48683, 12.6491 ]", q"[10, 10]"]
+choices = [q"[3, 4]", q"[30, 40]", q"[9.48683, 12.6491 ]", q"[10, 10]"]
 ans = 2
 radioq(choices, ans)
 ```
@@ -593,7 +593,7 @@ radioq(choices, ans)
 If $\vec{v} = \langle 3,~ 4 \rangle$ and $\vec{w} = \langle 1,~ 2 \rangle$  find $2\vec{v} + 5 \vec{w}$.
 
 ```
-choices = [q"[4,6]", q"[6,8]", q"[11,18]", q"[5,10]"]
+choices = [q"[4, 6]", q"[6, 8]", q"[11, 18]", q"[5, 10]"]
 ans = 3
 radioq(choices, ans)
 ```
@@ -604,14 +604,14 @@ Let `v` be defined by:
 
 ```
 Verbatim("""
-v = [1,1,2,3,5,8,13,21]
+v = [1, 1, 2, 3, 5, 8, 13, 21]
 """)
 ```
 
 What is the length of `v`?
 
 ```
-v = [1,1,2,3,5,8,13,21]
+v = [1, 1, 2, 3, 5, 8, 13, 21]
 val = length(v)
 numericq(val)
 ```
@@ -620,7 +620,7 @@ numericq(val)
 What is the `sum` of `v`?
 
 ```
-v = [1,1,2,3,5,8,13,21]
+v = [1, 1, 2, 3, 5, 8, 13, 21]
 val = sum(v)
 numericq(val)
 ```
@@ -634,9 +634,73 @@ val = prod(v)
 numericq(val)
 ```
 
+
 ###### Question
 
-If `xs=[1,2,3,4]` and `f(x) = x^2` which of these will not produce the vector `[1,4,9,16]`?
+From (transum.org)[http://www.transum.org/Maths/Exam/Online_Exercise.asp?Topic=Vectors].
+
+```
+using Plots
+#gr()
+
+p = plot(xlim=(0,10), ylim=(0,5), legend=false, framestyle=:none)
+for j in (-3):10
+    plot!(p, [j, j + 5], [0, 5*sqrt(3)], color=:blue, alpha=0.5)
+    plot!(p, [j - 5, j], [5*sqrt(3), 0], color=:blue, alpha=0.5)
+end
+for i in 1/2:1/2:3
+    plot!(p, [0,10],sqrt(3)*[i,i], color=:blue, alpha=0.5)
+end
+
+quiver!(p, [(3/2, 3/2*sqrt(3))], quiver=[(1,0)], color=:black,  linewidth=5)        # a
+quiver!(p, [(2, sqrt(3))], quiver=[(1/2,-sqrt(3)/2)], color=:black,  linewidth=5)   # b
+
+quiver!(p, [(3 + 3/2, 3/2*sqrt(3))], quiver=[(3,0)], color=:black,  linewidth=5)        # c
+quiver!(p, [(4 , sqrt(3))], quiver=[(3/2,-sqrt(3)/2)], color=:black,  linewidth=5)        # d
+quiver!(p, [(6+1/2 , sqrt(3)/2)], quiver=[(1/2, sqrt(3)/2)], color=:black,  linewidth=5)        # e
+
+delta = 1/4
+annotate!(p, [(2, 3/2*sqrt(3) -delta, "a"),
+              (2+1/4, sqrt(3), "b"),
+              (3+3/2+3/2, 3/2*sqrt(3)-delta, "c"),
+              (4+3/4, sqrt(3) - sqrt(3)/4-delta, "d"),
+              (6+3/4+delta, sqrt(3)/2 + sqrt(3)/4-delta, "e")
+              ])
+
+
+p
+```
+
+The figure shows $5$ vectors.
+
+Express vector **c** in terms of **a** and **b**:
+
+```
+choices = ["3a", "3b", "a + b", "a - b", "b-a"]
+ans = 1
+radioq(choices, ans)
+```
+
+Express vector **d** in terms of **a** and **b**:
+
+```
+choices = ["3a", "3b", "a + b", "a - b", "b-a"]
+ans = 3
+radioq(choices, ans)
+```
+
+Express vector **e** in terms of **a** and **b**:
+
+```
+choices = ["3a", "3b", "a + b", "a - b", "b-a"]
+ans = 4
+radioq(choices, ans)
+```
+
+
+###### Question
+
+If `xs=[1, 2, 3, 4]` and `f(x) = x^2` which of these will not produce the vector `[1, 4, 9, 16]`?
 
 ```
 choices = [q"f.(xs)", q"map(f, xs)", q"[f(x) for x in xs]", "All three of them work"]

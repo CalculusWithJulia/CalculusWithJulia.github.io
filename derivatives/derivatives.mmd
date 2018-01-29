@@ -6,7 +6,8 @@ using Plots
 plotly()
 ```
 
-Before defining the derivative, let's begin with two motivating examples that should be familiar.
+Before defining the derivative of a function, let's begin with two
+motivating examples that should be familiar.
 
 ##### Example: Driving
 
@@ -389,16 +390,17 @@ some expression (the "rule" part of an unnamed function).
 There are many other notations:
 
 - The Leibniz notation uses the infinitesimals: $dy/dx$ to relate to
-$\Delta y/\Delta x$. This notation is very common, and especially
-useful when more than one variable is involved.  `SymPy` uses Leibniz
-notation in some of its output, expressing somethings such as:
+  $\Delta y/\Delta x$. This notation is very common, and especially
+  useful when more than one variable is involved.  `SymPy` uses
+  Leibniz notation in some of its output, expressing somethings such
+  as:
 
 $$~
 f'(x) = \frac{d}{d\xi}(f(\xi)) \big|_{\xi=x}.
 ~$$
 
-The notation -- $\big|$ -- on the right-hand side separates the tasks of finding the
-derivative and evaluating the derivative at a specific value.
+  The notation -- $\big|$ -- on the right-hand side separates the tasks of finding the
+  derivative and evaluating the derivative at a specific value.
 
 - Euler used `D` for the operator `D(f)`. This is appropriated by an
   operator in the `Roots` package. This was initially used by
@@ -641,8 +643,7 @@ derivative of an *inverse* function.
 
 
 
-- The general product rule:  For any $n$---not just integer values--- we can re-express $x^n$  using $e$:
-$x^n = e^{n \log(x)}$. Now the chain rule can be applied:
+- The general product rule:  For any $n$---not just integer values--- we can re-express $x^n$  using $e$: $x^n = e^{n \log(x)}$. Now the chain rule can be applied:
 
 $$~
 [x^n]' = [e^{n\log(x)}]' = e^{n\log(x)} \cdot (n \frac{1}{x}) = n x^n \cdot \frac{1}{x} = n x^{n-1}.
@@ -843,6 +844,12 @@ f(x) = sin(x)
 f'(pi), f''(pi)
 ```
 
+```
+note("""Starting with v"0.7.0" of Julia, the `ctranspose` function is renamed `adjoint` and moved to a new position, so the defintion would be `LinearAlgebra.adjoint(f::Function) = D(f)`.
+""")
+```
+
+
 ##### Example
 
 Suppose our task is to find a zero of the second derivative of $f(x) =
@@ -984,7 +991,7 @@ expression. This function will be called `diffex` (to distinguish
 itself from the more powerful, built-in, `diff` function). The first
 task for `diffex` is to identify the wrapping, outside function, if any, and
 apply the corresponding rule to the arguments. Julia's `Val` types are
-used ini the following to specialize based on the type of "outside" function. This is
+used in the following to specialize based on the type of "outside" function. This is
 technical, but is exactly what is needed as different types of
 functions need different rules of differentiation.
 
@@ -993,6 +1000,7 @@ function diffex(ex)
     n = length(free_symbols(ex))
     n == 0 && return Sym(0)
     n > 1 && error("This is a simple example, use diff")
+
     _diff(Val{Symbol(funcname(ex))}, args(ex)...)
 end
 ```
@@ -1004,7 +1012,7 @@ thrown, and if one, the outside function is identified.
 For sums, we want the sum rule. This is the sum of the individual derivatives, simply implemented as:
 
 ```
-_diff(::Type{Val{:Add}}, args...) = sum(diffex.(args))
+_diff(::Type{Val{:Add}}, args...) = sum(diffex(ex) for ex in args)
 ```
 
 The product rule is a bit more advanced. We use a formula derived from
@@ -1021,7 +1029,7 @@ end
 
 The power rule has three cases that could be considered depending on
 where the variable exists (in the base, exponent, or both). The
-following avoids this by reexpressing $a^b = exp(b \ln(a))$ and then
+following avoids this by reexpressing $a^b = \exp(b \ln(a))$ and then
 applying the *chain* rule:
 
 ```
@@ -1196,9 +1204,9 @@ This is
 
 ```
 choices = [
-L"1. As this is clearly the analog of the limit of $\sin(h)/h$.",
+L" $1$, as this is clearly the analog of the limit of $\sin(h)/h$.",
 L"Does not exist. The answer is $0/0$ which is undefined",
-L"0. This expression is the derivative of cosine at $0$. The answer follows, as cosine clearly has a tangent line with slope $0$  at $x=0$."]
+L" $0$,  as this expression is the derivative of cosine at $0$. The answer follows, as cosine clearly has a tangent line with slope $0$  at $x=0$."]
 ans = 3
 radioq(choices, ans)
 ```

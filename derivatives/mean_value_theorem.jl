@@ -3,7 +3,8 @@ module mean_value_theorem
 
 using WeavePynb, LaTeXStrings
 using Plots
-gr()
+#gr()
+pyplot()
 fig_size = (600, 400)
 
 

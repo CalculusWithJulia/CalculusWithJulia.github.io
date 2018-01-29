@@ -64,7 +64,7 @@ numbers between the start and end are specified by `a:b`, as in
 But wait, nothing printed? This is because `1:10` is efficiently
 stored. Basically, only the current state and a means to generate the
 next value are kept. To expand the values, you have to ask for them
-to be `collect`ed (though this typically isn't needed):
+to be `collect`ed (though this typically isn't needed in practice):
 
 ```
 collect(1:10)
@@ -85,11 +85,16 @@ collect(100:-7:1)
 ```
 
 In this last example, we said end with 1, but it ended with 2. The
-ending value in the range is a suggestion to go up to, but not exceed. Negative values for `h` lead are used to make decreasing sequences.
+ending value in the range is a suggestion to go up to, but not exceed. Negative values for `h`  are used to make decreasing sequences.
 
 ### The linspace function
 
-For generating points to make graphs, a natural set of points is $n$ evenly spaced points between $a$ and $b$. We can mimic this with the range operation by solving the correct step size. We have $a_0=a$ and $a_0 + (n-1) \cdot h = b$. (Why $n-1$ and not $n$?) Solving yields $h = (b-a)/(n-1)$. To be concrete we might ask for 9 points between $-1$ and $1$:
+For generating points to make graphs, a natural set of points to
+specify is $n$ evenly spaced points between $a$ and $b$. We can mimic
+creating this set with the range operation by solving for the correct
+step size. We have $a_0=a$ and $a_0 + (n-1) \cdot h = b$. (Why $n-1$
+and not $n$?) Solving yields $h = (b-a)/(n-1)$. To be concrete we
+might ask for 9 points between $-1$ and $1$:
 
 ```
 a, b, n = -1, 1, 9
@@ -128,9 +133,7 @@ Floating point roundoff leads to the last value *exceeding* `0.6`, so should it 
 better to have something programmed that hits both `a` and `b` and adjusts `h` accordingly.
 
 Enter the base function `linspace` (*lin*early *space*d) which solves this seemingly
-simple---but not really---task. It asks for `a`, `b`, and `n`, though a
-default value of `n` will be given if a third argument is
-ommitted. Like the range operation, this function returns a generator
+simple---but not really---task. It asks for `a`, `b`, and `n`. Like the range operation, this function returns a generator
 which can be collected to realize the values:
 
 ```
@@ -159,7 +162,7 @@ built-in function `iseven`.
 
 The act of throwing out elements of a collection based on some
 condition is called *filtering*. The `filter` function does this in
-`Julia`. The basic syntax being
+`Julia`; the basic syntax being
 `filter(predicate_function, collection)`.
 The "`predicate_function`" is one that returns either
 `true` or `false`, such as `iseven`. The output of `filter` consists
@@ -187,7 +190,7 @@ filter(isprime, 100:200)
 ```
 
 (The `primes` function will list all primes less than its argument `n`
-in a much more efficient manner.)
+in a more efficient manner.)
 
 Illustrating `filter` at this point is mainly a motivation to
 illustrate that we can start with a regular set of numbers and then
@@ -218,7 +221,7 @@ values in our collection by commas (or semicolons), we will create a
 vector:
 
 ```
-x = [0,2,4,6,8,10]
+x = [0, 2, 4, 6, 8, 10]
 ```
 
 
@@ -268,10 +271,7 @@ To generate other progressions, such as powers of 2, we could do:
 [2^i for i in 1:10]
 ```
 
-To get decreasing powers takes a bit of care, as `2^(-i)` is an error
-for positive `i`s, but `1/2^i` is not. (This is because powers with
-integers are expected to return integers, but division by integers is
-not.) Here then are decreasing powers of 2:
+Here are decreasing powers of 2:
 
 ```
 [1/2^i for i in 1:10]
@@ -303,7 +303,9 @@ done more efficiently. To use this syntax, we just need to drop the
 sum(2^i for i in 1:10)
 ```
 
-### Filtering generated expressions
+(The difference being no intermediate object is created to store the collection of all values specified by the generator.)
+
+### Filtering generated expressions -- the "if" keyword in a generator
 
 Both comprehensions and generators allow for filtering through the keyword `if`. The following shows *one* way to add the prime numbers in $[1,100]$:
 
@@ -312,9 +314,10 @@ sum(p for p in 1:100 if isprime(p))
 ```
 
 
-The value on the other side of `if` should be either `true` or `false`
-for a given `p` (like a predicate function, but here as an
-expression). The value returned by `isprime(p)` is such.
+The value on the other side of `if` should be an expression that
+evaluates to either `true` or `false` for a given `p` (like a
+predicate function, but here specified as an expression). The value
+returned by `isprime(p)` is such.
 
 In this example, we use the fact that `rem(k, 7)` returns the
 remainder found from dividing `k` by `7`, and so is `0` when `k` is a
@@ -395,6 +398,13 @@ To illustrate, this will return a single number
 ```
 rand()
 ```
+
+If the command is run again, it is almost certain that a different value will be returned:
+
+```
+rand()
+```
+
 
 This call will return a vector of 10 such random numbers:
 
@@ -493,18 +503,18 @@ Does scalar multiplication work as expected? In particular, is the result of `2*
 yesnoq(true)
 ```
 
-Does vector addition work? as expected? In particular, is the result of `(1:4) + (2:5)` *basically* the same as `[1,2,3,4] + `[2,3,4,5]`?
+Does vector addition work? as expected? In particular, is the result of `(1:4) + (2:5)` *basically* the same as `[1,2,3,4]` + `[2,3,4,5]`?
 
 ```
 yesnoq(true)
 ```
 
-What if parenthese are left off. Explain the output of `1:4 + 2:5`?
+What if parenthese are left off? Explain the output of `1:4 + 2:5`?
 
 ```
 choices = ["It is just random",
 "Addition happens prior to the use of `:` so this is like `1:(4+2):5`",
-"It gives the correct answer, generator for the vector `[3,5,7,9]`"
+"It gives the correct answer, a generator for the vector `[3,5,7,9]`"
 ]
 ans = 2
 radioq(choices, ans)
@@ -545,7 +555,7 @@ radioq(choices, ans)
 
 ###### Question
 
-Evaluate the expression $x^3 - 2x + 3$ for each of the values -5, -4, $\dots$, 4, 5 using a comprehension. Which of these will work?
+Evaluate the expression $x^3 - 2x + 3$ for each of the values $-5, -4, \dots, 4, 5$ using a comprehension. Which of these will work?
 
 ```
 choices = [q"[x^3 - 2x + 3 for i in -5:5]", q"[x^3 - 2x + 3 for x in -(5:5)]", q"[x^3 - 2x + 3 for x in -5:5]"]
@@ -555,7 +565,7 @@ radioq(choices, ans)
 
 ###### Question
 
-How many prime numbers are there between 1100 and 1200? (Use `filter` and `isprime`)
+How many prime numbers are there between $1100$ and $1200$? (Use `filter` and `isprime`)
 
 ```
 val = length(filter(isprime, 1100:1200))

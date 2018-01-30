@@ -16,4 +16,4 @@ fnames = [
 
 
 
-[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")) for nm in fnames]
+[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md");markdownToHTML("$nm.md")) for nm in fnames]

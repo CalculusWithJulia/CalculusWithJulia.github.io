@@ -315,546 +315,546 @@ discr = b^2 - 4a*c
 <p>When learning calculus, the only common usage of complex numbers arises when solving polynomial equations for roots, or zeros, though they are very important for subsequent work using the concepts of calculus.</p><h2>Type stability</h2><p>One design decision of <code>Julia</code> is that it should be fast. How can <code>Julia</code> do this? In a simple model, <code>Julia</code> is an interface between the user and the computer's processor(s). Processors consume a set of instructions, the user issues a set of commands. <code>Julia</code> is in charge of the translation between the two. Ultimately <code>Julia</code> calls a compiler to create the instructions. A basic premise is the shorter the instructions, the faster they are to process. Shorter instructions can come about by being more explicit about what types of values the instructions concern. Explicitness means, there is no need to reason about what a value can be. When <code>Julia</code> can reason about the type of value involved without having to reason about the values themselves, it can work with the compiler to produce shorter lists of instructions.</p><p>So knowing the type of the output of a function can be a big advantage. In <code>Julia</code> this is known as <em>type stability</em>. In the standard <code>Julia</code> library, this is a primary design consideration.</p><h5>Example: closure</h5><p>To motivate this a bit, we discuss how mathematics can be shaped by a desire to stick to simple ideas.  A desirable algebraic property of a set of numbers and an operation–-<em>closure</em>.  That is, if one takes an operation like <code>&#43;</code> and then uses it to add two numbers in a set, will that result also be in the set? If this is so for any pair of numbers, then the set is closed with respect to the operation addition.</p><p>Lets suppose we start with the <em>natural numbers</em>: $1,2, \dots$. Natural, in that we can easily represent small values in terms of fingers. This set is closed under addition–-as a child learns when counting using their fingers. However, if we started with the odd natural numbers, this set would <em>not</em> be closed under addition–-$3+3=6$.</p><p>The natural numbers are not all the numbers we need, as once a desire for subtraction is included, we find the set isn't closed. There isn't a $0$, needed as $n-n=0$ and there aren't negative numbers. The set of integers are needed for closure under addition and subtraction.</p><p>The integers are also closed under multiplication, which for integer values can be seen as just regrouping into longer additions.</p><p>However, the integers are not closed under division–-even if you put aside the pesky issue of dividing by $0$. For that, the rational numbers must be introduced. So aside from division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.</p><p>Powers are defined for positive integers in a simple enough manner</p>$$~
 a^n=a\cdot a \cdot a \cdots a \text{ (n times); }  a, n \text{ are integers, $n$ is positive}.
 ~$$
-<p>We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as <code>1</code> within <code>Julia</code>). We can extend the above to include negative values of $a$, but what about negative values of $n$? We can't say the integers are closed under powers, as the definition consistent with the rules that $a^{(-n)} = 1/a^n$ requires rational numbers to be defined.</p><p>Well, in the above <code>a</code> could be a rational number, is <code>a^n</code> closed for rational numbers? No again. Though it is fine for $n$ as an integer (save the odd case of $0$, simple definitions like $2^{1/2}$ are not answered within the rationals. For this, we need to introduce the <em>real</em> numbers. It is mentioned that <a href="http://tinyurl.com/bpqbkap">Aristotle</a> hinted at the irrationality of the square root of $2$. To define terms like $a^{1/n}$ for integer values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is used. Such solutions require the irrational numbers to have solutions in general. Hence the need for the real numbers (well, algebraic numbers at least, though once the exponent is no longer a rational number, the full set of real numbers are needed.)</p><p>So, save the pesky cases, the real numbers will be closed under addition, subtraction, multiplication, division, and powers–-provided the base is non-negative.</p><p>Finally for that last case, the complex numbers are introduced to give an answer to $\sqrt{-1}$.</p><hr /><p>How does this apply with <code>Julia</code>?</p><p>The point is, if we restrict our set of inputs, we can get more precise values for the output of basic operations, but to get more general inputs we need to have bigger output sets.</p><p>A similar thing happens in <code>Julia</code>. For addition say, the addition of two integers of the same type will be an integer of that type. This speed consideration is not solely for type stability, but also to avoid checking for overflow.</p><p>Another example, the division of two integers will always be a number of the same type–-floating point, as that is the only type that ensures the answer will always fit within. (The explicit use of rationals notwithstanding.) So even if two integers are the input and their answer <em>could</em> be an integer, in <code>Julia</code> it will be a floating point number, (cf. <code>2/1</code>).</p><p>Hopefully this helps explain the subtle issues around powers: in <code>Julia</code> an integer raised to an integer should be an integer, for speed, though certain cases are special cased, like <code>2^&#40;-1&#41;</code>.  However since a real number raised to a real number makes sense always when the base is non-negative, as long as real numbers are used as outputs, the expressions <code>2.0^&#40;-1&#41;</code> and <code>2^&#40;-1.0&#41;</code> are computed and real numbers (floating points) are returned. For type stability, even though $2.0^1$ could be an integer, a floating point answer is returned.</p><p>As for negative bases, <code>Julia</code> could always return complex numbers, but in addition to this being slower, it would be irksome to users. So user's must opt in. Hence <code>sqrt&#40;-1.0&#41;</code> will be an error, but the more explicit–-but mathematically equivalent–-<code>sqrt&#40;-1.0 &#43; 0im&#41;</code> will not be a domain error, but rather a complex value will be returned.</p><h2>Questions</h2><h6>Question</h6><p>The number created by <code>pi/2</code> is?</p><form name="WeaveQuestion" data-id="G61gv6Et" data-controltype="radio">
+<p>We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as <code>1</code> within <code>Julia</code>). We can extend the above to include negative values of $a$, but what about negative values of $n$? We can't say the integers are closed under powers, as the definition consistent with the rules that $a^{(-n)} = 1/a^n$ requires rational numbers to be defined.</p><p>Well, in the above <code>a</code> could be a rational number, is <code>a^n</code> closed for rational numbers? No again. Though it is fine for $n$ as an integer (save the odd case of $0$, simple definitions like $2^{1/2}$ are not answered within the rationals. For this, we need to introduce the <em>real</em> numbers. It is mentioned that <a href="http://tinyurl.com/bpqbkap">Aristotle</a> hinted at the irrationality of the square root of $2$. To define terms like $a^{1/n}$ for integer values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is used. Such solutions require the irrational numbers to have solutions in general. Hence the need for the real numbers (well, algebraic numbers at least, though once the exponent is no longer a rational number, the full set of real numbers are needed.)</p><p>So, save the pesky cases, the real numbers will be closed under addition, subtraction, multiplication, division, and powers–-provided the base is non-negative.</p><p>Finally for that last case, the complex numbers are introduced to give an answer to $\sqrt{-1}$.</p><hr /><p>How does this apply with <code>Julia</code>?</p><p>The point is, if we restrict our set of inputs, we can get more precise values for the output of basic operations, but to get more general inputs we need to have bigger output sets.</p><p>A similar thing happens in <code>Julia</code>. For addition say, the addition of two integers of the same type will be an integer of that type. This speed consideration is not solely for type stability, but also to avoid checking for overflow.</p><p>Another example, the division of two integers will always be a number of the same type–-floating point, as that is the only type that ensures the answer will always fit within. (The explicit use of rationals notwithstanding.) So even if two integers are the input and their answer <em>could</em> be an integer, in <code>Julia</code> it will be a floating point number, (cf. <code>2/1</code>).</p><p>Hopefully this helps explain the subtle issues around powers: in <code>Julia</code> an integer raised to an integer should be an integer, for speed, though certain cases are special cased, like <code>2^&#40;-1&#41;</code>.  However since a real number raised to a real number makes sense always when the base is non-negative, as long as real numbers are used as outputs, the expressions <code>2.0^&#40;-1&#41;</code> and <code>2^&#40;-1.0&#41;</code> are computed and real numbers (floating points) are returned. For type stability, even though $2.0^1$ could be an integer, a floating point answer is returned.</p><p>As for negative bases, <code>Julia</code> could always return complex numbers, but in addition to this being slower, it would be irksome to users. So user's must opt in. Hence <code>sqrt&#40;-1.0&#41;</code> will be an error, but the more explicit–-but mathematically equivalent–-<code>sqrt&#40;-1.0 &#43; 0im&#41;</code> will not be a domain error, but rather a complex value will be returned.</p><h2>Questions</h2><h6>Question</h6><p>The number created by <code>pi/2</code> is?</p><form name="WeaveQuestion" data-id="4l3nlZZt" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_G61gv6Et" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_4l3nlZZt" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_G61gv6Et" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_4l3nlZZt" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_G61gv6Et" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_4l3nlZZt" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_G61gv6Et" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_4l3nlZZt" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_G61gv6Et" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_4l3nlZZt" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="G61gv6Et_message"></div>
+<div id="4l3nlZZt_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_G61gv6Et']").on("change", function() {
+$("input:radio[name='radio_4l3nlZZt']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#G61gv6Et_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#4l3nlZZt_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#G61gv6Et_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#4l3nlZZt_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2/2</code> is?</p><form name="WeaveQuestion" data-id="QKESXM5R" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2/2</code> is?</p><form name="WeaveQuestion" data-id="sU7ZW2lO" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_QKESXM5R" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_sU7ZW2lO" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_QKESXM5R" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_sU7ZW2lO" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_QKESXM5R" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_sU7ZW2lO" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_QKESXM5R" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_sU7ZW2lO" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_QKESXM5R" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_sU7ZW2lO" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="QKESXM5R_message"></div>
+<div id="sU7ZW2lO_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_QKESXM5R']").on("change", function() {
+$("input:radio[name='radio_sU7ZW2lO']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#QKESXM5R_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#sU7ZW2lO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#QKESXM5R_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#sU7ZW2lO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2//2</code> is?</p><form name="WeaveQuestion" data-id="9iVgB5Zq" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2//2</code> is?</p><form name="WeaveQuestion" data-id="0YqFqoJn" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_9iVgB5Zq" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_0YqFqoJn" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_9iVgB5Zq" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_0YqFqoJn" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_9iVgB5Zq" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_0YqFqoJn" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_9iVgB5Zq" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_0YqFqoJn" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_9iVgB5Zq" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_0YqFqoJn" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="9iVgB5Zq_message"></div>
+<div id="0YqFqoJn_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_9iVgB5Zq']").on("change", function() {
+$("input:radio[name='radio_0YqFqoJn']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#9iVgB5Zq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#0YqFqoJn_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#9iVgB5Zq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#0YqFqoJn_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>1 &#43; 1//2 &#43; 1/3</code> is?</p><form name="WeaveQuestion" data-id="26ivqfl1" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>1 &#43; 1//2 &#43; 1/3</code> is?</p><form name="WeaveQuestion" data-id="ecqQdv1V" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_26ivqfl1" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_ecqQdv1V" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_26ivqfl1" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_ecqQdv1V" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_26ivqfl1" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_ecqQdv1V" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_26ivqfl1" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_ecqQdv1V" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_26ivqfl1" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_ecqQdv1V" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="26ivqfl1_message"></div>
+<div id="ecqQdv1V_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_26ivqfl1']").on("change", function() {
+$("input:radio[name='radio_ecqQdv1V']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#26ivqfl1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#ecqQdv1V_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#26ivqfl1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#ecqQdv1V_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2^3</code> is?</p><form name="WeaveQuestion" data-id="5necAFq2" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2^3</code> is?</p><form name="WeaveQuestion" data-id="4xZNsThT" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5necAFq2" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_4xZNsThT" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5necAFq2" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_4xZNsThT" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5necAFq2" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_4xZNsThT" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5necAFq2" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_4xZNsThT" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_5necAFq2" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_4xZNsThT" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="5necAFq2_message"></div>
+<div id="4xZNsThT_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_5necAFq2']").on("change", function() {
+$("input:radio[name='radio_4xZNsThT']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#5necAFq2_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#4xZNsThT_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#5necAFq2_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#4xZNsThT_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>sqrt&#40;im&#41;</code> is?</p><form name="WeaveQuestion" data-id="6M2M5dGX" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>sqrt&#40;im&#41;</code> is?</p><form name="WeaveQuestion" data-id="dtLitaBf" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_6M2M5dGX" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_dtLitaBf" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_6M2M5dGX" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_dtLitaBf" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_6M2M5dGX" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_dtLitaBf" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_6M2M5dGX" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_dtLitaBf" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_6M2M5dGX" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_dtLitaBf" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="6M2M5dGX_message"></div>
+<div id="dtLitaBf_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_6M2M5dGX']").on("change", function() {
+$("input:radio[name='radio_dtLitaBf']").on("change", function() {
   correct = this.value == 4;
 
   if(correct) {
-     $("#6M2M5dGX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#dtLitaBf_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#6M2M5dGX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#dtLitaBf_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2^&#40;-1&#41;</code> is?</p><form name="WeaveQuestion" data-id="sHGu9DRx" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2^&#40;-1&#41;</code> is?</p><form name="WeaveQuestion" data-id="M6COEpe6" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sHGu9DRx" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_M6COEpe6" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sHGu9DRx" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_M6COEpe6" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sHGu9DRx" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_M6COEpe6" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sHGu9DRx" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_M6COEpe6" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sHGu9DRx" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_M6COEpe6" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="sHGu9DRx_message"></div>
+<div id="M6COEpe6_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_sHGu9DRx']").on("change", function() {
+$("input:radio[name='radio_M6COEpe6']").on("change", function() {
   correct = this.value == 5;
 
   if(correct) {
-     $("#sHGu9DRx_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#M6COEpe6_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#sHGu9DRx_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#M6COEpe6_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The "number" created by <code>1/0</code> is?</p><form name="WeaveQuestion" data-id="Yfciq4up" data-controltype="radio">
+<h6>Question</h6><p>The "number" created by <code>1/0</code> is?</p><form name="WeaveQuestion" data-id="uCEnZNFb" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_Yfciq4up" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_uCEnZNFb" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_Yfciq4up" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_uCEnZNFb" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_Yfciq4up" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_uCEnZNFb" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_Yfciq4up" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_uCEnZNFb" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_Yfciq4up" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_uCEnZNFb" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="Yfciq4up_message"></div>
+<div id="uCEnZNFb_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_Yfciq4up']").on("change", function() {
+$("input:radio[name='radio_uCEnZNFb']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#Yfciq4up_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#uCEnZNFb_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#Yfciq4up_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#uCEnZNFb_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is <code>&#40;2 &#43; 6&#41; &#43; 7</code> equal to  <code>2 &#43; &#40;6 &#43; 7&#41;</code>?</p><form name="WeaveQuestion" data-id="psm3xL9P" data-controltype="radio">
+<h6>Question</h6><p>Is <code>&#40;2 &#43; 6&#41; &#43; 7</code> equal to  <code>2 &#43; &#40;6 &#43; 7&#41;</code>?</p><form name="WeaveQuestion" data-id="S9EtAtvy" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_psm3xL9P" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_S9EtAtvy" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_psm3xL9P" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_S9EtAtvy" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="psm3xL9P_message"></div>
+<div id="S9EtAtvy_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_psm3xL9P']").on("change", function() {
+$("input:radio[name='radio_S9EtAtvy']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#psm3xL9P_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#S9EtAtvy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#psm3xL9P_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#S9EtAtvy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is <code>&#40;2/10 &#43; 6/10&#41; &#43; 7/10</code> equal to <code>2/10 &#43; &#40;6/10 &#43; 7/10&#41;</code>?</p><form name="WeaveQuestion" data-id="qD14lhuM" data-controltype="radio">
+<h6>Question</h6><p>Is <code>&#40;2/10 &#43; 6/10&#41; &#43; 7/10</code> equal to <code>2/10 &#43; &#40;6/10 &#43; 7/10&#41;</code>?</p><form name="WeaveQuestion" data-id="XWZSb4pm" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_qD14lhuM" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_XWZSb4pm" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_qD14lhuM" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_XWZSb4pm" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="qD14lhuM_message"></div>
+<div id="XWZSb4pm_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_qD14lhuM']").on("change", function() {
+$("input:radio[name='radio_XWZSb4pm']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#qD14lhuM_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#XWZSb4pm_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#qD14lhuM_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#XWZSb4pm_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>The following <em>should</em> compute <code>2^&#40;-1&#41;</code>, which if entered directly will return <code>0.5</code>. Does it?</p><pre class="sourceCode julia">a, b = 2, -1
 a^b</pre>
-<form name="WeaveQuestion" data-id="jLDyyqkr" data-controltype="radio">
+<form name="WeaveQuestion" data-id="z8BFEtVM" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_jLDyyqkr" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_z8BFEtVM" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_jLDyyqkr" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_z8BFEtVM" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="jLDyyqkr_message"></div>
+<div id="z8BFEtVM_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_jLDyyqkr']").on("change", function() {
+$("input:radio[name='radio_z8BFEtVM']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#jLDyyqkr_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#z8BFEtVM_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#jLDyyqkr_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#z8BFEtVM_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

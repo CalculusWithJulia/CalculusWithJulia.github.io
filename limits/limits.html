@@ -114,8 +114,8 @@ A = 1/2 + 1/8 + 2 \cdot (1/8)^2 + 4 \cdot (1/8)^3 + \cdots
 ~$$
 <p>This bounds the expression $\sin(x)/x$ between $1$ and $\cos(x)$ and as $x$ gets close to $0$, the value of $\cos(x)$ "clearly" goes to $1$, hence $L$ must be $1$. This is an application of the squeeze theorem.</p><p>To discuss the case of $(1+x)^{1/x}$, Cauchy first resorts to log tables to illustrate an approximate value. We can use <code>Julia</code> to find his approximate value:</p><pre class="sourceCode julia">x = 1/10000
 (1 + x)^(1/x)</pre>
-<pre class="output">
-2.7181459268249255</pre>
+<div class="well well-sm">
+2.7181459268249255</div>
 
 <p>A table can show the progression to this value:</p><pre class="sourceCode julia">f(x) = (1 + x)^(1/x)
 xs = [1/10^i for i in 1:5]
@@ -138,26 +138,26 @@ xs = [1/10^i for i in 1:5]
 
 <p>However, this can be unreliable, as floating point issues may mask the true evaluation. However, as a cheap trick it can work. So, the limit as $x$ goes to $1$ of $\sin(x)/x$ is simply found by evaluation:</p><pre class="sourceCode julia">x = 1
 sin(x) / x</pre>
-<pre class="output">
-0.8414709848078965</pre>
+<div class="well well-sm">
+0.8414709848078965</div>
 
 <p>But at $x=0$ we get an indicator that there is an issue with just evaluating the function:</p><pre class="sourceCode julia">x = 0
 sin(x) / x</pre>
-<pre class="output">
-NaN</pre>
+<div class="well well-sm">
+NaN</div>
 
 <p>The above is really just a heuristic. For some functions this is just not true. For example, the $f(x) = \sqrt{x}$ is only defined on $[0, \infty)$ There is technically no limit at $0$, per se, as the function is not defined around $0$. Other functions jump at values, and will not have a limit, despite having well defined values. The <code>floor</code> function is the function that rounds down to the nearest integer. At integer values there will be a jump, even though the function is defined.</p><h2>Graphical approaches to limits</h2><p>Let's return to the function $f(x) = \sin(x)/x$. This function was studied by Euler as part of his solution to the <a href="http://en.wikipedia.org/wiki/Basel_problem">Basel</a> problem. He knew that near $0$, $\sin(x) \approx x$, so the ratio is close to $1$ if $x$ is near $0$. Hence, the intuition is $\lim_{x \rightarrow 0} \sin(x)/x = 1$, as Cauchy wrote. We can verify this limit graphically two ways. First, a simple graph shows no issue at $0$:</p><pre class="sourceCode julia">using Plots
 f(x) = sin(x)/x
 plot(f, -pi/2, pi/2)</pre>
-    <div id="8a20fcdc-a6f0-46a4-bc9d-4ab9eaa48438" style="width:600px;height:400px;"></div>
+    <div id="577f3624-4cac-4af1-a8f9-0d4c73963d75" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('8a20fcdc-a6f0-46a4-bc9d-4ab9eaa48438');
+    PLOT = document.getElementById('577f3624-4cac-4af1-a8f9-0d4c73963d75');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.6489961359577007,0.7568994010457198,0.8147208158893878,0.8585849730653703,0.9003564769303462,0.9329365419828821,0.9610761923136321,0.984383466384161,0.9963787968263941,0.9999899834295366,0.996519257872929,0.9852808581117809,0.964004526619727,0.9354554857676454,0.8976652965113335,0.8599013567358403,0.8071031890771342,0.7515353712038386,0.6527029850018579],"type":"scatter","name":"y1","yaxis":"y","x":[-1.5401161015060427,-1.2564331181366653,-1.0859514696153307,-0.9418114054777994,-0.7852348947234071,-0.6408852012456286,-0.48612707399280874,-0.3068246067766686,-0.1474817337651674,-0.007752393396776786,0.14459009491381347,0.29783799645504017,0.4672731482129456,0.6284864197693613,0.7961108168818632,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.5401161015060427,1.5308693985542767],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.65,0.7000000000000001,0.75,0.8,0.8500000000000001,0.9,0.9500000000000001],"visible":true,"ticks":"inside","range":[0.6489961359577007,0.9999899834295366],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.65","0.70","0.75","0.80","0.85","0.90","0.95"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>The $y$ values of the graph seem to go to $1$ as the $x$ values get close to 0. (That the graph looks defined at $0$ is due to the fact that the points sampled to graph do not include $0$. Otherwise, since <code>f&#40;0&#41;</code> is <code>NaN</code>, there would be no lines connecting to the value with <code>x&#61;0</code>.)</p><p>We can also verify Euler's intuition through this graph:</p><pre class="sourceCode julia">plot([sin, x -> x], -pi/2,  pi/2)</pre>
-    <div id="119b2c23-33ba-487b-99e0-10146a825b96" style="width:600px;height:400px;"></div>
+    <div id="c37d91f9-b19a-4d85-abcc-6ad06435ff40" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('119b2c23-33ba-487b-99e0-10146a825b96');
+    PLOT = document.getElementById('c37d91f9-b19a-4d85-abcc-6ad06435ff40');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999705852622126,-0.9998823427793041,-0.9997352777425335,-0.9995293988036597,-0.9948430597767467,-0.9851550036675093,-0.9705139385764463,-0.9509934745716481,-0.9212151186366438,-0.884747267341282,-0.8488898446191034,-0.8086251202048149,-0.7601364898831775,-0.7069913233759381,-0.6541513392813404,-0.5979052234581003,-0.4672051572535759,-0.3020330699907742,-0.14694767244280807,-0.0077523157443820665,0.14408681407928978,0.29345407672551554,0.45045343004513017,0.5879210691037161,0.6535752319633152,0.7146410524921377,0.7621727928479266,0.8059123249407538,0.8538569674860573,0.8954704079393756,0.9285388260183279,0.9555228782097791,0.985644294445677,0.9992030260843753,0.9998007366681562],"type":"scatter","name":"y1","yaxis":"y","x":[-1.5631262704726832,-1.5554562141504698,-1.5477861578282561,-1.5401161015060427,-1.4691953556636985,-1.398274609821354,-1.3273538639790097,-1.2564331181366653,-1.171192293875998,-1.0859514696153307,-1.013881437546565,-0.9418114054777994,-0.8635231501006033,-0.7852348947234071,-0.7130600479845179,-0.6408852012456286,-0.48612707399280874,-0.3068246067766686,-0.1474817337651674,-0.007752393396776786,0.14459009491381347,0.29783799645504017,0.4672731482129456,0.6284864197693613,0.7122986183256123,0.7961108168818632,0.8666628356928043,0.9372148545037453,1.023350872735766,1.109486890967787,1.19045728865217,1.271427686336553,1.4011485424454149,1.5308693985542767,1.5508328626745866]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-1.5401161015060427,-1.2564331181366653,-1.0859514696153307,-0.9418114054777994,-0.7852348947234071,-0.6408852012456286,-0.48612707399280874,-0.3068246067766686,-0.1474817337651674,-0.007752393396776786,0.14459009491381347,0.29783799645504017,0.4672731482129456,0.6284864197693613,0.7961108168818632,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767],"type":"scatter","name":"y2","yaxis":"y","x":[-1.5401161015060427,-1.2564331181366653,-1.0859514696153307,-0.9418114054777994,-0.7852348947234071,-0.6408852012456286,-0.48612707399280874,-0.3068246067766686,-0.1474817337651674,-0.007752393396776786,0.14459009491381347,0.29783799645504017,0.4672731482129456,0.6284864197693613,0.7961108168818632,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.5631262704726832,1.5508328626745866],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.5401161015060427,1.5308693985542767],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>That the two are indistinguishable near $0$ makes it easy to see that their ratio should be going towards $1$.</p><p>The graphical approach to limits – plotting $f(x)$ around $c$ and observing if the $y$ values seem to converge to an $L$ value when $x$ get close to $c$ – allows us to gather quickly if a function seems to have a limit at $c$, though the precise value of $L$ may be hard to identify.</p><h5>Example</h5><p>Consider now the following limit</p>$$~
@@ -166,14 +166,14 @@ plot(f, -pi/2, pi/2)</pre>
 <p>Noting that this is a ratio of nice polynomial functions, we first check whether there is anything to do:</p><pre class="sourceCode julia">f(x) = (x^2 - 5x + 6) / (x^2 + x - 6)
 c = 2
 f(c)</pre>
-<pre class="output">
-NaN</pre>
+<div class="well well-sm">
+NaN</div>
 
 <p>The <code>NaN</code> indicates that this function is indeterminate at $c=2$. A quick plot gives us an idea that the limit exists and is roughly $-0.2$:</p><pre class="sourceCode julia">c, delta = 2, 1
 plot(f, c - delta, c + delta)</pre>
-    <div id="afc77c56-9d71-4c47-a8d6-2848a4355a11" style="width:600px;height:400px;"></div>
+    <div id="dd37a56e-8c51-487b-8def-ebf4da06fd1a" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('afc77c56-9d71-4c47-a8d6-2848a4355a11');
+    PLOT = document.getElementById('dd37a56e-8c51-487b-8def-ebf4da06fd1a');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.4927112261582661,-0.4285272685975138,-0.39254372866137915,-0.36350489776915673,-0.3333025369880379,-0.3066202633871903,-0.27917535342782535,-0.24878519511455116,-0.22296478074480727,-0.2011856487735485,-0.17830761293670283,-0.15615634153485194,-0.13261499707281696,-0.1110891194703218,-0.08955806129405479,-0.07206999333043314,-0.05146550518289229,-0.03280605066032682,-0.0042544019188189616],"type":"scatter","name":"y1","yaxis":"y","x":[1.0195316380395762,1.2001298343367457,1.3086618226112479,1.4004242374315314,1.500103940066103,1.5919998090692564,1.6905218928129797,1.8046693886770646,1.9061102122220428,1.99506467308044,2.092048913310639,2.1896095575056242,2.2974753252488083,2.4001068814896866,2.506819887022701,2.5966495073336904,2.706321291972728,2.8094160042574168,2.97458172803212]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[1.25,1.5,1.75,2.0,2.25,2.5,2.75],"visible":true,"ticks":"inside","range":[1.0195316380395762,2.97458172803212],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["1.25","1.50","1.75","2.00","2.25","2.50","2.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.4,-0.30000000000000004,-0.2,-0.1],"visible":true,"ticks":"inside","range":[-0.4927112261582661,-0.0042544019188189616],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.4","-0.3","-0.2","-0.1"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>The graph looks "continuous." In fact, the value $c=2$ is termed a <em>removable singularity</em> as redefining $f(x)$ to be $-0.2$ when $x=2$ results in a "continuous" function.</p><p>As an aside, we can redefine <code>f</code> using the "ternary operator":</p><pre class="sourceCode julia">f(x) = x == 2.0 ? -0.2 :  (x^2 - 5x + 6) / (x^2 + x - 6)</pre>
@@ -189,8 +189,8 @@ f(x) = \frac{(x-2)(x-3)}{(x-2)(x+3)}
 <p>We first define a function and check if there are issues at 25:</p><pre class="sourceCode julia">f(x) = (sqrt(x) - 5) / (sqrt(x-16) - 3)
 c = 25
 f(c)</pre>
-<pre class="output">
-NaN</pre>
+<div class="well well-sm">
+NaN</div>
 
 <p>So yes, an issue of the indeterminate form $0/0$. We investigate numerically by making a set of numbers getting close to $c$. This is most easily done making numbers getting close to $0$ and adding them to or subtracting them from $c$. Some natural candidates are negative powers of 10:</p><pre class="sourceCode julia">hs = [1/10^i for i in 1:8]</pre>
 <pre class="output">
@@ -279,8 +279,8 @@ ys = [(f(c + h) - f(c)) / h for  h in hs]
 ~$$
 <p>We can see that it is indeterminate of the form $0/0$:</p><pre class="sourceCode julia">f(x) = (1 - cos(x)) / x^2
 f(0)</pre>
-<pre class="output">
-NaN</pre>
+<div class="well well-sm">
+NaN</div>
 
 <p>What is the value of $L$, if it exists? A quick attempt numerically yields:</p><pre class="sourceCode julia">c = 0
 xs = c + hs
@@ -315,32 +315,53 @@ y2s = [x^2 for x in xs]
 @vars x real=true
 f(x) = (1 - cos(x)) / x^2
 limit(f(x), x=>0)		# f(x) is a symbolic expression when x is</pre>
+<div class="well well-sm">
+1/2</div>
+
 <p>As a convenience, there is also an "operator" version of <code>limit</code> for univariate functions, where only a function object and <code>c</code> need be specified:</p><pre class="sourceCode julia">limit(f, 0)</pre>
+<div class="well well-sm">
+1/2</div>
+
 <h5>Examples</h5><p>Find the <a href="http://en.wikipedia.org/wiki/L&#37;27H&#37;C3&#37;B4pital&#37;27s_rule">limits</a>:</p>$$~
 \lim_{x \rightarrow 0} \frac{2\sin(x) - \sin(2x)}{x - \sin(x)}, \quad
 \lim_{x \rightarrow 0} \frac{e^x - 1 - x}{x^2}, \quad
 \lim_{\rho \rightarrow 0} \frac{x^{1-\rho} - 1}{1 - \rho}.
 ~$$
 <p>We have for the first:</p><pre class="sourceCode julia">limit( (2sin(x) - sin(2x)) / (x - sin(x)), x=>0)</pre>
+<div class="well well-sm">
+6</div>
+
 <p>The second is similarly done, though here we define a function for variety:</p><pre class="sourceCode julia">f(x) = (exp(x) - 1 - x) / x^2
 limit(f, 0)</pre>
+<div class="well well-sm">
+1/2</div>
+
 <p>Finally, for the third we define a new variable and proceed:</p><pre class="sourceCode julia">@vars rho real=true
 limit( (x^(1-rho) - 1) / (1 - rho), rho=>1)</pre>
+<div class="well well-sm">
+log(x)</div>
+
 <h5>Example, floating point conversion issues</h5><p>The <a href="http://www.cybertester.com/data/gruntz.pdf">algorithm</a> implemented in <code>SymPy</code> for symbolic limits is quite powerful. However, some care must be exercised to avoid undesirable conversions from exact values to floating point values.</p><p>To Illustrate, let's look at the limit as $x$ goes to $\pi/2$ of $f(x) = \cos(x) / (x - \pi/2)$. We follow our past practice:</p><pre class="sourceCode julia">c = pi/2
 f(x) = cos(x) / (x - pi/2)
 f(c)</pre>
-<pre class="output">
-Inf</pre>
+<div class="well well-sm">
+Inf</div>
 
 <p>The value is not <code>NaN</code>, rather <code>Inf</code>. This is because <code>cos&#40;pi/2&#41;</code> is not exactly $0$ as it should be, as <code>pi/2</code> is rounded. This minor difference is important. If we try and correct for this by using <code>PI</code> we have:</p><pre class="sourceCode julia">limit(f(x), x=>PI/2)</pre>
+<div class="well well-sm">
+0</div>
+
 <p>The value is not right, as this simple graph suggests the limit is in fact $-1$:</p><pre class="sourceCode julia">plot(f, c - pi/4, c + pi/4)</pre>
-    <div id="7c2081ce-0e76-4623-bf8a-d9b726343840" style="width:600px;height:400px;"></div>
+    <div id="2c31b91e-2a4e-42c5-a40c-e1304910799f" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('7c2081ce-0e76-4623-bf8a-d9b726343840');
+    PLOT = document.getElementById('2c31b91e-2a4e-42c5-a40c-e1304910799f');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9040577032193639,-0.935509807813326,-0.9515821647398326,-0.9634489298381717,-0.9745058793692251,-0.9829737412141043,-0.9901823988866209,-0.9960820575422987,-0.9990939604662462,-0.9999974958517563,-0.9991291319661618,-0.996307951610052,-0.9909271232659294,-0.9836229377484003,-0.9738004094486707,-0.9638009273475877,-0.949493394389339,-0.9339926517016178,-0.9051726008306975],"type":"scatter","name":"y1","yaxis":"y","x":[0.8007382760418752,0.9425797677265639,1.0278205919872312,1.099890624055997,1.178178879433193,1.2503537261720823,1.327732789798492,1.4173840234065622,1.497055459912313,1.566920130096508,1.6430913742518032,1.7197153250224166,1.8044329009013693,1.8850395366795771,1.9688517352358281,2.039403754046769,2.12553977227879,2.206510169963173,2.336231026072035]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[1.0,1.2000000000000002,1.4000000000000001,1.6,1.8,2.0,2.2],"visible":true,"ticks":"inside","range":[0.8007382760418752,2.336231026072035],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["1.0","1.2","1.4","1.6","1.8","2.0","2.2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.98,-0.96,-0.9400000000000001,-0.92],"visible":true,"ticks":"inside","range":[-0.9999974958517563,-0.9040577032193639],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.98","-0.96","-0.94","-0.92"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>The difference between <code>pi</code> and <code>PI</code> can be significant, and though usually <code>pi</code> is silently converted to <code>PI</code>, it doesn't happen here as the division by <code>2</code> happens first, which turns the symbol into an approximate floating point number. Hence, <code>SymPy</code> is giving the correct answer for the problem it is given, it just isn't the problem we wanted to look at.</p><p>Trying again, being more aware of how <code>pi</code> and <code>PI</code> differ, we have:</p><pre class="sourceCode julia">f(x) = cos(x) / (x - PI/2)
 limit(f(x), x => PI/2)</pre>
+<div class="well well-sm">
+-1</div>
+
 <h2>Rules for limits</h2><p>The <code>limit</code> function doesn't compute limits from the definition, rather it applies some known facts about functions within a set of rules. Some of these rules are the following. Suppose the individual limits of $f$ and $g$ always exist below.</p>    
 <div class="table-responsive">
 <table class="table table-hover">
@@ -376,26 +397,32 @@ limit(f(x), x => PI/2)</pre>
 ~$$
 <p>We know the first factor has a limit found by evaluation: $2/\pi$, so it is really just a constant. The second we can compute:</p><pre class="sourceCode julia">g(x) = cos(PI*x) / (1 - (2x)^2)
 limit(g, 1//2)</pre>
+<div class="well well-sm">
+0.25*pi</div>
+
 <p>Putting together, we would get $1/2$. Which we could have done directly in this case:</p><pre class="sourceCode julia">limit(sin(PI*x)/(PI*x) * g(x), x=>1//2)</pre>
+<div class="well well-sm">
+0.500000000000000</div>
+
 <h5>Example, ratios</h5><p>Consider again the limit of $\cos(\pi x) / (1 - (2x)^2)$ at $c=1/2$. A graph of both the top and bottom functions shows the indeterminate, $0/0$, form:</p><pre class="sourceCode julia">plot(cos(pi*x), 0.4, 0.6)
 plot!(1 - (2x)^2)</pre>
-    <div id="afece7f6-bbbb-4da0-a29c-8de79048f786" style="width:600px;height:400px;"></div>
+    <div id="56faead4-3c07-49b7-9831-937456707314" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('afece7f6-bbbb-4da0-a29c-8de79048f786');
+    PLOT = document.getElementById('56faead4-3c07-49b7-9831-937456707314');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.3031754879698652,0.24865037974889534,0.21548678029409746,0.18725039552397188,0.1564022132436892,0.12782635079922197,0.09707231208193517,0.06132641543348781,0.029492069799348094,0.0015504780581345385,-0.02891398869360676,-0.059532378265964296,-0.09331865386267028,-0.1253665465328604,-0.15855025695869635,-0.1863472668910947,-0.22008087569137033,-0.2515539849504209,-0.3014126696359754],"type":"scatter","name":"y1","yaxis":"y","x":[0.4019531638039576,0.42001298343367455,0.4308661822611248,0.44004242374315317,0.4500103940066103,0.45919998090692565,0.46905218928129794,0.4804669388677064,0.4906110212222043,0.499506467308044,0.509204891331064,0.5189609557505624,0.5297475325248808,0.5400106881489687,0.5506819887022701,0.5596649507333691,0.5706321291972728,0.5809416004257416,0.5974581728032119]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.3475805494417157,0.2892958453666763,0.2530697595620468,0.22173856004725945,0.18697470520551895,0.15425260383851125,0.11845398997396583,0.0760499142531359,0.03753027701051992,0.003104675552710434,-0.035117736654933784,-0.0742927697743363,-0.11845272435583531,-0.16129554675766045,-0.2066960175157022,-0.24558836983925958,-0.29390781326823,-0.3401679232500916,-0.41597373457221765],"type":"scatter","name":"y2","yaxis":"y","x":[0.40386243033930636,0.42151635633547,0.4321256300076267,0.4410956358752432,0.4508395764555506,0.45982262780377847,0.4694534082382495,0.48061161184132456,0.490527706401351,0.4992232277366733,0.5087036801161688,0.5182404774268256,0.528784626373497,0.5388171180367372,0.5492485815902719,0.5580296519539216,0.5687503435753314,0.5788281099018282,0.594973473058299]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.42500000000000004,0.45,0.47500000000000003,0.5,0.525,0.55,0.5750000000000001],"visible":true,"ticks":"inside","range":[0.4019531638039576,0.5974581728032119],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.425","0.450","0.475","0.500","0.525","0.550","0.575"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.4,-0.2,0.0,0.2],"visible":true,"ticks":"inside","range":[-0.41597373457221765,0.3475805494417157],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.4","-0.2","0.0","0.2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>However, following Euler's insight that $\sin(x)/x$ will have a limit at $0$ of $1$ as $\sin(x) \approx x$, and $x/x$ has a limit of $1$ at $c=0$, we can see that $\cos(\pi x)$ looks like $-\pi\cdot (x - 1/2)$ and $(1 - (2x)^2)$ looks like $-4(x-1/2)$ around $x=1/2$:</p><pre class="sourceCode julia">plot(cos(pi*x), 0.4, 0.6)
 plot!(-pi*(x - 1/2))</pre>
-    <div id="9901777c-cb2a-47c0-9e9f-6f564cb88879" style="width:600px;height:400px;"></div>
+    <div id="12f4d5c2-67a7-4217-a937-ebf6c120549a" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('9901777c-cb2a-47c0-9e9f-6f564cb88879');
+    PLOT = document.getElementById('12f4d5c2-67a7-4217-a937-ebf6c120549a');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.3031754879698652,0.24865037974889534,0.21548678029409746,0.18725039552397188,0.1564022132436892,0.12782635079922197,0.09707231208193517,0.06132641543348781,0.029492069799348094,0.0015504780581345385,-0.02891398869360676,-0.059532378265964296,-0.09331865386267028,-0.1253665465328604,-0.15855025695869635,-0.1863472668910947,-0.22008087569137033,-0.2515539849504209,-0.3014126696359754],"type":"scatter","name":"y1","yaxis":"y","x":[0.4019531638039576,0.42001298343367455,0.4308661822611248,0.44004242374315317,0.4500103940066103,0.45919998090692565,0.46905218928129794,0.4804669388677064,0.4906110212222043,0.499506467308044,0.509204891331064,0.5189609557505624,0.5297475325248808,0.5400106881489687,0.5506819887022701,0.5596649507333691,0.5706321291972728,0.5809416004257416,0.5974581728032119]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.30202508258001703,0.2465636383634513,0.21323362213508035,0.18505351759871913,0.15444202545460994,0.1262209373321974,0.09596494827092683,0.06091041780424722,0.029758087982166392,0.002440302035984443,-0.02734341751214653,-0.057304149882080546,-0.09042957075129987,-0.12194757285773616,-0.1547189821237105,-0.18230552826880753,-0.2159855743080299,-0.247645810963947,-0.2983679652458546],"type":"scatter","name":"y2","yaxis":"y","x":[0.40386243033930636,0.42151635633547,0.4321256300076267,0.4410956358752432,0.4508395764555506,0.45982262780377847,0.4694534082382495,0.48061161184132456,0.490527706401351,0.4992232277366733,0.5087036801161688,0.5182404774268256,0.528784626373497,0.5388171180367372,0.5492485815902719,0.5580296519539216,0.5687503435753314,0.5788281099018282,0.594973473058299]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.42500000000000004,0.45,0.47500000000000003,0.5,0.525,0.55,0.5750000000000001],"visible":true,"ticks":"inside","range":[0.4019531638039576,0.5974581728032119],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.425","0.450","0.475","0.500","0.525","0.550","0.575"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.30000000000000004,-0.2,-0.1,0.0,0.1,0.2,0.30000000000000004],"visible":true,"ticks":"inside","range":[-0.3014126696359754,0.3031754879698652],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.3","-0.2","-0.1","0.0","0.1","0.2","0.3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <pre class="sourceCode julia">plot(1 - (2x)^2, 0.4, 0.6)
 plot!(-4(x - 1/2))</pre>
-    <div id="d3da7d4d-b4ca-45ad-8ec0-860dd1bcbacf" style="width:600px;height:400px;"></div>
+    <div id="132d753d-82c7-44a8-b2fc-a07fef568a3d" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('d3da7d4d-b4ca-45ad-8ec0-860dd1bcbacf');
+    PLOT = document.getElementById('132d753d-82c7-44a8-b2fc-a07fef568a3d');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.35373461643195525,0.29435637498857536,0.2574173319348928,0.2254506612250049,0.1899625811440614,0.15654151014031648,0.11996017492168576,0.07660608262038271,0.037203303421223244,0.0019731564697519355,-0.03715848542192268,-0.0772818943741489,-0.12252979286479859,-0.16644617326049094,-0.21300261072434878,-0.25289942831753787,-0.30248410748885224,-0.3499725724208882,-0.42782507299741046],"type":"scatter","name":"y1","yaxis":"y","x":[0.4019531638039576,0.42001298343367455,0.4308661822611248,0.44004242374315317,0.4500103940066103,0.45919998090692565,0.46905218928129794,0.4804669388677064,0.4906110212222043,0.499506467308044,0.509204891331064,0.5189609557505624,0.5297475325248808,0.5400106881489687,0.5506819887022701,0.5596649507333691,0.5706321291972728,0.5809416004257416,0.5974581728032119]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.3845502786427746,0.3139345746581199,0.27149747996949314,0.2356174564990272,0.19664169417779753,0.1607094887848861,0.12218636704700203,0.07755355263470176,0.03788917439459594,0.0031070890533066997,-0.034814720464675375,-0.07296190970730221,-0.11513850549398796,-0.1552684721469486,-0.1969943263610876,-0.2321186078156865,-0.27500137430132554,-0.3153124396073128,-0.3798938922331958],"type":"scatter","name":"y2","yaxis":"y","x":[0.40386243033930636,0.42151635633547,0.4321256300076267,0.4410956358752432,0.4508395764555506,0.45982262780377847,0.4694534082382495,0.48061161184132456,0.490527706401351,0.4992232277366733,0.5087036801161688,0.5182404774268256,0.528784626373497,0.5388171180367372,0.5492485815902719,0.5580296519539216,0.5687503435753314,0.5788281099018282,0.594973473058299]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.42500000000000004,0.45,0.47500000000000003,0.5,0.525,0.55,0.5750000000000001],"visible":true,"ticks":"inside","range":[0.4019531638039576,0.5974581728032119],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.425","0.450","0.475","0.500","0.525","0.550","0.575"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.4,-0.2,0.0,0.2],"visible":true,"ticks":"inside","range":[-0.42782507299741046,0.3845502786427746],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.4","-0.2","0.0","0.2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>So around $c=1/2$ the ratio should look like $-\pi (x-1/2) / ( -4(x -	 1/2)) = \pi/4$, which indeed it does, as that is the limit.</p><p>This is the basis of L'Hôpital's rule, which we will return to once the derivative is discussed.</p><h2>Limits from the definition</h2><p>The formal definition of a limit involves clarifying what it means for $f(x)$ to be "close to $L$" when $x$ is "close to $c$". These are quantified by the inequalities $0 < \lvert x-c\rvert < \delta$ and the $\lvert f(x) - L\rvert < \epsilon$. The second does not have the restriction that it is greater than $0$, as indeed $f(x)$ can equal $L$. The order is important: it says for any idea of close for $f(x)$ to $L$, an idea of close must be found for $x$ to $c$.</p><p>The key is identifying a value for $\delta$  for a given value of $\epsilon$.</p><p>A simple case is the linear case. Consider the function $f(x) = 3x + 2$. Verify that the limit at $c=1$ is $5$.</p><p>We show "numerically" that $\delta = \epsilon/3$.</p><pre class="sourceCode julia">f(x) = 3x + 2
@@ -405,137 +432,137 @@ delta = epsilon / 3
 xs = c + delta * rand(100)       # 100 numbers, c < x < c + delta
 as = [abs(f(x) - L) < epsilon for x in xs]
 all(as)                          # are all the as true?</pre>
-<pre class="output">
-true</pre>
+<div class="well well-sm">
+true</div>
 
 <p>These lines produce a random $\epsilon$, the resulting $\delta$, and then verify for 100 numbers within $(c, c+\delta)$ that the inequality $\lvert f(x) - L \rvert < \epsilon$ holds for each. Running them again and again should always produce <code>true</code> if $L$ is the limit and $\delta$ is chosen properly.</p><p>(Of course, we should also verify values to the left of $c$.)</p><p>If there is worry about the possibility that <code>epsilon &#61;&#61; 0</code>, we could replace its definition with <code>epsilon &#61; max&#40;eps&#40;&#41;, rand&#40;&#41;&#41;</code>.</p><p>In this case, $\delta$ is easy to guess, as the function is linear and has slope $3$. This basically says the $y$ scale is 3 times the $x$ scale. For non-linear functions, finding $\delta$ for a given $\epsilon$ can be a challenge. For the function $f(x) = x^3$, illustrated below, a value of $\delta=\epsilon^{1/3}$ is used for $c=0$:</p><p><div class="well well-sm"> <figure> <img src="data:image/gif;base64,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"/> <figcaption><div class="markdown"><p>Demonstration of $\epsilon$-$\delta$ proof of $\lim_{x \rightarrow 0} x^3 = 0$. For any $\epsilon>0$ (the orange lines) there exists a $\delta>0$ (the red lines of the box) for which the function $f(x)$ does not leave the top or bottom of the box (except possibly at the edges). In this example $\delta^3=\epsilon$.</p> </div></figcaption> </figure> </div></p><h2>Questions</h2><h6>Question</h6><p>From the graph, find the limit:</p>$$~
 L = \lim_{x\rightarrow 1}  \frac{x^2−3x+2}{x^2−6x+5}
 ~$$
-    <div id="add514dc-7c1b-4766-8ace-1f93f129aa97" style="width:600px;height:400px;"></div>
+    <div id="5d39f336-09f9-409b-87cb-d856090176dc" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('add514dc-7c1b-4766-8ace-1f93f129aa97');
+    PLOT = document.getElementById('5d39f336-09f9-409b-87cb-d856090176dc');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.3976470118928468,0.3749830940301163,0.36052361041475134,0.347765934325048,0.3333179344493416,0.31941926722862646,0.3038600207768017,0.2849192881478309,0.26720059515126554,0.2509242334488676,0.2323343016707353,0.21267910853877559,0.18974206425738402,0.16664192484652388,0.14118370568557756,0.11851570784010236,0.08916434602790059,0.05973326387798979,0.008401572834868639],"type":"scatter","name":"y1","yaxis":"y","x":[0.019531638039576263,0.20012983433674567,0.30866182261124775,0.4004242374315315,0.5001039400661028,0.5919998090692563,0.6905218928129796,0.8046693886770646,0.9061102122220429,0.99506467308044,1.092048913310639,1.1896095575056242,1.2974753252488085,1.4001068814896869,1.506819887022701,1.5966495073336904,1.7063212919727282,1.809416004257417,1.9745817280321198]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.25,0.5,0.75,1.0,1.25,1.5,1.75],"visible":true,"ticks":"inside","range":[0.019531638039576263,1.9745817280321198],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.25","0.50","0.75","1.00","1.25","1.50","1.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.05,0.1,0.15000000000000002,0.2,0.25,0.30000000000000004,0.35000000000000003],"visible":true,"ticks":"inside","range":[0.008401572834868639,0.3976470118928468],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.05","0.10","0.15","0.20","0.25","0.30","0.35"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<form name='WeaveQuestion' data-id='jFEBMf7B' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='QRHq3kGZ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="jFEBMf7B" type="number" class="form-control">
+<input id="QRHq3kGZ" type="number" class="form-control">
 
 </div>
   
-<div id='jFEBMf7B_message'></div>
+<div id='QRHq3kGZ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#jFEBMf7B').on('change', function() {
+$('#QRHq3kGZ').on('change', function() {
   correct = Math.abs(this.value - 0.25) <= 0.1;
 
   if(correct) {
-     $('#jFEBMf7B_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#QRHq3kGZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#jFEBMf7B_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#QRHq3kGZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>From the graph, find the limit $L$:</p>$$~
 L = \lim_{x \rightarrow -2} \frac{x}{x+1} \frac{x^2}{x^2 + 4}
 ~$$
-    <div id="7b30cc31-10b9-4308-a001-d69b93a19b9e" style="width:600px;height:400px;"></div>
+    <div id="d00daad0-504e-46b1-940f-0119666d3edb" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('7b30cc31-10b9-4308-a001-d69b93a19b9e');
+    PLOT = document.getElementById('d00daad0-504e-46b1-940f-0119666d3edb');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.0377755150842634,1.0311240597996607,1.0268921958112431,1.0232135581119555,1.0191602738438046,1.0154290267576216,1.011522976136155,1.0072881715232054,1.0040070423067446,1.0017352091558254,1.0002313399394973,1.0002226161235759,1.0028309467269696,1.0091443504068924,1.0217960765761043,1.039804972343404,1.0556124543408187,1.0764598946438588,1.1021663787994085,1.1358729837866375,1.1706439549768493,1.2147586688016454,1.2715796728098485,1.3462531866142673,1.3597983747973466,1.37399127062439,1.3888744761866494],"type":"scatter","name":"y1","yaxis":"y","x":[-2.9829098167153707,-2.8248863949553478,-2.729920905215158,-2.6496287922474098,-2.56240905244216,-2.4820001670644007,-2.395793343788643,-2.2959142849075684,-2.2071535643057123,-2.129318411054615,-2.044457200853191,-1.9590916371825788,-1.8647090904072925,-1.7749064786965238,-1.6815325988551366,-1.6029316810830212,-1.554950275303442,-1.5069688695238628,-1.4618649328993114,-1.4167609962747603,-1.380630994199044,-1.3445009921233277,-1.3083709900476115,-1.2722409879718952,-1.2666807409789214,-1.2611204939859477,-1.2555602469929739]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.7,-2.4000000000000004,-2.1000000000000005,-1.8000000000000003,-1.5000000000000002],"visible":true,"ticks":"inside","range":[-2.9829098167153707,-1.2555602469929739],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2.7","-2.4","-2.1","-1.8","-1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[1.05,1.1,1.1500000000000001,1.2000000000000002,1.25,1.3,1.35],"visible":true,"ticks":"inside","range":[1.0002226161235759,1.3888744761866494],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["1.05","1.10","1.15","1.20","1.25","1.30","1.35"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<form name='WeaveQuestion' data-id='1tJel3Qq' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='9VsGSElz' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="1tJel3Qq" type="number" class="form-control">
+<input id="9VsGSElz" type="number" class="form-control">
 
 </div>
   
-<div id='1tJel3Qq_message'></div>
+<div id='9VsGSElz_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#1tJel3Qq').on('change', function() {
+$('#9VsGSElz').on('change', function() {
   correct = Math.abs(this.value - 1.0) <= 0.1;
 
   if(correct) {
-     $('#1tJel3Qq_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#9VsGSElz_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#1tJel3Qq_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#9VsGSElz_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Graphically investigate the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{e^x - 1}{x}.
 ~$$
-<p>What is the value of $L$?</p>    <div id="d1120d78-eb9e-4de2-9ac5-8f64688581c5" style="width:600px;height:400px;"></div>
+<p>What is the value of $L$?</p>    <div id="8f3016f5-6f5c-40f0-b0d6-94473d3911a8" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('d1120d78-eb9e-4de2-9ac5-8f64688581c5');
+    PLOT = document.getElementById('8f3016f5-6f5c-40f0-b0d6-94473d3911a8');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.6373123964785365,0.6883775860184125,0.7219255295329693,0.7521242789092157,0.786976185061495,0.8211301258909615,0.8600613645897767,0.9083949219866229,0.9544904729849071,0.9975363911116318,1.0474697284051857,1.101091897132166,1.1646517276928865,1.2296318243187594,1.3022452540439153,1.3676773560381317,1.4533365429787082,1.540117312576805,1.6930940592004782],"type":"scatter","name":"y1","yaxis":"y","x":[-0.9804683619604238,-0.7998701656632544,-0.6913381773887523,-0.5995757625684686,-0.49989605993389713,-0.4080001909307437,-0.3094781071870203,-0.19533061132293544,-0.09388978777795712,-0.004935326919559979,0.09204891331063893,0.1896095575056242,0.29747532524880854,0.4001068814896869,0.5068198870227011,0.5966495073336903,0.7063212919727282,0.809416004257417,0.9745817280321198]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.75,-0.5,-0.25,0.0,0.25,0.5,0.75],"visible":true,"ticks":"inside","range":[-0.9804683619604238,0.9745817280321198],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.75","-0.50","-0.25","0.00","0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.8,1.0,1.2000000000000002,1.4000000000000001,1.6],"visible":true,"ticks":"inside","range":[0.6373123964785365,1.6930940592004782],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.8","1.0","1.2","1.4","1.6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<form name='WeaveQuestion' data-id='laMjQtL5' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='AqmiyfYP' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="laMjQtL5" type="number" class="form-control">
+<input id="AqmiyfYP" type="number" class="form-control">
 
 </div>
   
-<div id='laMjQtL5_message'></div>
+<div id='AqmiyfYP_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#laMjQtL5').on('change', function() {
+$('#AqmiyfYP').on('change', function() {
   correct = Math.abs(this.value - 1) <= 0.1;
 
   if(correct) {
-     $('#laMjQtL5_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#AqmiyfYP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#laMjQtL5_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#AqmiyfYP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Graphically investigate the limit</p>$$~
 \lim_{x \rightarrow 0} \frac{\cos(x) - 1}{x}.
 ~$$
-<p>The limit exists, what is the value?</p><form name='WeaveQuestion' data-id='5eADzEqh' data-controltype='numeric'>
+<p>The limit exists, what is the value?</p><form name='WeaveQuestion' data-id='H3dH1JaM' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="5eADzEqh" type="number" class="form-control">
+<input id="H3dH1JaM" type="number" class="form-control">
 
 </div>
   
-<div id='5eADzEqh_message'></div>
+<div id='H3dH1JaM_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#5eADzEqh').on('change', function() {
+$('#H3dH1JaM').on('change', function() {
   correct = Math.abs(this.value - 0) <= 0.01;
 
   if(correct) {
-     $('#5eADzEqh_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#H3dH1JaM_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#5eADzEqh_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#H3dH1JaM_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
@@ -545,43 +572,43 @@ $('#5eADzEqh').on('change', function() {
 <p>Factoring out $e^x$ from the top and using rules of limits this becomes, </p>$$~
 L = e^x \lim_{h \rightarrow 0} \frac{e^h - 1}{h}.
 ~$$
-<p>What is $L$?</p><form name="WeaveQuestion" data-id="CMV8HsjH" data-controltype="radio">
+<p>What is $L$?</p><form name="WeaveQuestion" data-id="CijvC0uF" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CMV8HsjH" value="1"><div class="markdown">$1$
+      <input type="radio" name="radio_CijvC0uF" value="1"><div class="markdown">$1$
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CMV8HsjH" value="2"><div class="markdown">$e^x$
+      <input type="radio" name="radio_CijvC0uF" value="2"><div class="markdown">$0$
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CMV8HsjH" value="3"><div class="markdown">$0$
+      <input type="radio" name="radio_CijvC0uF" value="3"><div class="markdown">$e^x$
 </div>
     </label>
     </div>
     
 
 
-<div id="CMV8HsjH_message"></div>
+<div id="CijvC0uF_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_CMV8HsjH']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_CijvC0uF']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#CMV8HsjH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#CijvC0uF_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#CMV8HsjH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#CijvC0uF_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -592,57 +619,57 @@ $("input:radio[name='radio_CMV8HsjH']").on("change", function() {
 <p>The answer should depend on $x$, though it is possible it is a constant.  Using a double angle formula and the rules of limits, this can be written as:</p>$$~
 L = \cos(x) \lim_{h \rightarrow 0}\frac{\sin(h)}{h} + \sin(x) \lim_{h \rightarrow 0}\frac{\cos(h)-1}{h}.
 ~$$
-<p>Using the last result, what is the value of $L$?</p><form name="WeaveQuestion" data-id="P7qqH12I" data-controltype="radio">
+<p>Using the last result, what is the value of $L$?</p><form name="WeaveQuestion" data-id="cF42hBXt" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_P7qqH12I" value="1"><div class="markdown"><p>0</p>
+      <input type="radio" name="radio_cF42hBXt" value="1"><div class="markdown"><p>0</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_P7qqH12I" value="2"><div class="markdown">$\sin(x)$
+      <input type="radio" name="radio_cF42hBXt" value="2"><div class="markdown"><p>1</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_P7qqH12I" value="3"><div class="markdown">$\sin(h)/h$
+      <input type="radio" name="radio_cF42hBXt" value="3"><div class="markdown">$\sin(x)$
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_P7qqH12I" value="4"><div class="markdown">$\cos(x)$
+      <input type="radio" name="radio_cF42hBXt" value="4"><div class="markdown">$\sin(h)/h$
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_P7qqH12I" value="5"><div class="markdown"><p>1</p>
+      <input type="radio" name="radio_cF42hBXt" value="5"><div class="markdown">$\cos(x)$
 </div>
     </label>
     </div>
     
 
 
-<div id="P7qqH12I_message"></div>
+<div id="cF42hBXt_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_P7qqH12I']").on("change", function() {
-  correct = this.value == 4;
+$("input:radio[name='radio_cF42hBXt']").on("change", function() {
+  correct = this.value == 5;
 
   if(correct) {
-     $("#P7qqH12I_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#cF42hBXt_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#P7qqH12I_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#cF42hBXt_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -650,48 +677,48 @@ $("input:radio[name='radio_P7qqH12I']").on("change", function() {
 <h6>Question <small>Squeeze theorem</small></h6><p>Let's look at the function $f(x) = x \sin(1/x)$. A graph around $0$ can be made with:</p><pre class="sourceCode julia">f(x) = x == 0 ? NaN : x * sin(1/x)
 c, delta = 0, 1/4
 plot([f, abs, x -> -abs(x)], c - delta, c + delta)</pre>
-    <div id="166bded7-3673-4fbd-8269-5b875b3162cb" style="width:600px;height:400px;"></div>
+    <div id="7359b30e-a3b8-42f7-b678-839faf10df21" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('166bded7-3673-4fbd-8269-5b875b3162cb');
+    PLOT = document.getElementById('7359b30e-a3b8-42f7-b678-839faf10df21');
     Plotly.plot(PLOT, [{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.19143198752496854,-0.19358887549862058,-0.19566895220255212,-0.19766984206495142,-0.20582075985452697,-0.2119769846451182,-0.21587367461518647,-0.21723362669970617,-0.21687358373728788,-0.2157726150504252,-0.21389539509059358,-0.21120733003163833,-0.20767500551761855,-0.20326671046811648,-0.1979530461233119,-0.19170763009575406,-0.1829366806363918,-0.1727575041196165,-0.1611528235753368,-0.14812105795956104,-0.133679859899754,-0.11787012418957231,-0.10076047464052659,-0.08245221387646778,-0.04917737223641475,-0.013864322551656103,0.022078837500441748,0.05673808278835926,0.07417388166448544,0.09005564415716849,0.10388347003108689,0.11512676593209023,0.11960857498196119,0.12323926783664753,0.12595169768003417,0.1276809181082159,0.12836534728971194,0.12794809650983419,0.1263784717941466,0.12361365473259908,0.11997716347817317,0.1152794979260122,0.10951351868567473,0.10268362564000183,0.09480740176723862,0.08591731485360951,0.07606244705026771,0.06531021252884062,0.041484760409953345,0.015405951291401451,-0.011582950486488231,-0.037752336237676334,-0.05073151972417241,-0.06252925391441125,-0.07277921061781774,-0.08111219305032696,-0.08716931010767767,-0.09061825842952491,-0.09127282283051087,-0.09117279683364762,-0.0902932977444761,-0.08861529043884013,-0.08612642636564649,-0.08282190325008715,-0.07870533387978275,-0.073789609749777,-0.06809774247203619,-0.0616636627357793,-0.05453295326473786,-0.046763488701394275,-0.029604191044787707,-0.010909958612545526,0.00838522415827301,0.027154957406432232,0.03728983316804719,0.04655754669262399,0.05469130154389406,0.06142890147021621,0.06652183914134771,0.06974570793881167,0.07091179411704578,0.06987959684208975,0.0665698904289436,0.06097778710613855,0.05318508276910296,0.043370978701091106,0.01892639141441158,-0.008781800855648492,-0.022310160902809233,-0.03465209879705876,-0.045046835114458283,-0.05276146320757769,-0.05540629195213675,-0.05714840781952025,-0.057930906654875054,-0.05771062207367628,-0.05646029429186421,-0.054170655378379014,-0.0508523634797964,-0.046537710060844194,-0.03516462866254024,-0.020784677692433327,-0.004516427772866357,0.012175445734203205,0.02757426171528602,0.039867117909179434,0.04430820863452087,0.047361619201056866,0.04887826677771076,0.04875124881651428,0.04721251021510566,0.044330327294083045,0.04014491737235911,0.03473994204615831,0.020831636239446175,0.0041678080181329616,-0.013062585516706526,-0.02826404535497033,-0.034268612006133466,-0.038798960350142665,-0.04159907420898966,-0.04247542227734618,-0.041314070603978986,-0.038096003549923055,-0.032909342645093875,-0.025957052379679477,-0.008144949632472288,0.01154331370936065,0.020572021468870206,0.028197749388902297,0.03382285924826023,0.0369493641917584,0.037460442384380704,0.037232225207839344,0.0362535765841192,0.03452858867860047,0.028937251447943735,0.02082211707152534,0.01081346202122933,-0.00021832391092559285,-0.011220035968874966,-0.021044586525222456,-0.02515966011713137,-0.028568158680545318,-0.031155773366197296,-0.0328272639189319,-0.033510812530306265,-0.03316201873615561,-0.03176734891183871,-0.029346847436790655,-0.025955917046429886,-0.021685984620799136,-0.01666388693027656,-0.011049839728275909,0.0011691664711289656,0.013195110812984908,0.01853157174078582,0.023102017570746994,0.02669333858534102,0.02912435554000503,0.030256704850023925,0.03000480024896265,0.028344227003662053,0.025317906646494158,0.02103938842702526,0.01569268520499013,0.009528181915185131,0.002854307545433575,-0.010577722807464064,-0.02155586525851998,-0.025221394624474945,-0.027290419230445537,-0.02758311377009127,-0.026029256447349238,-0.022682901575381224,-0.01772952312052236,-0.01148391686125028,-0.0043776165482486045,0.003064737409248862,0.010259752158830883,0.016608983517792403,0.021549457482662005,0.02460733280369437,0.025449995621388062,0.023931118930370993,0.020122892694803173,0.014329889242338153,0.007079999593352472,-0.0009103689192847263,-0.008797117833131344,-0.015692417883591776,-0.020765356042696827,-0.02334926804952255,-0.02304273411121831,-0.02034138364773981,-0.015575719110409418,-0.009183217321897977,-0.001804450365895422,0.005770511982013649,0.012680239995280125,0.018088777359355053,0.021291698346391597,0.021818783570294327,0.019518673626509896,0.01461053580590106,0.007689686806236307,-0.0003214429432312471,-0.008278686175521409,-0.014970630147470172,-0.019305151708600168,-0.020501708297987614,-0.018256454899194266,-0.012845253914339933,-0.005134054105926587,0.003522091024898134,0.011491273599871149,0.017164422494155476,0.01929397901137837,0.017303229136656176,0.011489270247752722,0.0030508179656901515,-0.006099621559162877,-0.013732656539866349,-0.017843069493435934,-0.01721397074257567,-0.011846998172537473,-0.0031038095678148072,0.006543213824070841,0.01415098090612829,0.01720395532549902,0.014513785808046544,0.00679726080831827,-0.003351545803627802,-0.012213663270396483,-0.016274234208780637,-0.013694271907199455,-0.00531137607739723,0.005392115421645718,0.013569703524270053,0.01518711860492417,0.009172993431291658,-0.0016229458619187048,-0.011481166465563254,-0.014726119415404724,-0.009153185586708162,0.0021088470265870317,0.011926826195864413,0.01352684426541292,0.005432148874903757,-0.006677908489577555,-0.01345174721240325,-0.009098578948207363,0.003068863633345764,0.012346222367006414,0.009807237774455503,-0.0024797860138449433,-0.012031148931115176,-0.008240939738331484,0.005015614390536151,0.011995156937431252,0.0035629502624788287,-0.00950771123371988,-0.008926283309499744,0.004891538987782619,0.01077492383086672,-0.0011800024730127877,-0.010789303237150808,-0.000510436080263035,0.01042813279095484,2.0287769050446278e-5,-0.01004063172628613,0.0026218091069328633,0.008584655062756274,-0.006763237325423116,-0.003887124958165801,0.009225648810342005,-0.004465739655513066,-0.0039722620846994626,0.008507097793552342,-0.007095826150627833,0.0022907900787713354,0.0026014047935564305,-0.005825859054447274,0.007268421538291524,-0.007592424170370596,0.007486722227326356,-0.007304941402773787,0.00694261535308755,-0.005802083439353098,0.0029855559395328313,0.001744902436359251,-0.0060003190387898616,0.00445226690206868,0.0034994214235942187,-0.00450409549016832,-0.005108794373316573,-0.0012556576574283315,0.001551374846640845,0.002163293105384714,0.0007015034640682986,-0.002819657447037656,-0.004470834030847443,0.0025669489191137884,0.00016682313169066616,0.00021244500695086362,-0.0032958107547214886,0.0012445201548082097,0.0019321962732953043,-0.0015119925601244388,-0.0008860359406626878,-0.0011878179513201586,-0.0022104415534213145,-0.00018754235059321946,-5.8725988395775854e-5,0.00027387030220222554,-0.000772062434877241,0.0017503354688846384,0.0024248436754350324,0.002931996656898907,0.0010158490120357935,0.001073385164304931,0.0024926200312417037,0.00032326546420690625,0.0024837472456926213,0.0031873162027878086,-0.004396262761923178,0.004274015078540167,-0.000989484292561024,-0.004942191923388721,-0.002167723254460707,0.00016077084794334653,0.00017701640939313409,-0.0021351453541607985,-0.005473196646502844,-0.004652898638622515,0.003438563872513021,0.004937461058313419,-0.006028131700385871,0.0012149447199511312,0.0036599044975181723,-0.006356537895383838,0.007359594243398126,-0.0076676792656302705,0.00785727787524664,-0.007940302540702158,0.00742475147060422,-0.005494182551019454,0.0015217119027558697,0.003967272252230901,-0.008439239535246433,0.008080402781800103,-0.0012528090942099522,-0.007458295432268592,0.008847179992395414,0.0005122161900453335,-0.009795692947203415,0.004938068022316008,0.008210111572551276,-0.007584628615395621,-0.007244930543763281,0.008266179106453924,0.00794027620487567,-0.007251094688637896,-0.010025678889030849,0.003916129370358354,0.011968984130189472,0.0022362683780956555,-0.010857416685425624,-0.009569512613273348,0.003942271865965951,0.012887037775706165,0.007175031891129647,-0.006416731605284675,-0.013537906533336294,-0.007452746362101646,0.005641955653889026,0.013858097580191254,0.010463262932432783,-0.0013521071154655665,-0.012224126801319887,-0.014281972647513162,-0.006455308385910761,0.005684647243437963,0.01431258506183501,0.014381272638961445,0.0061952842065405925,-0.005426197644494216,-0.014257566710691902,-0.015987187415285774,-0.010068138313485773,0.00048575486725963886,0.010864009093871195,0.016715220017656754,0.015861439820521454,0.008890867225872364,-0.0013851639430993213,-0.011197670970302956,-0.017226741768642296,-0.017646749658617556,-0.012536236941192278,-0.0036400388813254,0.006327584275808946,0.014554670103391848,0.018904103478536494,0.01839727114890085,0.013334498636108522,0.005085446653856983,-0.0043433200379662685,-0.012825450904962217,-0.018586905507033083,-0.020539042411542422,-0.01842678617459053,-0.012792857063301489,-0.004795270282191444,0.004063803721515814,0.012234468246427153,0.018384995637817807,0.02159718271121031,0.02147045609414233,0.01813264190313818,0.012170327283444658,0.004501575570728257,-0.0037819092551769754,-0.011576614129172522,-0.017942371434275087,-0.022087225916485643,-0.023582776057115996,-0.022337214894559733,-0.018575178454546943,-0.012784083152256076,-0.0056378969790381005,0.0020900411941725764,0.009614316784629828,0.01621583053943338,0.021304699639120607,0.02446373481279543,0.02547110469455053,0.024302999864275077,0.021118819760478948,0.016232563041306436,0.0031490220607077153,-0.010886953264350031,-0.017005195234555525,-0.02197224932489395,-0.025491952719408215,-0.027377766433970496,-0.02755600729640535,-0.02606152414085004,-0.02302706011365008,-0.018667768301268838,-0.007132957048772489,0.005919804932075353,0.012166361681986345,0.017817257126820932,0.02261732899926759,0.026364239996779455,0.028914062806107043,0.03018357533680878,0.03014954624659934,0.02884539831928174,0.026355708301423197,0.022809039240917012,0.01836960925578768,0.01322828379910052,0.0016814167793460855,-0.01011558094696274,-0.020566134987417637,-0.028389820545044478,-0.031034474030724263,-0.03274423220608923,-0.03348979605163781,-0.033271300166391155,-0.032116372722547804,-0.030077545697199743,-0.027229162904126462,-0.023663930810687402,-0.01482345648926215,-0.0045242494446518615,0.006206548396035339,0.016386332889279653,0.02516022749237899,0.03185988381889895,0.03603711022374637,0.03747405898698832,0.036173430466288264,0.032333139055255186,0.026310237561939412,0.018578751529902085,0.009685578040921199,0.00020789016010017304,-0.009285325638254125,-0.01826579434258878,-0.02627149974169574,-0.032924878350165714,-0.03794382381622807,-0.0411460739604415,-0.04244783377534923,-0.04185765424391429,-0.03946665583519177,-0.03543617622392217,-0.029983853486478966,-0.023369046817225334,-0.007811908089764948,0.008854103559050709,0.02439476367142445,0.036988683913823185,0.04220175057564602,0.045987246131789436,0.04827024519277607,0.04902962082042552,0.04829345741810694,0.046133356300517396,0.04265801109591479,0.03800639055605848,0.025840212234055866,0.011094325110512192,-0.004699696788453485,-0.020097635040741118,-0.03385818728983244,-0.04501449268939006,-0.049397540070766396,-0.05290619917771899,-0.05550576384398933,-0.05717928301592043,-0.057926369162682616,-0.0577618176163523,-0.05671409068358757,-0.054823715143750805,-0.05214163623069593,-0.048727565591438204,-0.044648355188379035,-0.03997642379000811,-0.029163002505698782,-0.016923392191674578,-0.003897247959633063,0.00930458829791202,0.022124815618278795,0.034077081432173105,0.04475676114504489,0.05384601382698418,0.06111411153983254,0.06641404587804342,0.06967636057798335,0.07090106567685528,0.07014837413890593,0.06752887926881729,0.06319367001248195,0.05732476771503413,0.05050294228176697,0.04266470786984031,0.03400316902623518,0.024712112891614096,0.004995406933367315,-0.01506423059059215,-0.034233966114652,-0.05151378344963943,-0.059200414932713136,-0.0661519990999656,-0.07231241472946563,-0.07763951051701627,-0.08210423646347297,-0.0856896818378204,-0.08839005223575819,-0.09020961356076346,-0.09116162636861237,-0.09126728998411221,-0.09055471214528377,-0.08905791666342802,-0.08387173476475585,-0.07606476198913702,-0.06603326027948123,-0.0541922506071827,-0.02557245214656212,0.005586223274740908,0.036323950645657216,0.06436430395066678,0.07685249912873905,0.08812348289193069,0.0980762727352224,0.10664247858341877,0.11378266455574133,0.11948272129127219,0.12375034864499089,0.12661171938559126,0.12796037938855345,0.1283735423526917,0.1278881492863254,0.12654531418571996,0.12146729224398704,0.11351969949708716,0.10310084284842237,0.09061029539837097,0.07643642405732122,0.06094753770278959,0.0196646930377823,-0.023270958830940085,-0.04434188996457242,-0.06473658927544972,-0.08421923102539794,-0.10260514721310206,-0.11876307993349357,-0.13374376678702837,-0.14748919555447385,-0.15996390769762386,-0.1711515204304202,-0.18105160052665112,-0.18967688532390264,-0.19705083610902668,-0.2063390387382843,-0.2126653131346189,-0.2162237083708724,-0.21722462387390415,-0.21588543655595246,-0.212423570923146,-0.2070515093896322,-0.19997332233886791,-0.19748159158854484,-0.1948520495190419,-0.19208999773751087],"type":"scatter","name":"y1","yaxis":"y","x":[-0.24877927262252647,-0.24755854524505297,-0.24633781786757947,-0.24511709049010594,-0.2394733968558194,-0.23382970322153285,-0.2281860095872463,-0.22254231595295976,-0.2197204691358165,-0.2168986223186732,-0.21407677550152993,-0.21125492868438667,-0.2084330818672434,-0.20561123505010015,-0.2027893882329569,-0.1999675414158136,-0.1965759167822354,-0.19318429214865723,-0.18979266751507903,-0.18640104288150083,-0.18300941824792263,-0.17961779361434443,-0.17622616898076626,-0.17283454434718806,-0.16709939342092034,-0.1613642424946526,-0.15562909156838486,-0.14989394064211714,-0.1467789499347868,-0.14366395922745642,-0.14054896852012605,-0.1374339778127957,-0.13587648245913053,-0.13431898710546536,-0.1327614917518002,-0.131203996398135,-0.12964650104446981,-0.12808900569080464,-0.12653151033713947,-0.12497401498347428,-0.1235381420303,-0.12210226907712574,-0.12066639612395147,-0.1192305231707772,-0.11779465021760294,-0.11635877726442866,-0.11492290431125438,-0.11348703135808011,-0.11061528545173156,-0.10774353954538302,-0.10487179363903447,-0.10200004773268592,-0.10046064017419024,-0.09892123261569456,-0.09738182505719889,-0.0958424174987032,-0.09430300994020753,-0.09276360238171186,-0.09199389860246401,-0.09122419482321617,-0.09045449104396833,-0.0896847872647205,-0.08891508348547267,-0.08814537970622482,-0.08737567592697698,-0.08660597214772914,-0.0858362683684813,-0.08506656458923346,-0.08429686080998564,-0.08352715703073779,-0.0819877494722421,-0.08044834191374643,-0.07890893435525076,-0.07736952679675507,-0.07647774948531691,-0.07558597217387875,-0.07469419486244058,-0.07380241755100242,-0.07291064023956426,-0.07201886292812609,-0.07112708561668793,-0.07023530830524977,-0.0693435309938116,-0.06845175368237344,-0.06755997637093528,-0.06666819905949711,-0.06488464443662079,-0.06310108981374446,-0.062209312502306296,-0.06131753519086813,-0.06042575787942997,-0.05953398056799181,-0.059088091912272725,-0.05864220325655364,-0.05819631460083456,-0.05775042594511548,-0.0573045372893964,-0.05685864863367732,-0.056412759977958235,-0.05596687132223916,-0.055075094010801004,-0.05418331669936284,-0.05329153938792468,-0.052399762076486514,-0.05150798476504835,-0.05061620745361019,-0.050170318797891106,-0.049724430142172024,-0.04927854148645294,-0.04883265283073386,-0.04843639961376129,-0.04804014639678872,-0.04764389317981615,-0.04724763996284358,-0.046455133528898435,-0.04566262709495329,-0.04487012066100815,-0.04407761422706301,-0.04368136101009044,-0.043285107793117866,-0.04288885457614529,-0.04249260135917272,-0.042096348142200146,-0.04170009492522757,-0.041303841708255,-0.040907588491282426,-0.040115082057337284,-0.03932257562339214,-0.03892632240641957,-0.038530069189447,-0.03813381597247443,-0.03773756275550186,-0.037539436147015576,-0.03734130953852929,-0.037143182930043,-0.036945056321556716,-0.036548803104584145,-0.036152549887611574,-0.035756296670639,-0.03536004345366643,-0.03496379023669386,-0.03456753701972129,-0.03436941041123501,-0.03417128380274872,-0.03397315719426243,-0.03377503058577615,-0.03357690397728986,-0.03337877736880357,-0.03318065076031729,-0.032982524151831,-0.03278439754334471,-0.03258627093485843,-0.032388144326372145,-0.032190017717885856,-0.031793764500913285,-0.031397511283940714,-0.03119938467545443,-0.031001258066968143,-0.030803131458481858,-0.030605004849995572,-0.030406878241509287,-0.030208751633023,-0.030010625024536712,-0.029812498416050427,-0.02961437180756414,-0.029416245199077852,-0.029218118590591566,-0.02901999198210528,-0.02862373876513271,-0.02822748554816014,-0.028029358939673853,-0.027831232331187568,-0.027633105722701282,-0.027434979114214997,-0.02723685250572871,-0.027038725897242426,-0.02684059928875614,-0.026642472680269855,-0.02644434607178357,-0.026246219463297284,-0.026048092854810998,-0.025849966246324713,-0.025651839637838427,-0.02545371302935214,-0.025255586420865853,-0.025057459812379567,-0.02485933320389328,-0.024661206595406993,-0.024463079986920707,-0.02426495337843442,-0.024066826769948136,-0.02386870016146185,-0.023670573552975565,-0.02347244694448928,-0.023298707763125225,-0.023124968581761166,-0.022951229400397108,-0.022777490219033053,-0.022603751037668995,-0.022430011856304936,-0.02225627267494088,-0.022082533493576823,-0.021908794312212765,-0.02173505513084871,-0.02156131594948465,-0.021387576768120593,-0.02121383758675654,-0.02104009840539248,-0.020866359224028422,-0.020692620042664367,-0.020518880861300312,-0.020345141679936254,-0.020171402498572195,-0.01999766331720814,-0.019823924135844086,-0.019650184954480027,-0.01947644577311597,-0.019302706591751914,-0.01912896741038786,-0.0189552282290238,-0.018781489047659743,-0.018607749866295688,-0.01843401068493163,-0.01826027150356757,-0.018086532322203516,-0.017912793140839458,-0.0177390539594754,-0.017565314778111345,-0.017391575596747286,-0.017217836415383228,-0.017044097234019173,-0.016870358052655115,-0.016696618871291057,-0.016522879689927,-0.016349140508562947,-0.01617540132719889,-0.01600166214583483,-0.015827922964470775,-0.01565418378310672,-0.015480444601742662,-0.015306705420378604,-0.015132966239014547,-0.01495922705765049,-0.014785487876286432,-0.014611748694922376,-0.014438009513558319,-0.014264270332194262,-0.014090531150830206,-0.01391679196946615,-0.013743052788102093,-0.013569313606738036,-0.01339557442537398,-0.013221835244009921,-0.013048096062645865,-0.012874356881281808,-0.01270061769991775,-0.012526878518553693,-0.012353139337189636,-0.01217940015582558,-0.012005660974461523,-0.011831921793097465,-0.011658182611733408,-0.011484443430369352,-0.011310704249005293,-0.011136965067641237,-0.01096322588627718,-0.010789486704913124,-0.010615747523549067,-0.01044200834218501,-0.010268269160820954,-0.010094529979456897,-0.00992079079809284,-0.009747051616728782,-0.009573312435364726,-0.009399573254000669,-0.00922583407263661,-0.009052094891272554,-0.008878355709908498,-0.008704616528544441,-0.008530877347180384,-0.008357138165816328,-0.008183398984452271,-0.008009659803088215,-0.007835920621724158,-0.0076621814403601005,-0.007488442258996043,-0.007314703077631986,-0.00714096389626793,-0.006967224714903873,-0.006793485533539816,-0.006619746352175758,-0.006446007170811702,-0.006272267989447645,-0.0060985288080835885,-0.005924789626719532,-0.0057510504453554745,-0.005577311263991417,-0.00540357208262736,-0.005229832901263304,-0.005056093719899246,-0.004882354538535189,-0.004708615357171132,-0.004534876175807076,-0.004361136994443019,-0.0041873978130789625,-0.004013658631714905,-0.003839919450350848,-0.003666180268986791,-0.0034924410876227344,-0.0033187019062586773,-0.0029712235435305637,-0.0026237451808024496,-0.0019287884553462222,-0.0012338317298899947,0.00028154702370686323,0.0017969257773037212,0.0021757704657029355,0.00255461515410215,0.0029334598425013645,0.003312304530900579,0.003501726875100186,0.0036911492192997935,0.003880571563499401,0.004069993907699008,0.004259416251898615,0.004448838596098223,0.00463826094029783,0.004827683284497437,0.005017105628697044,0.005206527972896651,0.005395950317096259,0.005585372661295866,0.005774795005495473,0.005964217349695081,0.006153639693894688,0.006343062038094295,0.006532484382293902,0.006721906726493509,0.006911329070693117,0.007100751414892724,0.007290173759092331,0.007479596103291939,0.007669018447491546,0.007858440791691153,0.00804786313589076,0.008237285480090367,0.008426707824289975,0.008616130168489583,0.008805552512689191,0.008994974856888797,0.009184397201088403,0.009373819545288011,0.009563241889487619,0.009752664233687225,0.009942086577886831,0.01013150892208644,0.010320931266286047,0.010510353610485655,0.010699775954685263,0.01088919829888487,0.011078620643084475,0.011268042987284083,0.011457465331483691,0.011646887675683299,0.011836310019882907,0.012025732364082513,0.01221515470828212,0.012404577052481727,0.012593999396681335,0.012783421740880941,0.012972844085080548,0.013162266429280155,0.013351688773479763,0.01354111111767937,0.013730533461878976,0.013919955806078584,0.014109378150278191,0.014298800494477798,0.014488222838677404,0.014677645182877012,0.01486706752707662,0.015056489871276228,0.015245912215475835,0.015435334559675442,0.015624756903875048,0.015814179248074656,0.016003601592274264,0.01619302393647387,0.01638244628067348,0.016571868624873087,0.016761290969072695,0.0169507133132723,0.017140135657471904,0.017329558001671512,0.01751898034587112,0.017708402690070728,0.017897825034270336,0.018087247378469944,0.01827666972266955,0.01846609206686916,0.018655514411068767,0.018844936755268375,0.019034359099467983,0.019223781443667588,0.019413203787867192,0.0196026261320668,0.019792048476266408,0.019981470820466016,0.020170893164665624,0.02036031550886523,0.02054973785306484,0.020739160197264444,0.02092858254146405,0.021118004885663656,0.021307427229863264,0.021496849574062872,0.02168627191826248,0.021875694262462088,0.022065116606661696,0.022254538950861304,0.02244396129506091,0.02263338363926052,0.022822805983460127,0.023012228327659732,0.023202776460853065,0.023393324594046395,0.023583872727239726,0.023774420860433056,0.023964968993626386,0.024155517126819716,0.024346065260013046,0.024536613393206376,0.024727161526399706,0.024917709659593036,0.025108257792786366,0.0252988059259797,0.025489354059173033,0.025679902192366363,0.025870450325559693,0.026060998458753024,0.026442094725139684,0.026823190991526344,0.027013739124719674,0.027204287257913004,0.027394835391106334,0.027585383524299668,0.027775931657493,0.02796647979068633,0.02815702792387966,0.02834757605707299,0.02872867232345965,0.029109768589846312,0.029300316723039642,0.029490864856232972,0.029681412989426302,0.029871961122619632,0.030062509255812962,0.030253057389006292,0.030443605522199622,0.030634153655392956,0.03082470178858629,0.03101524992177962,0.03120579805497295,0.03139634618816628,0.03177744245455294,0.0321585387209396,0.03253963498732626,0.03292073125371292,0.03311127938690625,0.03330182752009958,0.03349237565329291,0.03368292378648624,0.03387347191967957,0.0340640200528729,0.03425456818606623,0.03444511631925956,0.03482621258564622,0.03520730885203289,0.035588405118419555,0.035969501384806216,0.036350597651192876,0.036731693917579536,0.037112790183966196,0.037493886450352856,0.037874982716739516,0.03825607898312618,0.03863717524951284,0.0390182715158995,0.03939936778228616,0.039780464048672824,0.04016156031505949,0.04054265658144615,0.04092375284783281,0.04130484911421947,0.04168594538060613,0.04206704164699279,0.04244813791337945,0.04282923417976611,0.04321033044615277,0.04359142671253943,0.04397252297892609,0.04435361924531276,0.04511581177808609,0.04587800431085941,0.04664019684363273,0.04740238937640605,0.047823740031652864,0.04824509068689968,0.048666441342146496,0.049087791997393306,0.049509142652640115,0.04993049330788693,0.05035184396313375,0.05077319461838056,0.05161589592887419,0.05245859723936781,0.053301298549861445,0.05414399986035507,0.054986701170848695,0.05582940248134233,0.05625075313658914,0.05667210379183595,0.05709345444708276,0.05751480510232958,0.057936155757576394,0.05835750641282321,0.058778857068070026,0.059200207723316835,0.059621558378563644,0.06004290903381046,0.060464259689057276,0.06088561034430409,0.061728311654797724,0.06257101296529136,0.06341371427578499,0.0642564155862786,0.06509911689677222,0.06594181820726586,0.06678451951775949,0.06762722082825312,0.06846992213874675,0.06931262344924037,0.07015532475973399,0.07099802607022762,0.07184072738072125,0.07268342869121489,0.07352613000170852,0.07436883131220214,0.075170640345334,0.07597244937846587,0.07677425841159773,0.07757606744472959,0.0791796855109933,0.08078330357725703,0.08238692164352077,0.08399053970978448,0.08479234874291634,0.0855941577760482,0.08639596680918007,0.08719777584231193,0.08799958487544379,0.08880139390857567,0.08960320294170752,0.09040501197483938,0.09120682100797124,0.0920086300411031,0.09281043907423497,0.09361224810736683,0.09521586617363056,0.09681948423989428,0.098423102306158,0.10002672037242173,0.10336150179532844,0.10669628321823513,0.11003106464114182,0.11336584606404851,0.11503323677550185,0.1167006274869552,0.11836801819840854,0.12003540890986189,0.12170279962131524,0.12337019033276858,0.1250375810442219,0.12670497175567527,0.12810855957303446,0.12951214739039368,0.1309157352077529,0.1323193230251121,0.1351264986598305,0.13793367429454892,0.14074084992926733,0.14354802556398574,0.14635520119870415,0.14916237683342257,0.15601686337336246,0.16287134991330232,0.16629859318327225,0.16972583645324218,0.17315307972321212,0.17658032299318205,0.17980203275207857,0.18302374251097508,0.1862454522698716,0.18946716202876815,0.1926888717876647,0.1959105815465612,0.19913229130545773,0.20235400106435425,0.2075154299323137,0.21267685880027318,0.21783828766823266,0.2229997165361921,0.22816114540415156,0.23332257427211103,0.2384840031400705,0.24364543200802996,0.24523407400602248,0.24682271600401498,0.24841135800200748]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.24511709049010594,0.1999675414158136,0.17283454434718806,0.14989394064211714,0.12497401498347428,0.10200004773268592,0.07736952679675507,0.04883265283073386,0.036152549887611574,0.02347244694448928,0.017912793140839458,0.012353139337189636,0.006793485533539816,0.0012338317298899947,0.0017969257773037212,0.004827683284497437,0.007858440791691153,0.01088919829888487,0.0169507133132723,0.023012228327659732,0.03520730885203289,0.04740238937640605,0.07436883131220214,0.10002672037242173,0.12670497175567527,0.14916237683342257,0.17658032299318205,0.20235400106435425,0.24364543200802996],"type":"scatter","name":"y2","yaxis":"y","x":[-0.24511709049010594,-0.1999675414158136,-0.17283454434718806,-0.14989394064211714,-0.12497401498347428,-0.10200004773268592,-0.07736952679675507,-0.04883265283073386,-0.036152549887611574,-0.02347244694448928,-0.017912793140839458,-0.012353139337189636,-0.006793485533539816,-0.0012338317298899947,0.0017969257773037212,0.004827683284497437,0.007858440791691153,0.01088919829888487,0.0169507133132723,0.023012228327659732,0.03520730885203289,0.04740238937640605,0.07436883131220214,0.10002672037242173,0.12670497175567527,0.14916237683342257,0.17658032299318205,0.20235400106435425,0.24364543200802996]},{"showlegend":true,"mode":"lines","xaxis":"x","colorbar":{"title":""},"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.24511709049010594,-0.1999675414158136,-0.17283454434718806,-0.14989394064211714,-0.12497401498347428,-0.10200004773268592,-0.07736952679675507,-0.04883265283073386,-0.036152549887611574,-0.02347244694448928,-0.017912793140839458,-0.012353139337189636,-0.006793485533539816,-0.0012338317298899947,-0.0017969257773037212,-0.004827683284497437,-0.007858440791691153,-0.01088919829888487,-0.0169507133132723,-0.023012228327659732,-0.03520730885203289,-0.04740238937640605,-0.07436883131220214,-0.10002672037242173,-0.12670497175567527,-0.14916237683342257,-0.17658032299318205,-0.20235400106435425,-0.24364543200802996],"type":"scatter","name":"y3","yaxis":"y","x":[-0.24511709049010594,-0.1999675414158136,-0.17283454434718806,-0.14989394064211714,-0.12497401498347428,-0.10200004773268592,-0.07736952679675507,-0.04883265283073386,-0.036152549887611574,-0.02347244694448928,-0.017912793140839458,-0.012353139337189636,-0.006793485533539816,-0.0012338317298899947,0.0017969257773037212,0.004827683284497437,0.007858440791691153,0.01088919829888487,0.0169507133132723,0.023012228327659732,0.03520730885203289,0.04740238937640605,0.07436883131220214,0.10002672037242173,0.12670497175567527,0.14916237683342257,0.17658032299318205,0.20235400106435425,0.24364543200802996]}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.2,-0.1,0.0,0.1,0.2],"visible":true,"ticks":"inside","range":[-0.24877927262252647,0.24841135800200748],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.2","-0.1","0.0","0.1","0.2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.2,-0.1,0.0,0.1,0.2],"visible":true,"ticks":"inside","range":[-0.24511709049010594,0.24511709049010594],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.2","-0.1","0.0","0.1","0.2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x"},"legend":{"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<p>This graph clearly oscillates near $0$. To the graph of $f$, we added graphs of both $g(x) = \lvert x\rvert$ and $h(x) = - \lvert x\rvert$. From this graph it is easy to see by the "squeeze theorem" that the limit at $x=0$ is $0$. Why?</p><form name="WeaveQuestion" data-id="PZHoL2d1" data-controltype="radio">
+<p>This graph clearly oscillates near $0$. To the graph of $f$, we added graphs of both $g(x) = \lvert x\rvert$ and $h(x) = - \lvert x\rvert$. From this graph it is easy to see by the "squeeze theorem" that the limit at $x=0$ is $0$. Why?</p><form name="WeaveQuestion" data-id="BnNA8Mmg" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_PZHoL2d1" value="1"><div class="markdown"><p>The functions $g$ and $h$ both have a limit of $0$ at $x=0$ and the function $f$ is in between both $g$ and $h$, so must to have a limit of $0$.</p>
+      <input type="radio" name="radio_BnNA8Mmg" value="1"><div class="markdown"><p>The function $f$ has no limit – it oscillates too much near $0$</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_PZHoL2d1" value="2"><div class="markdown"><p>The function $f$ has no limit – it oscillates too much near $0$</p>
+      <input type="radio" name="radio_BnNA8Mmg" value="2"><div class="markdown"><p>The functions $g$ and $h$ squeeze each other as $g(x) > h(x)$</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_PZHoL2d1" value="3"><div class="markdown"><p>The functions $g$ and $h$ squeeze each other as $g(x) > h(x)$</p>
+      <input type="radio" name="radio_BnNA8Mmg" value="3"><div class="markdown"><p>The functions $g$ and $h$ both have a limit of $0$ at $x=0$ and the function $f$ is in between both $g$ and $h$, so must to have a limit of $0$.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="PZHoL2d1_message"></div>
+<div id="BnNA8Mmg_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_PZHoL2d1']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_BnNA8Mmg']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#PZHoL2d1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#BnNA8Mmg_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#PZHoL2d1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#BnNA8Mmg_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -699,211 +726,211 @@ $("input:radio[name='radio_PZHoL2d1']").on("change", function() {
 <h6>Question</h6><p>Find the limit as $x$ goes to $2$ of</p>$$~
 f(x) = \frac{3x^2 - x -10}{x^2 - 4}
 ~$$
-<form name='WeaveQuestion' data-id='8hCyoqPU' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='4OqWOLkZ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="8hCyoqPU" type="number" class="form-control">
+<input id="4OqWOLkZ" type="number" class="form-control">
 
 </div>
   
-<div id='8hCyoqPU_message'></div>
+<div id='4OqWOLkZ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#8hCyoqPU').on('change', function() {
+$('#4OqWOLkZ').on('change', function() {
   correct = Math.abs(this.value - 2.75) <= 0.001;
 
   if(correct) {
-     $('#8hCyoqPU_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#4OqWOLkZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#8hCyoqPU_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#4OqWOLkZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Find the limit as $x$ goes to $-2$ of</p>$$~
 f(x) = \frac{\frac{1}{x} + \frac{1}{2}}{x^3 + 8}
 ~$$
-<form name='WeaveQuestion' data-id='x0NKcxGE' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='487qqLhI' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="x0NKcxGE" type="number" class="form-control">
+<input id="487qqLhI" type="number" class="form-control">
 
 </div>
   
-<div id='x0NKcxGE_message'></div>
+<div id='487qqLhI_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#x0NKcxGE').on('change', function() {
+$('#487qqLhI').on('change', function() {
   correct = Math.abs(this.value - -0.020833333333333332) <= 0.001;
 
   if(correct) {
-     $('#x0NKcxGE_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#487qqLhI_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#x0NKcxGE_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#487qqLhI_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Find the limit as $x$ goes to $27$ of</p>$$~
 f(x) = \frac{x - 27}{x^{1/3} - 3}
 ~$$
-<form name='WeaveQuestion' data-id='Lu5gSjHS' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='F1kjECsw' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="Lu5gSjHS" type="number" class="form-control">
+<input id="F1kjECsw" type="number" class="form-control">
 
 </div>
   
-<div id='Lu5gSjHS_message'></div>
+<div id='F1kjECsw_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#Lu5gSjHS').on('change', function() {
+$('#F1kjECsw').on('change', function() {
   correct = Math.abs(this.value - 27) <= 0;
 
   if(correct) {
-     $('#Lu5gSjHS_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#F1kjECsw_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#Lu5gSjHS_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#F1kjECsw_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Find the limit </p>$$~
 L = \lim_{x \rightarrow \pi/2} \frac{\tan (2x)}{x - \pi/2}
 ~$$
-<form name='WeaveQuestion' data-id='3xw5kG05' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='eCnDKMEl' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="3xw5kG05" type="number" class="form-control">
+<input id="eCnDKMEl" type="number" class="form-control">
 
 </div>
   
-<div id='3xw5kG05_message'></div>
+<div id='eCnDKMEl_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#3xw5kG05').on('change', function() {
+$('#eCnDKMEl').on('change', function() {
   correct = Math.abs(this.value - 2) <= 0;
 
   if(correct) {
-     $('#3xw5kG05_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#eCnDKMEl_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#3xw5kG05_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#eCnDKMEl_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>The limit of $\sin(x)/x$ at $0$ has a numeric value. This depends upon the fact that $x$ is measured in radians. Try to find this limit: <code>limit&#40;sind&#40;x&#41;/x, x&#61;&gt;0&#41;</code>. What is the value?</p><form name="WeaveQuestion" data-id="HU1CxhGM" data-controltype="radio">
+<h6>Question</h6><p>The limit of $\sin(x)/x$ at $0$ has a numeric value. This depends upon the fact that $x$ is measured in radians. Try to find this limit: <code>limit&#40;sind&#40;x&#41;/x, x&#61;&gt;0&#41;</code>. What is the value?</p><form name="WeaveQuestion" data-id="2B47Q1QK" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_HU1CxhGM" value="1"><div class="markdown"><p><code>0</code></p>
+      <input type="radio" name="radio_2B47Q1QK" value="1"><div class="markdown"><p><code>0</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_HU1CxhGM" value="2"><div class="markdown"><p><code>1</code></p>
+      <input type="radio" name="radio_2B47Q1QK" value="2"><div class="markdown"><p><code>1</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_HU1CxhGM" value="3"><div class="markdown"><p><code>pi/180</code></p>
+      <input type="radio" name="radio_2B47Q1QK" value="3"><div class="markdown"><p><code>pi/180</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_HU1CxhGM" value="4"><div class="markdown"><p><code>180/pi</code></p>
+      <input type="radio" name="radio_2B47Q1QK" value="4"><div class="markdown"><p><code>180/pi</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="HU1CxhGM_message"></div>
+<div id="2B47Q1QK_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_HU1CxhGM']").on("change", function() {
+$("input:radio[name='radio_2B47Q1QK']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#HU1CxhGM_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#2B47Q1QK_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#HU1CxhGM_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#2B47Q1QK_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>What is the limit <code>limit&#40;sinpi&#40;x&#41;/x, x&#61;&gt;0&#41;</code>?</p><form name="WeaveQuestion" data-id="kTHx9h4G" data-controltype="radio">
+<p>What is the limit <code>limit&#40;sinpi&#40;x&#41;/x, x&#61;&gt;0&#41;</code>?</p><form name="WeaveQuestion" data-id="J62i7O2U" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_kTHx9h4G" value="1"><div class="markdown"><p><code>1</code></p>
+      <input type="radio" name="radio_J62i7O2U" value="1"><div class="markdown"><p><code>0</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_kTHx9h4G" value="2"><div class="markdown"><p><code>pi</code></p>
+      <input type="radio" name="radio_J62i7O2U" value="2"><div class="markdown"><p><code>1/pi</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_kTHx9h4G" value="3"><div class="markdown"><p><code>0</code></p>
+      <input type="radio" name="radio_J62i7O2U" value="3"><div class="markdown"><p><code>pi</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_kTHx9h4G" value="4"><div class="markdown"><p><code>1/pi</code></p>
+      <input type="radio" name="radio_J62i7O2U" value="4"><div class="markdown"><p><code>1</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="kTHx9h4G_message"></div>
+<div id="J62i7O2U_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_kTHx9h4G']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_J62i7O2U']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#kTHx9h4G_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#J62i7O2U_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#kTHx9h4G_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#J62i7O2U_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -911,72 +938,72 @@ $("input:radio[name='radio_kTHx9h4G']").on("change", function() {
 <h6>Question <small>limit properties</small></h6><p>There are several properties of limits that allow one to break down more complicated problems into smaller subproblems. For example,</p>$$~
 \lim (f(x) + g(x)) = \lim f(x) + \lim g(x)
 ~$$
-<p>is notation to indicate that one can take a limit of the sum of two function or take the limit of each first, then add and the answer will be unchanged, provided all the limits in question exist.</p><p>Use one or the either to find the limit of $f(x) = \sin(x) + \tan(x) + \cos(x)$ as $x$ goes to $0$.</p><form name='WeaveQuestion' data-id='0nAhbHBy' data-controltype='numeric'>
+<p>is notation to indicate that one can take a limit of the sum of two function or take the limit of each first, then add and the answer will be unchanged, provided all the limits in question exist.</p><p>Use one or the either to find the limit of $f(x) = \sin(x) + \tan(x) + \cos(x)$ as $x$ goes to $0$.</p><form name='WeaveQuestion' data-id='oAp3lJIj' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="0nAhbHBy" type="number" class="form-control">
+<input id="oAp3lJIj" type="number" class="form-control">
 
 </div>
   
-<div id='0nAhbHBy_message'></div>
+<div id='oAp3lJIj_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#0nAhbHBy').on('change', function() {
+$('#oAp3lJIj').on('change', function() {
   correct = Math.abs(this.value - 1.0) <= 1.0e-5;
 
   if(correct) {
-     $('#0nAhbHBy_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#oAp3lJIj_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#0nAhbHBy_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#oAp3lJIj_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Does this function have a limit as $h$ goes to $0$ from the right (that is, assume $h>0$)?</p>$$~
 \frac{h^h - 1}{h}
 ~$$
-<form name="WeaveQuestion" data-id="0Bh4vTBq" data-controltype="radio">
+<form name="WeaveQuestion" data-id="ofyKqKJ0" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Bh4vTBq" value="1"><div class="markdown"><p>Yes, the value is <code>-9.2061</code></p>
+      <input type="radio" name="radio_ofyKqKJ0" value="1"><div class="markdown"><p>Yes, the value is <code>-11.5123</code></p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Bh4vTBq" value="2"><div class="markdown"><p>No, the value heads to negative infinity</p>
+      <input type="radio" name="radio_ofyKqKJ0" value="2"><div class="markdown"><p>No, the value heads to negative infinity</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Bh4vTBq" value="3"><div class="markdown"><p>Yes, the value is <code>-11.5123</code></p>
+      <input type="radio" name="radio_ofyKqKJ0" value="3"><div class="markdown"><p>Yes, the value is <code>-9.2061</code></p>
 </div>
     </label>
     </div>
     
 
 
-<div id="0Bh4vTBq_message"></div>
+<div id="ofyKqKJ0_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_0Bh4vTBq']").on("change", function() {
+$("input:radio[name='radio_ofyKqKJ0']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#0Bh4vTBq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#ofyKqKJ0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#0Bh4vTBq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#ofyKqKJ0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -984,58 +1011,58 @@ $("input:radio[name='radio_0Bh4vTBq']").on("change", function() {
 <h6>Question</h6><p>Compute the limit</p>$$~
 \lim_{x \rightarrow 1} \frac{x}{x-1} - \frac{1}{\log(x)}.
 ~$$
-<form name='WeaveQuestion' data-id='gUxnk5ra' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='MG3bklCL' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="gUxnk5ra" type="number" class="form-control">
+<input id="MG3bklCL" type="number" class="form-control">
 
 </div>
   
-<div id='gUxnk5ra_message'></div>
+<div id='MG3bklCL_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#gUxnk5ra').on('change', function() {
+$('#MG3bklCL').on('change', function() {
   correct = Math.abs(this.value - 0.5) <= 0.001;
 
   if(correct) {
-     $('#gUxnk5ra_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#MG3bklCL_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#gUxnk5ra_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#MG3bklCL_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Compute the limit</p>$$~
 \lim_{x \rightarrow 1/2} \frac{1}{\pi} \frac{\cos(\pi x)}{1 - (2x)^2}.
 ~$$
-<form name='WeaveQuestion' data-id='vUcXTxSu' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='ZsdMWM0s' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="vUcXTxSu" type="number" class="form-control">
+<input id="ZsdMWM0s" type="number" class="form-control">
 
 </div>
   
-<div id='vUcXTxSu_message'></div>
+<div id='ZsdMWM0s_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#vUcXTxSu').on('change', function() {
+$('#ZsdMWM0s').on('change', function() {
   correct = Math.abs(this.value - 0.25) <= 0.001;
 
   if(correct) {
-     $('#vUcXTxSu_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#ZsdMWM0s_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#vUcXTxSu_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#ZsdMWM0s_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>

@@ -1,0 +1,1241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<!-- not TeX-AMS-MML_HTMLorMML-->
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) { 
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();                                    
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();  
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>The Inverse of a Function</h1><p>A (univariate) mathematical function relates or associates values of $x$ to values $y$ using the notation $y=f(x)$. A key point is a given $x$ is associated with just one $y$ value, though a given $y$ value may be associated with several different $x$ values.</p><p>We may conceptualize such a relation in many ways: through an algebraic rule; through the graph of $f$; through a description of what $f$ does; or through a table of paired values, say.  For the moment, let's consider a function as rule that takes in a value of $x$ and outputs a value $y$. If a rule is given defining the function, the computation of $y$ is straightforward. A different question is not so easy: for a given value $y$ what value–or <em>values</em>–of $x$ (if any) produce an output of $y$? That is, what $x$ value(s) satisfy $f(x)=y$?</p><p><em>If</em> for each $y$ in some set of values there is just one $x$ value, then this operation associates to each value $y$ a single value $x$, so it too is a function. When that is the case we call this an <em>inverse</em> function.</p><p>Why is this useful? When available, it can help us solve equations. If we can write our equation as $f(x) = y$, then we can "solve" for $x$ through $x = g(y)$, where $g$ is this inverse function.</p><p>Let's explore when we can "solve" for an inverse function.</p><p>Consider the graph of the function $f(x) = 2^x$:</p><pre class="sourceCode julia">f(x) = 2^x
+plot(f, 0, 4)
+plot!([2,2,0], [0,f(2),f(2)])</pre>
+    <div id="e87ced9c-9953-4090-8924-793612037525" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('e87ced9c-9953-4090-8924-793612037525');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.039063276079152526,0.40025966867349133,0.6173236452224955,0.800848474863063,1.0002078801322056,1.1839996181385126,1.3810437856259592,1.6093387773541292,1.8122204244440858,1.99012934616088,2.184097826621278,2.3792191150112485,2.594950650497617,2.8002137629793737,3.013639774045402,3.1932990146673808,3.3029707993064186,3.4126425839454564,3.515737296230145,3.618832008514834,3.783997732289537,3.9491634560642397,3.9745817280321196],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.0274465018201824,1.3197454285408055,1.534026755086117,1.742125400600867,2.0002882038184313,2.2720579281908835,2.6045674262556435,3.0511196941586896,3.5118237089915043,3.9727261442259727,4.544425198204494,5.202550684139792,6.041683674054713,6.965436493110616,8.0759936373444,9.147002305294178,9.869457594897751,10.648974381596837,11.437796965615215,12.285051568226182,13.77516536081378,15.446022319396926,15.720571144533864],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[2,2,0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0,4,4],"type":"scatter"}], {"showlegend":true,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[0.0,3.9745817280321196],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,5.0,10.0,15.0],"visible":true,"ticks":"inside","range":[0.0,15.720571144533864],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","5","10","15"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>The graph of a function is a representation of points $(x,f(x))$, so to <em>find</em> $f(c)$ from the graph, we begin on the $x$ axis at $c$, move vertically to the graph (the point $(c, f(c))$), and then move horizontally to the $y$ axis, intersecting it at $f(c)$. The figure shows this for $c=2$, from which we can read that $f(c)$ is about $4$. This is how an $x$ is associated to a single $y$.</p><p>If we were to <em>reverse</em> the direction, starting at $f(c)$ on the $y$ axis and then moving horizontally to the graph, and then vertically to the $x$-axis we end up at a value $c$ with the correct $f(c)$. This operation will form a function <strong>if</strong> the initial movement horizontally is guaranteed to find <em>no more than one</em> value on the graph. That is, to have an inverse function, there can not be two $x$ values corresponding to a given $y$ value. This observation is often visualized through the "horizontal line test"–the graph of a function with an inverse function can only intersect a horizontal line at most in one place.</p><p>More formally, a function is called <em>one-to-one</em> <em>if</em> for any two $a \neq b$, it must be that $f(a) \neq f(b)$. Many functions are one-to-one, many are not. Familiar one-to-one functions are linear functions ($f(x)=a \cdot x + b$ with $a\neq 0$), odd powers of $x$ ($f(x)=x^{2k+1}$), and functions of the form $f(x)=x^{1/n}$ for $x \geq 0$. In contrast, all <em>even</em> functions are <em>not</em> one-to-one, as $f(x) = f(-x)$ for any nonzero $x$ in the domain of $f$.</p><p>A class of functions that are guaranteed to be one-to-one are the <em>strictly</em> increasing functions (which satisfy $a < b$ implies $f(a) < f(b)$). Similarly, strictly decreasing functions are one-to-one. The term strictly <em>monotonic</em> is used to describe either strictly increasing or strictly decreasing.  By the above observations, strictly monotonic function will have inverse functions.</p><p>The function $2^x$, graphed above, is strictly increasing, so it will have an inverse function. That is we can solve for $x$ in an equation like $2^x = 9$ using the inverse function of $f(x) = 2^x$, provided we can identify the inverse function.</p><h2>How to solve for an inverse function?</h2><p>If we know an inverse function exists, how can we find it?</p><p>If our function is given by a graph, the process above describes how to find the inverse function.</p><p>However, typically we have a rule describing our function. What is the process then?  A simple example helps illustrate. The <em>linear</em> function $f(x) = 9/5\cdot x + 32$ is strictly increasing, hence has an inverse function. What should it be? Let's describe the action of $f$: it multiplies $x$ by $9/5$ and then adds $32$. To "invert" this we <em>first</em> invert the adding of $32$ by subtracting $32$, then we would "invert" multiplying by $9/5$ by <em>dividing</em> by $9/5$. Hence $g(x)=(x-32)/(9/5)$. We would generally simplify this, but let's not for now. If we view a function as a composition of many actions, then we find the inverse by composing the inverse of these actions in <strong>reverse</strong> order. The reverse order might seem confusing, but this is how we get dressed and undressed: to dress we put on socks and then shoes. To undress we take off the shoes and then take off the socks.</p><p>When we solve algebraically for $x$ in $y=9/5 \cdot x + 32$ we do the same thing as we do verbally: we subtract $32$ from each side, and then divide by $9/5$ to isolate $x$:</p>$$~
+\begin{align}
+y &= 9/5 \cdot x + 32\\
+y - 32 &= 9/5 \cdot x\\
+(y-32) / (9/5) &= x.
+\end{align}
+~$$
+<p>From this, we have the function $g(y) = (y-32) / (9/5)$ is the inverse function of $f(x) =  9/5\cdot x + 32$.</p><p><em>Usually</em> univariate functions are written with $x$ as the dummy variable, so it is typical to write $g(x) = (x-32) / (9/5)$ as the inverse function.</p><p><em>Usually</em> we use the name $f^{-1}$ for the inverse function of $f$, so this would be most often <a href="http://tinyurl.com/qypbueb">seen</a> as $f^{-1}(x) = (x-32)/(9/5)$ or after simplification $f^{-1}(x) = (5/9) \cdot (x-32)$.</p><div class="alert alert-info" role="alert">
+<div class="markdown"><p>The use of a negative exponent on the function name is <em>easily</em> confused for the notation for a reciprocal when it is used on a mathematical <em>expression</em>. An example might be the notation $(1/x)^{-1}$. As this is an expression this would simplify to $x$ and not the inverse of the <em>function</em> $f(x)=1/x$ (which is $f^{-1}(x) = 1/x$). </p>
+</div> 
+</div>
+<h5>Example</h5><p>Suppose a transformation of $x$ is given by $y = f(x) = (ax + b)/(cx+d)$. This function is  invertible. Find the inverse and describe it's domain.</p><p>From the expression $y=f(x)$ we <em>algebraically</em> solve for $x$:</p>$$~
+\begin{align*}
+y &= \frac{ax +b}{cx+d}\\
+y \cdot (cx + d) &= ax + b\\
+ycx - ax &= b - yd\\
+(cy-a) \cdot x &= b - dy\\
+x &= -\frac{dy - b}{cy-a}.
+\end{align*}
+~$$
+<p>We see that to solve for $x$ we need to divide by $cy-a$, so this expression can not be zero. So, using $x$ as the dummy variable, we have</p>$$~
+f^{-1}(x) = -\frac{dx - b}{cx-a},  $cx-a \neq 0$.
+~$$
+<h5>Example</h5><p>The function $f(x) = (x-1)^5 + 2$ is strictly increasing and so will have an inverse function. Find it.</p><p>Again, we solve algebraically starting with $y=(x-1)^5 + 2$ and solving for $x$:</p>$$~
+\begin{align*}
+y &= (x-1)^5 + 2\\
+y - 2 &= (x-1)^5\\
+(y-2)^{1/5} &= x - 1\\
+(y-2)^{1/5} + 1 = x.
+\end{align*}
+~$$
+<p>We see that $f^{-1}(x) = 1 + (x - 2)^{1/5}$. The fact that the power $5$ is an odd power is important, as this ensures a unique (real) solution to the fifth root of a value, in the above $y-2$.</p><h5>Example</h5><p>The function $f(x) = x^x,  x \geq 1/e$ is strictly increasing. However, trying to algebraically solve for an inverse function will quickly run into problems (without using specially defined functions). The existence of an inverse does not imply there will always be luck in trying to find a mathematical rule defining the inverse.</p><h2>Functions which are not always invertible</h2><p>Consider the function $f(x) = x^2$. The graph–a parabola–is clearly not <em>monotonic</em>. Hence no inverse function exists. Yet, we can solve equations $y=x^2$ quite easily: $y=\sqrt{x}$ <em>or</em> $y=-\sqrt{x}$. We know the square root undoes the squaring, but we need to be a little more careful to say the square root is the inverse of the squaring function.</p><p>The issue is there are generally <em>two</em> possible answers. To avoid this, we might choose to only take the <em>non-negative</em> answer. To make this all work as above, we restrict the domain of $f(x)$ and now consider the related function $f(x)=x^2, x \geq 0$. This is now a monotonic function, so will have an inverse function. This is clearly $f^{-1}(x) = \sqrt{x}$.</p><p>The <a href="https://en.wikipedia.org/wiki/Inverse_function_theorem">inverse function theorem</a> basically says that if $f$ is <em>locally</em> monotonic, then an inverse function will exist <em>locally</em>. By "local" we mean in a neighborhood of $c$.</p><h5>Example</h5><p>Consider the function $f(x) = (1+x^2)^{-1}$. This bell-shaped function is even (symmetric about $0$), so can not possibly be one-to-one. However, if the domain is restricted to $[0,\infty)$ it is. The restricted function is strictly decreasing and its inverse is found as follows:</p>$$~
+\begin{align*}
+y &= \frac{1}{1 + x^2}\\
+1+x^2 &= \frac{1}{y}\\
+x^2 &= \frac{1}{y} - 1\\
+x &= \sqrt{(1-y)/y}, \quad 0 \leq y \leq 1.
+\end{align*}
+~$$
+<p>Then $f^{-1}(x) = \sqrt{(1-x)/x}$ where $0 < x \leq 1$. The somewhat complicated restriction for the the domain coincides with the range of $f(x)$. We shall see next that this is no coincidence.</p><h2>Formal properties of the inverse function</h2><p>Consider again the graph of a monotonic function, in this case $f(x) = x^2 + 2, x \geq 0$:</p><pre class="sourceCode julia">f(x) = x^2 + 2
+plot(f, 0, 4)
+plot!([2,2,0], [0,f(2),f(2)])</pre>
+    <div id="d32087ba-a8d1-4bc6-8fa5-10692da71f60" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('d32087ba-a8d1-4bc6-8fa5-10692da71f60');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.039063276079152526,0.40025966867349133,0.6173236452224955,0.800848474863063,1.0002078801322056,1.1839996181385126,1.3810437856259592,1.6093387773541292,1.8122204244440858,1.99012934616088,2.184097826621278,2.3792191150112485,2.594950650497617,2.8002137629793737,3.013639774045402,3.1932990146673808,3.4126425839454564,3.618832008514834,3.9491634560642397],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.0015259395380363,2.160207802366613,2.3810884829507897,2.641358279690494,3.0004158034785604,3.4018550957521434,3.90728193781608,4.589971300295684,5.284142866772303,5.960614814450732,6.77028331625179,7.660683597234908,8.733768878518006,9.841197118379103,11.08202468770842,12.197158597075665,13.646129405757922,15.095945105851508,17.59589200271325],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[2,2,0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0,6,6],"type":"scatter"}], {"showlegend":true,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[0.0,3.9491634560642397],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,5.0,10.0,15.0],"visible":true,"ticks":"inside","range":[0.0,17.59589200271325],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","5","10","15"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>The graph is shown over the interval $(0,4)$, but the <em>domain</em> of $f(x)$ is all $x \geq 0$. The <em>range</em> of $f(x)$ is clearly $2 \leq x \leq \infty$.</p><p>The lines layered on the plot show how to associate an $x$ value to a $y$ value or vice versa (as $f(x)$ is one-to-one). The domain then of the inverse function is all the $y$ values for which an corresponding $x$ value exists: this is clearly all values bigger or equal to $2$. The <em>range</em> of the inverse function can be seen to be all the images for the values of $y$, which would be all $x \geq 0$. This gives the relationship:</p><blockquote>
+<p>the <em>range</em> of $f(x)$ is the <em>domain</em> of $f^{-1}(x)$ and furthermore the <em>domain</em> of $f(x)$ is the <em>range</em> for $f^{-1}(x)$; </p>
+</blockquote><p>Further, from this we can see if we start at $x$, apply $f$ we get $y$, if we then apply $f^{-1}$ we will get back to $x$ so we have:</p><blockquote>
+<p>For all $x$ in the domain of $f$: $f^{-1}(f(x)) = x$.</p>
+</blockquote><p>Similarly, were we to start on the $y$ axis, we would see:</p><blockquote>
+<p>For all $x$ in the domain of $f^{-1}$: $f(f^{-1}(x)) = x$.</p>
+</blockquote><p>In short $f^{-1} \circ f$ and $f \circ f^{-1}$ are both identity functions, though on possibly different domains.</p><h2>The graph of the inverse function</h2><p>The graph of $f(x)$ is a representation of all values $(x,y)$ where $y=f(x)$. As the inverse flips around the role of $x$ and $y$ we have:</p><blockquote>
+<p>If $(x,y)$ is a point on the graph of $f(x)$, then $(y,x)$ will be a point on the graph of $f^{-1}(x)$.</p>
+</blockquote><p>Let's see this in action. Take the function $2^x$. We can plot it by generating points to plot as follows:</p><pre class="sourceCode julia">f(x) = 2^x
+xs = range(0, stop=2, length=50) 
+ys = f.(xs)
+plot(xs, ys, color=:blue)
+plot!(ys, xs, color=:red) # the inverse</pre>
+    <div id="ed0f844f-763b-44cd-9cb8-afc0023e500d" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('ed0f844f-763b-44cd-9cb8-afc0023e500d');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,0.04081632653061224,0.08163265306122448,0.12244897959183673,0.16326530612244897,0.20408163265306123,0.24489795918367346,0.2857142857142857,0.32653061224489793,0.3673469387755102,0.40816326530612246,0.4489795918367347,0.4897959183673469,0.5306122448979592,0.5714285714285714,0.6122448979591837,0.6530612244897959,0.6938775510204082,0.7346938775510204,0.7755102040816326,0.8163265306122449,0.8571428571428571,0.8979591836734694,0.9387755102040817,0.9795918367346939,1.0204081632653061,1.0612244897959184,1.1020408163265305,1.1428571428571428,1.183673469387755,1.2244897959183674,1.2653061224489797,1.3061224489795917,1.346938775510204,1.3877551020408163,1.4285714285714286,1.469387755102041,1.510204081632653,1.5510204081632653,1.5918367346938775,1.6326530612244898,1.6734693877551021,1.7142857142857142,1.7551020408163265,1.7959183673469388,1.836734693877551,1.8775510204081634,1.9183673469387754,1.9591836734693877,2.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.0,1.0286957334762774,1.0582149120722961,1.088581165149745,1.1198188001321776,1.1519528219624953,1.1850089531187766,1.2190136542044754,1.25399414512947,1.2899784268989174,1.3269953040273563,1.365074407595997,1.404246218971659,1.4445420942063398,1.4859942891369484,1.5286359852052924,1.5725013160189902,1.6176253946745665,1.6640443418646058,1.7117953147914597,1.7609165369106559,1.8114473285278132,1.863428138273562,1.916900575481656,1.9719074434962,2.0284927739346545,2.086701861934038,2.1465813024085487,2.2081790273476245,2.2715443441842975,2.336727975264555,2.4037820984493083,2.472760388881456,2.5437180619514943,2.616711917496047,2.6918003852647123,2.769043571691609,2.8485033080090703,2.930243199741993,3.0143286776224634,3.1008270499654174,3.1898075565472563,3.2813414240305514,3.3755019229792005,3.4723644265096736,3.572006470625302,3.6745078162819036,3.7799505132344264,3.8884189657157195,4.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[1.0,1.0286957334762774,1.0582149120722961,1.088581165149745,1.1198188001321776,1.1519528219624953,1.1850089531187766,1.2190136542044754,1.25399414512947,1.2899784268989174,1.3269953040273563,1.365074407595997,1.404246218971659,1.4445420942063398,1.4859942891369484,1.5286359852052924,1.5725013160189902,1.6176253946745665,1.6640443418646058,1.7117953147914597,1.7609165369106559,1.8114473285278132,1.863428138273562,1.916900575481656,1.9719074434962,2.0284927739346545,2.086701861934038,2.1465813024085487,2.2081790273476245,2.2715443441842975,2.336727975264555,2.4037820984493083,2.472760388881456,2.5437180619514943,2.616711917496047,2.6918003852647123,2.769043571691609,2.8485033080090703,2.930243199741993,3.0143286776224634,3.1008270499654174,3.1898075565472563,3.2813414240305514,3.3755019229792005,3.4723644265096736,3.572006470625302,3.6745078162819036,3.7799505132344264,3.8884189657157195,4.0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.04081632653061224,0.08163265306122448,0.12244897959183673,0.16326530612244897,0.20408163265306123,0.24489795918367346,0.2857142857142857,0.32653061224489793,0.3673469387755102,0.40816326530612246,0.4489795918367347,0.4897959183673469,0.5306122448979592,0.5714285714285714,0.6122448979591837,0.6530612244897959,0.6938775510204082,0.7346938775510204,0.7755102040816326,0.8163265306122449,0.8571428571428571,0.8979591836734694,0.9387755102040817,0.9795918367346939,1.0204081632653061,1.0612244897959184,1.1020408163265305,1.1428571428571428,1.183673469387755,1.2244897959183674,1.2653061224489797,1.3061224489795917,1.346938775510204,1.3877551020408163,1.4285714285714286,1.469387755102041,1.510204081632653,1.5510204081632653,1.5918367346938775,1.6326530612244898,1.6734693877551021,1.7142857142857142,1.7551020408163265,1.7959183673469388,1.836734693877551,1.8775510204081634,1.9183673469387754,1.9591836734693877,2.0],"type":"scatter"}], {"showlegend":true,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0],"visible":true,"ticks":"inside","range":[0.0,4.0],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0],"visible":true,"ticks":"inside","range":[0.0,4.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>By flipping around the $x$ and $y$ values in the <code>plot&#33;</code> command, we produce the graph of the inverse function–when viewed as a function of $x$. We can see that the domain of the inverse function (in red) is clearly different from that of the function (in blue).</p><p>The inverse function graph can be viewed as a symmetry of the graph of the function. Flipping the graph for $f(x)$ around the line $y=x$ will produce the graph of the inverse function: Here we see for the graph of $f(x) = x^{1/3}$ and its inverse function:</p><pre class="sourceCode julia">f(x) = cbrt(x)
+xs = range(-2, stop=2, length=150) 
+ys = f.(xs)
+plot(xs, ys, color=:blue, aspect_ratio=:equal, legend=false)
+plot!(ys, xs, color=:red)
+plot!(identity, color=:green, linestyle=:dash)
+x, y = 1/2, f(1/2)
+plot!([x,y], [y,x], color=:green, linestyle=:dot)</pre>
+    <div id="3f8ca353-dc03-47ed-a3cf-2e0a451273a3" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('3f8ca353-dc03-47ed-a3cf-2e0a451273a3');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-2.0,-1.9731543624161074,-1.9463087248322148,-1.919463087248322,-1.8926174496644295,-1.8657718120805369,-1.8389261744966443,-1.8120805369127517,-1.7852348993288591,-1.7583892617449663,-1.7315436241610738,-1.7046979865771812,-1.6778523489932886,-1.651006711409396,-1.6241610738255035,-1.5973154362416107,-1.570469798657718,-1.5436241610738255,-1.516778523489933,-1.4899328859060403,-1.4630872483221478,-1.436241610738255,-1.4093959731543624,-1.3825503355704698,-1.3557046979865772,-1.3288590604026846,-1.3020134228187918,-1.2751677852348993,-1.2483221476510067,-1.221476510067114,-1.1946308724832215,-1.167785234899329,-1.1409395973154361,-1.1140939597315436,-1.087248322147651,-1.0604026845637584,-1.0335570469798658,-1.0067114093959733,-0.9798657718120806,-0.9530201342281879,-0.9261744966442953,-0.8993288590604027,-0.87248322147651,-0.8456375838926175,-0.8187919463087249,-0.7919463087248322,-0.7651006711409396,-0.738255033557047,-0.7114093959731543,-0.6845637583892618,-0.6577181208053692,-0.6308724832214765,-0.6040268456375839,-0.5771812080536913,-0.5503355704697986,-0.5234899328859061,-0.4966442953020134,-0.4697986577181208,-0.4429530201342282,-0.4161073825503356,-0.38926174496644295,-0.3624161073825503,-0.33557046979865773,-0.3087248322147651,-0.28187919463087246,-0.2550335570469799,-0.22818791946308725,-0.20134228187919462,-0.174496644295302,-0.1476510067114094,-0.12080536912751678,-0.09395973154362416,-0.06711409395973154,-0.040268456375838924,-0.013422818791946308,0.013422818791946308,0.040268456375838924,0.06711409395973154,0.09395973154362416,0.12080536912751678,0.1476510067114094,0.174496644295302,0.20134228187919462,0.22818791946308725,0.2550335570469799,0.28187919463087246,0.3087248322147651,0.33557046979865773,0.3624161073825503,0.38926174496644295,0.4161073825503356,0.4429530201342282,0.4697986577181208,0.4966442953020134,0.5234899328859061,0.5503355704697986,0.5771812080536913,0.6040268456375839,0.6308724832214765,0.6577181208053692,0.6845637583892618,0.7114093959731543,0.738255033557047,0.7651006711409396,0.7919463087248322,0.8187919463087249,0.8456375838926175,0.87248322147651,0.8993288590604027,0.9261744966442953,0.9530201342281879,0.9798657718120806,1.0067114093959733,1.0335570469798658,1.0604026845637584,1.087248322147651,1.1140939597315436,1.1409395973154361,1.167785234899329,1.1946308724832215,1.221476510067114,1.2483221476510067,1.2751677852348993,1.3020134228187918,1.3288590604026846,1.3557046979865772,1.3825503355704698,1.4093959731543624,1.436241610738255,1.4630872483221478,1.4899328859060403,1.516778523489933,1.5436241610738255,1.570469798657718,1.5973154362416107,1.6241610738255035,1.651006711409396,1.6778523489932886,1.7046979865771812,1.7315436241610738,1.7583892617449663,1.7852348993288591,1.8120805369127517,1.8389261744966443,1.8657718120805369,1.8926174496644295,1.919463087248322,1.9463087248322148,1.9731543624161074,2.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-1.2599210498948732,-1.2542584069509184,-1.2485441663946044,-1.2427771365281286,-1.2369560809963789,-1.2310797164530598,-1.2251467100693285,-1.2191556768718537,-1.2131051768958987,-1.2069937121375889,-1.2008197232878928,-1.1945815862290419,-1.188277608272071,-1.181906024111876,-1.1754649914736177,-1.1689525864213928,-1.1623667982968202,-1.155705524251483,-1.148966563332954,-1.1421476100793602,-1.1352462475719898,-1.1282599398892301,-1.1211860238980154,-1.1140217003107988,-1.1067640239266874,-1.0994098929645568,-1.0919560373834665,-1.0843990060711908,-1.076735152764848,-1.0689606205479385,-1.0610713247451307,-1.053062934009152,-1.044930849362359,-1.0366701809180203,-1.0282757219617855,-1.0197419200207627,-1.0110628444841654,-1.0022321502633007,-0.9932430368867219,-0.9840882023149455,-0.9747597906233837,-0.9652493325359132,-0.9555476775868228,-0.9456449164353739,-0.935530291541279,-0.9251920940131245,-0.9146175439411923,-0.9037926508891867,-0.8927020504024535,-0.8813288113337151,-0.8696542074084859,-0.8576574446354163,-0.845315333747679,-0.8326018936042698,-0.8194878670409024,-0.8059401245299506,-0.791920922421157,-0.7773869703140491,-0.7622882444196001,-0.7465664576591605,-0.7301530578960039,-0.7129665649632426,-0.694908960901739,-0.6758606906123872,-0.6556735643428303,-0.6341603858105127,-0.6110792677482748,-0.5861089170354228,-0.5588076717943957,-0.528541148573282,-0.4943434060523085,-0.4546186581307677,-0.4063852256239512,-0.34275857398726184,-0.2376555216544142,0.2376555216544142,0.34275857398726184,0.4063852256239512,0.4546186581307677,0.4943434060523085,0.528541148573282,0.5588076717943957,0.5861089170354228,0.6110792677482748,0.6341603858105127,0.6556735643428303,0.6758606906123872,0.694908960901739,0.7129665649632426,0.7301530578960039,0.7465664576591605,0.7622882444196001,0.7773869703140491,0.791920922421157,0.8059401245299506,0.8194878670409024,0.8326018936042698,0.845315333747679,0.8576574446354163,0.8696542074084859,0.8813288113337151,0.8927020504024535,0.9037926508891867,0.9146175439411923,0.9251920940131245,0.935530291541279,0.9456449164353739,0.9555476775868228,0.9652493325359132,0.9747597906233837,0.9840882023149455,0.9932430368867219,1.0022321502633007,1.0110628444841654,1.0197419200207627,1.0282757219617855,1.0366701809180203,1.044930849362359,1.053062934009152,1.0610713247451307,1.0689606205479385,1.076735152764848,1.0843990060711908,1.0919560373834665,1.0994098929645568,1.1067640239266874,1.1140217003107988,1.1211860238980154,1.1282599398892301,1.1352462475719898,1.1421476100793602,1.148966563332954,1.155705524251483,1.1623667982968202,1.1689525864213928,1.1754649914736177,1.181906024111876,1.188277608272071,1.1945815862290419,1.2008197232878928,1.2069937121375889,1.2131051768958987,1.2191556768718537,1.2251467100693285,1.2310797164530598,1.2369560809963789,1.2427771365281286,1.2485441663946044,1.2542584069509184,1.2599210498948732],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-1.2599210498948732,-1.2542584069509184,-1.2485441663946044,-1.2427771365281286,-1.2369560809963789,-1.2310797164530598,-1.2251467100693285,-1.2191556768718537,-1.2131051768958987,-1.2069937121375889,-1.2008197232878928,-1.1945815862290419,-1.188277608272071,-1.181906024111876,-1.1754649914736177,-1.1689525864213928,-1.1623667982968202,-1.155705524251483,-1.148966563332954,-1.1421476100793602,-1.1352462475719898,-1.1282599398892301,-1.1211860238980154,-1.1140217003107988,-1.1067640239266874,-1.0994098929645568,-1.0919560373834665,-1.0843990060711908,-1.076735152764848,-1.0689606205479385,-1.0610713247451307,-1.053062934009152,-1.044930849362359,-1.0366701809180203,-1.0282757219617855,-1.0197419200207627,-1.0110628444841654,-1.0022321502633007,-0.9932430368867219,-0.9840882023149455,-0.9747597906233837,-0.9652493325359132,-0.9555476775868228,-0.9456449164353739,-0.935530291541279,-0.9251920940131245,-0.9146175439411923,-0.9037926508891867,-0.8927020504024535,-0.8813288113337151,-0.8696542074084859,-0.8576574446354163,-0.845315333747679,-0.8326018936042698,-0.8194878670409024,-0.8059401245299506,-0.791920922421157,-0.7773869703140491,-0.7622882444196001,-0.7465664576591605,-0.7301530578960039,-0.7129665649632426,-0.694908960901739,-0.6758606906123872,-0.6556735643428303,-0.6341603858105127,-0.6110792677482748,-0.5861089170354228,-0.5588076717943957,-0.528541148573282,-0.4943434060523085,-0.4546186581307677,-0.4063852256239512,-0.34275857398726184,-0.2376555216544142,0.2376555216544142,0.34275857398726184,0.4063852256239512,0.4546186581307677,0.4943434060523085,0.528541148573282,0.5588076717943957,0.5861089170354228,0.6110792677482748,0.6341603858105127,0.6556735643428303,0.6758606906123872,0.694908960901739,0.7129665649632426,0.7301530578960039,0.7465664576591605,0.7622882444196001,0.7773869703140491,0.791920922421157,0.8059401245299506,0.8194878670409024,0.8326018936042698,0.845315333747679,0.8576574446354163,0.8696542074084859,0.8813288113337151,0.8927020504024535,0.9037926508891867,0.9146175439411923,0.9251920940131245,0.935530291541279,0.9456449164353739,0.9555476775868228,0.9652493325359132,0.9747597906233837,0.9840882023149455,0.9932430368867219,1.0022321502633007,1.0110628444841654,1.0197419200207627,1.0282757219617855,1.0366701809180203,1.044930849362359,1.053062934009152,1.0610713247451307,1.0689606205479385,1.076735152764848,1.0843990060711908,1.0919560373834665,1.0994098929645568,1.1067640239266874,1.1140217003107988,1.1211860238980154,1.1282599398892301,1.1352462475719898,1.1421476100793602,1.148966563332954,1.155705524251483,1.1623667982968202,1.1689525864213928,1.1754649914736177,1.181906024111876,1.188277608272071,1.1945815862290419,1.2008197232878928,1.2069937121375889,1.2131051768958987,1.2191556768718537,1.2251467100693285,1.2310797164530598,1.2369560809963789,1.2427771365281286,1.2485441663946044,1.2542584069509184,1.2599210498948732],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-2.0,-1.9731543624161074,-1.9463087248322148,-1.919463087248322,-1.8926174496644295,-1.8657718120805369,-1.8389261744966443,-1.8120805369127517,-1.7852348993288591,-1.7583892617449663,-1.7315436241610738,-1.7046979865771812,-1.6778523489932886,-1.651006711409396,-1.6241610738255035,-1.5973154362416107,-1.570469798657718,-1.5436241610738255,-1.516778523489933,-1.4899328859060403,-1.4630872483221478,-1.436241610738255,-1.4093959731543624,-1.3825503355704698,-1.3557046979865772,-1.3288590604026846,-1.3020134228187918,-1.2751677852348993,-1.2483221476510067,-1.221476510067114,-1.1946308724832215,-1.167785234899329,-1.1409395973154361,-1.1140939597315436,-1.087248322147651,-1.0604026845637584,-1.0335570469798658,-1.0067114093959733,-0.9798657718120806,-0.9530201342281879,-0.9261744966442953,-0.8993288590604027,-0.87248322147651,-0.8456375838926175,-0.8187919463087249,-0.7919463087248322,-0.7651006711409396,-0.738255033557047,-0.7114093959731543,-0.6845637583892618,-0.6577181208053692,-0.6308724832214765,-0.6040268456375839,-0.5771812080536913,-0.5503355704697986,-0.5234899328859061,-0.4966442953020134,-0.4697986577181208,-0.4429530201342282,-0.4161073825503356,-0.38926174496644295,-0.3624161073825503,-0.33557046979865773,-0.3087248322147651,-0.28187919463087246,-0.2550335570469799,-0.22818791946308725,-0.20134228187919462,-0.174496644295302,-0.1476510067114094,-0.12080536912751678,-0.09395973154362416,-0.06711409395973154,-0.040268456375838924,-0.013422818791946308,0.013422818791946308,0.040268456375838924,0.06711409395973154,0.09395973154362416,0.12080536912751678,0.1476510067114094,0.174496644295302,0.20134228187919462,0.22818791946308725,0.2550335570469799,0.28187919463087246,0.3087248322147651,0.33557046979865773,0.3624161073825503,0.38926174496644295,0.4161073825503356,0.4429530201342282,0.4697986577181208,0.4966442953020134,0.5234899328859061,0.5503355704697986,0.5771812080536913,0.6040268456375839,0.6308724832214765,0.6577181208053692,0.6845637583892618,0.7114093959731543,0.738255033557047,0.7651006711409396,0.7919463087248322,0.8187919463087249,0.8456375838926175,0.87248322147651,0.8993288590604027,0.9261744966442953,0.9530201342281879,0.9798657718120806,1.0067114093959733,1.0335570469798658,1.0604026845637584,1.087248322147651,1.1140939597315436,1.1409395973154361,1.167785234899329,1.1946308724832215,1.221476510067114,1.2483221476510067,1.2751677852348993,1.3020134228187918,1.3288590604026846,1.3557046979865772,1.3825503355704698,1.4093959731543624,1.436241610738255,1.4630872483221478,1.4899328859060403,1.516778523489933,1.5436241610738255,1.570469798657718,1.5973154362416107,1.6241610738255035,1.651006711409396,1.6778523489932886,1.7046979865771812,1.7315436241610738,1.7583892617449663,1.7852348993288591,1.8120805369127517,1.8389261744966443,1.8657718120805369,1.8926174496644295,1.919463087248322,1.9463087248322148,1.9731543624161074,2.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.6189562143740406,-0.3906612226458709,-0.18777957555591424,-0.009870653839119958,0.18409782662127785,0.3792191150112484,0.5949506504976171,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"dash","width":1},"y":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.6189562143740406,-0.3906612226458709,-0.18777957555591424,-0.009870653839119958,0.18409782662127785,0.3792191150112484,0.5949506504976171,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.5,0.7937005259840998],"showlegend":true,"mode":"lines","name":"y4","legendgroup":"y4","line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"dot","width":1},"y":[0.7937005259840998,0.5],"type":"scatter"}], {"showlegend":false,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.0,2.0],"domain":[0.19730242053076705,0.8323272090988626],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.0,2.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    </script>
+<p>We drew a line connecting $(1/2, f(1/2))$ to $(f(1/2),1/2)$. We can see that it crosses the line $y=x$ perpendicularly, indicating that points are symmetric about this line. (The plotting argument <code>aspect_ratio&#61;:equal</code> ensures that the $x$ and $y$ axes are on the same scale, so that this type of line will look perpendicular.)</p><p>One consequence of this symmetry, is that if $f$ is strictly increasing, then so is its inverse.</p><div class="alert alert-info" role="alert">
+<div class="markdown"><p>In the above we used <code>cbrt&#40;x&#41;</code> and not <code>x^&#40;1/3&#41;</code>. The latter usage assumes that $x \geq 0$ as it isn't guaranteed that for all real exponents the answer will be a real number. The <code>cbrt</code> function knows there will always be a real answer and provides it.</p>
+</div> 
+</div>
+<h2>Lines</h2><p>The slope of $f(x) = 9/5 \cdot x + 32$ is clearly $9/5$ and the slope of the inverse function $f^{-1}(x) = 5/9 \cdot (x-32)$ is clearly $5/9$–or the reciprocal. This makes sense, as the slope is the rise over the run, and by flipping the $x$ and $y$ values we merely flip over the rise and the run.</p><p>Now consider the graph of the <em>tangent line</em> to a function. This concept will be better defined later, for now, it is a line "tangent" to the graph of $f(x)$ at a point $x=c$.</p><p>For concreteness, we consider $f(x) = \sqrt{x}$ at $c=2$. The tangent line will have slope $1/(2\sqrt{2})$ and will go through the point $(2, f(2)$. We graph the function, its tangent line, and their inverses:</p><pre class="sourceCode julia">f(x) = sqrt(x)
+c = 2
+tl(x) = f(c) + 1/(2 * sqrt(2)) * (x - c)
+xs = range(0, stop=3, length=150) 
+ys = f.(xs)
+zs = tl.(xs)
+plot(xs, ys,  color=:blue, legend=false)
+plot!(xs, zs, color=:blue) # the tangent line
+plot!(ys, xs, color=:red)  # the inverse function
+plot!(zs, xs, color=:red)  # inverse of tangent line</pre>
+    <div id="6fbad66d-bac5-4b1f-a88a-14ea7e0c86bd" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('6fbad66d-bac5-4b1f-a88a-14ea7e0c86bd');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,0.020134228187919462,0.040268456375838924,0.06040268456375839,0.08053691275167785,0.10067114093959731,0.12080536912751678,0.14093959731543623,0.1610738255033557,0.18120805369127516,0.20134228187919462,0.2214765100671141,0.24161073825503357,0.26174496644295303,0.28187919463087246,0.30201342281879195,0.3221476510067114,0.3422818791946309,0.3624161073825503,0.3825503355704698,0.40268456375838924,0.4228187919463087,0.4429530201342282,0.46308724832214765,0.48322147651006714,0.5033557046979866,0.5234899328859061,0.5436241610738255,0.5637583892617449,0.5838926174496645,0.6040268456375839,0.6241610738255033,0.6442953020134228,0.6644295302013423,0.6845637583892618,0.7046979865771812,0.7248322147651006,0.7449664429530202,0.7651006711409396,0.785234899328859,0.8053691275167785,0.825503355704698,0.8456375838926175,0.8657718120805369,0.8859060402684564,0.9060402684563759,0.9261744966442953,0.9463087248322147,0.9664429530201343,0.9865771812080537,1.0067114093959733,1.0268456375838926,1.0469798657718121,1.0671140939597314,1.087248322147651,1.1073825503355705,1.1275167785234899,1.1476510067114094,1.167785234899329,1.1879194630872483,1.2080536912751678,1.2281879194630871,1.2483221476510067,1.2684563758389262,1.2885906040268456,1.308724832214765,1.3288590604026846,1.348993288590604,1.3691275167785235,1.389261744966443,1.4093959731543624,1.429530201342282,1.4496644295302012,1.4697986577181208,1.4899328859060403,1.5100671140939597,1.5302013422818792,1.5503355704697988,1.570469798657718,1.5906040268456376,1.610738255033557,1.6308724832214765,1.651006711409396,1.6711409395973154,1.691275167785235,1.7114093959731544,1.7315436241610738,1.7516778523489933,1.7718120805369129,1.7919463087248322,1.8120805369127517,1.832214765100671,1.8523489932885906,1.8724832214765101,1.8926174496644295,1.912751677852349,1.9328859060402686,1.9530201342281879,1.9731543624161074,1.9932885906040267,2.0134228187919465,2.033557046979866,2.053691275167785,2.0738255033557045,2.0939597315436242,2.1140939597315436,2.134228187919463,2.1543624161073827,2.174496644295302,2.1946308724832213,2.214765100671141,2.2348993288590604,2.2550335570469797,2.2751677852348995,2.295302013422819,2.315436241610738,2.335570469798658,2.3557046979865772,2.3758389261744965,2.3959731543624163,2.4161073825503356,2.436241610738255,2.4563758389261743,2.476510067114094,2.4966442953020134,2.5167785234899327,2.5369127516778525,2.557046979865772,2.577181208053691,2.597315436241611,2.61744966442953,2.6375838926174495,2.6577181208053693,2.6778523489932886,2.697986577181208,2.7181208053691277,2.738255033557047,2.7583892617449663,2.778523489932886,2.7986577181208054,2.8187919463087248,2.838926174496644,2.859060402684564,2.879194630872483,2.8993288590604025,2.9194630872483223,2.9395973154362416,2.959731543624161,2.9798657718120807,3.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.14189513095212064,0.20067001862719533,0.24576957615571215,0.2837902619042413,0.3172871584851762,0.34757066781809537,0.3754192287502549,0.40134003725439066,0.42568539285636187,0.4487118026965578,0.47061290894652913,0.4915391523114243,0.5116101703865483,0.5309229648742578,0.5495574790854838,0.5675805238084826,0.5850486126764433,0.602010055881586,0.6185065364007641,0.6345743169703524,0.6502451783337642,0.665547158460036,0.6805051420247665,0.6951413356361907,0.7094756547606033,0.7235260416086666,0.7373087284671365,0.7508384575005098,0.7641286655071019,0.7771916402262598,0.7900386533743164,0.8026800745087813,0.8151254689931743,0.8273836826945898,0.8394629155461134,0.8513707857127237,0.8631143857873186,0.874700332194369,0.886134808778472,0.8974236053931156,0.9085721521732316,0.919585550067321,0.930468598116313,0.9412258178930583,0.9518614754555286,0.962379601116054,0.9727840072864143,0.9830783046228486,0.9932659166648444,1.0033500931359767,1.0133339220532847,1.0232203407730966,1.0330121460852875,1.042712003454286,1.0523224554933581,1.0618459297485157,1.0712847458595727,1.0806411221581977,1.0899171817561406,1.0991149581709676,1.1082364005315324,1.1172833784009348,1.1262576862507647,1.1351610476169651,1.1439951189645718,1.1527614932858767,1.1614617034541448,1.1700972253528865,1.1786694807987705,1.1871798402745737,1.195629625487041,1.204020111763172,1.2123525302972402,1.2206280702597496,1.2288478807785608,1.2370130728015283,1.2451247208492002,1.253183864665404,1.261191510772903,1.2691486339407048,1.2770561785690857,1.2849150599978958,1.2927261657432774,1.3004903566675283,1.3082084680864723,1.315881310818371,1.3235096721781043,1.331094316920072,1.338635988133007,1.3461354080896735,1.353593279054189,1.361010284049533,1.3683870875876132,1.375724336364095,1.3830226599200568,1.3902826712723815,1.3975049675146731,1.4046901303903674,1.4118387268395873,1.4189513095212065,1.4260284173114735,1.433070575780476,1.440078297647633,1.4470520832173333,1.45399242079577,1.4608997870899505,1.4677746475898072,1.474617456934273,1.48142865926214,1.4882086885484647,1.4949579689272405,1.5016769150010196,1.50836593213812,1.5150254167580222,1.5216557566055269,1.5282573310142038,1.534830511159645,1.5413756603029958,1.5478931340252196,1.5543832804525195,1.5608464404733269,1.5672829479472348,1.5736931299062387,1.580077306748633,1.586435792425881,1.5927688946227738,1.5990769149311648,1.6053601490175626,1.6116188867848413,1.61785341252832,1.6240640050864528,1.6302509379863486,1.6364144795843407,1.6425548932018095,1.6486724372564514,1.6547673653891797,1.6608399265868359,1.6668903653008755,1.6729189215621914,1.6789258310922268,1.6849113254105226,1.6908756319388378,1.6968189741019764,1.7027415714254475,1.7086436396300788,1.7145253907236957,1.7203870330899849,1.7262287715746372,1.7320508075688772],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,0.020134228187919462,0.040268456375838924,0.06040268456375839,0.08053691275167785,0.10067114093959731,0.12080536912751678,0.14093959731543623,0.1610738255033557,0.18120805369127516,0.20134228187919462,0.2214765100671141,0.24161073825503357,0.26174496644295303,0.28187919463087246,0.30201342281879195,0.3221476510067114,0.3422818791946309,0.3624161073825503,0.3825503355704698,0.40268456375838924,0.4228187919463087,0.4429530201342282,0.46308724832214765,0.48322147651006714,0.5033557046979866,0.5234899328859061,0.5436241610738255,0.5637583892617449,0.5838926174496645,0.6040268456375839,0.6241610738255033,0.6442953020134228,0.6644295302013423,0.6845637583892618,0.7046979865771812,0.7248322147651006,0.7449664429530202,0.7651006711409396,0.785234899328859,0.8053691275167785,0.825503355704698,0.8456375838926175,0.8657718120805369,0.8859060402684564,0.9060402684563759,0.9261744966442953,0.9463087248322147,0.9664429530201343,0.9865771812080537,1.0067114093959733,1.0268456375838926,1.0469798657718121,1.0671140939597314,1.087248322147651,1.1073825503355705,1.1275167785234899,1.1476510067114094,1.167785234899329,1.1879194630872483,1.2080536912751678,1.2281879194630871,1.2483221476510067,1.2684563758389262,1.2885906040268456,1.308724832214765,1.3288590604026846,1.348993288590604,1.3691275167785235,1.389261744966443,1.4093959731543624,1.429530201342282,1.4496644295302012,1.4697986577181208,1.4899328859060403,1.5100671140939597,1.5302013422818792,1.5503355704697988,1.570469798657718,1.5906040268456376,1.610738255033557,1.6308724832214765,1.651006711409396,1.6711409395973154,1.691275167785235,1.7114093959731544,1.7315436241610738,1.7516778523489933,1.7718120805369129,1.7919463087248322,1.8120805369127517,1.832214765100671,1.8523489932885906,1.8724832214765101,1.8926174496644295,1.912751677852349,1.9328859060402686,1.9530201342281879,1.9731543624161074,1.9932885906040267,2.0134228187919465,2.033557046979866,2.053691275167785,2.0738255033557045,2.0939597315436242,2.1140939597315436,2.134228187919463,2.1543624161073827,2.174496644295302,2.1946308724832213,2.214765100671141,2.2348993288590604,2.2550335570469797,2.2751677852348995,2.295302013422819,2.315436241610738,2.335570469798658,2.3557046979865772,2.3758389261744965,2.3959731543624163,2.4161073825503356,2.436241610738255,2.4563758389261743,2.476510067114094,2.4966442953020134,2.5167785234899327,2.5369127516778525,2.557046979865772,2.577181208053691,2.597315436241611,2.61744966442953,2.6375838926174495,2.6577181208053693,2.6778523489932886,2.697986577181208,2.7181208053691277,2.738255033557047,2.7583892617449663,2.778523489932886,2.7986577181208054,2.8187919463087248,2.838926174496644,2.859060402684564,2.879194630872483,2.8993288590604025,2.9194630872483223,2.9395973154362416,2.959731543624161,2.9798657718120807,3.0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.7071067811865477,0.7142253058293653,0.7213438304721829,0.7284623551150005,0.735580879757818,0.7426994044006356,0.7498179290434532,0.7569364536862708,0.7640549783290884,0.771173502971906,0.7782920276147236,0.7854105522575412,0.7925290769003588,0.7996476015431764,0.806766126185994,0.8138846508288116,0.8210031754716292,0.8281217001144467,0.8352402247572643,0.8423587494000819,0.8494772740428995,0.8565957986857171,0.8637143233285347,0.8708328479713523,0.8779513726141699,0.8850698972569875,0.8921884218998051,0.8993069465426227,0.9064254711854403,0.9135439958282578,0.9206625204710754,0.927781045113893,0.9348995697567106,0.9420180943995282,0.9491366190423458,0.9562551436851634,0.963373668327981,0.9704921929707986,0.9776107176136162,0.9847292422564338,0.9918477668992514,0.998966291542069,1.0060848161848865,1.0132033408277041,1.0203218654705217,1.0274403901133393,1.034558914756157,1.0416774393989745,1.048795964041792,1.0559144886846097,1.0630330133274273,1.0701515379702449,1.0772700626130625,1.08438858725588,1.0915071118986976,1.0986256365415152,1.1057441611843328,1.1128626858271504,1.119981210469968,1.1270997351127856,1.1342182597556032,1.1413367843984208,1.1484553090412384,1.155573833684056,1.1626923583268736,1.1698108829696912,1.1769294076125087,1.1840479322553263,1.191166456898144,1.1982849815409615,1.2054035061837791,1.2125220308265967,1.2196405554694143,1.226759080112232,1.2338776047550495,1.240996129397867,1.2481146540406847,1.2552331786835023,1.2623517033263199,1.2694702279691374,1.276588752611955,1.2837072772547726,1.2908258018975902,1.2979443265404078,1.3050628511832254,1.312181375826043,1.3192999004688606,1.3264184251116782,1.3335369497544958,1.3406554743973134,1.347773999040131,1.3548925236829485,1.3620110483257661,1.3691295729685837,1.3762480976114013,1.383366622254219,1.3904851468970365,1.397603671539854,1.4047221961826717,1.4118407208254893,1.4189592454683069,1.4260777701111245,1.433196294753942,1.4403148193967596,1.4474333440395772,1.4545518686823948,1.4616703933252124,1.46878891796803,1.4759074426108476,1.4830259672536652,1.4901444918964828,1.4972630165393004,1.504381541182118,1.5115000658249356,1.5186185904677532,1.5257371151105708,1.5328556397533883,1.539974164396206,1.5470926890390235,1.5542112136818411,1.5613297383246587,1.5684482629674763,1.575566787610294,1.5826853122531115,1.589803836895929,1.5969223615387467,1.6040408861815643,1.6111594108243819,1.6182779354671994,1.625396460110017,1.6325149847528346,1.6396335093956522,1.6467520340384698,1.6538705586812874,1.660989083324105,1.6681076079669226,1.6752261326097402,1.6823446572525578,1.6894631818953754,1.696581706538193,1.7037002311810105,1.7108187558238281,1.7179372804666457,1.7250558051094633,1.732174329752281,1.7392928543950985,1.746411379037916,1.7535299036807337,1.7606484283235513,1.7677669529663689],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,0.14189513095212064,0.20067001862719533,0.24576957615571215,0.2837902619042413,0.3172871584851762,0.34757066781809537,0.3754192287502549,0.40134003725439066,0.42568539285636187,0.4487118026965578,0.47061290894652913,0.4915391523114243,0.5116101703865483,0.5309229648742578,0.5495574790854838,0.5675805238084826,0.5850486126764433,0.602010055881586,0.6185065364007641,0.6345743169703524,0.6502451783337642,0.665547158460036,0.6805051420247665,0.6951413356361907,0.7094756547606033,0.7235260416086666,0.7373087284671365,0.7508384575005098,0.7641286655071019,0.7771916402262598,0.7900386533743164,0.8026800745087813,0.8151254689931743,0.8273836826945898,0.8394629155461134,0.8513707857127237,0.8631143857873186,0.874700332194369,0.886134808778472,0.8974236053931156,0.9085721521732316,0.919585550067321,0.930468598116313,0.9412258178930583,0.9518614754555286,0.962379601116054,0.9727840072864143,0.9830783046228486,0.9932659166648444,1.0033500931359767,1.0133339220532847,1.0232203407730966,1.0330121460852875,1.042712003454286,1.0523224554933581,1.0618459297485157,1.0712847458595727,1.0806411221581977,1.0899171817561406,1.0991149581709676,1.1082364005315324,1.1172833784009348,1.1262576862507647,1.1351610476169651,1.1439951189645718,1.1527614932858767,1.1614617034541448,1.1700972253528865,1.1786694807987705,1.1871798402745737,1.195629625487041,1.204020111763172,1.2123525302972402,1.2206280702597496,1.2288478807785608,1.2370130728015283,1.2451247208492002,1.253183864665404,1.261191510772903,1.2691486339407048,1.2770561785690857,1.2849150599978958,1.2927261657432774,1.3004903566675283,1.3082084680864723,1.315881310818371,1.3235096721781043,1.331094316920072,1.338635988133007,1.3461354080896735,1.353593279054189,1.361010284049533,1.3683870875876132,1.375724336364095,1.3830226599200568,1.3902826712723815,1.3975049675146731,1.4046901303903674,1.4118387268395873,1.4189513095212065,1.4260284173114735,1.433070575780476,1.440078297647633,1.4470520832173333,1.45399242079577,1.4608997870899505,1.4677746475898072,1.474617456934273,1.48142865926214,1.4882086885484647,1.4949579689272405,1.5016769150010196,1.50836593213812,1.5150254167580222,1.5216557566055269,1.5282573310142038,1.534830511159645,1.5413756603029958,1.5478931340252196,1.5543832804525195,1.5608464404733269,1.5672829479472348,1.5736931299062387,1.580077306748633,1.586435792425881,1.5927688946227738,1.5990769149311648,1.6053601490175626,1.6116188867848413,1.61785341252832,1.6240640050864528,1.6302509379863486,1.6364144795843407,1.6425548932018095,1.6486724372564514,1.6547673653891797,1.6608399265868359,1.6668903653008755,1.6729189215621914,1.6789258310922268,1.6849113254105226,1.6908756319388378,1.6968189741019764,1.7027415714254475,1.7086436396300788,1.7145253907236957,1.7203870330899849,1.7262287715746372,1.7320508075688772],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.020134228187919462,0.040268456375838924,0.06040268456375839,0.08053691275167785,0.10067114093959731,0.12080536912751678,0.14093959731543623,0.1610738255033557,0.18120805369127516,0.20134228187919462,0.2214765100671141,0.24161073825503357,0.26174496644295303,0.28187919463087246,0.30201342281879195,0.3221476510067114,0.3422818791946309,0.3624161073825503,0.3825503355704698,0.40268456375838924,0.4228187919463087,0.4429530201342282,0.46308724832214765,0.48322147651006714,0.5033557046979866,0.5234899328859061,0.5436241610738255,0.5637583892617449,0.5838926174496645,0.6040268456375839,0.6241610738255033,0.6442953020134228,0.6644295302013423,0.6845637583892618,0.7046979865771812,0.7248322147651006,0.7449664429530202,0.7651006711409396,0.785234899328859,0.8053691275167785,0.825503355704698,0.8456375838926175,0.8657718120805369,0.8859060402684564,0.9060402684563759,0.9261744966442953,0.9463087248322147,0.9664429530201343,0.9865771812080537,1.0067114093959733,1.0268456375838926,1.0469798657718121,1.0671140939597314,1.087248322147651,1.1073825503355705,1.1275167785234899,1.1476510067114094,1.167785234899329,1.1879194630872483,1.2080536912751678,1.2281879194630871,1.2483221476510067,1.2684563758389262,1.2885906040268456,1.308724832214765,1.3288590604026846,1.348993288590604,1.3691275167785235,1.389261744966443,1.4093959731543624,1.429530201342282,1.4496644295302012,1.4697986577181208,1.4899328859060403,1.5100671140939597,1.5302013422818792,1.5503355704697988,1.570469798657718,1.5906040268456376,1.610738255033557,1.6308724832214765,1.651006711409396,1.6711409395973154,1.691275167785235,1.7114093959731544,1.7315436241610738,1.7516778523489933,1.7718120805369129,1.7919463087248322,1.8120805369127517,1.832214765100671,1.8523489932885906,1.8724832214765101,1.8926174496644295,1.912751677852349,1.9328859060402686,1.9530201342281879,1.9731543624161074,1.9932885906040267,2.0134228187919465,2.033557046979866,2.053691275167785,2.0738255033557045,2.0939597315436242,2.1140939597315436,2.134228187919463,2.1543624161073827,2.174496644295302,2.1946308724832213,2.214765100671141,2.2348993288590604,2.2550335570469797,2.2751677852348995,2.295302013422819,2.315436241610738,2.335570469798658,2.3557046979865772,2.3758389261744965,2.3959731543624163,2.4161073825503356,2.436241610738255,2.4563758389261743,2.476510067114094,2.4966442953020134,2.5167785234899327,2.5369127516778525,2.557046979865772,2.577181208053691,2.597315436241611,2.61744966442953,2.6375838926174495,2.6577181208053693,2.6778523489932886,2.697986577181208,2.7181208053691277,2.738255033557047,2.7583892617449663,2.778523489932886,2.7986577181208054,2.8187919463087248,2.838926174496644,2.859060402684564,2.879194630872483,2.8993288590604025,2.9194630872483223,2.9395973154362416,2.959731543624161,2.9798657718120807,3.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.7071067811865477,0.7142253058293653,0.7213438304721829,0.7284623551150005,0.735580879757818,0.7426994044006356,0.7498179290434532,0.7569364536862708,0.7640549783290884,0.771173502971906,0.7782920276147236,0.7854105522575412,0.7925290769003588,0.7996476015431764,0.806766126185994,0.8138846508288116,0.8210031754716292,0.8281217001144467,0.8352402247572643,0.8423587494000819,0.8494772740428995,0.8565957986857171,0.8637143233285347,0.8708328479713523,0.8779513726141699,0.8850698972569875,0.8921884218998051,0.8993069465426227,0.9064254711854403,0.9135439958282578,0.9206625204710754,0.927781045113893,0.9348995697567106,0.9420180943995282,0.9491366190423458,0.9562551436851634,0.963373668327981,0.9704921929707986,0.9776107176136162,0.9847292422564338,0.9918477668992514,0.998966291542069,1.0060848161848865,1.0132033408277041,1.0203218654705217,1.0274403901133393,1.034558914756157,1.0416774393989745,1.048795964041792,1.0559144886846097,1.0630330133274273,1.0701515379702449,1.0772700626130625,1.08438858725588,1.0915071118986976,1.0986256365415152,1.1057441611843328,1.1128626858271504,1.119981210469968,1.1270997351127856,1.1342182597556032,1.1413367843984208,1.1484553090412384,1.155573833684056,1.1626923583268736,1.1698108829696912,1.1769294076125087,1.1840479322553263,1.191166456898144,1.1982849815409615,1.2054035061837791,1.2125220308265967,1.2196405554694143,1.226759080112232,1.2338776047550495,1.240996129397867,1.2481146540406847,1.2552331786835023,1.2623517033263199,1.2694702279691374,1.276588752611955,1.2837072772547726,1.2908258018975902,1.2979443265404078,1.3050628511832254,1.312181375826043,1.3192999004688606,1.3264184251116782,1.3335369497544958,1.3406554743973134,1.347773999040131,1.3548925236829485,1.3620110483257661,1.3691295729685837,1.3762480976114013,1.383366622254219,1.3904851468970365,1.397603671539854,1.4047221961826717,1.4118407208254893,1.4189592454683069,1.4260777701111245,1.433196294753942,1.4403148193967596,1.4474333440395772,1.4545518686823948,1.4616703933252124,1.46878891796803,1.4759074426108476,1.4830259672536652,1.4901444918964828,1.4972630165393004,1.504381541182118,1.5115000658249356,1.5186185904677532,1.5257371151105708,1.5328556397533883,1.539974164396206,1.5470926890390235,1.5542112136818411,1.5613297383246587,1.5684482629674763,1.575566787610294,1.5826853122531115,1.589803836895929,1.5969223615387467,1.6040408861815643,1.6111594108243819,1.6182779354671994,1.625396460110017,1.6325149847528346,1.6396335093956522,1.6467520340384698,1.6538705586812874,1.660989083324105,1.6681076079669226,1.6752261326097402,1.6823446572525578,1.6894631818953754,1.696581706538193,1.7037002311810105,1.7108187558238281,1.7179372804666457,1.7250558051094633,1.732174329752281,1.7392928543950985,1.746411379037916,1.7535299036807337,1.7606484283235513,1.7677669529663689],"showlegend":true,"mode":"lines","name":"y4","legendgroup":"y4","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.020134228187919462,0.040268456375838924,0.06040268456375839,0.08053691275167785,0.10067114093959731,0.12080536912751678,0.14093959731543623,0.1610738255033557,0.18120805369127516,0.20134228187919462,0.2214765100671141,0.24161073825503357,0.26174496644295303,0.28187919463087246,0.30201342281879195,0.3221476510067114,0.3422818791946309,0.3624161073825503,0.3825503355704698,0.40268456375838924,0.4228187919463087,0.4429530201342282,0.46308724832214765,0.48322147651006714,0.5033557046979866,0.5234899328859061,0.5436241610738255,0.5637583892617449,0.5838926174496645,0.6040268456375839,0.6241610738255033,0.6442953020134228,0.6644295302013423,0.6845637583892618,0.7046979865771812,0.7248322147651006,0.7449664429530202,0.7651006711409396,0.785234899328859,0.8053691275167785,0.825503355704698,0.8456375838926175,0.8657718120805369,0.8859060402684564,0.9060402684563759,0.9261744966442953,0.9463087248322147,0.9664429530201343,0.9865771812080537,1.0067114093959733,1.0268456375838926,1.0469798657718121,1.0671140939597314,1.087248322147651,1.1073825503355705,1.1275167785234899,1.1476510067114094,1.167785234899329,1.1879194630872483,1.2080536912751678,1.2281879194630871,1.2483221476510067,1.2684563758389262,1.2885906040268456,1.308724832214765,1.3288590604026846,1.348993288590604,1.3691275167785235,1.389261744966443,1.4093959731543624,1.429530201342282,1.4496644295302012,1.4697986577181208,1.4899328859060403,1.5100671140939597,1.5302013422818792,1.5503355704697988,1.570469798657718,1.5906040268456376,1.610738255033557,1.6308724832214765,1.651006711409396,1.6711409395973154,1.691275167785235,1.7114093959731544,1.7315436241610738,1.7516778523489933,1.7718120805369129,1.7919463087248322,1.8120805369127517,1.832214765100671,1.8523489932885906,1.8724832214765101,1.8926174496644295,1.912751677852349,1.9328859060402686,1.9530201342281879,1.9731543624161074,1.9932885906040267,2.0134228187919465,2.033557046979866,2.053691275167785,2.0738255033557045,2.0939597315436242,2.1140939597315436,2.134228187919463,2.1543624161073827,2.174496644295302,2.1946308724832213,2.214765100671141,2.2348993288590604,2.2550335570469797,2.2751677852348995,2.295302013422819,2.315436241610738,2.335570469798658,2.3557046979865772,2.3758389261744965,2.3959731543624163,2.4161073825503356,2.436241610738255,2.4563758389261743,2.476510067114094,2.4966442953020134,2.5167785234899327,2.5369127516778525,2.557046979865772,2.577181208053691,2.597315436241611,2.61744966442953,2.6375838926174495,2.6577181208053693,2.6778523489932886,2.697986577181208,2.7181208053691277,2.738255033557047,2.7583892617449663,2.778523489932886,2.7986577181208054,2.8187919463087248,2.838926174496644,2.859060402684564,2.879194630872483,2.8993288590604025,2.9194630872483223,2.9395973154362416,2.959731543624161,2.9798657718120807,3.0],"type":"scatter"}], {"showlegend":false,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[0.0,3.0],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[0.0,3.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    </script>
+<p>What do we see? In blue, we can see the familiar square root graph along with a "tangent" line through the point $(2, f(2))$. The red graph of $f^{-1}(x) = x^2, x \geq 0$ is seen and, perhaps surprisingly, a tangent line. This is at the point $(f(2), 2)$. We know the slope of this tangent line is the reciprocal of the slope of the red tangent line. This gives this informal observation:</p><blockquote>
+<p>If the graph of $f(x)$ has a tangent line at $(c, f(c))$ with slope $m$, then the graph of $f^{-1}(x)$ will have a tangent line at $(f(c), c)$ with slope $1/m$.</p>
+</blockquote><p>This is reminiscent of the formula for the slope of a perpendicular line, $-1/m$, but quite different, as this formula implies the two lines have either both positive slopes or both negative slopes, unlike the relationship in slopes between a line and a perpendicular line.</p><p>The key here is that the shape of $f(x)$ near $x=c$ is somewhat related to the shape of $f^{-1}(x)$ at $f(c)$. In this case, if we use the tangent line as a fill in for how steep a function is, we see from the relationship that if $f(x)$ is "steep" at $x=c$, then $f^{-1}(x)$ will be "shallow" at $x=f(c)$.</p><h2>Logarithmic functions: the inverse of exponential functions</h2><p>The family of exponential functions is defined through: $f(x) = a^x, a \geq 0$.</p><p>These functions are strictly <em>decreasing</em> when $0 < a < 1$ and strictly <em>increasing</em> when $a>1$. In both cases an inverse function will exist. (When $a=1$ the function is a constant and is not one-to-one.) The domain of an exponential function is all real $x$ and the range is all <em>positive</em> $x$, so these are switched around for the inverse function.</p><p>The inverse function will solve for $x$ in the equation $a^x = y$. The answer, formally, is the logarithm base $a$, written $\log_a(x)$.</p><p>That is $a^{\log_a(x)} = x$ and $\log_a(a^x) = x$ when defined.</p><p>To see how a logarithm is mathematically defined will have to wait, though the family of functions–one for each $a>0$–are implemented in <code>Julia</code> through the function <code>log&#40;a,x&#41;</code>. There are special cases requiring just one argument: <code>log&#40;x&#41;</code> will compute the natural log, base $e$–the inverse of $f(x) = e^x$; <code>log2&#40;x&#41;</code> will compute the log base $2$–the inverse of $f(x) = 2^x$; and <code>log10&#40;x&#41;</code> will compute the log base $10$–the inverse of $f(x)=10^x$.</p><p>To see this in an example, we plot for base $2$ the exponential function $f(x)=2^x$, its inverse, and the logarithm function with base $2$:</p><pre class="sourceCode julia">f(x) = 2^x
+xs = range(-2, stop=2, length=100) 
+ys = f.(xs)
+plot(xs, ys,  color=:blue, legend=false)  # plot f
+plot!(ys, xs, color=:red)                 # plot f^(-1)
+xs = range(1/4, stop=4, length=100)
+plot!(xs, log2.(xs), color=:green)        # plot log2</pre>
+    <div id="052d6d6d-0e35-4f76-adf4-9febda66cfce" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('052d6d6d-0e35-4f76-adf4-9febda66cfce');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-2.0,-1.9595959595959596,-1.9191919191919191,-1.878787878787879,-1.8383838383838385,-1.797979797979798,-1.7575757575757576,-1.7171717171717171,-1.6767676767676767,-1.6363636363636365,-1.595959595959596,-1.5555555555555556,-1.5151515151515151,-1.4747474747474747,-1.4343434343434343,-1.393939393939394,-1.3535353535353536,-1.3131313131313131,-1.2727272727272727,-1.2323232323232323,-1.1919191919191918,-1.1515151515151516,-1.1111111111111112,-1.0707070707070707,-1.0303030303030303,-0.98989898989899,-0.9494949494949495,-0.9090909090909091,-0.8686868686868687,-0.8282828282828283,-0.7878787878787878,-0.7474747474747475,-0.7070707070707071,-0.6666666666666666,-0.6262626262626263,-0.5858585858585859,-0.5454545454545454,-0.5050505050505051,-0.46464646464646464,-0.42424242424242425,-0.3838383838383838,-0.3434343434343434,-0.30303030303030304,-0.26262626262626265,-0.2222222222222222,-0.18181818181818182,-0.1414141414141414,-0.10101010101010101,-0.06060606060606061,-0.020202020202020204,0.020202020202020204,0.06060606060606061,0.10101010101010101,0.1414141414141414,0.18181818181818182,0.2222222222222222,0.26262626262626265,0.30303030303030304,0.3434343434343434,0.3838383838383838,0.42424242424242425,0.46464646464646464,0.5050505050505051,0.5454545454545454,0.5858585858585859,0.6262626262626263,0.6666666666666666,0.7070707070707071,0.7474747474747475,0.7878787878787878,0.8282828282828283,0.8686868686868687,0.9090909090909091,0.9494949494949495,0.98989898989899,1.0303030303030303,1.0707070707070707,1.1111111111111112,1.1515151515151516,1.1919191919191918,1.2323232323232323,1.2727272727272727,1.3131313131313131,1.3535353535353536,1.393939393939394,1.4343434343434343,1.4747474747474747,1.5151515151515151,1.5555555555555556,1.595959595959596,1.6363636363636365,1.6767676767676767,1.7171717171717171,1.7575757575757576,1.797979797979798,1.8383838383838385,1.878787878787879,1.9191919191919191,1.9595959595959596,2.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.25,0.25710044999730297,0.26440256555526276,0.27191207433879777,0.27963486668882004,0.28757700024252586,0.2957447046849116,0.304144386635241,0.31278263467229667,0.32166622450235793,0.33080212427395883,0.3401975000435942,0.3498597213966623,0.3597963672280517,0.37001523168690786,0.3805243302902413,0.39133190621017355,0.40244643673975194,0.41387663994240537,0.42563148149025665,0.4377201816966549,0.4501522227484447,0.4629373561436452,0.47608561034037156,0.4896072986230007,0.5035130271917495,0.5178137034820122,0.5325205447199813,0.5476450867212644,0.5631991929393964,0.5791950637713467,0.5956452461273193,0.6125626432723523,0.6299605249474366,0.6478525377780926,0.6662527159785693,0.6851754923600619,0.7046357096515821,0.7246486321423627,0.7452299576549261,0.7663958298582102,0.788162850930409,0.8105480945814616,0.833569119445401,0.8572439828530728,0.8815912549960212,0.9066300334926565,0.9323799583681274,0.9588612274596486,0.9860946122593678,1.0141014742071979,1.0429037814463955,1.072524126055029,1.102985741766848,1.1343125221954626,1.1665290395761165,1.1996605640397648,1.2337330834345674,1.2687733237103496,1.3048087698820185,1.3418676875883773,1.3799791452632486,1.4191730369362991,1.4594801056814461,1.5009319677312445,1.5435611372761615,1.5874010519681994,1.6324860991488648,1.6788516428220597,1.7265340513930516,1.7755707261952807,1.8260001308273788,1.8778618213234126,1.9311964771800174,1.9860459332647549,2.042453212630728,2.1004625602631894,2.160119477784612,2.221470759145452,2.2845645273285835,2.3494502720962185,2.4161788888088944,2.484802718347001,2.5553755881661426,2.6279528545185524,2.7025914458736664,2.779349907571925,2.858288447746818,2.9394689845511977,3.0229551947249127,3.108812563541839,3.197108436175503,3.2879120705235816,3.381294691532708,3.477329547066204,3.5760919653585552,3.6776594141016967,3.7821115612094545,3.8895303373078116,4.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.25,0.25710044999730297,0.26440256555526276,0.27191207433879777,0.27963486668882004,0.28757700024252586,0.2957447046849116,0.304144386635241,0.31278263467229667,0.32166622450235793,0.33080212427395883,0.3401975000435942,0.3498597213966623,0.3597963672280517,0.37001523168690786,0.3805243302902413,0.39133190621017355,0.40244643673975194,0.41387663994240537,0.42563148149025665,0.4377201816966549,0.4501522227484447,0.4629373561436452,0.47608561034037156,0.4896072986230007,0.5035130271917495,0.5178137034820122,0.5325205447199813,0.5476450867212644,0.5631991929393964,0.5791950637713467,0.5956452461273193,0.6125626432723523,0.6299605249474366,0.6478525377780926,0.6662527159785693,0.6851754923600619,0.7046357096515821,0.7246486321423627,0.7452299576549261,0.7663958298582102,0.788162850930409,0.8105480945814616,0.833569119445401,0.8572439828530728,0.8815912549960212,0.9066300334926565,0.9323799583681274,0.9588612274596486,0.9860946122593678,1.0141014742071979,1.0429037814463955,1.072524126055029,1.102985741766848,1.1343125221954626,1.1665290395761165,1.1996605640397648,1.2337330834345674,1.2687733237103496,1.3048087698820185,1.3418676875883773,1.3799791452632486,1.4191730369362991,1.4594801056814461,1.5009319677312445,1.5435611372761615,1.5874010519681994,1.6324860991488648,1.6788516428220597,1.7265340513930516,1.7755707261952807,1.8260001308273788,1.8778618213234126,1.9311964771800174,1.9860459332647549,2.042453212630728,2.1004625602631894,2.160119477784612,2.221470759145452,2.2845645273285835,2.3494502720962185,2.4161788888088944,2.484802718347001,2.5553755881661426,2.6279528545185524,2.7025914458736664,2.779349907571925,2.858288447746818,2.9394689845511977,3.0229551947249127,3.108812563541839,3.197108436175503,3.2879120705235816,3.381294691532708,3.477329547066204,3.5760919653585552,3.6776594141016967,3.7821115612094545,3.8895303373078116,4.0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-2.0,-1.9595959595959596,-1.9191919191919191,-1.878787878787879,-1.8383838383838385,-1.797979797979798,-1.7575757575757576,-1.7171717171717171,-1.6767676767676767,-1.6363636363636365,-1.595959595959596,-1.5555555555555556,-1.5151515151515151,-1.4747474747474747,-1.4343434343434343,-1.393939393939394,-1.3535353535353536,-1.3131313131313131,-1.2727272727272727,-1.2323232323232323,-1.1919191919191918,-1.1515151515151516,-1.1111111111111112,-1.0707070707070707,-1.0303030303030303,-0.98989898989899,-0.9494949494949495,-0.9090909090909091,-0.8686868686868687,-0.8282828282828283,-0.7878787878787878,-0.7474747474747475,-0.7070707070707071,-0.6666666666666666,-0.6262626262626263,-0.5858585858585859,-0.5454545454545454,-0.5050505050505051,-0.46464646464646464,-0.42424242424242425,-0.3838383838383838,-0.3434343434343434,-0.30303030303030304,-0.26262626262626265,-0.2222222222222222,-0.18181818181818182,-0.1414141414141414,-0.10101010101010101,-0.06060606060606061,-0.020202020202020204,0.020202020202020204,0.06060606060606061,0.10101010101010101,0.1414141414141414,0.18181818181818182,0.2222222222222222,0.26262626262626265,0.30303030303030304,0.3434343434343434,0.3838383838383838,0.42424242424242425,0.46464646464646464,0.5050505050505051,0.5454545454545454,0.5858585858585859,0.6262626262626263,0.6666666666666666,0.7070707070707071,0.7474747474747475,0.7878787878787878,0.8282828282828283,0.8686868686868687,0.9090909090909091,0.9494949494949495,0.98989898989899,1.0303030303030303,1.0707070707070707,1.1111111111111112,1.1515151515151516,1.1919191919191918,1.2323232323232323,1.2727272727272727,1.3131313131313131,1.3535353535353536,1.393939393939394,1.4343434343434343,1.4747474747474747,1.5151515151515151,1.5555555555555556,1.595959595959596,1.6363636363636365,1.6767676767676767,1.7171717171717171,1.7575757575757576,1.797979797979798,1.8383838383838385,1.878787878787879,1.9191919191919191,1.9595959595959596,2.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.25,0.2878787878787879,0.32575757575757575,0.36363636363636365,0.4015151515151515,0.4393939393939394,0.4772727272727273,0.5151515151515151,0.553030303030303,0.5909090909090909,0.6287878787878788,0.6666666666666666,0.7045454545454546,0.7424242424242424,0.7803030303030303,0.8181818181818182,0.8560606060606061,0.8939393939393939,0.9318181818181818,0.9696969696969697,1.0075757575757576,1.0454545454545454,1.0833333333333333,1.121212121212121,1.1590909090909092,1.196969696969697,1.2348484848484849,1.2727272727272727,1.3106060606060606,1.3484848484848484,1.3863636363636365,1.4242424242424243,1.4621212121212122,1.5,1.5378787878787878,1.5757575757575757,1.6136363636363635,1.6515151515151516,1.6893939393939394,1.7272727272727273,1.7651515151515151,1.803030303030303,1.8409090909090908,1.878787878787879,1.9166666666666667,1.9545454545454546,1.9924242424242424,2.0303030303030303,2.0681818181818183,2.106060606060606,2.143939393939394,2.1818181818181817,2.2196969696969697,2.257575757575758,2.2954545454545454,2.3333333333333335,2.371212121212121,2.409090909090909,2.446969696969697,2.484848484848485,2.522727272727273,2.5606060606060606,2.5984848484848486,2.6363636363636362,2.6742424242424243,2.712121212121212,2.75,2.787878787878788,2.8257575757575757,2.8636363636363638,2.9015151515151514,2.9393939393939394,2.977272727272727,3.015151515151515,3.053030303030303,3.090909090909091,3.128787878787879,3.1666666666666665,3.2045454545454546,3.242424242424242,3.2803030303030303,3.3181818181818183,3.356060606060606,3.393939393939394,3.4318181818181817,3.4696969696969697,3.507575757575758,3.5454545454545454,3.5833333333333335,3.621212121212121,3.659090909090909,3.696969696969697,3.734848484848485,3.772727272727273,3.8106060606060606,3.8484848484848486,3.8863636363636362,3.9242424242424243,3.962121212121212,4.0],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-2.0,-1.7964666059148677,-1.6181293646563555,-1.4594316186372973,-1.3164736647952544,-1.1864131242308813,-1.0671141958585368,-0.9569312781081141,-0.8545695604784364,-0.758991900496205,-0.6693546880115286,-0.5849625007211563,-0.505235308250422,-0.4296842752432452,-0.3578935921752351,-0.2895066171949848,-0.22421515694326571,-0.1617510699966122,-0.10187961401921364,-0.044394119358453395,0.010888316142736155,0.06413033741971556,0.11547721741993588,0.1650592462704962,0.21299372333419844,0.25938662881864955,0.3043340348726241,0.3479233034203068,0.39023410827827115,0.4313393116079442,0.47130571892558915,0.510194732319184,0.548062917909627,0.5849625007211562,0.6209417978267228,0.6560455987826387,0.6903155008673847,0.7237902054184729,0.7565057805618514,0.7884958948062882,0.8197920252958268,0.85042364394949,0.8804183842473274,0.9098021910284219,0.9385994553358568,0.9668331360648007,0.9945248699338489,1.021695071099319,1.048363021561399,1.074546953365054,1.100264123473429,1.1255308820838588,1.1503627350637944,1.1747744011037082,1.1987798641144976,1.222392421336448,1.2456247275741648,1.268488835925902,1.2909962353354714,1.3131578852596302,1.3349842477128089,1.3564853169237308,1.377670646814359,1.3985493764902748,1.4191302539127268,1.4394216579058028,1.4594316186372973,1.4791678366985594,1.4986377008967844,1.5178483048626192,1.5368064625665037,1.5555187228286742,1.5739913829001528,1.5922305011851954,1.610241909169514,1.628031222613042,1.645603852060992,1.6629650127224291,1.6801197337614964,1.6970728670426933,1.7138290953682715,1.73039294024272,1.7467687691965648,1.7629608026991508,1.7789731206877817,1.7948096687384905,1.810474263901783,1.8259706002249512,1.8413022539809418,1.856472688622295,1.8714852594773197,1.8863432182044328,1.901049717019458,1.9156078127096277,1.9300204704470736,1.9442905674137125,1.9584208962486005,1.9724141683281005,1.986273016888488,2.0],"type":"scatter"}], {"showlegend":false,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0,3.0,4.0],"visible":true,"ticks":"inside","range":[-2.0,4.0],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2","3","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0,3.0,4.0],"visible":true,"ticks":"inside","range":[-2.0,4.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2","3","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    </script>
+<p>Though we made three graphs, only two are seen, as the graph of <code>log2</code> matches that of the inverse function.</p><p>Note that we needed a bit of care to plot the inverse function directly, as the domain of $f$ is <em>not</em> the domain of $f^{-1}$. Again, in this case the domain of $f$ is all $x$, but the domain of $f^{-1}$ is only all <em>positive</em> $x$ values.</p><p>Knowing that <code>log2</code> implements an inverse function allows us to solve many problems involving doubling.</p><h5>Example</h5><p>An <a href="https://en.wikipedia.org/wiki/Wheat_and_chessboard_problem">old</a> story about doubling is couched in terms of doubling grains of wheat. To simplify the story, suppose each day an amount of grain is doubled. How many days of doubling will it take 1 grain to become 1 million grains?</p><p>The number of grains after one day is $2$, two days is $4$, three days is $8$ and so after $n$ days the number of grains is $2^n$. To answer the question, we need to solve $2^x = 1,000,000$. The logarithm function yields 20 days (after rounding up):</p><pre class="sourceCode julia">log2(1_000_000)</pre>
+<pre class="output">
+19.931568569324174</pre>
+
+<h5>Example</h5><p>The half-life of a radioactive material is the time it takes for half the material to decay. Different materials have quite different half lives with some quite long, and others quite short. See <a href="https://en.wikipedia.org/wiki/List_of_radioactive_isotopes_by_half-life">half lives</a> for some details.</p><p>The carbon 14 isotope is a naturally occurring isotope on Earth, appearing in trace amounts. Unlike Carbon 12 and 13 it decays, in this case with a half life of 5730 years (plus or minus 40 years). In a <a href="https://en.wikipedia.org/wiki/Radiocarbon_dating">technique</a> due to Libby, measuring the amount of Carbon 14 present in an organic item can indicate the time since death. The amount of Carbon 14 at death is essentially that of the atmosphere, and this amount decays over time. If roughly half the carbon 14 remains, then the death occurred about 5730 years ago.</p><p>A formula for the amount of carbon 14 remaining $t$ years after death would be $P(t) = P_0 \cdot 2^{-t/5730}$.</p><p>If $1/10$ of the original carbon 14 remains, how old is the item? This amounts to solving $2^{-t/5730} = 1/10$. We have: $-t/5730 = \log_2(1/10)$ or:</p><pre class="sourceCode julia">-5730 * log2(1/10)</pre>
+<pre class="output">
+19034.647983704584</pre>
+
+<div class="alert alert-info" role="alert">
+<div class="markdown"><p>(Historically) Libby and James Arnold proceeded to test the radiocarbon dating theory by analyzing samples with known ages. For example, two samples taken from the tombs of two Egyptian kings, Zoser and Sneferu, independently dated to 2625 BC plus or minus 75 years, were dated by radiocarbon measurement to an average of 2800 BC plus or minus 250 years. These results were published in Science in 1949. Within 11 years of their announcement, more than 20 radiocarbon dating laboratories had been set up worldwide. Source: <a href="http://tinyurl.com/p5msnh6">Wikipedia</a>.</p>
+</div> 
+</div>
+<h3>Properties of logarithms</h3><p>The exponent rules for powers derive from the positive integer case, that $a^n \cdot a^m = a^{n+m}$ and $(a^n)^m = a^{n \cdot m}$.  These properties are preserved when defining $a^x$ for non-integer $x$. This is done by defining $a^0$ to be $1$ when $a\neq 0$. Negative integer powers are defined through reciprocals, and rational powers are handled by defining $a^{1/n}, n > 1$ as the non-negative solution to $x^n=a$, assuming now that $a>0$.  The general case of a rational exponent comes from defining the behaviour to preserve the rules above (e.g., $a^{m/n}$ is defined through $(a^m)^{1/n}$.  From here, calculus can be used to establish that for all real $x$, $a^x$ is defined when $a>0$, and a consequence of the definition is the two rules of exponents above. (Conversely, some books first define logarithms then use the theory of inverse functions to define $a^x$ in general.)</p><p>What do these properties of exponents imply about logarithms?</p><p>Consider the sum $\log_a(u) + \log_a(v)$. If we raise $a$ to this power, we have using the powers of exponents and the inverse nature of $a^x$ and $\log_a(x)$ that:</p>$$~
+a^{\log_a(u) + \log_a(v)} = a^{\log_a(u)} \cdot a^{\log_a(v)} = u \cdot v.
+~$$
+<p>Taking $\log_a$ of <em>both</em> sides yields $\log_a(u) + \log_a(v)=\log_a(u\cdot v)$. That is logarithms turn products into sums (of logs).</p><p>Similarly, the relation $(a^{x})^y =a^{x \cdot y}, a > 0$s can be used to see that $\log_a(b^x) = x \cdot\log_a(b)$. This follows, as applying $a^x$ to each side yields the same answer.</p><p>Due to inverse relationship between $a^x$ and $\log_a(x)$ we have:</p>$$~
+a^{\log_a(b^x)} = b^x.
+~$$
+<p>Due to the rules of exponents, we have:</p>$$~
+a^{x \log_a(b)} = a^{\log_a(b) \cdot x} = (a^{\log_a(b)})^x = b^x.
+~$$
+<p>Finally, since $a^x$ is one-to-one (when $a>0$ and $a \neq 1$), if  $a^{\log_a(b^x)}=a^{x \log_a(b)}$ it must be that $\log_a(b^x) = x \log_a(b)$. That is, logarithms turn powers into products.</p><p>Finally, we use the inverse property of logarithms and powers to show that logarithms can be defined for any base. Say $a, b > 0$. Then $\log_a(x) = \log_b(x)/\log_b(a)$. Again, to verify this we apply $a^x$ to both sides to see we get the same answer:</p>$$~
+a^{\log_a(x)} = x,
+~$$
+<p>this by the inverse property. Whereas, by expressing $a=b^{\log_b(a)}$ we have:</p>$$~
+a^{(\log_b(x)/\log_b(b))} = (b^{\log_b(a)})^{(\log_b(x)/\log_b(a))} =
+b^{\log_b(a) \cdot \log_b(x)/\log_b(a) } = b^{\log_b(x)} = x.
+~$$
+<p>In short we have these three properties of logarithmic functions:</p><blockquote>
+<p>if $a,b$ are positive bases; $u,v$ are positive numbers; and $x$ is any real number then: 1) $\log_a(uv) = \log_a(u) + \log_a(v)$, 2) $\log_a(u^x) = x \log_a(u)$, and  3) $\log_a(u) = \log_b(u)/\log_b(a)$.</p>
+</blockquote><h5>Example</h5><p>Before the ubiquity of electonic calculating devices, the need to compute was still present. Ancient civilizations had abacuses to make addition easier. For multiplication and powers a <a href="https://en.wikipedia.org/wiki/Slide_rule">slide rule</a> rule could be used. It is easy to represent addition physically with two straight pieces of wood–just represent a number with a distance and align the two pieces so that the distances are sequentially arranged. To multiply then was as easy: represent the logarithm of a number with a distance then add the logarithms. The sum of the logarithms is the logarithm of the <em>product</em> of the original two values. Converting back to a number answers the question. The conversion back and forth is done by simply labeling the wood using a logartithmic scale. The slide rule was <a href="http://tinyurl.com/qytxo3e">invented</a> soon after Napier's initial publication on the logarithm in 1614.</p><h2>Questions</h2><h6>Question</h6><p>Is it possible that a function have two different inverses?</p><form name="WeaveQuestion" data-id="lXwCdOAo" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_lXwCdOAo" value="1"><div class="markdown"><p>Yes, the function $f(x) = x^2, x \geq 0$ will have a different inverse than the same function $f(x) = x^2,  x \leq 0$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_lXwCdOAo" value="2"><div class="markdown"><p>No, for all $x$ in the domain an an inverse, the value of any inverse will be the same, hence all inverse functions would be identical.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="lXwCdOAo_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_lXwCdOAo']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#lXwCdOAo_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#lXwCdOAo_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A function takes a value $x$ adds $1$, divides by $2$, and then subtracts $1$. Is the function "one-to-one"?</p><form name="WeaveQuestion" data-id="RBP721IE" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_RBP721IE" value="1"><div class="markdown"><p>No, the function is $1$ then $2$ then $1$, but not "one-to-one"</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_RBP721IE" value="2"><div class="markdown"><p>Yes, the function is the linear function $f(x)=(x+1)/2 + 1$ and so is monotonic.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="RBP721IE_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_RBP721IE']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#RBP721IE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#RBP721IE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Is the function $f(x) = x^5 - x - 1$ one-to-one?</p><form name="WeaveQuestion" data-id="B6rUOAKO" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_B6rUOAKO" value="1"><div class="markdown"><p>No, a graph over $(-2,2)$ will show this.</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_B6rUOAKO" value="2"><div class="markdown"><p>Yes, a graph over $(-100, 100)$ will show this.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="B6rUOAKO_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_B6rUOAKO']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#B6rUOAKO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#B6rUOAKO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A function is given by the table</p><pre class="sourceCode julia">x  |   y
+--------
+1  |   3
+2  |   4
+3  |   5
+4  |   3
+5  |   4
+6  |   5</pre>
+<p>Is the function one-to-one?</p><form name="WeaveQuestion" data-id="SUAsbAtV" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_SUAsbAtV" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_SUAsbAtV" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="SUAsbAtV_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_SUAsbAtV']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#SUAsbAtV_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#SUAsbAtV_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A function is defined by its graph. </p>    <div id="353e8ef2-6333-4eeb-a682-3721d215f09b" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('353e8ef2-6333-4eeb-a682-3721d215f09b');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0460203379332808,0.0920406758665616,0.1380610137998424,0.1840813517331232,0.6096058267871892,1.0351303018412552,1.4606547768953213,1.8861792519493874,2.3976241975133914,2.9090691430773954,3.341489335489989,3.7739095279025827,4.24363906016576,4.713368592428937,5.146417672862272,5.579466753295607,6.043741135054066,6.508015516812526,7.045922918460947,7.583830320109367,8.061858939143871,8.539887558178375,8.959075579283546,9.378263600388719,9.83529106532049,10.29231853025226,10.75206223487594,11.211805939499621,11.720111394773337,12.228416850047052,12.7120566647163,13.195696479385546,13.698569670723053,14.20144286206056,14.624754974926205,15.048067087791852,15.564883197183978,16.081699306576102,16.567521692682398,17.053344078788697,17.442506647115284,17.83166921544187,18.220831783768457,18.609994352095043,18.66988474445597,18.7297751368169,18.78966552917783],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.624247364599707e-5,0.00012989851583747325,0.0004381754221078893,0.0010378683787492238,0.037061494474840084,0.17520143019899104,0.4667142280036697,0.9355015792609749,1.7204110230912724,2.678635290658695,3.540057406608365,4.36492480111171,5.135772795575564,5.713368112609097,6.053696606402187,6.226524086863951,6.280903828068563,6.285074668545174,6.3550197381534606,6.62009979494115,7.083387731421558,7.766041982584637,8.510025084782603,9.331766011161326,10.234370919680181,11.05505925115335,11.722559396811183,12.18851882297982,12.46891769715398,12.559974147124157,12.566885418182693,12.607096574875781,12.793221419934051,13.203507847978662,13.741289550188707,14.435032255991883,15.422290813931946,16.446795417705903,17.325076081452742,18.02804539745633,18.42913002769837,18.682669309379367,18.80894513069996,18.847271091441407,18.84859079785574,18.84926970240991,18.849520124892795],"type":"scatter"}], {"showlegend":true,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[2.5,5.0,7.5,10.0,12.5,15.0,17.5],"visible":true,"ticks":"inside","range":[0.0460203379332808,18.78966552917783],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["2.5","5.0","7.5","10.0","12.5","15.0","17.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[2.5,5.0,7.5,10.0,12.5,15.0,17.5],"visible":true,"ticks":"inside","range":[1.624247364599707e-5,18.849520124892795],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["2.5","5.0","7.5","10.0","12.5","15.0","17.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>Over the domain shown, is the function one-to-one?</p><form name="WeaveQuestion" data-id="BAEAR8AJ" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_BAEAR8AJ" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_BAEAR8AJ" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="BAEAR8AJ_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_BAEAR8AJ']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#BAEAR8AJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#BAEAR8AJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Suppose $f(x) = x^{-1}$.</p><p>What is $g(x) = (f(x))^{-1}$?</p><form name="WeaveQuestion" data-id="cpdijnL7" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_cpdijnL7" value="1"><div class="markdown">$g(x) = x$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_cpdijnL7" value="2"><div class="markdown">$g(x) = x^{-1}$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="cpdijnL7_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_cpdijnL7']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#cpdijnL7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#cpdijnL7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>What is $g(x) = f^{-1}(x)$?</p><form name="WeaveQuestion" data-id="5cQ09XaO" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_5cQ09XaO" value="1"><div class="markdown">$g(x) = x$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_5cQ09XaO" value="2"><div class="markdown">$g(x) = x^{-1}$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="5cQ09XaO_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_5cQ09XaO']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#5cQ09XaO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#5cQ09XaO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A function is given by its graph:</p>    <div id="446a1c99-583b-46fc-bbb8-a3288e22a929" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('446a1c99-583b-46fc-bbb8-a3288e22a929');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-1.9902341809802118,-1.9804683619604238,-1.9707025429406357,-1.9609367239208475,-1.8706376257722628,-1.780338527623678,-1.6900394294750933,-1.5997403313265088,-1.4912083430520067,-1.3826763547775045,-1.2909139399572207,-1.1991515251369371,-1.0994718225023656,-0.9997921198677943,-0.9078962508646409,-0.8160003818614874,-0.6189562143740406,-0.3906612226458709,-0.18777957555591424,-0.009870653839119958,0.18409782662127785,0.3792191150112484,0.5949506504976171,0.8002137629793739,0.9069267685123881,1.0136397740454022,1.1034693943563914,1.1932990146673805,1.3029707993064186,1.4126425839454564,1.5157372962301452,1.618832008514834,1.7839977322895368,1.9491634560642397,1.9745817280321198],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999705852622126,-0.9998823427793041,-0.9997352777425335,-0.9995293988036597,-0.9948430597767467,-0.9851550036675093,-0.9705139385764463,-0.9509934745716481,-0.9212151186366438,-0.884747267341282,-0.8488898446191034,-0.8086251202048149,-0.7601364898831775,-0.7069913233759381,-0.6541513392813404,-0.5979052234581003,-0.4672051572535759,-0.3020330699907742,-0.14694767244280807,-0.007752315744382067,0.1440868140792898,0.29345407672551554,0.4504534300451302,0.5879210691037161,0.6535752319633152,0.7146410524921378,0.7621727928479266,0.8059123249407538,0.8538569674860574,0.8954704079393756,0.9285388260183279,0.9555228782097791,0.985644294445677,0.9992030260843753,0.9998007366681562],"type":"scatter"}], {"showlegend":true,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.9902341809802118,1.9745817280321198],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.75,-0.5,-0.25,0.0,0.25,0.5,0.75],"visible":true,"ticks":"inside","range":[-0.9999705852622126,0.9998007366681562],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.75","-0.50","-0.25","0.00","0.25","0.50","0.75"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    </script>
+<p>What is the value of $f(1)$?</p><form name='WeaveQuestion' data-id='IONXxc2A' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="IONXxc2A" type="number" class="form-control">
+
+</div>
+  
+<div id='IONXxc2A_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#IONXxc2A').on('change', function() {
+  correct = Math.abs(this.value - 0.7071067811865475) <= 0.2;
+
+  if(correct) {
+     $('#IONXxc2A_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#IONXxc2A_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is the value of $f^{-1}(1)$?</p><form name='WeaveQuestion' data-id='8zyih4LY' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="8zyih4LY" type="number" class="form-control">
+
+</div>
+  
+<div id='8zyih4LY_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#8zyih4LY').on('change', function() {
+  correct = Math.abs(this.value - 2) <= 0.2;
+
+  if(correct) {
+     $('#8zyih4LY_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#8zyih4LY_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is the value of $(f(1))^{-1}$?</p><form name='WeaveQuestion' data-id='tyxnWoOO' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="tyxnWoOO" type="number" class="form-control">
+
+</div>
+  
+<div id='tyxnWoOO_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#tyxnWoOO').on('change', function() {
+  correct = Math.abs(this.value - 1.4142135623730951) <= 0.2;
+
+  if(correct) {
+     $('#tyxnWoOO_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#tyxnWoOO_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is the value of $f^{-1}(1/2)$?</p><form name='WeaveQuestion' data-id='dufJ68AK' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="dufJ68AK" type="number" class="form-control">
+
+</div>
+  
+<div id='dufJ68AK_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#dufJ68AK').on('change', function() {
+  correct = Math.abs(this.value - 0.6666666666666666) <= 0.2;
+
+  if(correct) {
+     $('#dufJ68AK_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#dufJ68AK_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>A function is described as follows: for $x > 0$ it takes the square root, adds $1$ and divides by $2$.</p><p>What is the inverse of this function?</p><form name="WeaveQuestion" data-id="8dHstxFa" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8dHstxFa" value="1"><div class="markdown"><p>The function that divides by $2$, adds $1$, and then takes the square root of the value.</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8dHstxFa" value="2"><div class="markdown"><p>The function that multiplies by $2$, subtracts $1$ and then squares the value.</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_8dHstxFa" value="3"><div class="markdown"><p>The function that takes square of the value, then subtracts $1$, and finally multiplies by $2$.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="8dHstxFa_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_8dHstxFa']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#8dHstxFa_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#8dHstxFa_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>A function, $f$, is specified by a table:</p><pre class="sourceCode julia">x  |  y
+-------
+1  |  2 
+2  |  3
+3  |  5
+4  |  8
+5  |  13</pre>
+<p>What is $f(3)$?</p><form name='WeaveQuestion' data-id='9gsUhrAT' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="9gsUhrAT" type="number" class="form-control">
+
+</div>
+  
+<div id='9gsUhrAT_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#9gsUhrAT').on('change', function() {
+  correct = Math.abs(this.value - 5) <= 0;
+
+  if(correct) {
+     $('#9gsUhrAT_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#9gsUhrAT_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is $f^{-1}(3)$?</p><form name='WeaveQuestion' data-id='P0uYfeXH' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="P0uYfeXH" type="number" class="form-control">
+
+</div>
+  
+<div id='P0uYfeXH_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#P0uYfeXH').on('change', function() {
+  correct = Math.abs(this.value - 2) <= 0;
+
+  if(correct) {
+     $('#P0uYfeXH_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#P0uYfeXH_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is $f(5)^{-1}$?</p><form name='WeaveQuestion' data-id='3oXERLvM' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="3oXERLvM" type="number" class="form-control">
+
+</div>
+  
+<div id='3oXERLvM_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#3oXERLvM').on('change', function() {
+  correct = Math.abs(this.value - 0.07692307692307693) <= 0.001;
+
+  if(correct) {
+     $('#3oXERLvM_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#3oXERLvM_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What is $f^{-1}(5)$?</p><form name='WeaveQuestion' data-id='b2AfJpZE' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="b2AfJpZE" type="number" class="form-control">
+
+</div>
+  
+<div id='b2AfJpZE_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#b2AfJpZE').on('change', function() {
+  correct = Math.abs(this.value - 3) <= 0;
+
+  if(correct) {
+     $('#b2AfJpZE_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#b2AfJpZE_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Find the inverse function of $f(x) = (x^3 + 4)/5$.</p><form name="WeaveQuestion" data-id="eyr0LiJW" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eyr0LiJW" value="1"><div class="markdown">$f^{-1}(x) = (5y-4)^{1/3}$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eyr0LiJW" value="2"><div class="markdown">$f^{-1}(x) = (5y-4)^3$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eyr0LiJW" value="3"><div class="markdown">$f^{-1}(x) = 5/(x^3 + 4)$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="eyr0LiJW_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_eyr0LiJW']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#eyr0LiJW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#eyr0LiJW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Find the inverse function of $f(x) = x^\pi + e,  x \geq 0$.</p><form name="WeaveQuestion" data-id="KDhdn45D" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_KDhdn45D" value="1"><div class="markdown">$f^{-1}(x) = (x-e)^{\pi}$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_KDhdn45D" value="2"><div class="markdown">$f^{-1}(x) = (x-\pi)^{e}$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_KDhdn45D" value="3"><div class="markdown">$f^{-1}(x) = (x-e)^{1/\pi}$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="KDhdn45D_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_KDhdn45D']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#KDhdn45D_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#KDhdn45D_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>What is the <em>domain</em> of the inverse function for $f(x) = x^2 + 7,  x \geq 0$?</p><form name="WeaveQuestion" data-id="IhOKdjAC" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_IhOKdjAC" value="1"><div class="markdown">$(-\infty, \infty)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_IhOKdjAC" value="2"><div class="markdown">$[7, \infty)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_IhOKdjAC" value="3"><div class="markdown">$[0, \infty)$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="IhOKdjAC_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_IhOKdjAC']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#IhOKdjAC_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#IhOKdjAC_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>What is the <em>range</em> of the inverse function for $f(x) =  x^2 + 7,  x \geq 0$?</p><form name="WeaveQuestion" data-id="MamSKS9r" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_MamSKS9r" value="1"><div class="markdown">$[0, \infty)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_MamSKS9r" value="2"><div class="markdown">$[7, \infty)$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_MamSKS9r" value="3"><div class="markdown">$(-\infty, \infty)$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="MamSKS9r_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_MamSKS9r']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#MamSKS9r_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#MamSKS9r_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>From plot, are blue and red inverse functions?</p>    <div id="3cf2e015-33d3-4209-9ab6-e3daa571cde4" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('3cf2e015-33d3-4209-9ab6-e3daa571cde4');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,0.020202020202020204,0.04040404040404041,0.06060606060606061,0.08080808080808081,0.10101010101010101,0.12121212121212122,0.1414141414141414,0.16161616161616163,0.18181818181818182,0.20202020202020202,0.2222222222222222,0.24242424242424243,0.26262626262626265,0.2828282828282828,0.30303030303030304,0.32323232323232326,0.3434343434343434,0.36363636363636365,0.3838383838383838,0.40404040404040403,0.42424242424242425,0.4444444444444444,0.46464646464646464,0.48484848484848486,0.5050505050505051,0.5252525252525253,0.5454545454545454,0.5656565656565656,0.5858585858585859,0.6060606060606061,0.6262626262626263,0.6464646464646465,0.6666666666666666,0.6868686868686869,0.7070707070707071,0.7272727272727273,0.7474747474747475,0.7676767676767676,0.7878787878787878,0.8080808080808081,0.8282828282828283,0.8484848484848485,0.8686868686868687,0.8888888888888888,0.9090909090909091,0.9292929292929293,0.9494949494949495,0.9696969696969697,0.98989898989899,1.0101010101010102,1.0303030303030303,1.0505050505050506,1.0707070707070707,1.0909090909090908,1.1111111111111112,1.1313131313131313,1.1515151515151516,1.1717171717171717,1.1919191919191918,1.2121212121212122,1.2323232323232323,1.2525252525252526,1.2727272727272727,1.292929292929293,1.3131313131313131,1.3333333333333333,1.3535353535353536,1.3737373737373737,1.393939393939394,1.4141414141414141,1.4343434343434343,1.4545454545454546,1.4747474747474747,1.494949494949495,1.5151515151515151,1.5353535353535352,1.5555555555555556,1.5757575757575757,1.595959595959596,1.6161616161616161,1.6363636363636365,1.6565656565656566,1.6767676767676767,1.696969696969697,1.7171717171717171,1.7373737373737375,1.7575757575757576,1.7777777777777777,1.797979797979798,1.8181818181818181,1.8383838383838385,1.8585858585858586,1.878787878787879,1.898989898989899,1.9191919191919191,1.9393939393939394,1.9595959595959596,1.97979797979798,2.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,8.244881217026918e-6,6.595904973621535e-5,0.00022261179285972677,0.0005276723978897228,0.0010306101521283645,0.0017808943428778141,0.002827994257440232,0.004221379183117782,0.006010518407212622,0.008244881217026916,0.010973936899862825,0.014247154743022513,0.018114004033808143,0.022623954059521854,0.027826474107465846,0.03377103346494226,0.04050710141925324,0.04808414725770098,0.056551640267587605,0.06595904973621533,0.07635584495088628,0.0877914951989026,0.10031546976756649,0.1139772379441801,0.1288262690160456,0.14491203227046515,0.16228399699474075,0.18099163247617484,0.20108440800206945,0.22261179285972676,0.2456232563364489,0.27016826771953806,0.2962962962962963,0.3240568113540259,0.353499282180029,0.38467317806160783,0.41762796828606447,0.45241312214070084,0.4890781089128196,0.5276723978897226,0.5682454583587121,0.6108467596070902,0.6555257709221591,0.7023319615912208,0.7513148009015777,0.8025237581405319,0.8560083025953855,0.9118179035534408,0.9700020303019998,1.0306101521283648,1.0936917383198375,1.1592962581637212,1.2274731809473163,1.298271975957926,1.3717421124828535,1.4479330598093987,1.526894287224866,1.6086752640165556,1.6933254594717706,1.7808943428778141,1.8714313835219862,1.9649860506915913,2.061607813673929,2.1613461417563045,2.264250504226017,2.3703703703703702,2.479755209476667,2.5924544908322074,2.708517683724296,2.827994257440232,2.9509336812673204,3.0773854244928627,3.20739895640416,3.3410237462885157,3.47830926343323,3.6193049771256067,3.7640603566529496,3.912624871302557,4.065047990361734,4.221379183117781,4.381667918858002,4.545963666869697,4.714315896440168,4.886774076856722,5.063387677406654,5.244206167377273,5.429279016055875,5.618655692729766,5.812385666686248,6.010518407212621,6.2131033835961915,6.420190065124255,6.6318279210841204,6.848066420763084,7.068955033448452,7.294543228427527,7.524880474987606,7.760016242415999,8.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.0,8.244881217026918e-6,6.595904973621535e-5,0.00022261179285972677,0.0005276723978897228,0.0010306101521283645,0.0017808943428778141,0.002827994257440232,0.004221379183117782,0.006010518407212622,0.008244881217026916,0.010973936899862825,0.014247154743022513,0.018114004033808143,0.022623954059521854,0.027826474107465846,0.03377103346494226,0.04050710141925324,0.04808414725770098,0.056551640267587605,0.06595904973621533,0.07635584495088628,0.0877914951989026,0.10031546976756649,0.1139772379441801,0.1288262690160456,0.14491203227046515,0.16228399699474075,0.18099163247617484,0.20108440800206945,0.22261179285972676,0.2456232563364489,0.27016826771953806,0.2962962962962963,0.3240568113540259,0.353499282180029,0.38467317806160783,0.41762796828606447,0.45241312214070084,0.4890781089128196,0.5276723978897226,0.5682454583587121,0.6108467596070902,0.6555257709221591,0.7023319615912208,0.7513148009015777,0.8025237581405319,0.8560083025953855,0.9118179035534408,0.9700020303019998,1.0306101521283648,1.0936917383198375,1.1592962581637212,1.2274731809473163,1.298271975957926,1.3717421124828535,1.4479330598093987,1.526894287224866,1.6086752640165556,1.6933254594717706,1.7808943428778141,1.8714313835219862,1.9649860506915913,2.061607813673929,2.1613461417563045,2.264250504226017,2.3703703703703702,2.479755209476667,2.5924544908322074,2.708517683724296,2.827994257440232,2.9509336812673204,3.0773854244928627,3.20739895640416,3.3410237462885157,3.47830926343323,3.6193049771256067,3.7640603566529496,3.912624871302557,4.065047990361734,4.221379183117781,4.381667918858002,4.545963666869697,4.714315896440168,4.886774076856722,5.063387677406654,5.244206167377273,5.429279016055875,5.618655692729766,5.812385666686248,6.010518407212621,6.2131033835961915,6.420190065124255,6.6318279210841204,6.848066420763084,7.068955033448452,7.294543228427527,7.524880474987606,7.760016242415999,8.0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.020202020202020204,0.04040404040404041,0.06060606060606061,0.08080808080808081,0.10101010101010101,0.12121212121212122,0.1414141414141414,0.16161616161616163,0.18181818181818182,0.20202020202020202,0.2222222222222222,0.24242424242424243,0.26262626262626265,0.2828282828282828,0.30303030303030304,0.32323232323232326,0.3434343434343434,0.36363636363636365,0.3838383838383838,0.40404040404040403,0.42424242424242425,0.4444444444444444,0.46464646464646464,0.48484848484848486,0.5050505050505051,0.5252525252525253,0.5454545454545454,0.5656565656565656,0.5858585858585859,0.6060606060606061,0.6262626262626263,0.6464646464646465,0.6666666666666666,0.6868686868686869,0.7070707070707071,0.7272727272727273,0.7474747474747475,0.7676767676767676,0.7878787878787878,0.8080808080808081,0.8282828282828283,0.8484848484848485,0.8686868686868687,0.8888888888888888,0.9090909090909091,0.9292929292929293,0.9494949494949495,0.9696969696969697,0.98989898989899,1.0101010101010102,1.0303030303030303,1.0505050505050506,1.0707070707070707,1.0909090909090908,1.1111111111111112,1.1313131313131313,1.1515151515151516,1.1717171717171717,1.1919191919191918,1.2121212121212122,1.2323232323232323,1.2525252525252526,1.2727272727272727,1.292929292929293,1.3131313131313131,1.3333333333333333,1.3535353535353536,1.3737373737373737,1.393939393939394,1.4141414141414141,1.4343434343434343,1.4545454545454546,1.4747474747474747,1.494949494949495,1.5151515151515151,1.5353535353535352,1.5555555555555556,1.5757575757575757,1.595959595959596,1.6161616161616161,1.6363636363636365,1.6565656565656566,1.6767676767676767,1.696969696969697,1.7171717171717171,1.7373737373737375,1.7575757575757576,1.7777777777777777,1.797979797979798,1.8181818181818181,1.8383838383838385,1.8585858585858586,1.878787878787879,1.898989898989899,1.9191919191919191,1.9393939393939394,1.9595959595959596,1.97979797979798,2.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[0.07812655215830505,0.8005193373469827,1.234647290444991,1.601696949726126,2.0004157602644113,2.3679992362770252,2.7620875712519184,3.2186775547082584,3.6244408488881716,3.98025869232176,4.368195653242556,4.758438230022497,5.189901300995234,5.6004275259587475,6.027279548090804,6.3865980293347615,6.825285167890913,7.237664017029668,7.898326912128479],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"dash","width":1},"y":[0.07812655215830505,0.8005193373469827,1.234647290444991,1.601696949726126,2.0004157602644113,2.3679992362770252,2.7620875712519184,3.2186775547082584,3.6244408488881716,3.98025869232176,4.368195653242556,4.758438230022497,5.189901300995234,5.6004275259587475,6.027279548090804,6.3865980293347615,6.825285167890913,7.237664017029668,7.898326912128479],"type":"scatter"}], {"showlegend":false,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2.0,4.0,6.0,8.0],"visible":true,"ticks":"inside","range":[0.0,8.0],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2","4","6","8"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2.0,4.0,6.0,8.0],"visible":true,"ticks":"inside","range":[0.0,8.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2","4","6","8"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    </script>
+<form name="WeaveQuestion" data-id="69UsmG6X" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_69UsmG6X" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_69UsmG6X" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="69UsmG6X_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_69UsmG6X']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#69UsmG6X_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#69UsmG6X_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>From plot, are blue and red inverse functions?</p>    <div id="e5733ba7-eb6a-46fc-a42f-79ac3616540c" style="width:600px;height:400px;"></div>
+    <script>
+    PLOT = document.getElementById('e5733ba7-eb6a-46fc-a42f-79ac3616540c');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-2.0,-1.9595959595959596,-1.9191919191919191,-1.878787878787879,-1.8383838383838385,-1.797979797979798,-1.7575757575757576,-1.7171717171717171,-1.6767676767676767,-1.6363636363636365,-1.595959595959596,-1.5555555555555556,-1.5151515151515151,-1.4747474747474747,-1.4343434343434343,-1.393939393939394,-1.3535353535353536,-1.3131313131313131,-1.2727272727272727,-1.2323232323232323,-1.1919191919191918,-1.1515151515151516,-1.1111111111111112,-1.0707070707070707,-1.0303030303030303,-0.98989898989899,-0.9494949494949495,-0.9090909090909091,-0.8686868686868687,-0.8282828282828283,-0.7878787878787878,-0.7474747474747475,-0.7070707070707071,-0.6666666666666666,-0.6262626262626263,-0.5858585858585859,-0.5454545454545454,-0.5050505050505051,-0.46464646464646464,-0.42424242424242425,-0.3838383838383838,-0.3434343434343434,-0.30303030303030304,-0.26262626262626265,-0.2222222222222222,-0.18181818181818182,-0.1414141414141414,-0.10101010101010101,-0.06060606060606061,-0.020202020202020204,0.020202020202020204,0.06060606060606061,0.10101010101010101,0.1414141414141414,0.18181818181818182,0.2222222222222222,0.26262626262626265,0.30303030303030304,0.3434343434343434,0.3838383838383838,0.42424242424242425,0.46464646464646464,0.5050505050505051,0.5454545454545454,0.5858585858585859,0.6262626262626263,0.6666666666666666,0.7070707070707071,0.7474747474747475,0.7878787878787878,0.8282828282828283,0.8686868686868687,0.9090909090909091,0.9494949494949495,0.98989898989899,1.0303030303030303,1.0707070707070707,1.1111111111111112,1.1515151515151516,1.1919191919191918,1.2323232323232323,1.2727272727272727,1.3131313131313131,1.3535353535353536,1.393939393939394,1.4343434343434343,1.4747474747474747,1.5151515151515151,1.5555555555555556,1.595959595959596,1.6363636363636365,1.6767676767676767,1.7171717171717171,1.7575757575757576,1.797979797979798,1.8383838383838385,1.878787878787879,1.9191919191919191,1.9595959595959596,2.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-7.0,-6.565284515391647,-6.149763114256533,-5.7530400422962416,-5.374719545212353,-5.014405868706451,-4.671703258480117,-4.346215960234937,-4.037548219672492,-3.7453042824943656,-3.469088394402138,-3.208504801097394,-2.963157748281715,-2.732651481656685,-2.516590246923886,-2.314578289784902,-2.1262198559413132,-1.9511191910947039,-1.7888805409466564,-1.639108151198754,-1.5014062675525788,-1.3753791357097145,-1.2606310013717423,-1.1567661102402456,-1.0633887080168072,-0.9801030404030099,-0.906513353100436,-0.8422238918106686,-0.7868389022352904,-0.7399626300758838,-0.7011993210340317,-0.670153220811317,-0.646428575109322,-0.6296296296296297,-0.6193606300738226,-0.6152258221434836,-0.6168294515401953,-0.6237757639655406,-0.6356690051211018,-0.652113420708462,-0.6727132564292038,-0.6970727579849099,-0.7247961710771629,-0.7554877414075455,-0.7887517146776406,-0.8241923365890308,-0.8614138528432989,-0.9000205091420274,-0.9396165511867991,-0.9798062246791969,-1.0201937753208032,-1.060383448813201,-1.0999794908579728,-1.1385861471567011,-1.175807663410969,-1.2112482853223594,-1.2445122585924544,-1.2752038289228371,-1.3029272420150901,-1.3272867435707962,-1.347886579291538,-1.3643309948788982,-1.3762242360344594,-1.3831705484598047,-1.3847741778565164,-1.3806393699261774,-1.3703703703703702,-1.353571424890678,-1.329846779188683,-1.2988006789659683,-1.2600373699241163,-1.2131610977647096,-1.1577761081893314,-1.093486646899564,-1.01989695959699,-0.9366112919831928,-0.8432338897597544,-0.7393689986282577,-0.6246208642902855,-0.4985937324474212,-0.36089184880124603,-0.21111945905334362,-0.048880808905296114,0.12621985594131346,0.3145782897849019,0.5165902469238861,0.7326514816566851,0.9631577482817151,1.2085048010973942,1.4690883944021378,1.7453042824943656,2.037548219672492,2.346215960234937,2.6717032584801172,3.0144058687064508,3.3747195452123533,3.7530400422962416,4.149763114256533,4.565284515391647,5.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[2.0,1.9595959595959596,1.9191919191919191,1.878787878787879,1.8383838383838385,1.797979797979798,1.7575757575757576,1.7171717171717171,1.6767676767676767,1.6363636363636365,1.595959595959596,1.5555555555555556,1.5151515151515151,1.4747474747474747,1.4343434343434343,1.393939393939394,1.3535353535353536,1.3131313131313131,1.2727272727272727,1.2323232323232323,1.1919191919191918,1.1515151515151516,1.1111111111111112,1.0707070707070707,1.0303030303030303,0.98989898989899,0.9494949494949495,0.9090909090909091,0.8686868686868687,0.8282828282828283,0.7878787878787878,0.7474747474747475,0.7070707070707071,0.6666666666666666,0.6262626262626263,0.5858585858585859,0.5454545454545454,0.5050505050505051,0.46464646464646464,0.42424242424242425,0.3838383838383838,0.3434343434343434,0.30303030303030304,0.26262626262626265,0.2222222222222222,0.18181818181818182,0.1414141414141414,0.10101010101010101,0.06060606060606061,0.020202020202020204,-0.020202020202020204,-0.06060606060606061,-0.10101010101010101,-0.1414141414141414,-0.18181818181818182,-0.2222222222222222,-0.26262626262626265,-0.30303030303030304,-0.3434343434343434,-0.3838383838383838,-0.42424242424242425,-0.46464646464646464,-0.5050505050505051,-0.5454545454545454,-0.5858585858585859,-0.6262626262626263,-0.6666666666666666,-0.7070707070707071,-0.7474747474747475,-0.7878787878787878,-0.8282828282828283,-0.8686868686868687,-0.9090909090909091,-0.9494949494949495,-0.98989898989899,-1.0303030303030303,-1.0707070707070707,-1.1111111111111112,-1.1515151515151516,-1.1919191919191918,-1.2323232323232323,-1.2727272727272727,-1.3131313131313131,-1.3535353535353536,-1.393939393939394,-1.4343434343434343,-1.4747474747474747,-1.5151515151515151,-1.5555555555555556,-1.595959595959596,-1.6363636363636365,-1.6767676767676767,-1.7171717171717171,-1.7575757575757576,-1.797979797979798,-1.8383838383838385,-1.878787878787879,-1.9191919191919191,-1.9595959595959596,-2.0],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[7.0,6.565284515391647,6.149763114256533,5.7530400422962416,5.374719545212353,5.014405868706451,4.671703258480117,4.346215960234937,4.037548219672492,3.7453042824943656,3.469088394402138,3.208504801097394,2.963157748281715,2.732651481656685,2.516590246923886,2.314578289784902,2.1262198559413132,1.9511191910947039,1.7888805409466564,1.639108151198754,1.5014062675525788,1.3753791357097145,1.2606310013717423,1.1567661102402456,1.0633887080168072,0.9801030404030099,0.906513353100436,0.8422238918106686,0.7868389022352904,0.7399626300758838,0.7011993210340317,0.670153220811317,0.646428575109322,0.6296296296296297,0.6193606300738226,0.6152258221434836,0.6168294515401953,0.6237757639655406,0.6356690051211018,0.652113420708462,0.6727132564292038,0.6970727579849099,0.7247961710771629,0.7554877414075455,0.7887517146776406,0.8241923365890308,0.8614138528432989,0.9000205091420274,0.9396165511867991,0.9798062246791969,1.0201937753208032,1.060383448813201,1.0999794908579728,1.1385861471567011,1.175807663410969,1.2112482853223594,1.2445122585924544,1.2752038289228371,1.3029272420150901,1.3272867435707962,1.347886579291538,1.3643309948788982,1.3762242360344594,1.3831705484598047,1.3847741778565164,1.3806393699261774,1.3703703703703702,1.353571424890678,1.329846779188683,1.2988006789659683,1.2600373699241163,1.2131610977647096,1.1577761081893314,1.093486646899564,1.01989695959699,0.9366112919831928,0.8432338897597544,0.7393689986282577,0.6246208642902855,0.4985937324474212,0.36089184880124603,0.21111945905334362,0.048880808905296114,-0.12621985594131346,-0.3145782897849019,-0.5165902469238861,-0.7326514816566851,-0.9631577482817151,-1.2085048010973942,-1.4690883944021378,-1.7453042824943656,-2.037548219672492,-2.346215960234937,-2.6717032584801172,-3.0144058687064508,-3.3747195452123533,-3.7530400422962416,-4.149763114256533,-4.565284515391647,-5.0],"type":"scatter"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","x":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.6189562143740406,-0.3906612226458709,-0.18777957555591424,-0.009870653839119958,0.18409782662127785,0.3792191150112484,0.5949506504976171,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"dash","width":1},"y":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.6189562143740406,-0.3906612226458709,-0.18777957555591424,-0.009870653839119958,0.18409782662127785,0.3792191150112484,0.5949506504976171,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"type":"scatter"}], {"showlegend":false,"paper_bgcolor":"rgba(255, 255, 255, 1.000)","xaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.0,2.0],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis1":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-5.0,-2.5,0.0,2.5,5.0],"visible":true,"ticks":"inside","range":[-7.0,7.0],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-5.0","-2.5","0.0","2.5","5.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    </script>
+<form name="WeaveQuestion" data-id="VVIyF5Pd" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_VVIyF5Pd" value="1"><div class="markdown"><p>Yes</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_VVIyF5Pd" value="2"><div class="markdown"><p>No</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="VVIyF5Pd_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_VVIyF5Pd']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#VVIyF5Pd_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#VVIyF5Pd_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The function $f(x) = (ax + b)/(cx + d)$ is known as a <a href="http://tinyurl.com/oemweyj">Mobius</a> transformation and can be expressed as a composition of $4$ functions, $f4 \circ f3 \circ f2 \circ f1$, where: the translation $f1(x) = x + d/c$; the inversion and reflection $f2(x) = x^{-1}$; the scaling $f3(x) = ((bc-ad)/c^2) \cdot x$; and the translation $f4(x) = x + a/c$.</p><p>For $x=10$, what is $f(10)$?</p><form name='WeaveQuestion' data-id='FJ3aw0AN' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="FJ3aw0AN" type="number" class="form-control">
+
+</div>
+  
+<div id='FJ3aw0AN_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#FJ3aw0AN').on('change', function() {
+  correct = Math.abs(this.value - 0.34285714285714286) <= 0.001;
+
+  if(correct) {
+     $('#FJ3aw0AN_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#FJ3aw0AN_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>For $x=10$, what is $f4(f3(f2(f1(10))))$?</p><form name='WeaveQuestion' data-id='kb22zTQd' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="kb22zTQd" type="number" class="form-control">
+
+</div>
+  
+<div id='kb22zTQd_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#kb22zTQd').on('change', function() {
+  correct = Math.abs(this.value - 0.34285714285714286) <= 0.001;
+
+  if(correct) {
+     $('#kb22zTQd_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#kb22zTQd_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>The last two answers should be the same, why?</p><form name="WeaveQuestion" data-id="pLmIAJPG" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_pLmIAJPG" value="1"><div class="markdown"><p>As $f4(f3(f2(f1(x))))=(f1 \circ f2 \circ f3 \circ f4)(x)$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_pLmIAJPG" value="2"><div class="markdown"><p>As $f4(f3(f2(f1(x))))=(f4 \circ f3 \circ f2 \circ f1)(x)$</p>
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_pLmIAJPG" value="3"><div class="markdown"><p>As the latter is more complicated than the former.</p>
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="pLmIAJPG_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_pLmIAJPG']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#pLmIAJPG_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#pLmIAJPG_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>Let $g1$, $g2$, $g3$, and $g4$ denote the inverse functions. Clearly, $g1(x) = x- d/c$ and $g4(x) = x - a/c$, as the inverse of adding a constant is subtracting the constant.</p><p>What is $g2(x)=f2^{-1}(x)$?</p><form name="WeaveQuestion" data-id="eKdgRso9" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eKdgRso9" value="1"><div class="markdown">$g2(x) = x^{-1}$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eKdgRso9" value="2"><div class="markdown">$g2(x) = x$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_eKdgRso9" value="3"><div class="markdown">$g2(x) = x -1$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="eKdgRso9_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_eKdgRso9']").on("change", function() {
+  correct = this.value == 1;
+
+  if(correct) {
+     $("#eKdgRso9_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#eKdgRso9_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>What is $g3(x)=f3^{-1}(x)$?</p><form name="WeaveQuestion" data-id="JP5PCYS9" data-controltype="radio">
+<div class="form-group ">
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_JP5PCYS9" value="1"><div class="markdown">$c^2 x$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_JP5PCYS9" value="2"><div class="markdown">$c^2/(b\cdot c - a\cdot d) \cdot  x$
+</div>
+    </label>
+    </div>
+    
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_JP5PCYS9" value="3"><div class="markdown">$(b\cdot c-a\cdot d)/c^2 \cdot  x$
+</div>
+    </label>
+    </div>
+    
+
+
+<div id="JP5PCYS9_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_JP5PCYS9']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#JP5PCYS9_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#JP5PCYS9_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<p>Given these, what is the value of $g4(g3(g2(g1(f4(f3(f2(f1(10))))))))$?</p><form name='WeaveQuestion' data-id='rOOLn3C9' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="rOOLn3C9" type="number" class="form-control">
+
+</div>
+  
+<div id='rOOLn3C9_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#rOOLn3C9').on('change', function() {
+  correct = Math.abs(this.value - -7.131894484412468) <= 0.001;
+
+  if(correct) {
+     $('#rOOLn3C9_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#rOOLn3C9_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>What about the value of $g1(g2(g3(g4(f4(f3(f2(f1(10))))))))$?</p><form name='WeaveQuestion' data-id='hzLTN7Dc' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+
+<div class="input-group">
+<input id="hzLTN7Dc" type="number" class="form-control">
+
+</div>
+  
+<div id='hzLTN7Dc_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#hzLTN7Dc').on('change', function() {
+  correct = Math.abs(this.value - 9.999999999999973) <= 0.001;
+
+  if(correct) {
+     $('#hzLTN7Dc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#hzLTN7Dc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+
+  </div>
+</div>  
+
+</body>
+</html>

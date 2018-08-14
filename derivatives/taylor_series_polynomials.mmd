@@ -262,7 +262,7 @@ f(x) - \left(f(c) + f'(c) \cdot(x-c) + (1/2)\cdot f''(c) \cdot (x-c)^2 \right) =
 \frac{1}{3!}f'''(\xi) \cdot (x-c)^3.
 ~$$
 
-In this sense the above quadratic polynomial, called the Taylor Polynomial of degree 2, is the best *quadratic* approximation to $f$, as the difference goes to $0$.
+In this sense, the above quadratic polynomial, called the Taylor Polynomial of degree 2, is the best *quadratic* approximation to $f$, as the difference goes to $0$.
 
 
 The graphs of the secant line and approximating parabola for $h=1/4$ are similar:
@@ -283,8 +283,8 @@ Though similar, the graphs aren't identical, as the interpolating
 polynomials aren't the best approximations.  For example, in the
 tangent-line graph the parabola only intersects the cosine graph at
 $x=0$, whereas for the secant-line graph---by definition---the
-parabola intersects the graph at least 3 times (at $x_0$, $x_1$, and
-$x_2$).
+parabola intersects the graph at least $2$ times and the
+interporlating polynomial $3$ times (at $x_0$, $x_1$, and $x_2$).
 
 
 
@@ -417,7 +417,7 @@ series(sin(x), x, 0, 10)    # sum (-1)^i * x^(2i+1) / (2i+1)! for i in 0:n
 series(cos(x), x, 0, 10)    # sum (-1)^i * x^(2i) / (2i)! for i in 0:n
 ```
 
-Each of these has a pattern that can be expressed quite succinctly if the denominator is recognized as $n!$.
+Each of these last three have a pattern that can be expressed quite succinctly if the denominator is recognized as $n!$.
 
 
 The output of `series` includes a big "Oh" term, which identifies the
@@ -863,7 +863,7 @@ choices = [
 "The intermediate value theorem",
 "The mean value theorem",
 "The extreme value theorem"]
-ans = 2
+ans = 3
 radioq(choices, ans)
 ```
 
@@ -871,15 +871,15 @@ radioq(choices, ans)
 
 ```
 choices = [
-L"1/6!\cdot 1^6 \cdot 1^6",
-L"1^6 \cdot 1^6"]
+L"1/6!\cdot e^1 \cdot 1^6",
+L"1^6 \cdot 1 \cdot 1^6"]
 ans = 1
 radioq(choices,ans)
 ```
 
 ###### Question
 
-The error in using $T_k(x)$ to approximate $e^x$ over the interval $[-1/2, 1/2]$ is $(1/(k+1)!) e^\xi x^{k+1}$, for some $\xi$ in the interval. This is *less* than $1/((k+1)!) e^{1/2} (1/2)^k$.
+The error in using $T_k(x)$ to approximate $e^x$ over the interval $[-1/2, 1/2]$ is $(1/(k+1)!) e^\xi x^{k+1}$, for some $\xi$ in the interval. This is *less* than $1/((k+1)!) e^{1/2} (1/2)^{k+1}$.
 
 * Why?
 
@@ -896,8 +896,8 @@ radioq(choices, ans)
 Assuming the above is right, find the smallest value $k$ guaranteeing a error no more than $10^{-16}$.
 
 ```
-f(k) = 1/factorial(k) * exp(1/2) * (1/2)^k
-(f(14) > 1e-16 && f(15) < 1e-16) && numericq(15)
+f(k) = 1/factorial(k+1) * exp(1/2) * (1/2)^(k+1)
+(f(13) > 1e-16 && f(14) < 1e-16) && numericq(14)
 ```
 
 * The function $f(x) = (1 - x + x^2) \cdot e^x$ has a Taylor polynomial about 0 such that all coefficients are rational numbers. Is it true that the numerators are all either 1 or prime? (From the 2014 [Putnam](http://kskedlaya.org/putnam-archive/2014.pdf) exam.)
@@ -923,7 +923,7 @@ yesnoq(true)
 
 ## Appendix
 
-We mentioned two facts that could use a proof: the Newton form of the interpolating polynomial and the mean value theorem for divided differences.
+We mentioned two facts that could use a proof: the Newton form of the interpolating polynomial and the mean value theorem for divided differences. Our explanation tries to emphasize a parallel with the secant line's relationship with the tangent line. The standard way to discuss the Taylor polynomial is different and so these two proofs are not in most calculus texts.
 
 A [proof](https://www.math.uh.edu/~jingqiu/math4364/interpolation.pdf) of the Newton form can be done knowing that the interpolating polynomial is unique and can be expressed either as $g(x)=a_0 + a_1 (x-x_0) + \cdots + a_n (x-x_0)\cdot\cdots\cdot(x-x_{n-1})$ *or* in this reversed form
 $h(x)=b_0 + b_1 (x-x_n) + b_2(x-x_n)(x-x_{n-1}) + \cdots + b_n (x-x_n)(x-x_{n-1})\cdot\cdots\cdot(x-x_1)$. These two polynomials are of degree $n$ at most and have $u(x) = h(x)-g(x)=0$, by uniqueness. So the coefficients of $u(x)$ are $0$. We have that the coefficient of $x^n$ must be $a_n-b_n$ so $a_n=b_n$. Our goal is to express $a_n$ in terms of $a_{n-1}$ and $b_{n-1}$. Focusing on the $x^{n-1}$ term, we have:
@@ -942,7 +942,7 @@ $$~
 (b_{n-1}-a_{n-1}) - a_n(x_n-x_0) = 0.
 ~$$
 
-On rearranging, this yields $a_n = (b_{n-1}-a_{n-1}) / (x_n - x_0)$. By *induction*---that $a_i=f[x_0, x_1, \dot, x_i]$ and $b_i = f[x_n, x_{n-1}, \dots, x_{n-i}$ which has trivial base case---this is $(f[x_1, \dots, x_n] - f[x_0,\dots x_{n-1}])/(x_n-x_0)$.
+On rearranging, this yields $a_n = (b_{n-1}-a_{n-1}) / (x_n - x_0)$. By *induction*---that $a_i=f[x_0, x_1, \dots, x_i]$ and $b_i = f[x_n, x_{n-1}, \dots, x_{n-i}]$ (which has trivial base case)---this is $(f[x_1, \dots, x_n] - f[x_0,\dots x_{n-1}])/(x_n-x_0)$.
 
 Now, assuming the Newton form is correct, a
 [proof](http://tinyurl.com/zjogv83) of the mean value theorem for

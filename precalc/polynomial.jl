@@ -31,7 +31,7 @@ end
 
 imgfile = tempname() * ".gif"
 gif(anim, imgfile, fps = 1)
-caption = L"Demonstration that $x^10$ grows faster than $x^8$, ... and $x^2$  grows faster than $x^0$ (which is constant)."
+caption = L"Demonstration that $x^{10}$ grows faster than $x^8$, ... and $x^2$  grows faster than $x^0$ (which is constant)."
 poly_growth_graph =  gif_to_data(imgfile, caption)
 
 

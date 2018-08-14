@@ -28,7 +28,7 @@ restricting ourselves to the case of a single variable and real
 coefficients.
 
 A *polynomial* is a sum of monomials. After
-combining terms with same powers, a polynomial may be written uniquely
+combining terms with same powers, a non-zero polynomial may be written uniquely
 as:
 
 $$~
@@ -42,11 +42,11 @@ The numbers $a_0, a_1, \dots, a_n$ are the **coefficients** of the
 polynomial. With the convention that $x=x^1$ and $1 = x^0$, the
 monomials above have their power match their coefficient's index,
 e.g., $a_ix^i$.  Outside of the coefficient $a_n$, the other
-coefficients may be negative, positive or $0$. Except for the zero
+coefficients may be negative, positive, *or* $0$. Except for the zero
 polynomial, the largest power $n$ is called the
 [degree](https://en.wikipedia.org/wiki/Degree_of_a_polynomial). The
 degree of the [zero](http://tinyurl.com/he6eg6s) polynomial is typically not
-defined, so as to make certain statements easier to express. The term
+defined or defined to be $-1$, so as to make certain statements easier to express. The term
 $a_n$ is called the **leading coefficient**. When the leading
 coefficient is $1$, the polynomial is called a **monic polynomial**.
 The monomial $a_n x^n$ is the **leading term**.
@@ -62,13 +62,13 @@ linear, a degree $2$ polynomial is quadratic, and  a degree $3$ polynomial is ca
 ## Linear polynomials
 
 A special place is reserved for polynomials with degree 1. These are
-linear, as their graphs are straight lines. The general form
+linear, as their graphs are straight lines. The general form,
 
 $$~
-a_1 x + a_0
+a_1 x + a_0, \quad a_1 \neq 0,
 ~$$
 
-Is often written as $mx + b$, which is the **slope-intercept** form. The slope of a line determines how steeply it rises. The value
+is often written as $mx + b$, which is the **slope-intercept** form. The slope of a line determines how steeply it rises. The value
 of $m$ can be found from two points through the well-known formula:
 
 $$~
@@ -94,18 +94,12 @@ have slope $m$. This form is more useful in calculus, as the
 information we have convenient is more likely to be related to a
 specific value of $x$, not the special value $x=0$.
 
-Alternatively, we could think of the equation of a line in this form:
-
-$$~
-m \cdot(x - c)
-~$$
-
 Thinking in terms of transformations, this looks like the function
 $f(x) = x$ (whose graph is a line with slope 1) stretched in the $y$
-direction by a factor of $m$ then shifted right by $c$ units. When
-$m>1$, this means the line grows faster.  When $m< 0$, the line
-$f(x)=x$ is flipped through the $x$-axis so would head downwards, not
-upwards like $f(x) = x$.
+direction by a factor of $m$ then shifted right by $x_0$ units, and
+then shifted up by $y_0$ units. When $m>1$, this means the line grows
+faster.  When $m< 0$, the line $f(x)=x$ is flipped through the
+$x$-axis so would head downwards, not upwards like $f(x) = x$.
 
 ## Symbolic math in Julia
 
@@ -128,7 +122,7 @@ includes a wide-range of open-source math projects available within
 its umbrella framework. (`Julia` can even be run from within the free
 service [cloud.sagemath.com](https://cloud.sagemath.com/projects).) A
 more focused project for symbolic math, is the [SymPy](www.sympy.org)
-Python library. SymPy is also used by Sage. However, SymPy provides a self-contained library that can be
+Python library. SymPy is also used  within Sage. However, SymPy provides a self-contained library that can be
 used standalone within a Python session. That is great for `Julia` users, as the
 `PyCall` package glues `Julia` to Python in a seamless manner. This
 allows the `Julia` package `SymPy` to provide functionality from SymPy
@@ -176,7 +170,7 @@ be the easiest way to create symbolic values (no commas are used):
 
 The `SymPy` package does two basic things:
 
-- It imports some of the functionality provided by `SymPy`.
+- It imports some of the functionality provided by `SymPy`, including the ability to create symbolic variables.
 
 - It overloads many `Julia` functions to work seamlessly with symbolic expressions. This makes working with polynomials quite natural.
 
@@ -298,7 +292,7 @@ are just looking at the output, we can easily translate from the
 symbolic value to an integer, as they print similarly. However the
 conversion to an integer, or another type of number, does not happen
 automatically.  If a number is needed to pass along to another `Julia`
-function, it must be converted. In general, conversions between
+function, it may need to be converted. In general, conversions between
 different types are handled through various methods of
 `convert`. However, with `SymPy`, the `N` function will attempt to do
 the conversion for you:
@@ -438,11 +432,11 @@ graph of the polynomial $p$.
 
 ## Factoring polynomials
 
-There are two common ways of representing a polynomial: either in an
+Among others, there are two common ways of representing a non-zero polynomial: either in an
 
 * expanded form, as in $a_n x^n + a_{n-1}x^{n-1} + \cdots a_1 x + a_0, a_n \neq 0$; or
 
-* in factored form, as in $a\cdot(x-r_1)\cdot(x-r_2)\cdots(x-r_n)$.
+* in factored form, as in $a\cdot(x-r_1)\cdot(x-r_2)\cdots(x-r_n), a \neq 0$.
 
 The latter writes $p$ as a product of linear factors, though this is
 only possible in general if we consider complex roots. With real roots
@@ -480,11 +474,12 @@ expand((x-1)*(x-2)*(x-3))
 
 
 Factoring a polynomial is several weeks worth of lessons, as there is
-no one-size-fits-all algorithm to follow. There are some tricks that are taught: for
-example factoring differences of perfect squares, completing the
-square, the rational root theorem, $\dots$. But in general the solution is not
-automated. The `SymPy` function `factor` will factor fully over
-rational factors (terms like $(qx-p)$). for example:
+no one-size-fits-all algorithm to follow. There are some tricks that
+are taught: for example factoring differences of perfect squares,
+completing the square, the rational root theorem, $\dots$. But in
+general the solution is not automated. The `SymPy` function `factor`
+will find all rational factors (terms like $(qx-p)$), but will leave
+terms that do not have rational factors alone. For example:
 
 
 ```
@@ -513,7 +508,7 @@ can then be used to produce the factored form.)
 
 Our definition of a polynomial is in terms of algebraic expressions
 which are easily represented by `SymPy` objects, but not objects from
-base `Julia`. (Though there is the `Polynomials` package.)
+base `Julia`. (Though there are the `Polynomials` package and the `AbstractAlbegra` package for representing polynomials	.)
 
 However, *polynomial functions* are easily represented by `Julia`, for
 example,
@@ -524,7 +519,7 @@ f(x) = -16x^2 + 100
 
 The distinction is subtle, the expression is turned into a function
 just by adding the `f(x) =` preface. But to `Julia` there is a big
-distinction. The function form never does any work until after a value
+distinction. The function form never does any computation until after a value
 of $x$ is passed to it. Whereas symbolic expressions can be
 manipulated quite freely before any numeric values are specified.
 
@@ -645,7 +640,7 @@ radioq(choices, ans)
 The polynomial `p` is defined in `Julia` as follows:
 
 ```
-x = symbols("x")
+@vars x
 p = -16x^2 + 64
 ```
 
@@ -732,7 +727,7 @@ radioq(choices, 2)
 
 ###### Question
 
-Use `expand` to expand the expression `((x-h)^3 - x^3) / h` where `h` is some symbolic constant. What is the value:
+Use `expand` to expand the expression `((x-h)^3 - x^3) / h` where `x` and `h` are symbolic constants. What is the value:
 
 ```
 choices = [

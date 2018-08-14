@@ -73,11 +73,11 @@ $\cos(0)$, but rather the tangent-line expansion, which is $\sin(x)
 
 - Consider this limit at $0$: $(a^x - 1)/x$. We have $f(x) =a^x-1$ has
   $f(0) = 0$, so this limit is indeterminate of the form $0/0$. The
-  derivative of $f(x)$ is $f'(x) = a^x \log(a)$ which has $f'(0) = 1$.
+  derivative of $f(x)$ is $f'(x) = a^x \log(a)$ which has $f'(0) = \log(a)$.
   The derivative of the bottom is also $1$ at $0$, so we have:
 
 $$~
-1 = \frac{1}{1} = \frac{f'(0)}{g'(0)} = \lim_{x \rightarrow 0}\frac{f'(x)}{g'(x)} = \lim_{x \rightarrow 0}\frac{f(x)}{g(x)}
+\log(a) = \frac{\log(a)}{1} = \frac{f'(0)}{g'(0)} = \lim_{x \rightarrow 0}\frac{f'(x)}{g'(x)} = \lim_{x \rightarrow 0}\frac{f(x)}{g(x)}
 = \lim_{x \rightarrow 0}\frac{a^x - 1}{x}.
 ~$$
 
@@ -172,7 +172,7 @@ The proof of L'Hospital's rule takes advantage of Cauchy's
 of the mean value theorem to two functions. Let $f(x)$ and $g(x)$ be
 continuous on $[a,b]$ and differentiable on $(a,b)$ so that on
 $[c,c+x]$ there exists a $\xi$ with $f'(\xi) \cdot (f(x) - f(c)) =
-g'(c) \cdot (g(x) - g(c))$. In our formulation, both $f(c)$ and $g(c)$
+g'(\xi) \cdot (g(x) - g(c))$. In our formulation, both $f(c)$ and $g(c)$
 are zero, so we have, provided we know that $g(x)$ is non zero, that
 $f(x)/g(x) = f'(\xi)/g'(\xi)$ for some $\xi$, $c < \xi < c + x$. That
 the right-hand side has a limit as $x \rightarrow c+$ is true by the
@@ -486,4 +486,61 @@ using SymPy
 f(x) = 1/x - 1/sin(x)
 L = float(N(limit(f, 0)))
 numericq(L)
+```
+
+##### Question
+
+Use  L'Hospital's rule  to find the limit
+
+$$~
+L = \lim_{x \rightarrow \infty} \log(x)/x
+~$$
+
+What is $L$?
+
+```
+using SymPy
+@vars x
+L = float(N(limit(log(x)/x, x=>oo)))
+numericq(L)
+```
+
+##### Question
+
+Using  L'Hospital's rule, does
+
+
+$$~
+\lim_{x \rightarrow 0+} x^{\log(x)}
+~$$
+
+exist?
+
+Consider $x^{\log(x)} = e^{\log(x)\log(x)}$.
+
+```
+yesnoq(false)
+```
+
+
+##### Question
+
+Using  L'Hospital's rule, find the limit of
+
+$$~
+\lim_{x \rightarrow 1} (2-x)^{\tan(\pi/2 \cdot x)}.
+~$$
+
+(Hint, express as $\exp^{\tan(\pi/2 \cdot x) \cdot \log(2-x)}$ and take the limit of the resulting exponent.)
+
+```
+choices = [
+L"e^{2/\pi}",
+L"{2\pi}",
+L"1",
+L"0",
+"It does not exist"
+]
+ans =1
+radioq(choices, ans)
 ```

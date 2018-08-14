@@ -100,7 +100,6 @@ Pkg.add("Plots")
 Pkg.add("SymPy")
 Pkg.add("Roots")
 Pkg.add("ImplicitEquations")
-""")
 ```
 
 The `SymPy` package requires some add-ons for the `Python`
@@ -136,8 +135,8 @@ Comments can be made in a cell. Anything after a `#` will be ignored.
 Graphics are provided by external packages. There is no built-in
 graphing. We use the `Plots` package and its default backend. The
 `Plots` package provides a common interface to several different
-backends, so this choice is easily changed. The `GR` backend and
-`plotly` backend are used in these notes.
+backends, so this choice is easily changed. The `GR` and
+`plotly` backends are used in these notes.
 
 
 ```

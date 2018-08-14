@@ -33,7 +33,7 @@ To plot such an equation in `Julia`, we can use the
 using ImplicitEquations
 ```
 
-To plot the circle of radius $2$, we would first define a function:
+To plot the circle of radius $2$, we would first define a function of *two* variables:
 
 ```
 f(x,y) = x^2 + y^2
@@ -166,7 +166,7 @@ graph is reduced to just a small, well-behaved, section of its graph.
 
 
 With this assumption, asking what $dy/dx$ is has an obvious meaning --
-what is the slope at the tangent line at $(x,y)$.
+what is the slope of the tangent line to the graph at $(x,y)$.
 
 The method of implicit differentiation allows this question to be
 investigated. It begins by differentiating both sides of the equation
@@ -529,48 +529,28 @@ plot(Eq(F, 3),  xlims=(-3, 3), ylims=(-3, 3))
 ```
 
 
-The same problem can be done symbolically. The steps are similar, though the last step (replacing $x^3 - y^3$ with $3#) isn't done without explicitly asking.
+The same problem can be done symbolically. The steps are similar, though the last step (replacing $x^3 - y^3$ with $3$) isn't done without explicitly asking.
 
 ```
 @vars x y
 u = SymFunction("u")
 
-eqn = F(x,y) - 3
-eqn1 = eqn(y => u(x))
-dydx = solve(diff(eqn1,x), diff(u(x), x))[1]          # 1 soln
+eqn    = F(x,y) - 3
+eqn1   = eqn(y => u(x))
+dydx   = solve(diff(eqn1,x), diff(u(x), x))[1]          # 1 soln
 d2ydx2 = solve(diff(eqn1, x, 2), diff(u(x),x, 2))[1]  # 1 soln
-eqn2 = d2ydx2(diff(u(x), x) => dydx, u(x) => y)
+eqn2   = d2ydx2(diff(u(x), x) => dydx, u(x) => y)
 simplify(eqn2)
 ```
 
 ## Inverse functions
 
-An [inverse](http://en.wikipedia.org/wiki/Inverse_function) function for $f(x)$ is a function $g(x)$ satisfying:
+As [mentioned](../precalc/inversefunctions.html), an [inverse](http://en.wikipedia.org/wiki/Inverse_function) function for $f(x)$ is a function $g(x)$ satisfying:
 $y = f(x)$ if and only if $g(y) = x$ for all $x$ in the domain of $f$ and $y$ in the range of $f$.
 
-This means that when defined, $f(g(x)) = x$ and $g(f(x)) = x$.
-
-Not all functions will have an inverse function, only those functions
-which are one-to-one. Strictly increasing or decreasing functions will
-have inverse functions. We call these functions *monotonic*.
-
-The typical example is $f(x) = x^2$. We "know" the inverse would be
-$g(x) = \sqrt{x}$. But this isn't quite right---the property won't
-hold for both $x < 0$ and $x > 0$ simultaneously. The trick is to
-*redefine* the function by restricting the domain so that the function
-is monotonic on the domain. For the function $f(x) = x^2$, we can
-choose to restrict $x$ to $x \geq 0$. Then in fact $g(x) = \sqrt{x}$
-is an inverse function.
-
-It is conventional to employ the notation $f^{-1}(x)$ for the inverse
+In short, both $f \circ g$ and $g \circ f$ are identify functions on their respective domains.
+As inverses are unique, their notation, $f^{-1}(x)$, reflects the name of the related function.
 function.
-
-```
-alert("""
-It is also common for people to confuse this notation with
-that of exponents, especially when used with trigonometric functions.
-""")
-```
 
 The chain rule can be used to give the derivative of an inverse
 function when applied to $f(f^{-1}(x)) = x$. Solving gives,
@@ -682,7 +662,7 @@ F(x, y, a, b) = sqrt(x^2 + y^2) + sqrt((a-x)^2 + (b-y)^2)
 
 To illustrate, we need specific values of $a$, $b$, and $L$:
 ```
-a,b,L = 3, 3, 10      # L > sqrt{a^2 + b^2}
+a, b, L = 3, 3, 10      # L > sqrt{a^2 + b^2}
 F(x, y) = F(x, y, a, b) 
 ```
 
@@ -793,13 +773,13 @@ yesnoq(x^2 - 2x*y + y^2 ==1)
 
 ###### Question
 
-for the equation
+For the equation
 
 $$~
 x^2y + 2y - 4 x = 0,
 ~$$
 
-If $x=4$, what is a value for $y$ such that $(x,y)$ is a point on the graph of the equation?
+if $x=4$, what is a value for $y$ such that $(x,y)$ is a point on the graph of the equation?
 
 ```
 using SymPy

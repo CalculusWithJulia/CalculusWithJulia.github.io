@@ -11,7 +11,7 @@ so far. In this section we quickly review their definitions and some
 basic properties. 
 
 The trigonometric functions are used to describe relationships between
-triangles, circles and oscillatory motions. With such a wide range of
+triangles and circles as well as oscillatory motions. With such a wide range of
 utility it is no wonder that they pop up in many places and their
 [origins](https://en.wikipedia.org/wiki/Trigonometric_functions#History)
 date to Hipparcus and Ptolemy over 2000 years ago.
@@ -19,12 +19,25 @@ date to Hipparcus and Ptolemy over 2000 years ago.
 ## The 6 basic trigonometric functions
 
 We measure angles in radians, where $360$ degrees is $2\pi$
-radians. By proportions, $90$ degrees is $\pi/2$, $60$ degrees is $\pi/3$, etc.
+radians. By proportions, $180$ degrees is $\pi$ radian, $90$ degrees is $\pi/2$ radians, $60$ degrees is $\pi/3$ radians, etc. In general, $x$ degrees is $2\pi \cdot x / 360$ radians.
 
 For a right triangle with angles $\theta$, $\pi/2 - \theta$, and
 $\pi/2$ we call the side opposite $\theta$ the "opposite" side, the
 shorter adjacent side the "adjacent" side and the longer adjacent side
-the hypotenuse. With these, the basic definitions for the primary
+the hypotenuse.
+
+
+```nocode
+plot([0,4,4,0],[0,0,3,0], linewidth=3, legend=false, xlim=(0,5), ylim=(-1/2, 3))
+del = .25
+plot!([4-del, 4-del,4], [0, del, del], color=:black, linewidth=3)
+annotate!([(.75, .35, "θ"), (4.0, 1.25, "opposite"), (2, -.25, "adjacent"), (1.5, 1.25, "hypotenuse")])
+```
+
+
+
+
+With these, the basic definitions for the primary
 trigonometric functions are
 
 $$~
@@ -79,8 +92,6 @@ These all follow from the definition involving the unit circle:
 * If the angle $\theta$ corresponds to a point $(x,y)$ on the unit circle, then rotating by $\pi/2$ moves the points to $(-y, x)$. So $\cos(\theta) = x = \sin(\theta + \pi/2)$.
 
 
-These can be used to define the trigonometric functions exactly for many different angles, though not all.
-
 
 
 The fact that $x^2 + y^2 = 1$ for the unit circle leads to the
@@ -93,7 +104,7 @@ $$~
 This basic fact can be manipulated many ways. For example, dividing through by $\cos(\theta)^2$ gives the related identity: $\tan(\theta)^2 + 1 = \sec(\theta)^2$.
 
 
-`Julia`'s functions can compute values for any angles, including these fundamental:
+`Julia`'s functions can compute values for any angles, including these fundamental ones:
 
 ```
 [cos(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
@@ -116,6 +127,58 @@ For really large values, round off error can play a big role. For example, the *
 
 """)
 ```
+
+##### Example
+
+Measuring the height of a
+[tree](https://lifehacker.com/5875184/is-there-an-easy-way-to-measure-the-height-of-a-tree)
+may be a real-world task for some, but a typical task for trigonometry
+students. How might it be done? If a right triangle can be formed
+where the angle and adjacent side length are known, then the opposite
+side (the height of the tree) can be solved for with the tangent
+function. For example, if standing $100$ feet from the base of the
+tree the tip makes a 15 degree angle the height is given by:
+
+```
+theta = 15 * 180/pi
+adjacent = 100
+opposite = adjacent * tan(theta)
+```
+
+Having some means to compute an angle and then a tangent of that angle
+handy is not a given, so the linked to article provides a few other
+methods taking advantage of similar triangles.
+
+You can also measure distance with your
+[thumb](http://www.vendian.org/mncharity/dir3/bodyruler_angle/) or
+fist. How, the fist takes up about $10$ degree of view when held
+straight out. So, pacing off backwards until the fist completely
+occludes the tree will give the distance of the adjacent side of a
+right triangle. If that distance is $30$ paces what is the height of the tree?
+Well, we need some facts. Suppose your pace is $3$ feet. Then the
+adjacent length is $90$ feet. The multiplier is the tangent of $10$
+degrees, or:
+
+```
+tan(10 * pi/180)
+```
+
+Which for sake of memory we will say is $1/6$ (a $5$ percent error)$. So that answer is *roughly* $15$ feet:
+
+```
+30 * 3 / 6
+```
+
+Similarly, you can use your thumb instead of your first. To use your first you can multiply by $1/6$ the adjacent side, to use your thumb about $1/30$ as this approximates the tangent of $2$ degrees:
+
+```
+1/30, tan(2*pi/180)
+```
+
+This could be reversed. If you know the height of something a distance
+away that is covered by your thumb or fist, then you would multiply
+that height by the appropriate amount to find your distance.
+
 
 ### Basic properties
 
@@ -159,7 +222,7 @@ pt
 
 Trigonometric function are functions of angles which have two common descriptions: in terms of degrees or radians. Degrees are common when right triangles are considered, radians much more common in general, as the relationship with arc-length holds in that $r\theta = l$, where $r$ is the radius of a circle and $l$ the length of the arc formed by angle $\theta$.
 
-The two are related, as a circle of $2\pi$ radians and 360 degrees. So to convert from degrees into radians it takes multiplying by $2\pi/360$ and to convert from radians to degrees it takes multiplying by $360/(2\pi)$. The `deg2rad` and `rad2deg` functions will happily do this.
+The two are related, as a circle of $2\pi$ radians and 360 degrees. So to convert from degrees into radians it takes multiplying by $2\pi/360$ and to convert from radians to degrees it takes multiplying by $360/(2\pi)$. The `deg2rad` and `rad2deg` functions are available for this task.
 
 
 In `Julia`, the functions `sind`, `cosd`, `tand`, `cscd`, `secd`, and `cotd` are available to simplify the task of composing the two operations (that is `sin(deg2rad(x))` is the same as `sind(x)`).
@@ -176,7 +239,7 @@ According to [Wikipedia](https://en.wikipedia.org/wiki/Trigonometric_functions#I
 
 ![Geometric picture](http://www.mathalino.com/sites/default/files/users/Mathalino/summary-sum-and-difference-of-two-angles.jpg)
 
-To read this, there are three triangles: the bigger (green) has hypotenuse $1$ (and adjacent and opposite sides that form the hypotenuses of the other two); the next biggest (yellow) hypotenuse $\cos(\beta)$,  adjacent side (of angle $\alpha$) $\cos(\beta)\cdot \cos(\alpha)$, and opposite side $\cos(\beta)\cdot\sin(\alpha)$; and  the smallest (puplish) hypotenuse $\sin(\beta)$, adjacent side (of angle $\alpha$) $\sin(\beta)\cdot \cos(\alpha)$, and opposite side $\sin(\beta)\sin(\alpha)$.
+To read this, there are three triangles: the bigger (green with pink part) has hypotenuse $1$ (and adjacent and opposite sides that form the hypotenuses of the other two); the next biggest (yellow) hypotenuse $\cos(\beta)$,  adjacent side (of angle $\alpha$) $\cos(\beta)\cdot \cos(\alpha)$, and opposite side $\cos(\beta)\cdot\sin(\alpha)$; and  the smallest (pink) hypotenuse $\sin(\beta)$, adjacent side (of angle $\alpha$) $\sin(\beta)\cdot \cos(\alpha)$, and opposite side $\sin(\beta)\sin(\alpha)$.
 
 This figure shows the following sum formula for sine and cosine:
 
@@ -202,6 +265,7 @@ The latter looks like the Pythagorean identify, but has a minus sign. In fact, t
 
 
 Applying the above with $\alpha = \beta/2$, we get that $\cos(\beta) = 2\cos(\beta/2)^2 -1$, which rearranged yields the "half-angle" formula: $\cos(\beta/2)^2 = (1 + \cos(\beta))/2$.
+
 
 ##### Example
 
@@ -273,6 +337,69 @@ But,
 atan2(y, x)
 ```
 
+
+##### Example
+
+A (white) light shining through a [prism](http://tinyurl.com/y8sczg4t) will be deflected depending on the material of the prism and the angles involved (cf. the link for a figure). The relationship can be analyzed by tracing a ray through the figure and utilizing Snell's law. If the prism has index of refraction $n$ then the ray will deflect by an amount $\delta$ that depends on the angle, $\alpha$ of the prism and the initial angle ($\theta_0$) according to:
+
+$$~
+\delta = \theta_0 - \alpha  + \arcsin(n \sin(\alpha - \arcsin(\frac{1}{n}\sin(\theta_0)))).
+~$$
+
+If $n=1.5$ (glass), $\alpha = \pi/3$ and $\theta_0=\pi/6$, find the deflection (in radians).
+
+We have:
+
+```
+n, alpha, theta0 = 1.5, pi/3, pi/6
+delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
+```
+
+For small $\theta_0$ and $\alpha$ the deviation is approximated by $(n-1)\alpha$. Compare this approximation to the actual value when $\theta_0 = \pi/10$ and $\alpha=\pi/15$.
+
+
+We have:
+
+```
+n, alpha, theta0 = 1.5, pi/15, pi/10
+delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
+delta, (n-1)*alpha
+```
+
+The approximation error is about 2.7 percent.
+
+
+##### Example
+
+The AMS has an interesting column on
+[rainbows](http://www.ams.org/publicoutreach/feature-column/fcarc-rainbows)
+the start of which uses some formulas from the previous example. Click through to
+see a ray of light passing through a spherical drop of water, as analyzed by Descartes. The
+deflection of the ray occurs when the incident light hits the drop of
+water, then there is an *internal* deflection of the light, and
+finally when the light leaves, there is another deflection. The total
+deflection (in radians) is $D = (i-r) + (\pi - 2r) + (i-r) = \pi - 2i - 4r$. However, the incident angle $i$ and the refracted angle $r$ are related by Snell's law: $\sin(i) = n \sin(r)$. The value $n$ is the index of refraction and is $4/3$ for water. (It was $3/2$ for glass in the previous example.) This gives
+
+$$~
+D = \pi + 2i - 4 \arcsin(\frac{1}{n} \sin(i)).
+~$$
+
+Graphing this for incident angles between $0$ and $\pi/2$ we have:
+
+```
+n = 4/3
+D(i) = pi + 2i - 4 * asin(sin(i)/n)
+plot(D, 0, pi/2)
+```
+
+Descartes was interested in the minimum value of this graph, as it relates to where the light concentrates. This is roughly at $1$ radian or about $57$ degrees:
+
+```
+rad2deg(1.0)
+```
+
+(Using calculus it can be seen to be $\arccos(((n^2-1)/3)^{1/2})$.)
+
 ##### Example: The Chebyshev Polynomials
 
 Consider again this equation derived with the sum-and-difference formula:
@@ -282,7 +409,7 @@ $$~
 \cos((n+1)\theta) = 2\cos(n\theta) \cos(\theta)  - \cos((n-1)\theta).
 ~$$
 
-Let $T_n(x) = \cos(n \arccos(x))$. Calling $\theta = \arccos(x)$ we get a relation between these functions:
+Let $T_n(x) = \cos(n \arccos(x))$. Calling $\theta = \arccos(x)$ for $-1 \leq x \leq x$ we get a relation between these functions:
 
 $$~
 T_{n+1}(x) = 2x T_n(x) - T_{n-1}(x).

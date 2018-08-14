@@ -54,7 +54,7 @@ This section gives some implications of this fact and quantifies what
 
 There are several approximations that are well known in physics, due to their widespread usage. Three are:
 
-* That $\sin(x) \approx x$ at $x=0$:
+* That $\sin(x) \approx x$ around $x=0$:
 
 ```
 f(x) = sin(x)
@@ -62,7 +62,7 @@ plot(f, -pi/2, pi/2)
 plot!(tangent(f, 0))
 ```
 
-* That $\log(1 + x) \approx x$ at $x=0$:
+* That $\log(1 + x) \approx x$ around $x=0$:
 
 ```
 f(x) = log(1 + x)
@@ -70,7 +70,7 @@ plot(f, -1/2, 1/2)
 plot!(tangent(f, 0))
 ```
 
-* That $1/(1-x) \approx x$ at $x=0$:
+* That $1/(1-x) \approx x$ aroun $x=0$:
 
 ```
 f(x) = 1/(1-x)
@@ -99,18 +99,18 @@ p
 
 The plot shows the tangent line with slope $dy/dx$ and the actual
 change in $y$, $\Delta y$, for some specified $\Delta x$. The small
-gap above the sine curve is the error. We can see that approximating
+gap above the sine curve is the error were the value of the sine approximated using the drawn tangent line. We can see that approximating
 the value of $\Delta y = \sin(c+\Delta x) - \sin(c)$ with the often
 easier to compute $f'(c)\Delta x$---for small enough values of
-$\Delta x$--- is not going to be too far off.
+$\Delta x$--- is not going to be too far off provided $\Delta x$ is not too large.
 
 This approximation is known as linearization. It can be used both in
-theoretical computations, and in pratical applications. To see how
+theoretical computations and in pratical applications. To see how
 effective it is, we look at some examples.
 
 ##### Example
 
-If $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$ then the values are:
+If $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$ then the values for the actual change in the function values and the value of $\Delta y$ are:
 
 ```
 f(x) = sin(x)
@@ -136,7 +136,7 @@ They agree until the third decimal value. The *percentage error* is just $1/2$ a
 
 ##### Example
 
-We are traveling 60 miles. At 60 miles an hour, we will take 60 minutes (or one hour). How long will it take at 70 miles an hour? (Assume you can't divide, but only multiply!)
+We are traveling 60 miles. At 60 miles an hour, we will take 60 minutes (or one hour). How long will it take at 70 miles an hour? (Assume you can't divide, but, instead, can only multiply!)
 
 
 Well the answer is $60/70$ hours or $60/70 \cdot 60$ minutes. But we
@@ -181,14 +181,23 @@ Computing the derivative can be done easily, we get for our answer:
 ```
 fp(x) = 3*x^2
 c, Delta = 10, 0.1
-1000 + fp(c) * Delta
+approx = 1000 + fp(c) * Delta
 ```
 
 This is a relative error as a percent of:
 
 ```
-fp(c) * Delta / 1000 * 100
+actual = 10.1^3
+(actual - approx)/actual * 100
 ```
+
+The manufacturer may be interested instead in comparing the valume of the actual object to the $1$ liter target. They might use the approximate value for this comparison, which would yield:
+
+```
+(1000 - approx)/approx * 100
+```
+
+This is off by about $3# percent. Not so bad for some applications, devastating for others.
 
 ##### Example from physics
 
@@ -215,7 +224,7 @@ This would be much easier if the second derivative were proportional to the angl
 approximation of $\sin(x) \approx x$, noted above, to say that when
 the angle is not too big, we have the pendulum's swing obeying
 $\theta''(t) = -g/l \cdot t$. Without getting too involved in why,
-we can verify that $\theta_0\sin(\sqrt{g/l}\cdot t)$ will be a solution to this
+we can verify by taking two derivatives that $\theta_0\sin(\sqrt{g/l}\cdot t)$ will be a solution to this
 modified equation.
 
 This says the motion is periodic with constant amplitude (assuming frictionless behaviour), as
@@ -243,8 +252,8 @@ more general Taylor remainder theorem):
 > b$. Then for any $x$ in $I$, there exists some value $\xi$ between $c$  and $x$ such that
 > $$~f(x) = f(c) + f'(c)(x-c) + f''(\xi)\cdot(x-c)^2/2.~$$
 
-That is, the error is basically a constant times a quadratic function
-centered at $c$. 
+That is, the error is basically a constant depending on the concavity
+of $f$ times a quadratic function centered at $c$.
 
 For $\sin(x)$ at $c=0$ we get $\lvert\sin(x) - x\rvert = \lvert-\sin(\xi)\cdot x^2/2\rvert$.
 Since $\lvert\sin(\xi)\rvert \leq 1$, we must have this bound:
@@ -303,7 +312,7 @@ f'(0) x)$ and $g(x) = x^2$. Then we have that there exists a $e$ with
 $0 < e < x$ such that
 
 $$~
-\text{error} = h(x) - h(0) = (g(x) - g(0)) \frac{h'(x)}{g'(x)} = x^2 \cdot \frac{1}{2} \cdot \frac{f'(e) - f'(0)}{e} =
+\text{error} = h(x) - h(0) = (g(x) - g(0)) \frac{h'(e)}{g'(e)} = x^2 \cdot \frac{1}{2} \cdot \frac{f'(e) - f'(0)}{e} =
 x^2 \cdot \frac{1}{2} \cdot f''(\xi).
 ~$$
 
@@ -376,7 +385,7 @@ f(x) \cdot g(x) &=  [f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2)] \cdot [g(c) + g'(
 
 The big "oh" notation just sweeps up many things including any products of it *and* the term $f'(c)\cdot g'(c) \cdot (x-c)^2$. Again, we see from the product rule that this is just a tangent line approximation for $f(x) \cdot g(x)$.
 
-In conclusion, basic mathematical operations involving tangent lines can be computed just using the tangent lines when all the accuracy desired is at the tangent line level. This is even true for composition, though there the outer and inner functions may have different "$c$"s.
+In conclusion, basic mathematical operations involving tangent lines can be computed just using the tangent lines when the desired accuracy is at the tangent line level. This is even true for composition, though there the outer and inner functions may have different "$c$"s.
 
 ```
 note("""

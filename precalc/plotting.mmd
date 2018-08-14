@@ -52,6 +52,7 @@ installed on the system at some point with a command such as
 ```
 using Plots
 plotly()
+include("compat.jl")
 ```
 
 ```
@@ -73,9 +74,9 @@ plot(f, -3, 3)
 
 The `plot` command does the hard work behind the scenes. It needs 2 pieces of information:
 
-* what to plot. With this invocation, this detail is expressed by passing a function object to `plot`
+* **What** to plot. With this invocation, this detail is expressed by passing a function object to `plot`
 
-* where to plot. As with a sketch, it is impossible in this case to
+* **Where** to plot. As with a sketch, it is impossible in this case to
   render a graph with all possible $x$ values in the domain of $f$, so
   we need to pick some viewing window. In the example this is $[-3,3]$
   which is expressed by passing the two endpoints as the second and
@@ -159,13 +160,13 @@ to curve the lines connecting points based on an analysis of the
 function. As `Julia` doesn't consider this, the points are connected
 with straight lines like a dot-to-dot puzzle.
 
-We can use `linspace` to create the $x$ values and broadcasting to create the $y$ values.
+We can use `range` to create the $x$ values and broadcasting to create the $y$ values.
 
 For example, if we were to plot $f(x) = \sin(x)$ over $[0,2\pi]$ using $10$ points, we might do:
 
 ```
 f(x) = sin(x)
-xs = linspace(0, 2pi, 10)  
+xs = range(0, stop=2pi, length=10)  
 ys = f.(xs)
 ```
 
@@ -180,7 +181,7 @@ straight lines. Basically, it creates a dot-to-dot graph. The above
 graph looks primitive, as it doesn't utilize enought points. A
 solution might be to just use more than 10 points. In `Plots` an
 algorithm is utilized that adds more points when the function is more
-"curvy" and otherwise uses fewer points.
+"curvy" and uses fewer points when it is "straighter."
 
 #### NaN values
 
@@ -191,14 +192,14 @@ there were a vertical asymptote, such as what happens at $0$ with
 $1/x$. There is a convention that if the $y$ value for a point is
 `NaN` that no lines will connect. This is convenient in many cases,
 though not with $1/x$ as `1/0` is `Inf` and not `NaN`. (Unlike `0/0`
-which is NaN.
+which is NaN.)
 
 Here is one way to plot $f(x) = 1/x$ over $[-1,1]$:
 
 ```
 f(x) = 1/x
-xs = linspace(-1, 1, 251)
-ys = map(f, xs)
+xs = range(-1, stop=1, length=251)
+ys = f.(xs)
 ys[xs .== 0.0] = NaN
 plot(xs, ys)
 ```
@@ -219,7 +220,7 @@ The graph of a function may be reflected through a line, as those seen with a mi
 For example, to plot $\sin(x)$ over $(-\pi,\pi)$ we might do:
 
 ```
-xs = linspace(-pi, pi)
+xs = range(-pi, stop=pi, length=100)
 ys = sin.(xs)
 plot(xs, ys)
 ```
@@ -274,7 +275,7 @@ This is the graph of the equation $x = \sin(y)$, but is not the graph of a funct
 However, for the sine function we can get a function from this reflection if we choose a narrower viewing window:
 
 ```
-xs = linspace(-pi/2, pi/2)
+xs = range(-pi/2, stop=pi/2, length=100)
 ys = [sin(x) for x in xs]
 plot(ys, xs)
 ```
@@ -365,6 +366,8 @@ The `Plots` package provides many arguments for modifying a graphic, here we men
 * `plot(..., linewidth=5)`: this argument can be used to adjust the width of drawn lines
 * `plot(..., xlims=(a,b), ylims=(c,d)`: either or both `xlims` and `ylims` can be used to control the viewing window
 * `plot(..., legend=false)`: by default, different layers will be indicated with a legend, this will turn off this feature
+* `plot(..., linestyle=:dash): will change the line style of the plotted lines to dashed lines. Also `:dot`, ...
+* `plot(..., aspect_ratio=:equal): will keep $x$ and $y$ axis on same scale so that squares look square.
 
 For plotting points with `scatter` or `scatter!` the markers can be adjusted via
 
@@ -398,7 +401,7 @@ The most "famous" parametric graph is one we are already familiar with, as it fo
 
 ```
 f(x) = cos(x); g(x) = sin(x)
-xs = linspace(0, 2pi)
+xs = range(0, stop=2pi, length=100)
 plot(f.(xs), g.(xs))
 ```
 
@@ -434,7 +437,7 @@ and this only gets worse if the viewing window were to get
 larger. However, the parametric graph is quite different:
 
 ```
-xs = linspace(0, 5)
+xs = range(0, stop=5, length=100)
 plot(g, f, 0, 25)
 ```
 
@@ -498,7 +501,7 @@ Now, thinking about the last problem in the context of this, we saw in
 the last problem that the parametric graph was nearly a line -- so
 close the eye can't really tell otherwise. That means that the rates
 of change in $t$ of both $g(t)=t - \sin(t)$ and $f(t) = t^3$ for $t$ around
-$0$ are in a nearly fixed ratio, as otherwise the graph would have a
+$0$ are in a nearly fixed ratio, as otherwise the graph would have more
 curve in it.
 
 ##### Example: Spirograph
@@ -650,7 +653,7 @@ functions. An example is the graph of `f(x) = sin(500*pi*x)` over `[0,1]`.
 Make its graph using 250 evenly spaced points, as follows:
 
 ```noout
-xs = linspace(0, 1, 250)
+xs = range(0, stop=1, length=250)
 f(x) = sin(500*pi*x)
 plot(xs, f.(xs))
 ```
@@ -718,7 +721,7 @@ R, r, rho = 1, 3/4, 1/4
 f(t) = (R-r) * cos(t) + rho * cos((R-r)/r * t)
 g(t) = (R-r) * sin(t) - rho * sin((R-r)/r * t)
 
-xs = linspace(0, max((R-r)/r, r/(R-r))*2pi, 1000)
+xs = (0, stop=max((R-r)/r, r/(R-r))*2pi, length=1000)
 plot(f, g, 0, max((R-r)/r, r/(R-r))*2pi, aspect_ratio=:equal)
 ```
 

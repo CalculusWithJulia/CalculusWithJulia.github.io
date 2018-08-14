@@ -102,7 +102,7 @@ a,b = rand(2)
 a < b, 1/a > 1/b
 ```
 
-In summary we verified numerically that the following hold:
+In summary we investigated numerically that the following hold:
 
 - `a < b` if and only if `a + c < b + c` for all finite `a`, `b`, and `c`.
 
@@ -116,7 +116,7 @@ In summary we verified numerically that the following hold:
 
 We now show some inequalities highlighted on this  [Wikipedia](http://en.wikipedia.org/wiki/Inequality_%28mathematics%29) page.
 
-Numerically investigate the fact $\exp(x) \geq 1 + x$ by showing it is
+Numerically investigate the fact $e^x \geq 1 + x$ by showing it is
 true for three different values of $x$. We pick $x=-1$, $0$, and $1$:
 
 ```
@@ -327,7 +327,7 @@ radioq(choices, ans)
 
 ###### Question
 
-Is sin(1000) positive?
+Is $\sin(1000)$ positive?
 
 ```
 ans = (sin(1000) > 0)
@@ -363,10 +363,17 @@ radioq(choices, ans)
 The `airyai` [function](http://en.wikipedia.org/wiki/Airy_function) is
 a special function named after a British Astronomer who realized the
 function's value in his studies of the rainbow. The `SpecialFunctions`
-package must be loaded to include this function. It is known that it
+package must be loaded to include this function, as with:
+
+```
+using SpecialFunctions
+airyai(0)
+```
+
+It is known that this function
 is always positive for $x > 0$, though not so for negative values of
-$x$. Which of these indicates the first negative value : `airy(-1) <
-0`, `airy(-2) < 0`, ..., or `airy(-5) < 0`?
+$x$. Which of these indicates the first negative value : `airy(-1) <0`,
+`airy(-2) < 0`, ..., or `airy(-5) < 0`?
 
 ```
 choices = ["`airy($i) < 0`" for i in -1:-1:-5]
@@ -489,7 +496,7 @@ radioq(choices, ans)
 
 ###### Question
 
-The IEEE 754 standard  is about floating point numbers, for which there are the special values `Inf`, `-Inf`, `NaN`, and (surprisingly `-0`. Here are 4 facts that seem reasonable:
+The IEEE 754 standard  is about floating point numbers, for which there are the special values `Inf`, `-Inf`, `NaN`, and, surprisingly, `-0.0` (as a floating point number and not `-0`, an integer). Here are 4 facts that seem reasonable:
 
 - Positive zero is equal but not greater than negative zero.
 
@@ -505,3 +512,31 @@ Do all four seem to be the case within `Julia`? Find your answer by trial and er
 yesnoq(true)
 ```
 
+##### Question
+
+The `NaN` value is meant to signal an error in computation. `Julia` has value to indicate some data is missing or unavailable. This is `missing`. (In `Julia` version `v0.6` this is provided in the `Missings` package.) For `missing` values we have these computations:
+
+```
+using Missings  # if version v0.6
+true & missing, true | missing
+```
+
+We see the value of `true | missing` is `true`. Why?
+
+```
+choices = ["If `missing` were `true` or `false`, the answer would always be `true`",
+"Since the second value is \"`missing`\", only the first is used. So `false | missing` would also be `false`"]
+ans = 1
+radioq(choices, ans)
+```
+
+The value for `true & missing` is `missing` showing that there are possibly three values for `&` to return. Why would it make sense for this to be "`missing`"?
+
+```
+
+```
+choices = ["If `missing` were `true` the answer would be `true` and if it were `false` the answer would be `false`, so the answer is not known, hence also \"`missing`\"",
+"Since the second value is \"`missing`\" all such answers would be missing."]
+ans = 1
+radioq(choices, ans)
+```

@@ -417,7 +417,7 @@ In `Julia`, functions are used to perform the actions that a
 specialized button may do on the calculator. `Julia` provides many
 standard mathematical functions---more than there could be buttons on
 a calculator---and allows the user to easily define their own
-functions. For example, julia provides the same set of functions as on
+functions. For example, `Julia` provides the same set of functions as on
 Google's calculator, though with different names. For logarithms,
 $\ln$ becomes `log` and $\log$ is `log10` (computer programs almost
 exclusively reserve `log` for the natural log); for factorials, $x!$,
@@ -499,28 +499,45 @@ making of a "tuple," or a container of different objects, for example
 ```
 
 
-`Julia`'s design embraces *polymorphism*, a term to indicate that the same function may have different implementations and the one ultimately called depends on the number and types of the arguments. Polymorphism is also commonly referred to as *multiple dispatch*. This is a great convenience for the user who only needs to remember one function name for related uses, that may differ only in technicalities.  For example, there are about $200$ methods implemented for the generic function `+`. This may be expected from mathematical analogy: the details of the operation of addition are different for integers, than rational numbers, than polynomials, though all can be added.
+<script>
+// XXX This seems to be no longer needed, as 2^(-1) is defined when -1 is a numeric literal
+//
+// `Julia`'s design embraces *polymorphism*, a term to indicate that the
+// same function may have different implementations and the one
+// ultimately called depends on the number and types of the
+// arguments. Polymorphism is also commonly referred to as *multiple
+// dispatch*. This is a great convenience for the user who only needs to
+// remember one function name for related uses, that may differ only in
+// technicalities.  For example, there are about $200$ methods
+// implemented for the generic function `+`. This may be expected from
+// mathematical analogy: the details of the operation of addition are
+// different for integers, than rational numbers, than polynomials,
+// though all can be added.
+//
+//
+// 
+// The power operator, `^`, provides a concrete example. For integer
+// bases there is a different implementation than there is for real
+// bases. When the base is an integer, the answer may or may not be an
+// integer:
+// 
+// ```
+// 2^(-1), 2^2
+// ```
+// 
+// However, for floating point bases the answer is always a floating point number
+// 
+// ```
+// 2.0^(-1), 2.0^2
+// ```
+</script>
 
-
-The power operator, `^`, provides a concrete example. For integer bases there is a different implementation than there is for real bases. When the base is an integer, the answer may or may not be an integer:
-
-```
-2^(-1), 2^2
-```
-
-However, for floating point bases the answer is always a floating point number
-
-```
-2.0^(-1), 2.0^2
-```
-
-
-
+### Multiple arguments
 
 For the logarithm, we mentioned that `log` is the natural log and
 `log10` implements the logarithm base 10. As well there is
 `log2`. However, in general there is no `logb` for any base
-`b`. Instead, the basic `log` function can take two arguments. When it
+`b`. Instead, the basic `log` function can take *two* arguments. When it
 does, the first is the base, and the second the value to take the
 logarithm of. This avoids forcing the user to remember that $\log_b(x)
 = \log(x)/\log(b)$.
@@ -531,9 +548,9 @@ So we have all these different, but related, uses to find logarithms:
 log(e), log(2, e), log(10, e), log(e, 2)
 ```
 
-The generic function `log` not only has different implementations for
+In `Julia`, the "generic" function `log` not only has different implementations for
 different types of arguments (real or complex), but also has a
-different implementation depending on the number of arguments.
+different implementation depending on the number of arguments. 
 
 ### Examples
 
@@ -666,7 +683,7 @@ use floating point, but rather the difference between the two numbers:
 (3987.0^12 + 4365.0^12)^(1/12) - 4472
 ```
 
-is less than $10^{-9}$ so on display with $8$ digits may be rounded to $0$.
+is less than $10^{-8}$ so on display with $8$ digits may be rounded to $0$.
 
 Moral: with `Julia` and with calculators, we still have to be mindful not to blindly accept an answer.
 
@@ -836,6 +853,14 @@ ans = 3
 radioq(choices, ans)
 ```
 
+###### Question
+
+In the U.S. version of the Office, the opening credits include a calculator calculation. The key sequence shown is `9653 +` which produces `11532`.  What value was added to?
+
+```
+val = 11532 - 9653
+numericq(val)
+```
 
 ###### Question
 

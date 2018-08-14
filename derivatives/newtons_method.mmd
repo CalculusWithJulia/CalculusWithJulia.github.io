@@ -109,11 +109,11 @@ that the intersection point of the tangent line with the $x$ axis
 nearly hides the actual zero of $f(x)$ that is near $2.1$.
 
 That is, it seems that the intersection of the tangent line and the
-$x$ axis should be a improved approximation for the zero of the
+$x$ axis should be an improved approximation for the zero of the
 function.
 
-Let $x_0$ be $2$, and $x_1$ the intersection point of the tangent line
-at $(x_0, f(x_0))$ with the $x_axis$. Then by the definition of the
+Let $x_0$ be $2$, and $x_1$ be the intersection point of the tangent line
+at $(x_0, f(x_0))$ with the $x$ axis. Then by the definition of the
 tangent line:
 
 $$~
@@ -180,8 +180,7 @@ call $x_4$ an *approximate zero* of $f(x)$.
 > points converges to a zero of $f$.
 
 On the computer, we know that actual convergence will likely never
-occur, but accuracy to a certain tolerance will happen quite
-quickly.
+occur, but accuracy to a certain tolerance can often be achieved.
 
 
 
@@ -197,7 +196,7 @@ x = x - f(x) / f'(x)      # x3
 x = x - f(x) / f'(x)      # x4
 ```
 
-As see above, the assignment will update the value bound to `x` using the previous value of `x` in the computation.
+As seen above, the assignment will update the value bound to `x` using the previous value of `x` in the computation.
 
 We implement the algorithm by repeating the step until either we
 converge or it is clear we won't converge. For good guesses and most
@@ -213,7 +212,7 @@ Research. 02/2007; 181(3):1086-1096.) though his technique was
 slightly different as he did not use the derivative, *per se*, but
 rather an approximation based on the fact that his function was a
 polynomial (though identical to the derivative). Raphson (1690)
-proposed the general form, hence the usual name of Newton-Raphson
+proposed the general form, hence the usual name of the Newton-Raphson
 method.
 
 
@@ -344,9 +343,9 @@ general, this is not the case with Newton's method where the algorithm
 is iterated until convergence.  Having to repeat steps until something
 happens is a task best done by the computer. The `while` loop is a
 good way to repeat commands until some condition is met. With this, we
-present a simple function implementing Newton's method, we we iterate
+present a simple function implementing Newton's method, we iterate
 until the update step gets really small (the `delta`) or the
-convergence takes more than 50 steps.
+convergence takes more than 50 steps. (There are other reasonable choices that could be used to determine when the algorithm should stop.)
 
 ```
 function nm(f, fp, x0)
@@ -405,16 +404,17 @@ Or, if a derivative is not specified, one is computed using `D`:
 newton(f, 2)
 ```
 
-The argument `verbose=true` will force a print out of a message on each step.
+The argument `verbose=true` will force a print out of a message summarizing each step.
 
 More generally, the function `fzero` provides a derivative-free
 algorithm for finding roots of functions. It is similar to Newton's
 method in that only a good initial guess is needed. However, the
-algorithm, while slower, is engineered to be a bit more robust to the
-choice of initial estimate than Newton's method. (If it finds a
-bracket, it will use bisection which is guaranteed to converge, but
-can be slower to do so.) Here we see how to call the function
-(identically to the `nm` function we previously defined):
+algorithm, while slower in terms of function evaluations and steps, it
+is engineered to be a bit more robust to the choice of initial
+estimate than Newton's method. (If it finds a bracket, it will use
+bisection which is guaranteed to converge, but can be slower to do
+so.) Here we see how to call the function (identically to the `newton` or `nm`
+functions we previously used):
 
 ```
 f(x) = cos(x) - x
@@ -429,14 +429,14 @@ fzero(f, 0, 1)           ## [0,1] must be a bracketing interval
 ```
 
 For this example both give the same answer, but the bisection method
-is a bit more inconvenient as a bracketing interval must be pre-specified.
+is a bit more inconvenient as a bracketing interval must be pre-specified. 
 
 
 ##### Example: intersection of two graphs
 
 Find the intersection point between $f(x) = \cos(x)$ and $g(x) = 5x$ near $0$.
 
-We have Newton's method solve for zeros of $f(x)$, i.e. when $f(x) =
+We have Newton's method to solve for zeros of $f(x)$, i.e. when $f(x) =
 0$. Here we want to solve for $x$ with $f(x) = g(x)$. To do so, we
 make a new function $h(x) = f(x) - g(x)$, for that is $0$ when $f(x)$
 equals $g(x)$:
@@ -445,7 +445,8 @@ equals $g(x)$:
 f(x) = cos(x)
 g(x) = 5x
 h(x) = f(x) - g(x)
-newton(h, 0)
+x0 = newton(h, 0)
+x0, h(x0), f(x0), g(x0)
 ```
 
 ##### Example: Finding  $c$ in Rolle's Theorem
@@ -457,17 +458,18 @@ f(x) = sqrt(1 - cos(x^2)^2)
 plot(f, 0, 1.77)
 ```
 
-As $f(x)$ is differentiable between $0$ and $a$, Rolle's theorem says there will be point where the derivative is $0$. Find that.
+As $f(x)$ is differentiable between $0$ and $a$, Rolle's theorem says
+there will be value where the derivative is $0$. Find that value.
 
-This will be a zero of the derivative. A graph shows it should be near $1.5$:
+This value will be a zero of the derivative. A graph shows it should be near $1.2$, so we use that as a starting value to get the answer:
 
 ```
-fzero(D(f), 1.5)
+fzero(f', 1.2)
 ```
 
 ## Convergence
 
-Newton's method is famously known to be quadratically converging. What
+Newton's method is famously known to have "quadratic convergence." What
 does this mean? Let the error in the $i$th step be called $e_i = x_i -
 \alpha$. Then Newton's method satisfies a bound of the type:
 
@@ -554,7 +556,7 @@ What can go wrong when one of these isn't the case is illustrated next:
 
 Suppose $\alpha$ is a simple zero for $f(x)$.  (The value $\alpha$ is
 a zero of multiplicity $k$ if $f(x) = (x-\alpha)^kg(x)$ where
-$g(\alpha)$ is not zero. A simple zero has multiplicity $1$. If
+$g(\alpha)$ is not zero.) A simple zero has multiplicity $1$. If
 $f'(\alpha) \neq 0$ and the second derivative exists, then a zero
 $\alpha$ will be simple.)  Around $\alpha$, quadratic convergence should
 apply. However, consider the function $g(x) = f(x)^k$ for some integer
@@ -588,14 +590,14 @@ Look at this graph with $x_0$ marked with a point:
 ```nocode
 p = plot(airy, -3.3, 0, legend=false);
 plot!(p, zero, -3.3, 0);
-scatter!(p, [-3], [0], color=:orange, markersize=5);
-annotate!(p, [(-3, 0, text("x₀", :below))])
+scatter!(p, [-2.8], [0], color=:orange, markersize=5);
+annotate!(p, [(-2.8, 0, text("x₀", :below))])
 ```
 
 If one step of Newton's method was used, what would be the value of $x_1$?
 
 ```
-choices = [L"-2.800", L"-2.338",  L"-0.020", L"0.355"]
+choices = [L"-2.224", L"-2.80",  L"-0.020", L"0.355"]
 ans = 1
 radioq(choices, ans, keep_order=true)
 ```
@@ -648,7 +650,7 @@ L"It must be $x_1 < c$",
 L"It must be $x_1 > x_0$",
 L"It must be $c < x_1 < x_0$"
 ]
-ans = 1
+ans = 3
 radioq(choices, ans)
 ```
 
@@ -759,7 +761,7 @@ choices = [
 "No. The initial guess is not close enough",
 "No. The second derivative is too big",
 L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
-ans = 1
+ans = 2
 radioq(choices, ans, keep_order=true)
 ```
 
@@ -776,7 +778,7 @@ choices = [
 "No. The initial guess is not close enough",
 "No. The second derivative is too big, or does not exist",
 L"No. The first derivative gets too close to $0$ for one of the $x_i$"]
-ans = 1
+ans = 2
 radioq(choices, ans, keep_order=true)
 ```
 
@@ -849,7 +851,7 @@ numericq(val)
 
 ###### Question
 
-The Newton baffler is so named, as Newton's method will fail to find the root. The function can be 
+The Newton baffler (defined below) is so named, as Newton's method will fail to find the root for most starting points. 
 
 ```
 function newton_baffler(x) 
@@ -863,7 +865,7 @@ function newton_baffler(x)
 end
 ```
 
-Will `fzero` find the zero at $0.0$ starting at 1?
+Will `fzero` find the zero at $0.0$ starting at 1 using the default option for `order`?
 
 ```
 yesnoq("yes")
@@ -945,8 +947,7 @@ yesnoq(false)
 If so, what is the value?
 
 ```
-val = fzero(f, 0)
-numericq(val)
+numericq(-999.999)
 ```
 
 If not, what is the reason?
@@ -958,7 +959,7 @@ choices = [
 "The function oscillates too much to rely on the tangent line approximations far from the zero",
 "We can find an answer"
 ]
-ans = 4
+ans = 3
 radioq(choices, ans, keep_order=true)
 ```
 
@@ -1021,7 +1022,7 @@ function findy(x)
 end
 ```
 
-For a *fixed* x, this solve for $y$ in the equation: $F(y) = x^2 + x \cdot y + y^2 - 1 = 0$. It should be that $(x,y)$ is a solution:
+For a *fixed* x, this solves for $y$ in the equation: $F(y) = x^2 + x \cdot y + y^2 - 1 = 0$. It should be that $(x,y)$ is a solution:
 
 ```
 x = .75

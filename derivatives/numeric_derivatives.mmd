@@ -1,0 +1,285 @@
+# Numeric derivatives
+
+
+```nocode, noout
+using Plots
+plotly()
+```
+
+
+`SymPy` returns symbolic derivatives. Up to choices of simplification, these answers match those that would be derived by hand. This is useful when comparing with known answers and for seeing the structure of the answer. However, there are times we just want to work with the answer numerically. For that we have other options.
+
+### Approximate derivatives
+
+An approximate derivative can be used. By approximating the limit of the secant line with a value for a small, but positive, $h$, we get an approximation. That is
+
+$$~
+f'(x) \approx \frac{f(x+h) - f(x)}{h}.
+~$$
+
+This is the forward-difference approximation. The central difference approximation looks both ways:
+
+$$~
+f'(x) \approx \frac{f(x+h) - f(x-h)}{2h}.
+~$$
+
+Though in general they are different, they are both
+approximations. The central difference is a bit more accurate for the
+same size $h$. However, both are susceptible to round-off errors. The
+numerator is a subtraction of like-size numbers---a perfect
+opportunity to lose precision. As such there is a balancing act: if
+$h$ is too small the round-off errors are problematic, if $h$ is too
+big, the approximation to the limit is not good. For the forward
+difference $h$ values around $10^{-8}$ are good, for the central
+difference, values around $10^{-6}$ are good for most instances.
+
+##### Example
+
+Let's verify that the forward difference isn't too far off.
+
+```
+f(x) = exp(-x^2/2)
+c = 1
+h = 1e-8
+approx = (f(c+h) - f(c)) / h
+```
+
+We can compare to the actual with:
+
+```
+df = diff(f(x), x)
+actual = N(df(c))
+abs(actual - approx)
+```
+
+The error is about 1 part in 100 million.
+
+The central difference is better here:
+
+```
+h = 1e-6
+approx = (f(c+h) - f(c-h)) / (2h)
+abs(actual - approx)
+```
+
+### Automatic derivatives
+
+There are some other ways to compute derivatives numerically that give
+much more accuracy at the expense of some increased computing
+time. Automatic differentiation is the general name for a few
+different approaches. These approaches promise less complexity---in
+some cases---than symbolic derivatives and more accuracy than
+approximate derivatives. In fact the accuracy is on the order of
+machine precision.
+
+The `Roots` package has an operator `D` which uses an implementation
+of automatic differentiation provided by the `ForwardDiff`
+package. The notation used is `D(f)` to find the first derivative, and
+`D(f,k)` to return the $k$th. These return anonymous functions which
+can be passed directly to another function, or assigned a name.
+
+
+Here we see the error in estimating $f'(1)$ for the $f(x) = e^{-x^2/2}$.
+
+```
+using Roots
+approx = D(f)(c)         # D(f) is a function, D(f)(c) is the function called on c
+abs(actual - approx)
+```
+
+In this case, it is exact.
+
+
+The `D` operator is only defined for most functions, not all. (The
+`diff` operator of `SymPy` is somewhat similar in that respect.) 
+
+##### Example
+
+For $f(x) = \sqrt{1 + \sin(\cos(x))}$ compare the difference between the forward derivative with $h=1e-8$ and that computed by `D` at $x=\pi/4$.
+
+The forward derivative is found from:
+
+```
+f(x) = sqrt(1 + sin(cos(x)))
+c, h = pi/4, 1e-8
+fwd = (f(c+h) - f(c))/h
+```
+
+That given by `D` is:
+
+```
+ds_value = D(f)(c)
+ds_value, fwd, ds_value - fwd
+```
+
+Finally, `SymPy` gives an exact value we use to compare:
+
+```
+@vars x
+actual = diff(f(x), x) |> subs(x, PI/4) |> N
+actual - ds_value, actual - fwd
+```
+
+#### Convenient notation
+
+`Julia` allows the possibility of extending functions to different
+types. Out of the box, the `'` notation is not employed for functions,
+but is used for matrices. It is used in postfix position, as with
+`A'`. We can define it to do the same thing as `D` for functions and
+then, we can evaluate derivatives with the familiar `f'(x)`. Ignoring
+the warning, here is how using the `derivative` function of the
+`ForwardDiff` package (the right hand side is basically the definition of `D` in
+`Roots`):
+
+```
+using ForwardDiff
+#Base.adjoint(f::Function) = x -> ForwardDiff.derivative(f, x)
+Base.ctranspose(f::Function) = x -> ForwardDiff.derivative(f, x) 
+```
+
+Then, we have, for example:
+
+```
+f(x) = sin(x)
+f'(pi), f''(pi)
+```
+
+```
+note("""Starting with v"0.7.0" of Julia, the `ctranspose` function is renamed `adjoint`, so the defintion would be `Base.adjoint(f::Function) = ...`.
+""")
+```
+
+
+##### Example
+
+Suppose our task is to find a zero of the second derivative of $f(x) =
+e^{-x^2/2}$ in $[0, 10]$, a known bracket. The `D` function takes a second argument to indicate the order of the derivative (e.g., `D(f,2)`), but we use the more familiar notation:
+
+
+```
+f(x) = exp(-x^2/2)
+fzero(f'', 0, 10)
+```
+
+We pass in the function object, `f''`, and not the evaluated function.
+
+
+## Questions
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+Mathematically, as the value of `h` in the forward difference gets
+smaller the forward difference approximation gets better. On the
+computer, this is thwarted by floating point reprentation issues (in
+particular the error in subtracting two like-sized numbers in forming
+$f(x+h)-f(x)$.)
+
+For `1e-16` what is the error (in absolute value) in finding the forward difference
+approximation for the derivative of $\sin(x)$ at $x=0$?
+
+```
+h = 1e-16
+c = 0
+approx = (f(c+h)-f(c))/h
+val = abs(cos(0)  - approx)
+numericq(val)
+```
+
+Repeat for $x=pi/4$:
+
+
+```
+h = 1e-16
+c = pi/4
+approx = (f(c+h)-f(c))/h
+val = abs(cos(0)  - approx)
+numericq(val)
+```
+
+
+
+
+
+###### Question
+
+Let $f(x) = x^x$. Using `D`, find $f'(3)$.
+
+```
+f(x) = x^x
+val = D(f)(3)
+numericq(val)
+```
+
+###### Question
+
+
+Let $f(x) = \lvert 1 - \sqrt{1 + x}\rvert$. Using `D`, find $f'(3)$.
+
+```
+f(x) = abs(1 - sqrt(1 + x))
+val = D(f)(3)
+numericq(val)
+```
+
+
+###### Question
+
+
+Let $f(x) = e^{\sin(x)}$. Using `D`, find $f'(3)$.
+
+```
+f(x) = exp(sin(x))
+val = D(f)(3)
+numericq(val)
+```
+
+
+
+
+###### Question
+
+For `Julia`'s
+`airyai` function find a numeric derivative using the
+forward difference. For $c=3$ and $h=10^{-8}$ find the forward
+difference approximation to $f'(3)$ for the `airyai` function.
+
+```
+h = 1e-8
+c = 3
+val = (airyai(c+h) - airyai(c))/h
+numericq(val)
+```
+
+
+###### Question
+
+Find the rate of change with respect to time of the function $f(t)= 64 - 16t^2$ at $t=1$.
+
+```
+fp(t) = -16*2*t
+c = 1
+numericq(fp(c))
+```
+
+###### Question
+
+Find the rate of change with respect to height, $h$, of $f(h) = 32h^3 - 62 h + 12$ at $h=2$.
+
+```
+fp(h) = 3*32h^2 - 62
+c = 2
+numericq(fp(2))
+```

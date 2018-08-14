@@ -1,5 +1,9 @@
 # Ranges and Sets
 
+```nocode
+include("compat.jl")
+```
+
 Sequences of numbers are prevalent in math. A simple one is just counting by ones:
 
 $$~
@@ -87,7 +91,7 @@ collect(100:-7:1)
 In this last example, we said end with 1, but it ended with 2. The
 ending value in the range is a suggestion to go up to, but not exceed. Negative values for `h`  are used to make decreasing sequences.
 
-### The linspace function
+### The range function
 
 For generating points to make graphs, a natural set of points to
 specify is $n$ evenly spaced points between $a$ and $b$. We can mimic
@@ -132,12 +136,15 @@ It seems to work as expected. But looking just at the algorithm it isn't quite s
 Floating point roundoff leads to the last value *exceeding* `0.6`, so should it be included? Well, here it is pretty clear it *should* be, but 
 better to have something programmed that hits both `a` and `b` and adjusts `h` accordingly.
 
-Enter the base function `linspace` (*lin*early *space*d) which solves this seemingly
-simple---but not really---task. It asks for `a`, `b`, and `n`. Like the range operation, this function returns a generator
-which can be collected to realize the values:
+Enter the base function `range` which solves this seemingly
+simple---but not really---task. It can use `a`, `b`, and `n`. Like the
+range operation, this function returns a generator which can be
+collected to realize the values.
+
+The stopping point and number of points are specified with keyword arguments, as in:
 
 ```
-xs = linspace(-1, 1, 9)
+xs = range(-1, stop=1, length=9)
 ```
 
 and
@@ -182,7 +189,7 @@ requires us to write a function akin to `iseven`, which isn't hard (e.g.,
 
 For another example, here is an inefficient way to list the prime
 numbers between 100 and 200 using the `isprime` function from the
-`Primes` package (which may need installation):
+`Primes` package (which may need installation to run this example):
 
 ```
 using Primes
@@ -212,10 +219,10 @@ While `Julia` has a special type for dealing with sets, we will use a
 vector for such a set. (Unlike a set, vectors can have repeated
 values, but as vectors are more widely used, we demonstrate them.)
 Vectors are described more fully in a previous section, but as a
-reminder vectors are constructed using square brackets: `[]` (a
+reminder, vectors are constructed using square brackets: `[]` (a
 special syntax for
 [concatenation](http://docs.julialang.org/en/latest/manual/arrays/#concatenation)). Square
-brackets are used in many different contexts within `Julia`, in this
+brackets are used in different contexts within `Julia`, in this
 case we use them to create a *collection*. If we separate single
 values in our collection by commas (or semicolons), we will create a
 vector:
@@ -372,11 +379,12 @@ ways[1:3]
 
 The generating expression reads naturally. It introduces the use of
 multiple `for` statements, each subsequent one depending on the value
-of the previous (working left to right). Now suppose we want to ensure
-that the amount of pennies is less than the amount from nickels,
-etc. We could use `filter` somehow to do this for our last answer, but
-using `if` allows for filtering while the events are generating. Here
-our condition is simply expressed: `q > d > n > p`:
+of the previous (working left to right). Now suppose, like a shop
+keeper, we want to ensure that the amount of pennies is less than the
+amount from nickels, etc. We could use `filter` somehow to do this for
+our last answer, but using `if` allows for filtering while the events
+are generating. Here our condition is simply expressed: `q > d > n >
+p`:
 
 
 ```
@@ -436,17 +444,6 @@ q"1:2:99"
 ans = 3
 radioq(choices, ans)
 ```		   
-
-
-###### Question
-
-Which of these will produce the countdown numbers 10, 9, 8, ..., 3, 2, 1?
-
-```
-choices = [q"10:1", q"10:9:8:...:1", q"10:1:-1", q"10:-1:1"]
-ans = 4
-radioq(choices, ans)
-```
 
 
 ###### Question

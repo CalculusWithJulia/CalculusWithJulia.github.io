@@ -112,35 +112,11 @@ x = 3
 -16*x^2 + 32*x - 12
 ```
 
-This looks nearly identical to the mathematical expression, but we inserted `*` to indicate multiplication between the constant and the variable. In fact, this step is not needed:
+This looks nearly identical to the mathematical expression, but we inserted `*` to indicate multiplication between the constant and the variable. In fact, this step is not needed as Julia allows numeric literals to have an implied multiplication:
 
 ```
 -16x^2 + 32x - 12
 ```
-
-### Numeric literals
-   
-As previously mentioned, `Julia` conveniently allows for numeric
-[literals](http://julia.readthedocs.org/en/latest/manual/integers-and-floating-point-numbers/#numeric-literal-coefficients)
-to imply multiplication. That is, numeric coefficients need not have a
-multiplication sign. (Of course, we can't write `xy` to mean `x * y`,
-as it could also mean the variable `xy`. As well, we can't use `x2` to
-mean `x*2`, as `x2` is a valid variable name, unlike `2x`, as that
-begins with a number.)
-
-The precedence is not that of multiplication but higher. It is the same as unary minus. This makes one of the following values different:
-
-```
-x = 2
-1/2x, 1/2*x, 1/(2*x)
-```
-
-With the middle one the multiplication happens after the division due
-to the left-to-right associativity order for these operations with the
-same precedence. To avoid subtle bugs, it is advised to be explicit
-with multiplication by using `*` except in the simplest of
-expressions, such as polynomials.
-
 
 
 
@@ -217,7 +193,7 @@ binding to `sin` occurs in the `Main` module. This shadows that
 value of `sin` bound in the `Base` module. Even if redefined in
 `Main`, the value in base can be used by fully qualifying the name,
 as in `Base.sin(pi)`. This uses the convention
-`module_name.variable_name` to look up a binding in a module. This will be needed until the workspace is cleared.
+`module_name.variable_name` to look up a binding in a module. 
 """)
 ```
 
@@ -235,15 +211,32 @@ can be locally overwritten. Conventionally, variable names are lower
 case. For compound names, it is not unusual to see them squished
 together, joined with underscores, or written in camelCase.
 
-The Unicode names allow julia notation to mirror that of many
+```
+value_1 = 1
+a_long_winded_variable_name = 2
+sinOfX = sind(45)
+__private = 2     # a convention
+```
+
+### Unicode names
+
+Julia allows variable names to use Unicode identifiers. Such
+names allow `julia` notation to mirror that of many
 mathematical texts. For example, in calculus the variable $\epsilon$
 is often used to represent some small number. We can assign to a
 symbol that looks like $\epsilon$ using `Julia`'s LaTeX input
 mode. Typing `\epsilon[tab]` will replace the text with the symbol
-within `IJulia` or the command line. This follows the pattern of
+within `IJulia` or the command line.
+
+```
+ϵ = 1e-10
+```
+
+
+Entering Unicode names follows the pattern of
 "slash" + LaTeX name + `[tab]` key. Some other ones that are useful
 are `\delta[tab]`, `\alpha[tab]`, and `\beta[tab]`, though there are
-[hundreds](https://github.com/JuliaLang/julia/blob/master/base/latex_symbols.jl)
+[hundreds](https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/src/latex_symbols.jl)
 of other values defined.
 
 
@@ -256,21 +249,23 @@ For example, we could have defined `theta` (`\theta[tab]`) and `v0` (`v\_0[tab]`
 
 ```
 alert("""
-
 There is even support for tab-completion of
-[emojis](https://github.com/JuliaLang/julia/blob/master/base/emoji_symbols.jl)
-such as `\:snowman:[tab]` or `\:koala:[tab]`
+[emojis](https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/src/emoji_symbols.jl)
+such as `\\:snowman:[tab]` or `\\:koala:[tab]`
 
 """)
 ```
 
 ##### Example
 
-As mentioned, the value of $e$ is bound to the unicode value `\euler[tab]` and not the letter `e`:
+As mentioned, as of `Julia` `v"0.7.0"`, the value of $e$ is bound to
+the unicode value `\euler[tab]` and not the letter `e`, so Unicode
+entry is required to access this constant:
 
 ```
 ℯ
 ```
+
 
 This isn't quite true. The `MathConstants` module defines `e`, as well as a few other values accessed via unicode:
 
@@ -278,24 +273,38 @@ This isn't quite true. The `MathConstants` module defines `e`, as well as a few 
 Base.MathConstants.e, Base.MathConstants.γ, Base.MathConstants.ϕ, Base.MathConstants.catalan
 ```
 
+(Or one can define `e = exp(1)` and use the variable as desired.)
 
-## Constant variables
 
-If a variable is not to be changed it can be declared
-constant. Declaring variables constant can help `Julia` speed up some
-computations. For example, `pi` is defined to be a constant by base
-`Julia`. The `const` keyword is used to mark a value a constant, though not within a function body. Here
-we define a constant global variable `MAX`:
-
-```
-const MAX = 10
-```
-
-Trying to redefine `MAX` will raise a warning, though is permitted.
+<script>
+// ## This doesn't seen needed
+// 
+// ## Constant variables
+// 
+// If a variable is not to be changed it can be declared
+// constant. Declaring variables constant can help `Julia` speed up some
+// computations. For example, `pi` is defined to be a constant by base
+// `Julia`. The `const` keyword is used to mark a value a constant, though not within a function body. Here
+// we define a constant global variable `MAX`:
+// 
+// ```
+// const MAX = 10
+// ```
+// 
+// Trying to redefine `MAX` will raise a warning, though is permitted.
+</script>
 
 ## Tuple assignment
 
-For convenience, `Julia` allows the definition of more than one variable at a time. The syntax is similar:
+It is a common task to define more than one variable. Multiple definitions can be done in one line, using semicolons to break up the commands, as with:
+
+```
+a = 1; b = 2; c=3
+```
+
+
+
+For convenience, `Julia` allows an alternate means to define more than one variable at a time. The syntax is similar:
 
 ```
 a, b, c = 1, 2, 3

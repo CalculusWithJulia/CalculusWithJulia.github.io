@@ -1,3 +1,16 @@
+
+# v0.7
+many deprecations:
+* D not in Roots
+* atan2 -> atan(x,y)?
+* e -> euler
+* linspace -> range(a,stop=b,length=...)
+
+Add:
+✓ inverse functions
+✓ exp and log functions
+
+
 # (PART) The derivative of a function {-}
 for Rbookdown
 

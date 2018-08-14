@@ -41,7 +41,7 @@ end
 
 imgfile = tempname() * ".gif"
 gif(anim, imgfile, fps = 1)
-caption = "An angle in radian measure corresponds to a point on the unit circle, which defines the sine and cosine of the angle."
+caption = "An angle in radian measure corresponds to a point on the unit circle, whose coordinates define the sine and cosine of the angle."
 radian_to_trig =  gif_to_data(imgfile, caption)
 
 

@@ -1,24 +1,20 @@
 # Vectors
 
-There are examples where numbers are naturally paired off, for example
-a point in the $x$-$y$ plane is naturally represented by a pair of
-numbers. A bit more generally, we have an example from physics of
-describing the laws of motion of a projectile, such as an arrow flying
-when wind effects are not known. A two-dimensional picture represents
-the trajectory with $y$ as the height and $x$ the distance from the
-shooter. The projectile itself has three main quantities of
-interest: its position, its velocity and its acceleration. Each in
-turn has two components---one in the $x$ direction and one in the
-$y$.
+One of the first models learned in physics are the equations governing the laws of motion with constant acceleration: $x(t) = x_0 + v_0 t + 1/2 \cdot a t^2$. This is a consequence of Newton's second [law](http://tinyurl.com/8ylk29t) of motion applied to the constant acceleration case. A related formula for the velocity is $v(t) = v_0 + at$. The following figure is produced using these formulas applied to both the vertical position and the horizontal position:
 
 
+{{{xva_trajectory}}}
 
-The basic equations of motion are derived from Newton's laws
-and govern the position, velocity, and acceleration of the
-projectile. The formulas depend on an initial
-position, which we take to be $\langle x_0,~ y_0 \rangle$, an initial
-velocity $\langle v_{0x},~ v_{0y} \rangle$, and time $t > 0$. The three
-values for a given time $t$ are then:
+
+For the motion in the above figure, the object's $x$ and $y$ values change according to the same rule, but, as the acceleration is different in each direction, we get different formula, namely: $x(t) = x_0 + v_{0x} t$ and $y(t) = y_0 + v_{0y}t - 1/2 \cdot gt^2$.
+
+It is common to work with *both* formulas at once. Mathematically,
+when graphing, we naturally pair off two values using Cartesian
+coordinates (e.g., $(x,y)$). Another means of combining related values
+is to use a *vector*. The notation for a vector varies, but to
+distinguish them from a point we will use $\langle x,~ y\rangle$.
+With this notation, we can use it to represent the position,
+the velocity, and the acceleration at time $t$ through:
 
 $$~
 \begin{align}
@@ -29,7 +25,6 @@ $$~
 ~$$
 
 
-{{{xva_trajectory}}}
 
 Don't spend time thinking about the formulas if they are
 unfamiliar. The point emphasized here is that we have used the
@@ -38,6 +33,9 @@ single object, which we indicate through a label on the variable
 name. These are vectors, and we shall see they find use far beyond
 this application.
 
+Initially, our primary use of vectors will be as containers, but it is
+worthwhile to spend some time to discuss propoerties of vectors and
+their visualization.
 
 
 A line segment in the plane connects two points $(x_0, y_0)$ and
@@ -55,13 +53,13 @@ at the position of the projectile over time.
 
 
 
-We can visualize a vector as an arrow in two-dimensional space. This arrow
+We can visualize a (two-dimensional) vector as an arrow in space. This arrow
 has two components. We represent a vector
 than mathematically as $\langle x,~ y \rangle$. For example, the vector
 connecting the point $(x_0, y_0)$ to $(x_1, y_1)$ is $\langle x_1 -
 x_0,~ y_1 - y_0 \rangle$.
 
-The magnitude of a vector comes from the distance formula, and is
+The magnitude of a vector comes from the distance formula applied to a line segment, and is
 $\| \vec{v} \| = \sqrt{x^2 + y^2}$.
 
 
@@ -117,7 +115,12 @@ vectors---they can be *any* two non-parallel vectors.
 {{{vector_decomp}}}
 
 
+The two operations of scalar multiplication and vector addition are
+defined in a component-by-component basis. We will see that there are
+many other circumstances where performing the same action on each
+component in a vector is desirable.
 
+----
 
 When a vector is placed with its tail at the origin, it can be
 described in terms of the angle it makes with the $x$ axis, $\theta$,
@@ -173,6 +176,13 @@ v + w, v - 2w
 We see above that scalar multiplication, addition, and subtraction can
 be done without new notation. This is because the usual operators have
 methods defined for vectors.
+
+Finally, to find an angle $\theta$ from a vector $\langle x,~ y\rangle$, we can employ the `atan2` function:
+
+```
+# v  = [x, y]
+norm(v), atan2(y, x)
+```
 
 ## Higher dimensional vectors
 
@@ -254,9 +264,8 @@ Though this is convenient for small vectors, it is far from being so
 if the vector has a large number of components. However, the vector is
 stored in order with a first, second, third, $\dots$
 component. `Julia` allows these values to be referred to by
-*index*. This too uses the `[]` notation, though differently (in
-analogy to how `(a,b)` forms tuples, but `a(b)` is a function call
-notation). Here is how we get the second component of `v`:
+*index*. This too uses the `[]` notation, though differently. Here is
+how we get the second component of `v`:
 
 ```
 v[2]
@@ -397,43 +406,65 @@ Functions such as `sum` or `length` are known as *reductions* as they reduce the
 
 Other desired operations with vectors act differently. Rather than reduce a collection of values using some formula, the goal is to apply some formula to *each* of the values, returning a modified vector. A simple example might be to square each element, or subtract the average value from each element. An example comes from statistics. When computing a variance, we start with data $x_1, x_2, \dots, x_n$ and along the way form the values $(x_1-\bar{x})^2, (x_2-\bar{x})^2, \dots, (x_n-\bar{x})^2$.
 
-Such things can be done in *many* differents ways. Here we describe three, but will primarily utilize the first.
+Such things can be done in *many* differents ways. Here we describe two, but will primarily utilize the first.
 
 ### Broadcasting a function call
 
-If we have a vector, `xs`, and a function, `f`, to apply to each value, there is a simple means to achieve this task. By adding a "dot" between the function name and the parenthesis that enclose the arguments, instructs `Julia` to "broadcast" the function call. The details allow for more flexibility, for this purpose, broadcasting will take each value in `xs` and apply `f` to it, returning a vector of the same size as `xs`. For example, the following will square each value in a vector:
+If we have a vector, `xs`, and a function, `f`, to apply to each value, there is a simple means to achieve this task. By adding a "dot" between the function name and the parenthesis that enclose the arguments, instructs `Julia` to "broadcast" the function call. The details allow for more flexibility, for this purpose, broadcasting will take each value in `xs` and apply `f` to it, returning a vector of the same size as `xs`.
+
+
+
+For example, the following will find,  using `sqrt`, the square root each value in a vector:
 
 ```
 xs = [1, 1, 3, 4, 7]
-f(x) = x^2
-f.(xs)
+sqrt.(xs)
 ```
 
-The task of subtracting a number then squaring would be handled with a function like:
+This would find the sine of each number in `xs`:
 
 ```
-f(x, c) = (x-c)^2
+sin.(xs)
 ```
 
-Can we use this to compute the values above? Yes:
+The `^` operator is an infix operator. It too can be broadcast by using the form `.^`, as in:
 
 ```
-f.(xs, mean(xs))
+xs .^ 2
 ```
 
-That succint notation hides some neat details. The term "broadcast"
-implies that the containers for `xs` and `mean(xs)` are matched (if
-possible), in this case, the scalar number `mean(xs)` is broadcast
-into a vector and then the two vectors have subtraction performed, the
-squaring. In addition, this is all done in a performant manner.
 
-### The map function
-
-The `map` function is very much related to broadcasting and similarly named functions are found in many different programming languages. (The "dot" broadcast is mostly limited to `Julia` and based on a similar usage of a dot in `MATLAB`.) For those familiar with other languages, using `map` may seem more natural. Here is an example:
+Here is an example involving the logarithm of a set of numbers. In astronomy, a logarithm with base $100^{1/5}$ is used for star [brightness](http://tinyurl.com/ycp7k8ay). We can use broadcasting to find this value for several values at once through:
 
 ```
-f(x) = x^2
-map(f, xs)    # [x1, x2, ..., xn] -> [f(x1), f(x2), ..., f(xn)]
+xs = [1/5000, 1/500, 1/50, 1/5, 5, 50]
+b = (100)^(1/5)
+log.(b, xs)
+```
+
+Broadcasting with multiple arguments allows for mixing of vectors and scalar values, as above, making it convenient when parameters are used.
+
+
+As a final example, the task from statistics of centering and then
+squaring can be done with broadcasting. We go a bit further, showing how to compute
+the (unbiased) [sample variance](http://tinyurl.com/p6wa4r8) of a data set. This has the formula
+$(1/(n-1))\cdot ((x_1-\bar{x})^2 + \cdots + (x_n + \bar{x})^2)$. It can be computed, with broadcasting, through:
+
+```
+xs = [1, 1, 2, 3, 5, 8, 13]
+n = length(xs)
+(1/(n-1)) * sum(abs2.(xs - mean(xs)))
+```
+
+This shows many of the manipulations that can be made with
+vectors. Rather than write `.^2`, we follow the internal defintion of `var` and chose the possibly more
+performant `abs2` function which in general efficiently finds $|x|^2$
+for various number types.
+
+
+```
+note("""The `map` function is very much related to broadcasting and similarly named functions are found in many different programming languages. (The "dot" broadcast is mostly limited to `Julia` and based on a similar usage of a dot in `MATLAB`.) For those familiar with other programming languages, using `map` may seem more natural. Its syntax is `map(f, xs)`.
+""")
 ```
 
 ### Comprehensions
@@ -454,17 +485,18 @@ xs = [1,2,3,4,5]
 ```
 
 
-Something similar could be done with two lines, as:
+Something similar can be done more succinctly:
 
 ```
-f(x) = x^3
-f.(xs)
+xs .^ 3
 ```
 
-The comprehension has the advantage of working with an expression of `x`, and not a pre-defined or anonomously defined function.
+However, comprehesions have a value when more complicated expressions are desired as they work with an expression of `x`, and not a pre-defined or user-defined function.
 
 
-Another typical example might include a condition, such as, the numbers divisible by $7$ between $1$ and $100$. Set notation might be:
+Another typical example of set notation might include a condition,
+such as, the numbers divisible by $7$ between $1$ and $100$. Set
+notation might be:
 
 $$~
 \{x: rem(x, 7) = 0 \text{ for } x \text{ in } 1, 2, \dots, 100\}.
@@ -481,16 +513,24 @@ somewhat, the math notation. For example, the above would become
 ```
 
 
-Comprehensions can be a convenient means to describe a collection of numbers, especially when no function is defined, but the simplicity of the broadcast notion leads to its more common use in these notes.
+Comprehensions can be a convenient means to describe a collection of
+numbers, especially when no function is defined, but the simplicity of
+the broadcast notation (just adding a judicious ".") leads to its more
+common use in these notes.
 
 
 ##### Example: creating a "T" table for creating a graph
 
-The process of plotting a function is usually first taught by generating a "T" table: values of $x$ and corresponding values of $y$. These pairs are then plotted on a Cartesian grid and the points are connected with lines to form the graph. Generating a "T" table in `Julia` is easy: create the $x$ values, then create the $y$ values for each $x$.
+The process of plotting a function is usually first taught by
+generating a "T" table: values of $x$ and corresponding values of
+$y$. These pairs are then plotted on a Cartesian grid and the points
+are connected with lines to form the graph. Generating a "T" table in
+`Julia` is easy: create the $x$ values, then create the $y$ values for
+each $x$.
 
 To be concrete, let's generate $7$ points to plot $f(x) = x^2$ over $[-1,1]$.
 
-The first task is to create the `xs`. We will see later, more convenient ways to generate patterned data using either the range operator or `linspace`, but for now, we do this by hand:
+The first task is to create the `xs`. We will see later, more convenient ways to generate patterned data, but for now, we do this by hand:
 
 ```
 a,b, n = -1, 1, 7
@@ -498,11 +538,10 @@ d = (b-a) // (n-1)
 xs = [a, a+d, a+2d, a+3d, a+4d, a+5d, a+6d]  # 7 points
 ```
 
-To get the corresponding $y$ values, we can use a "dot":
+To get the corresponding $y$ values, we can use a comprension (or define a function and broadcast):
 
 ```
-f(x) = x^2
-ys = f.(xs)
+ys = [x^2 for x in xs]
 ```
 
 Vectors can be compared together by combining them into a separate container, as follows:
@@ -513,6 +552,9 @@ Vectors can be compared together by combining them into a separate container, as
 
 (If there is a space between objects they are horizontally combined. In our construction of vectors using `[]` we used a comma for vertical combination. More generally we should use a `;` for vertical concatenation.)
 
+
+In the sequel, we will typically use broadcasting for this task using two
+steps: one to define a function the second to broadcast it.
 
 
 ```
@@ -637,9 +679,9 @@ numericq(val)
 
 ###### Question
 
-From (transum.org)[http://www.transum.org/Maths/Exam/Online_Exercise.asp?Topic=Vectors].
+From [transum.org](http://www.transum.org/Maths/Exam/Online_Exercise.asp?Topic=Vectors).
 
-```
+```nocode
 using Plots
 #gr()
 
@@ -716,10 +758,10 @@ Let $f(x) = \sin(x)$ and $g(x) = \cos(x)$. In the interval $[0, 2\pi]$ the zeros
 zs = [pi/2, 3pi/2]
 ```
 
-If `f(x) = sin(x)` what construct will give the function values of $f$ at the zeros of $g$?
+What construct will give the function values of $f$ at the zeros of $g$?
 
 ```
-choices = [q"f(zs)", q"f.(zs)", q"f(.zs)", q".f(zs)"]
+choices = [q"sin(zs)", q"sin.(zs)", q"sin(.zs)", q".sin(zs)"]
 ans = 2
 radioq(choices, ans)
 ```

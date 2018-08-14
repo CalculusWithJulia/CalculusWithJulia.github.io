@@ -56,7 +56,7 @@ caption = """
 
 Illustration of Newton's Method converging to a zero of a function,
 but slowly as the initial guess, is very poor, and not close to the
-zero. The algorithm does converge, but not quickly and not to the nearest root from
+zero. The algorithm does converge in this illustration, but not quickly and not to the nearest root from
 the initial guess.
 
 """

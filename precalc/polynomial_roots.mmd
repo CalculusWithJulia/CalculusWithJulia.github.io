@@ -56,7 +56,7 @@ where the degree of $r$ is less than the degree of $g(x)$. The
 can be used to find both $q(x)$ and $r(x)$.
 
 For the special case of a linear factor where $g(x) = x - c$,  the
-remainder must be of degree $0$, or a constant. The above simplifies to
+remainder must be of degree $0$ (a constant) or the $0$ polynomial. The above simplifies to
 
 $$~
 f(x) = (x-c) \cdot q(x) + r
@@ -108,7 +108,7 @@ $$~
 x_0 + c\cdot(x_1 + c\cdot(x_2 + c\cdot(x_3 + c\cdot x_4))),
 ~$$
 
-The above pattern provides a means to compute $f(c)$ and could easily be generalized for higher order
+The above pattern provides a means to compute $f(c)$ and could easily be generalized for higher degree
 polynomials.  This generalization is called [Horner's](http://en.wikipedia.org/wiki/Horner%27s_method) method. Horner's
 method has the advantage of also being faster and more accurate when
 floating point issues are accounted for. `Julia` has a built-in method
@@ -189,9 +189,10 @@ An immediate consequence is that if the polynomial with integer
 coefficients is monic, then any rational root must be an integer.
 
 This gives a finite---though possibly large---set of values that can
-be checked to exhaust the possibility of a rational root. By
-hand this can be tedious, though may be speeded up using synthetic
-division. It is one of the mainstays of high school algebra.
+be checked to exhaust the possibility of a rational root. By hand this
+process can be tedious, though may be speeded up using synthetic
+division. This task is one of the mainstays of high school algebra
+where problems are chosen judiciously to avoid too many possibilities.
 
 
 However, one of the great triumphs of computer algebra is the ability
@@ -201,7 +202,7 @@ modular numbers (akin to those on a clock face) and has nothing to do
 with the rational root test.
 
 `SymPy` can quickly find such a factorization, even
-for quite large polynomials.
+for quite large polynomials with rational or integer coefficients. 
 
 For example, factoring $p = 2x^4 + x^3 -19x^2 -9x +9$. This has
 *possible* rational roots of plus or minus $1$ or $2$ divided by $1$,
@@ -239,7 +240,7 @@ multiplicity must be accounted for and $x^2 + 1$ to see why complex
 values may be necessary.)
 
 (The special case of the $0$ polynomial having no degree defined
-eliminates needing to exclude it, as it has infinitely many roots.)
+eliminates needing to exclude it, as it has infinitely many roots. Otherwise, the language would be qualified to have $n \geq 0$.)
 
 ## Finding roots of a polynomial
 
@@ -379,7 +380,7 @@ roots. It is as easy as calling `N` on the solutions:
 
 ```
 rts = solve(x^5 - x + 1)
-N.(rts)     # note the `.(` to map over all values in rts
+N.(rts)     # note the `.(` to broadcast over all values in rts
 ```
 
 
@@ -576,22 +577,8 @@ real root is approximately $-1.1673$ which satisfies $|-1.1673| \leq
 
 ## Other numeric methods
 
-The `PolynomialZeros` package offers an alternative to using `SymPy`
-to find roots of polynomial functions. Its `poly_roots` functions
-takes a function and a argument specifying a domain---one of `Over.C`
-(complex), `Over.R` (real), `Over.Q` (rational), or `Over.Z`
-(integer). The domain argument narrows the found roots to that
-domain. This package leverages others, but also provides a function to
-solve over the reals which uses an algorithm employing both
-Descartes's rule and a Cauchy-like bound. It assumes the polynomial
-has no double roots, though an argument can passed on that restricts
-that assumption.
+Finding roots of polynomials numerically is implemented in a few `Julia` only packages: the `roots` function of the `Polynomials` package; the `roots` function of the `PolynomialRoots` package; and the `poly_roots` function of the `PolynomialZeros` package, which provides an interface to the two `roots` functions as well as other means of solving for roots.
 
-```
-using PolynomialZeros
-f(x) = x^5 - x - 1
-poly_roots(f, Over.R)
-```
 
 ## Questions
 

@@ -117,12 +117,13 @@ roots of negative numbers, start with complex numbers:
 sqrt(-1.0 + 0im)
 ```
 
-
+```
 note("""
 At one point, `Julia` had an issue with a third type of power:
-integer bases and negative integer exponents. For example `2^(-1)`. This is now special cased. Historically, the desire to keep a predictable type for the ouput (integer) led to defining this case as a domain error.
+integer bases and negative integer exponents. For example `2^(-1)`. As of version `v"0.7"`, this is now special cased. Historically, the desire to keep a predictable type for the ouput (integer) led to defining this case as a domain error.
 """)
 
+```
 
 ## Some more details.
 
@@ -170,7 +171,7 @@ then is *necessarily* an approximation for all but a subset of the
 real numbers. Floating point values can be viewed in normalized
 [scientific notation](http://en.wikipedia.org/wiki/Scientific_notation)
 as $a\cdot 2^b$ where $a$ is the *significand* and $b$ is the
-*exponent*. The significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert <
+*exponent*. Save for special values, the significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert <
 2$, the exponent can be taken to be an integer, possibly negative.
 
 As per IEEE Standard 754, the `Float64` type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but, rather, are much more concentrated closer to $0$.
@@ -305,7 +306,7 @@ multiplication, and division will keep their answers as rational
 numbers. As well, raising a rational number to a positive, integer
 value will produce a rational number.
 
-As mentioned, these are constructed using a double slashes:
+As mentioned, these are constructed using double slashes:
 
 ```
 1//2, 2//1, 6//4
@@ -329,7 +330,7 @@ Here we see that the type is preserved under the basic  operations:
 (1//2 + 1//3 * 1//4 / 1//5) ^ 6
 ```
 
-For powers, a non-integer exponent is converted to floating point, so this operation is defined:
+For powers, a non-integer exponent is converted to floating point, so this operation is defined, though will always return a floating point value:
 
 ```
 (1//2)^(1//2)   # the first parentheses are necessary as `^` will be evaluated before `//`.
@@ -343,7 +344,7 @@ This table shows what attributes are implemented for the different types.
 ```
 using DataFrames
 attributes = ["construction", "exact", "wide range", "has infinity", "has `-0`", "fast", "closed under"]
-integer = [q"1", true, false, false, false, true, "`+`, `-`, `*`"]
+integer = [q"1", true, false, false, false, true, "`+`, `-`, `*`, `^` (non-negative exponent)"]
 rational = [q"1//1", true, false, false, false, false, "`+`, `-`, `*`,<br/> `/` (non zero denominator),<br/>`^` (integer power)"]
 float = [q"1.0", "not usually", true, true, true, true, "`+`, `-`, `*`,<br/> `/` (possibly `NaN`, `Inf`),<br/>`^` (non-negative base)"]
 d = DataFrame(Attributes=attributes, Integer=integer, Rational=rational, FloatingPoint=float)
@@ -355,7 +356,7 @@ table(d)
 
 ## Complex numbers
 
-Complex numbers in `Julia` are stored as two numbers, `re` and `im`, each some type of `Real` number. The special constant `im` is used to represent $i=\sqrt{-1}$.  This makes the construction of complex numbers fairly standard:
+Complex numbers in `Julia` are stored as two numbers, a real and imaginary part, each some type of `Real` number. The special constant `im` is used to represent $i=\sqrt{-1}$.  This makes the construction of complex numbers fairly standard:
 
 ```
 1 + 2im, 3 + 4.0im
@@ -384,7 +385,7 @@ When learning calculus, the only common usage of complex numbers arises when sol
 
 ## Type stability
 
-One design decision of `Julia` is that it should be fast. How can
+One design priority of `Julia` is that it should be fast. How can
 `Julia` do this? In a simple model, `Julia` is an interface between
 the user and the computer's processor(s). Processors consume a set of
 instructions, the user issues a set of commands. `Julia` is in charge

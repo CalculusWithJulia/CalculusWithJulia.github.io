@@ -1,19 +1,19 @@
 module ftc
 using WeavePynb, LaTeXStrings
 using Plots
-gr()
+pyplot()
 fig_size = (600, 400)
 
 function make_ftc_graph(n)
     a, b = 2, 3
-    ts = linspace(0, b)
-    xs = linspace(a,b,8)
+    ts = range(0, stop=b, length=50)
+    xs = range(a, stop=b, length=8)
     g(x) = x
     G(x) = x^2/2
 
     xn,xn1 = xs[n:(n+1)]
     xbar = (xn+xn1)/2
-    rxs = collect(linspace(xn, xn1, 2))
+    rxs = collect(range(xn, stop=xn1, length=2))
     rys = map(g, rxs)
 
     p = plot(g, 0, b, legend=false, size=fig_size, xlim=(0,3.25), ylim=(0,5))

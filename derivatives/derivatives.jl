@@ -13,10 +13,10 @@ function secant_line_tangent_line_graph(n)
     h = 2.0^(-n) * pi/4
     m = (f(c+h) - f(c))/h
     
-    xs = linspace(0, pi)
+    xs = range(0, stop=pi, length=50)
     plt = plot(f, 0, pi, legend=false, size=fig_size)
-    plot!(plt, xs, f(c)+cos(c)*(xs - c), color=:orange)
-    plot!(plt, xs, f(c) + m*(xs - c), color=:black)
+    plot!(plt, xs, f(c) .+ cos(c)*(xs - c), color=:orange)
+    plot!(plt, xs, f(c) .+ m*(xs - c), color=:black)
     scatter!(plt, [c,c+h], [f(c), f(c+h)], color=:orange, markersize=5)
 
     plot!(plt, [c, c+h, c+h], [f(c), f(c), f(c+h)], color=:gray30)
@@ -49,7 +49,7 @@ secant_line_tangent_line = gif_to_data(imgfile, caption)
 function line_approx_fn_graph(n)
     f(x) = sin(x)
     c = pi/3
-    h = round(2.0^(-n) * pi/2,2)
+    h = round(2.0^(-n) * pi/2, digits=2)
     m = cos(c)
 
     Delta = max(f(c) - f(c-h), f(min(c+h, pi/2)) - f(c))

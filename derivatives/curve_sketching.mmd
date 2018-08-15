@@ -58,9 +58,10 @@ only when the second function `g` is positive.
 ```
 using Plots
 function plotif(f, g, a, b)
-       xs = linspace(a,b,251)
-       p = plot(xs, f.(xs), linewidth=5, color=:blue, legend=false)
-       plot!(p, xs, (x -> g(x) >= 0 ? f(x) : NaN).(xs), linewidth=5, color=:red)
+       xs = range(a, stop=b, length=251)
+       ys = f.(xs)
+       cols = [gx < 0 ? :red : :blue for gx in g.(xs)]
+       p = plot(xs, ys, color=cols, linewidth=5, legend=false)
        p
 end
 ```
@@ -84,6 +85,14 @@ plotif(sin, cos, -2pi, 2pi)
 Maybe surprisingly, we see that the increasing parts of the sine curve are now
 highlighted. Of course, the cosine is the derivative of the sine
 function, now we discuss that this is no coincidence.
+
+For the sequel, we will use `ForwardDiff` to ease the burden of finding (numeric) derivatives:
+
+```
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+```
 
 ## Relative extrema
 
@@ -143,8 +152,6 @@ For example, here we see where a more complicated function is
 increasing by passing in its derivative to `plotif`:
 
 ```
-using Roots                           # for D
-Base.ctranspose(f::Function) = D(f)   # to use f' notation in place of D(f)
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
 plotif(f, f', -2, 2)
 ```
@@ -205,8 +212,9 @@ $f(x)$. To do so, we need to know the extent of the zeros. We can try
 some theory, but instead we just guess and if that fails, will work harder:
 
 ```
+using Roots
 f(x) = x^4 - 13x^3 + 56x^2 -92x + 48
-rts = fzeros(f, -10, 10)
+rts = find_zeros(f, -10, 10)
 ```
 
 As we found $4$ roots, we know by the fundamental theorem of algebra we have them all. This means, our graph need not focus on values much larger than $6$ or much smaller than $1$.
@@ -214,7 +222,7 @@ As we found $4$ roots, we know by the fundamental theorem of algebra we have the
 To know where the peaks and valleys are, we look for the critical points:
 
 ```
-cps = fzeros(f', 1, 6)
+cps = find_zeros(f', 1, 6)
 ```
 
 Because we have the $4$ distinct zeros, we must have the peaks and
@@ -256,10 +264,10 @@ only zeros of $f'(x)$ can be critical points. We find these with
 
 ```
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
-cps = fzeros(f', -2, 2)
+cps = find_zeros(f', -2, 2)
 ```
 
-We should be careful though, as `fzeros` may miss zeros that are not
+We should be careful though, as `find_zeros` may miss zeros that are not
 simple or too close together. A critical point will correspond to a
 relative maximum if the function crosses the axis, so these can not be
 "pauses." As this is exactly the case we are screening for, we double
@@ -294,7 +302,7 @@ around the interval $(-1, 1)$. So we look to the slightly wider interval $[-2, 2
 
 ```
 f(x) = sqrt(abs(x^2 - 1))
-cps = fzeros(f', -2, 2)
+cps = find_zeros(f', -2, 2)
 ```
 
 We see the three values $-1$, $0$, $1$ that correspond to the two
@@ -346,7 +354,7 @@ plot(f, -2, 2)
 ```
 
 
-Finally, why does `fzeros` find these values that are not zeros of
+Finally, why does `find_zeros` find these values that are not zeros of
 $f'(x)$? It uses the bisection algorithm on bracketing intervals to
 find zeros which are guaranteed by the intermediate value theorem. But
 we see from the graph that $f'(x)$ is not continuous. Still the
@@ -380,7 +388,7 @@ Both are negative. The derivative does not change sign at $0$, so the critical p
 What about at $2\pi$? We do something similar:
 
 ```
-vals = fp.(2*pi + [-1/10,  1/10])
+vals = fp.(2*pi .+ [-1/10,  1/10])
 [vals plus_or_minus.(vals)]
 ```
 
@@ -437,12 +445,13 @@ secant lines for a few pairs of $x$ values:
 ```nocode
 f(x) = x^2
 seca(f,a,b) = x -> f(a) + (f(b) - f(a)) / (b-a) * (x-a)
-sec1(f,a,b) = x -> (a < x <  b) ? seca(f,a,b)(x) : NaN
 p = plot(f, -2, 3, legend=false, linewidth=5, xlim=(-2,3), ylim=(-2, 9))
 plot!(p,seca(f, -1, 2))
-plot!(p,sec1(f, -1, 2), linewidth=5)
+a,b = -1, 2; xs = range(a, stop=b, length=50)
+plot!(xs, seca(f, a, b).(xs), linewidth=5)
 plot!(p,seca(f, 0, 3/2))
-plot!(p,sec1(f, 0, 3/2), linewidth=5)
+a,b = 0, 3/2; xs = range(a, stop=b, length=50)
+plot!(xs, seca(f, a, b).(xs), linewidth=5)
 p
 ```
 
@@ -509,7 +518,7 @@ plotif(f, f'', 0, 8)
 From the graph, we would expect that the second derivative---which is continuous---would have two zeros on $[0,8]$:
 
 ```
-ips = fzeros(f'', 0, 8)
+ips = find_zeros(f'', 0, 8)
 ```
 
 As well, between the zeros we should have the sign pattern `+`, `-`, and `+`, as we verify:
@@ -547,7 +556,7 @@ Use the second derivative test to characterize the critical points of $f(x) = x^
 
 ```
 f(x) = x^5 - 2x^4 + x^3
-cps = fzeros(f', -3, 3)
+cps = find_zeros(f', -3, 3)
 ```
 
 The critical point $x=0$ is masked by floating point issues. Here we work around that:
@@ -590,7 +599,7 @@ changes sign. At an inflection point the derivative will change from
 increasing to decreasing (or vice versa) and the function will change
 from concave up to down (or vice versa).
 
-We can use the `fzeros` function to find inflection points, by passing
+We can use the `find_zeros` function to find inflection points, by passing
 in the second derivative function. For example, consider the
 bell-shaped function
 
@@ -609,10 +618,10 @@ plotif(f, f'', -3, 3)
 The inflection points can be found directly, if desired, or numerically with:
 
 ```
-fzeros(f'', -3, 3)
+find_zeros(f'', -3, 3)
 ```
 
-(The `fzeros` function may return points which are not inflection points. It primarily returns points where $f''(x)$ changes sign, but may also find points where $f''(x)$ is $0$ yet does not change sign at $x$.)
+(The `find_zeros` function may return points which are not inflection points. It primarily returns points where $f''(x)$ changes sign, but may also find points where $f''(x)$ is $0$ yet does not change sign at $x$.)
 
 
 ##### Example
@@ -644,8 +653,8 @@ done changing and we are past all relative extrema, so we should take an interva
 potential inflection points and critical points:
 
 ```
-cps = fzeros(f', -10, 10)
-poss_ips = fzero(f'', -10, 10)
+cps = find_zeros(f', -10, 10)
+poss_ips = find_zero(f'', (-10, 10))
 extrema(union(cps, poss_ips))
 ```
 
@@ -654,36 +663,33 @@ So a range over $[-5,5]$ should display the key features including the slant asy
 Previously we used this function to avoid the distortion that vertical asymptotes can have:
 
 ```
-trim(f, M=20) = x -> abs(f(x)) > M ? NaN : f(x)
+function trimplot(f, a, b, c=20; kwargs...)
+  xs = range(a, stop=b, length=251)
+  ys = f.(xs)
+
+  us, vs = Real[], Real[]
+  p = plot(us, vs, xlim=(a, b), legend=false, kwargs...)
+  for (x,y) in zip(xs, ys)
+    if abs(y) <= c
+       push!(us, x); push!(vs, y)
+    else
+      length(us) > 0 && plot!(p, us, vs, color=:blue)
+      empty!(us); empty!(vs)
+    end
+ end	
+ length(us) > 0 && plot!(p, us, vs, color=:blue)
+ p
+end
 ```
 
 producing
 
 ```
-plot(trim(f), -5, 5)
+trimplot(f, -5, 5)
 ```
 
-This is a graphic where the algorithmic choice of plotting points fails to produce a good graphic. To override this, we choose many points manually over the domain:
+With this graphic, we can now clearly see in the graph the two zeros at $x=1$ and $x=3$, the vertical asymptotes at $x=0$ and $x=2$, and the slant asymptote.
 
-```
-xs = linspace(-5, 5, 601)
-plot(xs, trim(f).(xs))
-```
-
-With these adjustments, we can now clearly see in the graph the two zeros at $x=1$ and $x=3$, the vertical asymptotes at $x=0$ and $x=2$, and the slant asymptote.
-
-
-```
-note("""
-
-The expression `trim(f).(xs)` might appear a bit opaque as to its
-intent. To break it down, the part `trim(f)` returns a function that
-has its large values replaced by `NaN`. This function is then
-broadcast over the values in `xs`, as expressed by the "`.`" before the parentheses
-in the call to the function `trim(f)`.
-
-""")
-```
 
 ##### Example
 
@@ -734,7 +740,8 @@ would be felt by most riders.
 Consider this graph:
 
 ```
-p = plot(airy, -5, 0)
+import SpecialFunctions: airyai
+p = plot(airyai, -5, 0)
 Outputonly(p)
 ```
 
@@ -756,6 +763,7 @@ radioq(choices, ans)
 Consider this graph:
 
 ```
+import SpecialFunctions: besselj
 p = plot(x->besselj(x, 1), -5,-3)
 Outputonly(p)
 ```
@@ -889,7 +897,7 @@ Find  the smallest critical point of $f(x) = x^3 e^{-x}$.
 ```
 f(x)= x^3*exp(-x)
 using Roots
-cps = fzeros(D(f), -5, 10)
+cps = find_zeros(D(f), -5, 10)
 val = minimum(cps)
 numericq(val)
 ```
@@ -901,7 +909,7 @@ How many critical points does $f(x) = x^5 - x + 1$ have?
 
 ```
 f(x) = x^5 - x + 1
-cps = fzeros(D(f), -3, 3)
+cps = find_zeros(D(f), -3, 3)
 val = length(cps)
 numericq(val)
 ```
@@ -913,7 +921,7 @@ How many inflection points does $f(x) = x^5 - x + 1$ have?
 
 ```
 f(x) = x^5 - x + 1
-cps = fzeros(D(f,2), -3, 3)
+cps = find_zeros(D(f,2), -3, 3)
 val = length(cps)
 numericq(val)
 ```
@@ -1000,8 +1008,8 @@ yesnoq("yes")
 ###### Question
 
 ```nocode
-fp(x) = (x-1)*(x-2)^2*(x-3)^2
-plot(fp, 0, 4)
+f_p(x) = (x-1)*(x-2)^2*(x-3)^2
+plot(f_p, 0, 4)
 ```
 
 This plot shows the graph of $f'(x)$. What is true about the critical points and their characterization?
@@ -1075,7 +1083,7 @@ If yes, find it numerically:
 
 ```
 using Roots
-val = fzero(D(lgrowth,2), 0, 20)
+val = find_zero(D(lgrowth,2), (0, 20))
 numericq(val)
 ```
 

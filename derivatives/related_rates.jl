@@ -53,10 +53,10 @@ function baseball_been_berry_good_graph(n)
     y = (t) -> v0*t - 5 * t^2
 
     
-    ns = linspace(.25, 3, 8)
+    ns = range(.25, stop=3, length=8)
 
     t = ns[n]
-    ts = linspace(0, t)
+    ts = range(0, stop=t, length=50)
     xs = map(x, ts)
     ys = map(y, ts)
 

@@ -26,7 +26,7 @@ Though not all of our problems lend themselves to a description of a
 continuous function on a closed interval, if they do, we have an
 algorithmic prescription to find the absolute extrema of a function:
 
-1) Find the critical points. For this we will can use a root-finding function like `fzero`.
+1) Find the critical points. For this we will can use a root-finding function like `find_zero`.
 
 2) Evaluate the function values at the critical points and at the end points.
 
@@ -115,12 +115,20 @@ functions:
 A(b) = A(b, h(b))
 ```
 
-From this we can solve graphically as before, or numerically, as with:
+From this we can solve graphically as before, or numerically. For this, we first define a numeric derivative:
+
 
 ```
-using Roots			# provides D
-Base.ctranspose(f::Function) = D(f) # provides f' notation
-fzeros(A', 0, 10)
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+```
+
+The we search for zeros of the derivative:
+
+```
+using Roots
+find_zeros(A', 0, 10)
 ```
 
 
@@ -151,15 +159,15 @@ $x=4$, the other with base length given by $x=3$. The one with base
 length $4$ seems to have much bigger area, what value of $x$ will lead to the largest area?
 
 ```nocode
-ts = linspace(0, pi)
+ts = range(0, stop=pi, length=50)
 x1,y1 = 4, 4.85840
 x2,y2 = 3, 6.1438
 delta = 4
 p = plot(delta+x1*[0, 1,1,0], y1*[0,0,1,1],          linetype=:polygon, fillcolor=:blue, legend=false)
 plot!(p, x2*[0, 1,1,0], y2*[0,0,1,1],                linetype=:polygon, fillcolor=:blue)
 
-plot!(p, delta+x1/2+x1/2*cos.(ts), y1+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
-plot!(p, x2/2+x2/2*cos.(ts), y2+x2/2*sin.(ts),         linetype=:polygon, fillcolor=:red)
+plot!(p, delta .+ x1/2 .+ x1/2*cos.(ts), y1.+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
+plot!(p, x2/2 .+ x2/2*cos.(ts), y2 .+ x2/2*sin.(ts),         linetype=:polygon, fillcolor=:red)
 p
 ```
 
@@ -227,11 +235,11 @@ plot(A', 5.5, 5.7)
 
 We confirm that the critical point is around $5.6$.
 
-#### Using fzero to locate critical points.
+#### Using `find_zero` to locate critical points.
 
 Rather than zoom in graphically, we now use a root-finding algorithm,
 to find a more precise value. We know that the maximum will occur at a
-critical point, a zero of the derivative. The `fzero`
+critical point, a zero of the derivative. The `find_zero`
 function from the `Roots` package provides a non-linear root-finding
 algorithm based on the bisection method. The only thing to keep
 track of is that solving $f'(x) = 0$ means we use the derivative and
@@ -240,7 +248,7 @@ not the original function.
 We see from the graph that $[0, 20/(1+\pi/2)]$ will provide a bracket, as there is only one relative maximum:
  
 ```
-x = fzero(A', 0, 20/(1+pi/2))
+x = find_zero(A', (0, 20/(1+pi/2)))
 ```
 
 The value `x` is the critical point, and in this case gives
@@ -288,7 +296,7 @@ As an aside, compare the steps involved above for a symbolic solution to those o
 A(w, h) = w*h + pi*(w/2)^2 / 2
 h(w)    = (20 - w - pi * w/2) / 2
 A(w)    =  A(w, h(w))
-fzero(A', 0, 20/(1+pi/2))  # 40 / (pi + 4)
+find_zero(A', (0, 20/(1+pi/2)))  # 40 / (pi + 4)
 ```
 
 They are similar, except we solved for `h0` symbolically, rather than by hand, when we solved for `h(w)`.
@@ -365,7 +373,7 @@ plot(l, delta, pi/2 - delta)
 The minimum occurs between 0.5 and 1.0 radians, a bracket for the derivative:
 
 ```
-x = fzero(l', 0.5, 1.0)
+x = find_zero(l', (0.5, 1.0))
 ```
 
 So the minimum of the function $l$ is 
@@ -426,11 +434,11 @@ The minimum happens way out near 8. We zoom in a bit:
 plot(T, 7, 9) 
 ```
 
-It appears to be around 8.3. We now use `fzero` to refine our
+It appears to be around 8.3. We now use `find_zero` to refine our
 guess at the critical point using $[7,9]$ as a bracket:
 
 ```
-x = fzero(T', 7, 9)
+x = find_zero(T', (7, 9))
 ```
 
 Okay, got it. Around 8.23. So is  our minimum time
@@ -602,10 +610,10 @@ derivative near that area:
 plot(f', 0, 5) 
 ```
 
-This shows the value of interest near $0.7$. We use `fzero` with $[0,1]$ as a bracket
+This shows the value of interest near $0.7$. We use `find_zero` with $[0,1]$ as a bracket
 
 ```
-x = fzero(f', 0, 1)
+x = find_zero(f', (0, 1))
 ```
 
 The maximum is then at 
@@ -675,10 +683,10 @@ plot(SA, 2, 10)
 ```
 
 The minimum looks to be around $4$cm and is clearly between $3$ and
-$5$. We can use `fzero` to zero in on the value of the critical point:
+$5$. We can use `find_zero` to zero in on the value of the critical point:
 
 ```
-r0 = fzero(SA', 3, 5)
+r0 = find_zero(SA', (3, 5))
 ```
 
 Okay, $3.837...$ is our computation for $r$. To get $h$, we use:
@@ -708,7 +716,7 @@ A(a,b) = pi*a*b
 P = 20
 b1(a) = 20/pi - a
 A(a) = A(a, b1(a))
-x = fzero(A', 0, 10)
+x = find_zero(A', (0, 10))
 val = A(x)
 numericq(val)
 ```
@@ -724,7 +732,7 @@ A(a,b) = pi*a*b
 P = 20
 b1(a) = sqrt((P*2/pi)^2 - a^2)
 A(a) = A(a, b1(a))
-x = fzero(A', 0, 10)
+x = find_zero(A', (0, 10))
 val = A(x)
 numericq(val)
 ```
@@ -740,7 +748,7 @@ made?
 
 ```
 Ar(y) = (10-2y)*y;
-val = Ar(fzero(Ar',  5))
+val = Ar(find_zero(Ar',  5))
 numericq(val, 1e-3)
 ```
 
@@ -766,7 +774,7 @@ A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *smallest* per
 ```
 Prim(x,y) = 2x + 2y
 Prim(x) = Prim(x, 20/x)
-xstar = fzero(Prim', 5)
+xstar = find_zero(Prim', 5)
 val = Prim(xstar)
 numericq(val)
 ```
@@ -807,7 +815,7 @@ function Ar(t)
 	 adj = 10 * cos(t)
 	 2 * opp * adj/2 + opp * 10
 end
-t = fzero(Ar', pi/4);	## Has issues with order=8 algorithm, tol > 1e-14 is needed
+t = find_zero(Ar', pi/4);	## Has issues with order=8 algorithm, tol > 1e-14 is needed
 val = t * 180/pi;
 numericq(val, 1e-3)
 ```
@@ -824,7 +832,7 @@ P = 20
 A(x,y) = x*y + pi * (x/2)^2
 y(x) = (P - pi*x)/2 # P = 2y + 2pi*x/2
 A(x) = A(x,y(x)) 
-x0 = fzero(D(A), 0, 10)
+x0 = find_zero(D(A), (0, 10))
 val = y(x0)
 numericq(val) # 0
 ```
@@ -846,7 +854,7 @@ What value of $x$ gives the largest angle $\theta$? (In degrees.)
 
 ```
 theta(x) = atan(30/x) - atan(10/x)
-val = fzero(D(theta), 20); ## careful where one starts
+val = find_zero(D(theta), 20); ## careful where one starts
 val = theta(val) * 180/pi
 numericq(val, 1e-1)
 ```
@@ -864,7 +872,7 @@ Then `Likhood(t)` is continuous and has single peak, so the maximum occurs
 at the lone critical point. It turns out that this problem is bit sensitive to an initial condition, so we bracket
 
 ```
-x = fzero(Likhood',  [0.1, 0.5])
+x = find_zero(Likhood',  (0.1, 0.5))
 ```
 
 Now if $Likhood(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, by graphing, explain why the same approach won't work:
@@ -915,7 +923,7 @@ Minimize the function $f(x) = 2x + 3/x$ over $(0, \infty)$.
 
 ```
 f(x) = 2x + 3/x;
-val = fzero(f', 1);
+val = find_zero(f', 1);
 numericq(val, 1e-3)
 ```
 
@@ -927,7 +935,7 @@ Of all rectangles of area 4, find the one with smallest perimeter. What is the p
 ```
 # 4 = xy
 Prim(x) = 2x + 2*(4/x);
-val = fzero(D(Prim), 1);
+val = find_zero(D(Prim), 1);
 numericq(Prim(val), 1e-3)		## a square!
 ```
 
@@ -968,7 +976,7 @@ The width is:
 w(h) = 12_000 / h
 S(w, h) = (w- 2*8) * (h - 2*32)
 S(h) = S(w(h), h)
-hstar =fzero(D(S), 500)
+hstar =find_zero(D(S), 500)
 wstar = w(hstar)
 numericq(wstar)
 ```
@@ -992,13 +1000,13 @@ plot!(p, [0,2],[0,0], color=:blue)
 xs = [0,1]; ys = [0, f(1)]
 scatter!(p, xs,ys, color=:orange)
 plot!(p, xs, ys, color=:orange, linewidth=3)
-annotate!(p, [(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2),2))")])
+annotate!(p, [(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2), digits=2))")])
 p
 ```
 
 ```
 d2(x) = sqrt((0-x)^2 + (0 - f(x))^2)
-xstar = fzero(D(d2), 1)
+xstar = find_zero(D(d2), 1)
 val = d2(xstar)
 numericq(val)
 ```
@@ -1017,7 +1025,7 @@ SA(r,l) = pi * r * l
 y(x) = sqrt(1 - x^2)
 l(x) = sqrt((x-(-1))^2 +  y(x)^2)
 SA(x) = SA(y(x), l(x))
-cp = fzero(D(SA), -1, 1)
+cp = find_zero(D(SA), (-1, 1))
 val = SA(cp)
 numericq(val)
 ```

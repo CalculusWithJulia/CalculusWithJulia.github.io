@@ -1,14 +1,17 @@
 
-# v0.7
-many deprecations:
-* D not in Roots
+# v1.0
+many deprecations!
+* D not in Roots, find_zero, not fzero
 * atan2 -> atan(x,y)?
 * e -> euler
 * linspace -> range(a,stop=b,length=...)
+* airy -> import SpecialFunctions: airyai
 
 Add:
 ✓ inverse functions
 ✓ exp and log functions
+DiffEq.jl to euler.mmd
+
 
 
 # (PART) The derivative of a function {-}

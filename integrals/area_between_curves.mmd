@@ -23,12 +23,12 @@ f1(x) = x^2
 g1(x) = sqrt(x)
 a,b = 1/4, 3/4
 
-xs = linspace(a, b, 250)
+xs = range(a, stop=b, length=250)
 ss = vcat(xs, reverse(xs))
 ts = vcat(f1.(xs), g1.(reverse(xs)))
 
 plot(f1, 0, 1, legend=false)
-plot!(g1)
+plot!(g1, 0, 1)
 plot!(ss, ts, fill=(0, :red))
 plot!(xs, f1.(xs), linewidth=5, color=:green)
 plot!(xs, g1.(xs), linewidth=5, color=:green)
@@ -65,14 +65,14 @@ For this problem we need to identify $a$ and $b$. These are found numerically th
 
 ```
 using Roots
-a,b = fzeros(x -> f(x) - g(x), -3, 3)
+a,b = find_zeros(x -> f(x) - g(x), -3, 3)
 ```
 
 The answer then can be found numerically:
 
 ```
 using QuadGK
-QuadGK.quadgk(x -> f(x) - g(x), a, b)[1]
+quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
 ##### Example
@@ -91,8 +91,8 @@ There is a single interval when $f \geq g$ and this can be found
 algebraically using basic trigonometry, or numerically:
 
 ```
-a,b = fzeros(x -> f(x) - g(x), 0, 2pi)  # pi/4, 5pi/4
-QuadGK.quadgk(x -> f(x) - g(x), a, b)[1]
+a,b = find_zeros(x -> f(x) - g(x), 0, 2pi)  # pi/4, 5pi/4
+quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
 ##### Example
@@ -129,8 +129,8 @@ Verify [Archimedes'](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola
 f(x) = 2 - x^2
 a,b = -1, 1/2
 c = (a+b)/2
-xs = linspace(-sqrt(2), sqrt(2))
-rxs = linspace(a, b)
+xs = range(-sqrt(2), stop=sqrt(2), length=50)
+rxs = range(a, stop=b, length=50)
 rys = map(f, rxs)
 
 
@@ -155,7 +155,7 @@ sac, sab, scb = secant(f, a,c), secant(f, a,b), secant(f, c,b)
 f1(x) = min(sac(x), scb(x))
 f2(x) = sab(x)
 
-val1 = QuadGK.quadgk(x -> f1(x) - f2(x), a, b)[1]
+val1 = quadgk(x -> f1(x) - f2(x), a, b)[1]
 ```
 
 As we needed three secant lines, we created a function to generate
@@ -166,7 +166,7 @@ the integral over $[a,c]$ and $[c,b]$.
 The area of the parabolic segment is more straightforward.
 
 ```
-val2 = QuadGK.quadgk(x -> f(x) - f2(x), a, b)[1]
+val2 = quadgk(x -> f(x) - f2(x), a, b)[1]
 ```
 
 Finally, if Archimedes was right, this relationship should bring about $0$ (or something within round-off error):
@@ -196,8 +196,8 @@ clearly reveal the other zero.) We now find these intersection points
 numerically and then integrate:
 
 ```
-a,b = fzeros(x -> f(x) - g(x), 0, 10)
-QuadGK.quadgk(x -> f(x) - g(x), a, b)[1]
+a,b = find_zeros(x -> f(x) - g(x), 0, 10)
+quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
 ##### Examples
@@ -218,17 +218,17 @@ For a given $m$, the area is found after computing $b$, the
 intersection point. We express this as a function of $m$ for later reuse:
 
 ```
-B(m) = maximum(fzeros(x -> sin(x) - m*x, 0, pi))
+B(m) = maximum(find_zeros(x -> sin(x) - m*x, 0, pi))
 a = 0
 b = B(m)
-QuadGK.quadgk(x -> sin(x) - m*x, a, b)[1]
+quadgk(x -> sin(x) - m*x, a, b)[1]
 ```
 
 
 In general, the area then as a function of `m` is found by substitution `B(m)` for `b`:
 
 ```
-area(m) = QuadGK.quadgk(x -> sin(x) - m*x, 0, B(m))[1]
+area(m) = quadgk(x -> sin(x) - m*x, 0, B(m))[1]
 ```
 
 A plot shows the relationship:
@@ -241,10 +241,10 @@ While here, let's also answer the question of which $m$ gives an area
 of $1$, or one-half the total? This can be done as follows:
 
 ```
-fzero(m -> area(m) - 1, 0, 1)
+find_zero(m -> area(m) - 1, (0, 1))
 ```
 
-(Which is a nice combination of using `fzeros`, `QuadGK.quadgk` and `fzero` to answer a problem.)
+(Which is a nice combination of using `find_zeros`, `quadgk` and `find_zero` to answer a problem.)
 
 ##### Example
 
@@ -262,7 +262,7 @@ The value for "$b$" is found from the intersection point of  $\log(x+1)$ and $x-
 
 ```
 a = 0
-b = fzero(x -> f(x) - g(x), 2)
+b = find_zero(x -> f(x) - g(x), 2)
 ```
 
 We see that the lower part of the area has a condition: if $x < 1$ then use $0$, otherwise use $g(x)$. We can handle this many different ways:
@@ -270,14 +270,14 @@ We see that the lower part of the area has a condition: if $x < 1$ then use $0$,
 * break the integral into two pieces and add:
 
 ```
-QuadGK.quadgk(x -> f(x) - zero(x), a, 1)[1] + QuadGK.quadgk(x -> f(x) - g(x), 1, b)[1]
+quadgk(x -> f(x) - zero(x), a, 1)[1] + quadgk(x -> f(x) - g(x), 1, b)[1]
 ```
 
 * make a new function for the bottom bound:
 
 ```
 h(x) = x < 1 ? 0.0 : g(x)
-QuadGK.quadgk(x -> f(x) - h(x), a, b)[1]
+quadgk(x -> f(x) - h(x), a, b)[1]
 ```
 
 * Turn the picture on its side and integrate in the $y$ variable. To
@@ -288,7 +288,7 @@ a1=f(a)
 b1=f(b)
 f1(y)=y+1                # y=x-1, so x=y+1
 g1(y)=exp(y)-1           # y=log(x+1) so e^y = x + 1, x = e^y - 1
-QuadGK.quadgk(y -> f1(y) - g1(y), a1, b1)[1]
+quadgk(y -> f1(y) - g1(y), a1, b1)[1]
 ```
 
 ```
@@ -315,7 +315,7 @@ over $[-1,1]$.
 
 ```
 f(x) = x^3
-xs = linspace(-1, 1)
+xs = range(-1, stop=1, length=50)
 ys = f.(xs)
 plot(ys, xs)
 ```
@@ -326,7 +326,7 @@ through the line $x=y$.
 We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
 
 ```
-ys = linspace(-1,1)
+ys = range(-1, stop=1, length=50)
 xs = [y^3 for y in ys]
 plot(xs, ys)
 ```
@@ -343,7 +343,7 @@ For a less trivial problem, consider the area between $x = y^2$ and $x
 = 2-y$ in the first quadrant.
 
 ```
-ys = linspace(0, 2)
+ys = range(0, stop=2, length=50)
 xs = [y^2 for y in ys]
 plot(xs, ys)
 xs = [2-y for y in ys]
@@ -360,7 +360,7 @@ from $y=0$ to $y=1$. So, this area may be found as follows:
 f(y) = 2-y
 g(y) = y^2
 a, b = 0, 1
-QuadGK.quadgk(y -> f(y) - g(y), a, b)[1]
+quadgk(y -> f(y) - g(y), a, b)[1]
 ```
 
 
@@ -374,8 +374,8 @@ Find the area enclosed by the curves $y=2-x^2$ and $y=x^2 - 3$.
 using Roots
 f(x) = 2 - x^2
 g(x) = x^2 - 3
-a,b = fzeros(x -> f(x) - g(x), -10,10)
-val, _ = QuadGK.quadgk(x -> f(x) - g(x), a, b)
+a,b = find_zeros(x -> f(x) - g(x), -10,10)
+val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
 
@@ -387,8 +387,8 @@ Find the area between $f(x) = \cos(x)$, $g(x) = x$ and the $y$ axis.
 f(x) = cos(x)
 g(x) = x
 a = 0
-b = fzero(x -> f(x) - g(x), 1)
-val, _ = QuadGK.quadgk(x -> f(x) - g(x), a, b)
+b = find_zero(x -> f(x) - g(x), 1)
+val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
 
@@ -399,8 +399,8 @@ Find the area between the line $y=1/2(x+1)$ and half circle $y=\sqrt{1 - x^2}$.
 ```
 f(x) = sqrt(1 - x^2)
 g(x) = 1/2 * (x + 1)
-a,b = fzeros(x -> f(x) - g(x), -1, 1)
-val, _ = QuadGK.quadgk(x -> f(x) - g(x), a, b)
+a,b = find_zeros(x -> f(x) - g(x), -1, 1)
+val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
 
@@ -413,8 +413,8 @@ f(x) = x
 g(x) = 1.0
 h(x) = min(f(x), g(x))
 j(x) = x^2 / 4
-a,b = fzeros(x -> h(x) - j(x), 0, 3)
-val, _ = QuadGK.quadgk(x -> h(x) - j(x), a, b)
+a,b = find_zeros(x -> h(x) - j(x), 0, 3)
+val, _ = quadgk(x -> h(x) - j(x), a, b)
 numericq(val)
 ```
 
@@ -426,7 +426,7 @@ Find the area between $y=x^2$ and $y=-x^4$ for $\lvert x \rvert \leq 1$.
 f(x) = x^2
 g(x) = -x^4
 a,b = -1, 1
-val, _ = QuadGK.quadgk(x -> f(x) - g(x), a, b)
+val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
 
@@ -435,10 +435,11 @@ numericq(val)
 Let `f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + t^2)^(-1)` and `g(x) = 1/sqrt(2*pi) * exp(-x^2/2)`. These graphs intersect in two points. Find the area bounded by them.
 
 ```
+import SpecialFunctions: gamma
 f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + x^2)^(-1)
 g(x) = 1/sqrt(2*pi) * exp(-x^2/2)
-a,b =  fzeros(x -> f(x) - g(x), -3, 3)
-val, _ = QuadGK.quadgk(x -> f(x) - g(x), a, b)
+a,b =  find_zeros(x -> f(x) - g(x), -3, 3)
+val, _ = quadgk(x -> f(x) - g(x), a, b)
 numericq(val)
 ```
 
@@ -453,10 +454,10 @@ f(y) = (y-1)^2
 g(y) = 3 - y
 h(y) = 2sqrt(y)
 a = 0
-b = fzero(y -> f(y) - g(y), 2)
+b = find_zero(y -> f(y) - g(y), 2)
 f1(y) = max(f(y), zero(y))
 g1(y) = min(g(y), h(y))
-val, _ = QuadGK.quadgk(y -> g1(y) - f1(y), a, b)
+val, _ = quadgk(y -> g1(y) - f1(y), a, b)
 numericq(val)
 ```
 
@@ -468,7 +469,7 @@ Find the total area bounded by the lines $x=0$, $x=2$ and the curves $y=x^2$ and
 f(x) = x^2
 g(x) = x
 a, b = 0, 2
-val, _ = QuadGK.quadgk(x -> abs(f(x) - g(x)), a, b)
+val, _ = quadgk(x -> abs(f(x) - g(x)), a, b)
 numericq(val)
 ```
 
@@ -505,8 +506,8 @@ Put this altogether to give an estimated weight in pounds.
 ```
 f(x) = x^2/70
 g(x) = 35 + x^2/140
-a,b = fzeros(x -> f(x) - g(x), -100, 100)
-ar, _ = QuadGK.quadgk(x -> abs(f(x) - g(x)), a, b)
+a,b = find_zeros(x -> f(x) - g(x), -100, 100)
+ar, _ = quadgk(x -> abs(f(x) - g(x)), a, b)
 val = 5 * ar * 7850 * 2.2 * (1/39.3)^3
 numericq(val)
 ```
@@ -532,10 +533,10 @@ $$~
 Find the profit to produce 100 units: $P = \int_0^{100} (\text{mr}(x) - \text{mc}(x)) dx$.
 
 ```
-mr(x) = 2 + e^(-x/10) / (1 + e^(-x/10))
-mc(x) = 1 + (1/2) * e^(-x/5) / (1 + e^(-x/5))
+mr(x) = 2 + exp((-x/10)) / (1 + exp(-x/10))
+mc(x) = 1 + (1/2) * exp(-x/5) / (1 + exp(-x/5))
 a, b = 0, 100
-val, _ = QuadGK.quadgk(x -> mr(x) - mc(x), 0, 100)
+val, _ = quadgk(x -> mr(x) - mc(x), 0, 100)
 numericq(val)
 ```
 

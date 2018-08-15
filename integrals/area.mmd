@@ -226,7 +226,7 @@ choice is to break the interval into $n+1$ equal-sized pieces. With
 $\Delta = (b-a)/n$, these pieces become the arithmetic sequence $a =
 a + 0 \cdot \Delta < a + 1 \cdot \Delta < a + 2 \cdot \Delta < \cdots
 a + n \cdots < \Delta = b$ with $x_i = a + i (b-a)/n$. (The
-`linspace(a,b,n+1)` command will compute these.) An alternate choice
+`range(a,stop=b,length=n+1)` command will compute these.) An alternate choice
 made below for one problem is to use a geometric progression $a = a(1+\alpha)^0 <
 a(1+\alpha)^1 < a (1+\alpha)^2 < \cdots < a (1+\alpha)^n = b$. The
 general statement allows for any partition such that the largest gap
@@ -280,7 +280,7 @@ approximating sums.
 
 The area is $0$ when there is no width to the interval to integrate over:
 
-> $\int_a^a f(x) dx = 0$.
+> $\int_a^a f(x) dx = 0.$
 
 
 Even our definition of a partition doesn't really apply, as we assume
@@ -291,7 +291,7 @@ could be $f(a)(b-a) = 0$.
 The area under a constant function is found from the area of
 rectangle, a special case being $c=0$ yielding $0$ area:
 
-> $\int_a^b c dx = c \cdot (b-a)$.
+> $\int_a^b c dx = c \cdot (b-a).$
 
 
 For any partition of $a < b$, we have
@@ -304,7 +304,7 @@ By factoring out the $c$, we have a
 Scaling the $y$ axis by a constant can be done before or after
 computing the area:
 
-> $\int_a^b cf(x) dx = c \int_a^b f(x) dx$.
+> $\int_a^b cf(x) dx = c \int_a^b f(x) dx.$
 
 
 Let $a=x_0 < x_1 < \cdots < x_n=b$ be any partition. Then we have
@@ -322,7 +322,7 @@ $\epsilon$ is the same.
 
 The area is invariant under shifts left or right.
 
-> $\int_a^b f(x - c) dx = \int_{a-c}^{b-c} f(x) dx$.
+> $\int_a^b f(x - c) dx = \int_{a-c}^{b-c} f(x) dx.$
 
 Any partition $a =x_0 < x_1 < \cdots < x_n=b$ is related to a
 partition of $[a-c, b-c]$ through $a-c < x_0-c < x_1-c < \cdots <
@@ -345,7 +345,7 @@ $$~
 The area between $a$ and $b$ can be broken up into the sum of the area
 between $a$ and $c$ and that between $c$ and $b$.
 
-> $\int_a^b f(x) dx = \int_a^c f(x) dx + \int_c^b f(x) dx$.
+> $\int_a^b f(x) dx = \int_a^c f(x) dx + \int_c^b f(x) dx.$
 
 
 For this, suppose we have a partition for both the integrals on the
@@ -361,7 +361,7 @@ $0$ being equivalent.
 
 The "reversed" area is the same, only accounted for with a minus sign.
 
-> $\int_a^b f(x) dx = -\int_b^a f(x) dx$.
+> $\int_a^b f(x) dx = -\int_b^a f(x) dx.$
 
 A consequence of the last few statements is:
 
@@ -375,7 +375,7 @@ If $g$ bounds $f$ then the area under $g$ wil bound the area under
  are integrable.)
 
 > If $0 \leq f(x) \leq g(x)$ then $\int_a^b f(x) dx \leq \int_a^b g(x)
-> dx$
+> dx.$
 
 For any partition of $[a,b]$ and choice of $c_i$, we have the
 term-by-term bound $f(c_i)(x_i-x_{i-1}) \leq g(c_i)(x_i-x_{i-1})$ So
@@ -516,7 +516,7 @@ find the $c_i$, multiply the pieces and add up. Here is one way to do all this:
 
 ```
 n = 5
-xs = a:(b-a)/n:b       # also linspace(a, b, n)
+xs = a:(b-a)/n:b       # also range(a, stop=b, length=n)
 deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
 cs = xs[1:end-1]       # finds left-hand end points. xs[2:end] would be right-hand ones.
 ```
@@ -677,7 +677,7 @@ The partition is $-1 < -1/2 < 0 < 1/2 < 1$. The midpoints are $-3/4,
 -1/4, 1/4, 3/4$. We thus have that $\pi/2$ is approximately:
 
 ```
-xs = linspace(-1, 1, 5)
+xs = range(-1, stop=1, length=5)
 deltas = diff(xs)
 cs = [-3/4, -1/4, 1/4, 3/4]
 f(x) = sqrt(1 - x^2)
@@ -834,16 +834,9 @@ To use the function, we have:
 ```
 using QuadGK
 f(x) = x * log(x)
-QuadGK.quadgk(f, 0, 2)
+quadgk(f, 0, 2)
 ```
 
-```
-note("""
-
-We need the qualifying module in the call (`QuadGK.quadgk`) when using `Julia` version `v"0.6"` due to a naming conflict. This won't be necessary with newer versions of `Julia`.
-
-""")
-```
 
 As mentioned, there are two values returned: an approximate answer,
 and an error estimate. In this example we see that the value of
@@ -861,7 +854,7 @@ The method should be exact for polynomial functions:
 
 ```
 f(x) = x^5 - x + 1
-QuadGK.quadgk(f, -2, 2)
+quadgk(f, -2, 2)
 ```
 
 The error term is $0$, answer is $4$ up to the last unit of precision
@@ -869,15 +862,15 @@ The error term is $0$, answer is $4$ up to the last unit of precision
 
 
 
-For the numeric computation of definite integrals, the `QuadGK.quadgk`
+For the numeric computation of definite integrals, the `quadgk`
 function should be used over the Riemann sums or even Simpson's rule.
 
-Here are some sample integrals computed with `QuadGK.quadgk`:
+Here are some sample integrals computed with `quadgk`:
 
 - $\int_0^\pi \sin(x) dx$
 
 ```
-QuadGK.quadgk(sin, 0, pi)
+quadgk(sin, 0, pi)
 ```
 
 (Again, the actual answer is off only in the last digit, the error estimate is an upper bound.)
@@ -886,13 +879,13 @@ QuadGK.quadgk(sin, 0, pi)
 
 ```
 f(x) = x^x
-QuadGK.quadgk(f, 0, 2)
+quadgk(f, 0, 2)
 ```
 
 - $\int_0^5 e^x dx$
 
 ```
-QuadGK.quadgk(exp, 0, 5)
+quadgk(exp, 0, 5)
 ```
 
 
@@ -901,14 +894,14 @@ drop the error in the answer. Two styles can be used for this. The
 first is to just name the two returned values:
 
 ```
-A, err = QuadGK.quadgk(cos, 0, pi/4)
+A, err = quadgk(cos, 0, pi/4)
 A
 ```
 
 The second is to ask for just the first component of the returned value:
 
 ```
-A = QuadGK.quadgk(tan, 0, pi/4)[1]
+A = quadgk(tan, 0, pi/4)[1]
 ```
 
 
@@ -930,7 +923,7 @@ The fact that $1 = \int_{-\pi}^\pi C \cdot \exp(\cos(x)) dx = C \int_{-\pi}^\pi 
 
 ```
 f(x) = exp(cos(x))
-A,err = QuadGK.quadgk(f, -pi, pi)
+A,err = quadgk(f, -pi, pi)
 ```
 
 So
@@ -949,7 +942,7 @@ these?
 First we define a function, that computes $F(x)$:
 
 ```
-F(x) = QuadGK.quadgk(f, -pi, x)[1]
+F(x) = quadgk(f, -pi, x)[1]
 ```
 
 (The trailing `[1]` is so only the answer -- and not the error -- is returned.)
@@ -985,7 +978,7 @@ $$~
 
 ```
 f(x) = sqrt(5^2 - x^2)
-val, _ = QuadGK.quadgk(f, -5,5)
+val, _ = quadgk(f, -5,5)
 numericq(val)
 ```
 
@@ -1001,7 +994,7 @@ $$~
 ```
 f(x) = 2- abs(x)
 a,b = -2, 2
-val, _ = QuadGK.quadgk(f, a,b)
+val, _ = quadgk(f, a,b)
 numericq(val)
 ```
 
@@ -1017,7 +1010,7 @@ $$~
 ```
 f(x) = x <= 3 ? 3.0 : 3 + 3*(x-3)
 a,b = 0, 9
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -1035,7 +1028,7 @@ $$~
 ```
 f(x) = floor(x)
 a, b = 0, 5
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -1201,7 +1194,7 @@ radioq(choices, ans)
 
 ###### Question
 
-Use `QuadGK.quadgk` to find the following definite integral:
+Use `quadgk` to find the following definite integral:
 
 $$~
 \int_1^4 x^x dx   .
@@ -1210,14 +1203,14 @@ $$~
 ```
 f(x) = x^x
 a, b = 1, 4
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
 
 ###### Question
 
-Use `QuadGK.quadgk` to find the following definite integral:
+Use `quadgk` to find the following definite integral:
 
 $$~
 \int_0^3 e^{-x^2} dx   .
@@ -1226,14 +1219,14 @@ $$~
 ```
 f(x) = exp(-x^2)
 a, b = 0, 3
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
 
 ###### Question
 
-Use `QuadGK.quadgk` to find the following definite integral:
+Use `quadgk` to find the following definite integral:
 
 $$~
 \int_0^{9/10} \tan(u \frac{\pi}{2}) du.   .
@@ -1242,14 +1235,14 @@ $$~
 ```
 f(x) = tan(x*pi/2)
 a, b = 0, 9/10
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
 
 ###### Question
 
-Use `QuadGK.quadgk` to find the following definite integral:
+Use `quadgk` to find the following definite integral:
 
 $$~
 \int_{-1/2}^{1/2} \frac{1}{\sqrt{1 - x^2}} dx
@@ -1258,7 +1251,7 @@ $$~
 ```
 f(x) = 1/sqrt(1 - x^2)
 a, b =-1/2, 1/2
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 

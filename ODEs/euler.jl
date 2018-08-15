@@ -4,12 +4,12 @@ using SymPy
 using QuadGK
 
 using Plots
-gr()
+pyplot()
 fig_size = (600, 400)
 
 function slopefield_plot(fyx; xlim=(-5, 5), ylim=(-5, 5), n=8)
-    xs = repeat(collect(linspace(xlim[1], xlim[2], n)), inner=(n,))
-    ys = repeat(collect(linspace(ylim[1], ylim[2], n)), outer=(n,))
+    xs = repeat(collect(range(xlim[1], stop=xlim[2], length=n)), inner=(n,))
+    ys = repeat(collect(range(ylim[1], stop=ylim[2], length=n)), outer=(n,))
 
     us, vs = broadcast((x,y)->1, xs, ys), broadcast(fyx, ys, xs)
     m = maximum(sqrt.(1 .+ vs.^2))
@@ -18,8 +18,8 @@ function slopefield_plot(fyx; xlim=(-5, 5), ylim=(-5, 5), n=8)
     quiver(xs, ys, quiver=(lambda*us, lambda*vs), legend=false)
 end
 function vfieldplot(fx, fy; xlim=(-5,5), ylim=(-5,5), n=7)
-    xs = linspace(xlim..., n)
-    ys = linspace(ylim..., n)
+    xs = range(xlim[1], stop=xlim[2], length=n)
+    ys = range(ylim[1], stop=ylim[2], length=n)
 
     us = vec([x for x in xs, y in ys])
     vs = vec([y for x in xs, y in ys])
@@ -133,7 +133,7 @@ function make_brach_graph_old(n)
     n == 0 && scatter!(p, [0], [1], color=:black)
     n < 1 && return p
     
-    ts = linspace(.05, .55, 9)
+    ts = range(.05, stop=.55, length=9)
     t = ts[n]
     for (i,fn) in enumerate(fs)
         if t < J(B,f)
@@ -150,8 +150,8 @@ end
 
 
 #https://pdfs.semanticscholar.org/66c1/4d8da6f2f5f2b93faf4deb77aafc7febb43a.pdf
-using Roots
-Base.ctranspose(f::Function) = x -> D(f)(x)
+using ForwardDiff
+Base.adjoint(f::Function) = x -> ForwardDiff.derivative(f, float(x))
 
 function brach(f, x0, vx0, y0, vy0, dt, n)
     m = 1

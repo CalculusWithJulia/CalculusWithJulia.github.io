@@ -1,5 +1,6 @@
 module vectors
 using LaTeXStrings
+import LinearAlgebra: norm
 using WeavePynb
 
 macro q_str(x) 
@@ -22,6 +23,7 @@ x(t) = x0 + v0*t + 1/2*g*t^2
 v(t) = v0 + g*t
 a(t) = g
 
+
 unit(v::Vector) = v / norm(v)
 x_ticks = collect(0:10:80)
 y_ticks = collect(0:10:80)
@@ -42,7 +44,7 @@ function make_plot(t)
     
     t = 1/10 + t*2/10
     
-    ts = linspace(0, 2, 100)
+    ts = range(0, stop=2, length=100)
     xys = map(xn, ts)
 
     xs, ys = [p[1] for p in xys], [p[2] for p in xys]

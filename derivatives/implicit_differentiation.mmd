@@ -360,7 +360,7 @@ We can solve for the lower curve, $y$, as a function of $x$, as follows:
 
 ```
 using Roots
-y1(x) = minimum(fzeros(y->F(x,y), -10, 10))
+y1(x) = minimum(find_zeros(y->F(x,y), -10, 10))
 ```
 
 This gives the lower part of the curve, which we can plot with:
@@ -711,11 +711,11 @@ eqn1 = eqn(x => cps[2])
 
 We would try to solve `eqn1` for `y` with `solve(eqn1, y)`, but
 `SymPy` can't complete this problem. Instead, we will approach this
-numerically using `fzero` from the `Roots` package. We make the above a function of `y` alone
+numerically using `find_zero` from the `Roots` package. We make the above a function of `y` alone
 
 ```
 eqn2 = eqn1(a=>3, b=>3, L=>10)
-ystar = fzero(eqn2, -3)
+ystar = find_zero(eqn2, -3)
 ```
 
 Okay, now we need to put this value back into our expression for the `x` value and also substitute in for the parameters:
@@ -857,6 +857,8 @@ This intersection is:
 
 ```
 using Roots
+using ForwardDiff
+D(f) = x -> ForwardDiff.derivative(f, float(x))
 f(x) = x^2 - log(x)
 x0 = 1/2
 tl(x) = f(x0) + D(f)(x0) * (x - x0)
@@ -879,7 +881,7 @@ If $a=1$, numerically find a a value of $y$ when $x=2$.
 using Roots
 a = 1
 f(x,y) = y*(x^2 + a^2) - a^3
-val = fzero(y->f(2,y), 1)
+val = find_zero(y->f(2,y), 1)
 numericq(val)
 ```
 

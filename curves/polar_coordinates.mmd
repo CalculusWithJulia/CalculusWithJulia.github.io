@@ -3,6 +3,9 @@
 ```nocode, noout
 using Plots, QuadGK
 plotly()
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f) = D(f)
 ```
 
 The description of the $x$-$y$ plane via Cartesian coordinates is not
@@ -31,14 +34,14 @@ r = \sqrt{x^2 + y^2},~ \theta=\tan^{-1}(y/x).
 ~$$
 
 For the other two quadrants, the signs of $y$ and $x$ must be
-considered. This is done with the function `atan2`.
+considered. This is done with the function `atan` when two arguments are used.
 
 
 For example, $(-3, 4)$ would have polar coordinates:
 
 ```
 x,y = -3, 4
-rad, theta = sqrt(x^2 + y^2), atan2(y, x)
+rad, theta = sqrt(x^2 + y^2), atan(y, x)
 ```
 
 And reversing
@@ -273,16 +276,12 @@ like the cardiod, but contains an extra loop. When $a=1$ and $b=1$ we
 have this graph.
 
 ```
-#ts = vcat(linspace(0, pi/2+pi/6), linspace(3pi/2 - pi/6, pi/2 + pi/6), linspace(3pi/2 - pi/6, 2pi))
 a,b = 1,1
 r(theta) = b + 2a*cos(theta)
 p = plot(t->r(t)*cos(t), t->r(t)*sin(t), 0, pi/2 + pi/6,  legend=false, color=:blue)
 plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, pi/2 + pi/6, color=:orange)
 plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, 2pi, color=:blue)
 
-##p = Gadfly.plot(x=[r(t)*cos(t) for t in ts], y=[r(t)*sin(t) for t in ts],
-#         Gadfly.Geom.polygon(fill=true, preserve_order=true),
-#         Gadfly.Theme(default_color=colorant"orange"))
 Outputonly(p)
 ```
 
@@ -333,8 +332,8 @@ d_i^2 &= (r(t_i) \cos(t_i) - r(t_{i-1})\cos(t_{i-1}))^2 + (r(t_i) \sin(t_i) - r(
 \end{align}
 ~$$
 
-As was done with arc length we multiply $d_i$ by $ (t_i - t_{i-1}) /
-(t_i - t_{i-1})$ and move the bottom factor under the square root:
+As was done with arc length we multiply $d_i$ by $(t_i - t_{i-1})/(t_i - t_{i-1})$
+and move the bottom factor under the square root:
 
 
 $$~
@@ -353,7 +352,7 @@ the extension to the Riemann sum formula needed to derive the arc
 length for a parameterized curve). That is:
 
 > Arc length of a polar curve. The arc length of the curve described in polar coordinates by $r(\theta)$ for $a \leq \theta \leq b$ is given by
-> $$~\int_a^b \sqrt{(r'(\theta)^2) + r(\theta)^2} d\theta.~$$
+> $$~\int_a^b \sqrt{r'(\theta)^2 + r(\theta)^2} d\theta.~$$
 
 We test this out on a circle with $r(\theta) = R$, a constant. The
 integrand simplifies to just $\sqrt{R^2}$ and the integral is from $0$
@@ -377,7 +376,7 @@ but `SymPy` isn't able to find it. Instead we give a numeric answer:
 ```
 using Roots, QuadGK
 Base.ctranspose(f::Function) = D(f)
-QuadGK.quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
+quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
 ```
 
 ##### Example
@@ -435,7 +434,7 @@ r(b,t) = dinner/2 + b*t
 rp(b,t) = b
 integrand(b,t) = sqrt((r(b,t))^2 + rp(b,t)^2)  # sqrt(r^2 + r'^2)
 n(b) = (douter - dinner)/2/(2*pi*b)
-b = fzero(b -> QuadGK.quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, 1/100000, 1/100)
+b = find_zero(b -> quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, (1/100000, 1/100))
 ```
 
 This gives a value in inches, in millimeters this is about a $.02mm$ thickness per sheet:
@@ -468,7 +467,7 @@ A point in Cartesian coordinates is given by $(-12, -5)$. In has a polar coordin
 
 ```
 x,y = -12, -5
-r1, theta1 = sqrt(x^2 + y^2), atan2(y,x)
+r1, theta1 = sqrt(x^2 + y^2), atan(y,x)
 numericq(r1)
 ```
 
@@ -612,7 +611,7 @@ Find the area of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curve
 
 ```
 r(theta) = sqrt(cos(2theta) * sec(theta)^4)
-val, _ = QuadGK.quadgk(t -> r(t)^2/2, -pi/4, pi/4)
+val, _ = quadgk(t -> r(t)^2/2, -pi/4, pi/4)
 numericq(val)
 ```
 
@@ -626,7 +625,7 @@ $-\pi/4$ and $\pi/4$. What is the answer (numerically)?
 ```
 using Roots
 r(theta) = sqrt(cos(2theta))
-val, _ = QuadGK.quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
+val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)
 ```
 
@@ -637,7 +636,7 @@ Find the arc length of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk
 
 ```
 r(theta) = sqrt(cos(2theta) * sec(theta)^4)
-val, _ = QuadGK.quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
+val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)
 ```
 

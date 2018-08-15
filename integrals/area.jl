@@ -2,7 +2,7 @@ module area
 
 using WeavePynb, LaTeXStrings
 using Plots
-gr()
+pyplot()
 fig_size = (600, 400)
 
 
@@ -14,13 +14,13 @@ colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
 ## Area of parabola
 function make_triangle_graph(n)
     title = "Area of parabolic cup ..."
-    n==1 && (title = "\$\\textrm{Area = }1/2\$")
-    n==2 && (title = "\$\\textrm{Area = previous }+ 1/8\$")
-    n==3 && (title = "\$\\textrm{Area = previous }+ 2*(1/8)^2\$")
-    n==4 && (title = "\$\\textrm{Area = previous }+ 4*(1/8)^3\$")
-    n==5 && (title = "\$\\textrm{Area = previous }+ 8*(1/8)^4\$")
-    n==6 && (title = "\$\\textrm{Area = previous }+ 16*(1/8)^5\$")
-    n==7 && (title = "\$\\textrm{Area = previous }+ 32*(1/8)^6\$")
+    n==1 && (title = "Area = }1/2")
+    n==2 && (title = "Area = previous + 1/8")
+    n==3 && (title = "Area = previous + 2*(1/8)^2")
+    n==4 && (title = "Area = previous + 4*(1/8)^3")
+    n==5 && (title = "Area = previous + 8*(1/8)^4")
+    n==6 && (title = "Area = previous + 16*(1/8)^5")
+    n==7 && (title = "Area = previous + 32*(1/8)^6")
 
 
 
@@ -29,7 +29,7 @@ function make_triangle_graph(n)
     n >= 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linetype=:polygon, fill=colors[1], alpha=.2)
     n == 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linewidth=2)
     for k in 2:n
-        xs = linspace(0,1,1+2^(k-1))
+        xs = range(0, stop=1, length=1+2^(k-1))
         ys = map(f, xs)
         k < n && plot!(plt, xs, ys, linetype=:polygon, fill=:black, alpha=.2)
         if k == n

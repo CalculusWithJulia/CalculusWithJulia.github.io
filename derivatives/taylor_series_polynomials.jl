@@ -12,9 +12,9 @@ function make_taylor_plot(u, a, b, k)
     k = 2k
     plot(u, a, b, title="plot of T_$k", linewidth=5, legend=false, size=fig_size, ylim=(-2,2.5))
     if k == 1
-        plot!(zero, linspace(a, b,100))
+        plot!(zero, range(a, stop=b, length=100))
     else
-        plot!(taylor(u, x, 0, k), linspace(a, b, 100))
+        plot!(taylor(u, x, 0, k), range(a, stop=b, length=100))
     end
 end
 

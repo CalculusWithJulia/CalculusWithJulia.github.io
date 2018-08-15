@@ -372,7 +372,7 @@ $$~
 
 ## The derivative of the integral
 
-The relationship that $[\int_a^x f(u) du]' = f(x)$ is a bit harder to appreciate, as it doesn't help answer many ready made questions. Here we give some examples of it use.
+The relationship that $[\int_a^x f(u) du]' = f(x)$ is a bit harder to appreciate, as it doesn't help answer many ready made questions. Here we give some examples of its use.
 
 First, the expression defining an antiderivative, or indefinite integral, is given in term of a definite integral:
 
@@ -484,7 +484,7 @@ We need to figure out when this is $0$. For that, we use some numeric math.
 
 ```
 using Roots, QuadGK
-F(x) = exp(-x^2) * QuadGK.quadgk(t -> exp(t^2), 0, x)[1]
+F(x) = exp(-x^2) * quadgk(t -> exp(t^2), 0, x)[1]
 Fp(x) = -2x*F(x) + 1
 cps = fzeros(Fp, -4,4)
 ```
@@ -708,7 +708,7 @@ Find the value of $\int_0^1 (1-x^2/2 + x^4/24) dx$.
 ```
 f(x) = 1 - x^2/2 + x^4/24
 a, b = 0, 1
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -760,7 +760,7 @@ A particle has velocity $v(t) = 2t^2 - t$ between $0$ and $1$. If $x(0) = 0$, fi
 
 ```
 v(t) = 2t^2 - t
-f(x) = QuadGK.quadgk(v, 0, x)[1] - 0
+f(x) = quadgk(v, 0, x)[1] - 0
 numericq(f(1))
 ```
 
@@ -771,7 +771,7 @@ A particle has acceleration given by $\sin(t)$ between $0$ and
 $\pi$. If the initial velocity is $v(0) = 0$, find $v(\pi/2)$.
 
 ```
-f(x) = QuadGK.quadgk(sin, 0, x)[1] - 0
+f(x) = quadgk(sin, 0, x)[1] - 0
 numericq(f(pi/2))
 ```
 
@@ -900,13 +900,14 @@ $A(x)$. This figure illustrates the labeling for some function:
 ```
 f(x) = x^(2/3)
 x = 2
-A(x) = QuadGK.quadgk(f, 0, x)[1]
+A(x) = quadgk(f, 0, x)[1]
 m=f(x)
 T = x - A(x)/f(x)
 Q = f(x)
 P = A(x)
 secpt = u -> 0 + P/(x-T) * (u-T)
-xs = linspace(0, x+1/4)
+xs = range(0, stop=x+1/4, length=50
+)
 p = plot(f, 0, x + 1/4, legend=false)
 plot!(p, A, 0, x + 1/4, color=:red)
 scatter!(p, [T, x, x, x], [0, 0, Q, P], color=:orange)

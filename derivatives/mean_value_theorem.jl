@@ -3,6 +3,7 @@ module mean_value_theorem
 
 using WeavePynb, LaTeXStrings
 using Plots
+using Printf
 #gr()
 pyplot()
 fig_size = (600, 400)
@@ -13,7 +14,7 @@ function parametric_fns_graph(n)
     g = (x) -> x
 
     ns = (1:10)/10
-    ts = linspace(-pi/2, -pi/2 + ns[n] * pi)
+    ts = range(-pi/2, stop=-pi/2 + ns[n] * pi, length=100)
 
     plt = plot(f, g, -pi/2, -pi/2 + ns[n] * pi, legend=false, size=fig_size,
                xlim=(-1.1,1.1), ylim=(-pi/2-.1, pi/2+.1))

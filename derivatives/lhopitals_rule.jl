@@ -14,7 +14,7 @@ function lhopitals_picture_graph(n)
     
     g = (x) -> sqrt(1 + x) - 1 - x^2
     f = (x) -> x^2
-    ts = linspace(-1/2, 1/2)
+    ts = range(-1/2, stop=1/2, length=50)
 
     
     a, b = 0, 1/2^n * 1/2

@@ -436,10 +436,26 @@ get too large. This is not a big request.  If instead of the value of
 connect-the-dots algorithm will skip those values.
 
 This is actually quite easy to implement, if we operate on the
-function object. Here is a `trim` function:
+function object. Here is a `trimplot` function:
 
 ```
-trim(f, c=20) = x -> abs(f(x)) > c ? NaN : f(x)
+function trimplot(f, a, b, c=20; kwargs...)
+  xs = range(a, stop=b, length=251)
+  ys = f.(xs)
+
+  us, vs = Real[], Real[]
+  p = plot(us, vs, xlim=(a, b), legend=false, kwargs...)
+  for (x,y) in zip(xs, ys)
+    if abs(y) <= c
+       push!(us, x); push!(vs, y)
+    else
+      length(us) > 0 && plot!(p, us, vs, color=:blue)
+      empty!(us); empty!(vs)
+    end
+ end	
+ length(us) > 0 && plot!(p, us, vs, color=:blue)
+ p
+end
 ```
 
 As before, the `x ->` of the function indicates that this will return an anonymous function, which does what we want: replace large values with `NaN`.
@@ -447,7 +463,7 @@ As before, the `x ->` of the function indicates that this will return an anonymo
 Now to graph:
 
 ```
-plot(trim(f), -25, 25)
+trimplot(f, -25, 25, 30)
 ```
 
 We can see the general shape of 3 curves broken up by the vertical
@@ -486,10 +502,10 @@ so, plotting the function and then coloring it different colors based on the sig
 
 ```
 function signchart(f, a, b)
-   nonneg(x) = f(x) < 0 ? NaN : f(x)
-   nonpos(x) = f(x) > 0 ? NaN : f(x)
-   plot(nonneg, a, b, linewidth=5, legend=false)
-   plot!(nonpos, linewidth=5)
+   xs = range(a, stop=b, length=200)
+   ys = f.(xs)
+   cols = [fx < 0 ? :red  : :blue for fx in ys]
+   plot(xs, ys, color=cols, linewidth=5, legend=false)
    plot!(zero)
 end
 f(x) = x^3 - x
@@ -497,7 +513,6 @@ signchart(f, -3/2, 3/2)
 ```
 
 
-The conditions used are similar in spirit to how the `trim` function was done: for values of $f(x)$ that should not be plotted, they are replaced with `NaN`.
 
 
 ## Pade approximate
@@ -648,8 +663,11 @@ Look at the graph of the function $f(x) = ((x-1)\cdot(x-2)) / ((x-3)\cdot(x-4))$
 
 ```nocode
 f(x) = ((x-1) * (x-2)) / ((x-3) *(x-4))
-trim(f,c=20) = x->abs(f(x)) > c ? NaN : f(x)
-p = plot([trim(f, 20), x->1], -5, 10 )
+delta = 1e-1
+col = :blue
+p = plot(f, -1, 3-delta, color=col, legend=false)
+plot!(p, f, 3+delta, 4-3delta, color=col)
+plot!(p,f, 4 + 5delta, 9, color=col)
 p
 ```
 

@@ -35,7 +35,7 @@ function make_triangle_graph(n)
     n >= 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linetype=:polygon, fill=colors[1], alpha=.2)
     n == 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linewidth=2)
     for k in 2:n
-        xs = linspace(0,1,1+2^(k-1))
+        xs = range(0,stop=1, length=1+2^(k-1))
         ys = map(f, xs)
         k < n && plot!(plt, xs, ys, linetype=:polygon, fill=:black, alpha=.2)
         if k == n
@@ -69,7 +69,7 @@ archimedes_parabola = gif_to_data(imgfile, caption)
 function make_limit_e_d(n)
     f(x) = x^3
 
-    xs = linspace(-.9, .9)
+    xs = range(-.9, stop=.9, length=50)
     ys = map(f, xs)
     
 
@@ -81,8 +81,8 @@ function make_limit_e_d(n)
         epsilon = 1/2^k
         delta = cbrt(epsilon)
         if isodd(n)
-            plot!(plt, xs, 0*xs + epsilon, color=:orange)
-            plot!(plt, xs, 0*xs - epsilon, color=:orange)
+            plot!(plt, xs, 0*xs .+ epsilon, color=:orange)
+            plot!(plt, xs, 0*xs .- epsilon, color=:orange)
         else
             plot!(delta * [-1,  1], epsilon * [ 1, 1], color=:orange)
             plot!(delta * [ 1, -1], epsilon * [-1,-1], color=:orange)

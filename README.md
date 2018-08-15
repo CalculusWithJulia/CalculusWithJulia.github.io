@@ -19,7 +19,7 @@ Before beginning, we need to get started with Julia. This is akin to going out a
 
 ## Precalculus
 
-Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus review, covers some of the basic materials mathematically, but more importantly illustrates the key computational mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).
+Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus *review*, covers some of the basic materials mathematically (though not systematically). More importantly it illustrates the key computational mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).
 
 ### Number systems
 
@@ -39,12 +39,14 @@ Calculators really only use one type of number -- floating point numbers. Floati
 - [Inequalities and Boolean Values](precalc/logical_expressions.html)
 
 
+Vectors as a mathematical object could be postponed for later, but they are introduced here as the `Julia` implementation makes an excellent choice for a container of one or more values. We also see how to work with more than one value at a time, a useful facility in future work.
+
 - [Vectors](precalc/vectors.html)
 
 An arithmetic progression is a sequence of the form $a, a+h, a+2h, \dots, a+kh$. For example $3, 10, 17, 24, .., 52$. They prove very useful in describing collections of numbers. We introduce the range operator that models these within `Julia` and comprehensions that allow one to easily modify the simple sequences.
 
 
-- [Arithmetic progressions](precalc/ranges.html)
+- [Arithmetic Progressions](precalc/ranges.html)
 
 ### Functions
 
@@ -57,6 +59,8 @@ A graphing calculator makes it very easy to produce a graph. `Julia`, using the 
 - [Graphs of Functions](precalc/plotting.html)
 
 - [Transformations of Functions](precalc/transformations.html)
+
+- [Inverse Runctions](precalc/inversefunctions.html)
 
 #### Polynomials
 
@@ -74,7 +78,12 @@ The roots of a univariate polynomial are the values of $x$ for which $p(x)=0$. R
 
 A rational expression is the ratio of two polynomial expressions. This section covers some additional details that arise when graphing such expressions.
 
-- [Rational Functions](precalc/rational_functions.html)
+- [Rational functions](precalc/rational_functions.html)
+
+####  Exponential and logarithmic functions
+
+- [Exponential and Logarithmic Functions](precalc/exp_log_functions.html)
+
 
 #### Trigonometric functions
 
@@ -88,7 +97,7 @@ The notion of a limit is at the heart of the two main operations of calculus, di
 
 - [Limits](limits/limits.html)
 
-- [Examples and extensions of the basic limit definition](limits/limits_extensions.html)
+- [Examples and Extensions of the basic limit definition](limits/limits_extensions.html)
 
 
 Continuous functions are at the center of any discussion of calculus concepts. These sections define them and illustrate a few implications for continuous functions.
@@ -103,6 +112,7 @@ The derivative of a function is a derived function that for each $x$ yields the 
 
 - [Derivatives](derivatives/derivatives.html)
 
+- [Numeric Derivatives](derivatives/numeric_derivatives.html)
 
 The derivative of a function has certain features. These next sections explore one of the first uses of the derivative -- using its zeros to characterize the original function.
 

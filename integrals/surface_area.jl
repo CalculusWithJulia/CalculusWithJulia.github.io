@@ -5,10 +5,10 @@ using WeavePynb, LaTeXStrings
 # ----
 
 using Plots
-gr()
+pyplot()
 fig_size=(600, 400)
 
-xs,ys = linspace(-1,1), linspace(-1,1)
+xs,ys = range(-1, stop=1, length=50), range(-1, stop=1, length=50)
 f(x,y)= 2 - (x^2 + y^2)
 
 dr = [1/2, 3/4]
@@ -16,7 +16,7 @@ df = [f(dr[1],0), f(dr[2],0)]
 
 function sa_approx_graph(i)
     p = plot(xs, ys, f, st=[:surface], legend=false)
-    for theta in linspace(0, i/10*2pi, 10*i ) 
+    for theta in range(0, stop=i/10*2pi, length=10*i ) 
         path3d!(p,sin(theta)*dr, cos(theta)*dr, df)
     end
     p

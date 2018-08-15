@@ -691,22 +691,38 @@ asymptote. Here are two ways to restrict this with `Plots`:
 - trim the $y$ values returned by the function so that if they are bigger than 10, say, they are not shown. For this, a function like the following can be useful:
 
 ```
-trim(f; c=10) =  x -> abs(f(x)) > c ? NaN : f(x)
+function trimplot(f, a, b, c=20; kwargs...)
+  xs = range(a, stop=b, length=251)
+  ys = f.(xs)
+
+  us, vs = Real[], Real[]
+  p = plot(us, vs, xlim=(a, b), legend=false, kwargs...)
+  for (x,y) in zip(xs, ys)
+    if abs(y) <= c
+       push!(us, x); push!(vs, y)
+    else
+      length(us) > 0 && plot!(p, us, vs, color=:blue)
+      empty!(us); empty!(vs)
+    end
+ end	
+ length(us) > 0 && plot!(p, us, vs, color=:blue)
+ p
+end
 ```
 
-The latter might be used as follows:
+This would be used as follows:
 
 ```verbatim
 f(x) = 1/x
-plot(trim(f), -1,1)
+trimplot(f, -1, 1)
 ```
 
-Compare the graph of the above with the graph without `trim`. What would you say:
+Compare the graph of the above with the graph without using `trimplot`. What would you say:
 
 ```
-choices = ["They appear the same, using `trim` just complicates things.",
+choices = ["They appear the same, using `trimplot` just complicates things.",
            "The trimmed graph is not influenced by the vertical asymptote at 0. It is a better graph.",
-           "There is an error when plotting `trim(f)`."]
+           "There is an error when plotting `trimplot(f)`."]
 ans = 2
 radioq(choices, ans)
 ```

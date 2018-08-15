@@ -141,10 +141,11 @@ Rotate the graph of $x^x$ from $0$ to $2$ around the $x$ axis. What is the surfa
 We work numerically for this one, as no antiderivative is forthcoming.
 
 ```
-using Roots, QuadGK # for D, quadgk
+using ForwardDiff, QuadGK
+D(f,n=1) = n > 1 ? D(D(f), n-1) : x -> ForwardDiff.derivative(f, float(x))
 f(x) = x^x
 a, b = 0, 2
-val, _ = QuadGK.quadgk(x -> 2pi * f(x) * sqrt(1 + D(f)(x)^2), a, b)
+val, _ = quadgk(x -> 2pi * f(x) * sqrt(1 + D(f)(x)^2), a, b)
 val
 ```
 
@@ -303,7 +304,7 @@ Though the integral can be computed by hand, give a numeric value.
 ```
 f(x) = sin(x)
 a, b = 0, pi
-val, _ = QuadGK.quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
+val, _ = quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -315,7 +316,7 @@ $x$ axis. Numerically find the surface area generated?
 ```
 f(x) = sqrt(x)
 a, b = 0, 4
-val, _ = QuadGK.quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
+val, _ = quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -327,7 +328,7 @@ $f(x) = x^3/9$ from $x=0$ to $x=2$ around the $x$ axis. This can be done by hand
 ```
 f(x) = x^3/9
 a, b = 0, 2
-val, _ = QuadGK.quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
+val, _ = quadgk(x -> 2pi* f(x) * sqrt(1 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -367,7 +368,7 @@ Numerically find the value.
 g(t) = cos(t)
 f(t) = sin(t)
 a, b = 0, pi/4
-val, _ = QuadGK.quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
+val, _ = quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -385,7 +386,7 @@ using Roots
 g(t) = cos(t^3)
 f(t) = sin(t^3)
 a, b = 0, pi
-val, _ = QuadGK.quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
+val, _ = quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -402,6 +403,6 @@ using Roots
 g(t) = cos(t^5)
 f(t) = sin(t^5)
 a, b = 0, pi
-val, _ = QuadGK.quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
+val, _ = quadgk(t -> 2pi* f(t) * sqrt(D(g)(t)^2 + D(f)(t)^2), a, b)
 numericq(val)
 ```

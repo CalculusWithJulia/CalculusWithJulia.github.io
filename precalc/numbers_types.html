@@ -126,8 +126,10 @@ $( document ).ready(function() {
 <li><p>complex numbers are formed by including a term with the imaginary unit, <code>im</code>.</p>
 </li>
 </ul><div class="alert alert-success" role="alert">
+    
 <div class="markdown"><p>Heads up, the difference between <code>1</code> and <code>1.0</code> is subtle (and even more so, as <code>1.</code> will parse as <code>1.0</code>). </p>
 </div> 
+
 </div>
 <p>Similarly, each type is printed slightly differently.</p><p>The key distinction is between integers and floating points. While floating point values include integers, and so can be used exclusively on the calculator, the difference is that an integer is guaranteed to be an exact value, whereas a floating point value is typically just an <em>approximate</em> value–-used to advantage, as floating point values can model a much wider set of numbers.</p><p>Now in nearly all cases, the differences are not noticed. Take for instance this simple calculation involving mixed types.</p><pre class="sourceCode julia">1 + 1.25 + 3//2</pre>
 <pre class="output">
@@ -149,21 +151,28 @@ $( document ).ready(function() {
 </li>
 </ul><pre class="sourceCode julia">sqrt(-1.0)</pre>
 <pre class="output">
-DomainError()
+DomainError(-1.0, "sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).")
 </pre>
 
 <p>This is because for real-valued inputs <code>Julia</code> expects to return a real-valued output. Of course, this is true in mathematics until the complex numbers are introduced. Similarly in <code>Julia</code>–-to take square roots of negative numbers, start with complex numbers:</p><pre class="sourceCode julia">sqrt(-1.0 + 0im)</pre>
 <pre class="output">
 0.0 + 1.0im</pre>
 
-<p>note(""" At one point, <code>Julia</code> had an issue with a third type of power: integer bases and negative integer exponents. For example <code>2^&#40;-1&#41;</code>. This is now special cased. Historically, the desire to keep a predictable type for the ouput (integer) led to defining this case as a domain error. """)</p><h2>Some more details.</h2><p>What follows is only needed for those seeking more background.</p><p>Julia has <em>abstract</em> number types <code>Integer</code>, <code>Real</code>, and <code>Number</code>. All four types described above are of type <code>Number</code>, but <code>Complex</code> is not of type <code>Real</code>.</p><p>However, a specific value is an instance of a <em>concrete</em> type. A concrete type will also include information about how the value is stored. For example, the <em>integer</em> <code>1</code> could be stored using $64$ bits as a signed integers, or, should storage be a concern, as an $8$ bits  signed or even unsigned integer, etc.. If storage isn't an issue, but exactness at all scales is, then it can be stored in a manner that allows for the storage to grow using "big" numbers.</p><p>These distinctions can be seen in how <code>Julia</code> parses these three values:</p><ul>
+<div class="alert alert-info" role="alert">
+    
+<div class="markdown"><p>At one point, <code>Julia</code> had an issue with a third type of power: integer bases and negative integer exponents. For example <code>2^&#40;-1&#41;</code>. As of version <code>v&quot;0.7&quot;</code>, this is now special cased. Historically, the desire to keep a predictable type for the ouput (integer) led to defining this case as a domain error.</p>
+</div> 
+
+</div>
+<h2>Some more details.</h2><p>What follows is only needed for those seeking more background.</p><p>Julia has <em>abstract</em> number types <code>Integer</code>, <code>Real</code>, and <code>Number</code>. All four types described above are of type <code>Number</code>, but <code>Complex</code> is not of type <code>Real</code>.</p><p>However, a specific value is an instance of a <em>concrete</em> type. A concrete type will also include information about how the value is stored. For example, the <em>integer</em> <code>1</code> could be stored using $64$ bits as a signed integers, or, should storage be a concern, as an $8$ bits  signed or even unsigned integer, etc.. If storage isn't an issue, but exactness at all scales is, then it can be stored in a manner that allows for the storage to grow using "big" numbers.</p><p>These distinctions can be seen in how <code>Julia</code> parses these three values:</p><ul>
 <li><p><code>1234567890</code> will be a $64$-bit integer (on newer machines), <code>Int64</code></p>
 </li>
 <li><p><code>12345678901234567890</code> will be a $128$ bit integer, <code>Int128</code></p>
 </li>
 <li><p><code>1234567890123456789012345678901234567890</code> will be a big integer, <code>BigInt</code></p>
 </li>
-</ul><p>Having abstract types allows programmers to write functions that will work over a wide range of input values that are similar, but have different implementation details.</p><h3>Integers</h3><p>Integers are often used casually, as they come about from parsing. As with a calculator, floating point numbers <em>could</em> be used for integers, but in <code>Julia</code>–-and other languages–-it proves useful to have numbers known to have <em>exact</em> values. In <code>Julia</code> there are built-in number types for integers stored in $8$, $16$, $32$, $64$, and $128$ bits and <code>BigInt</code>s if the previous aren't large enough. ($8$ bits can hold $8$ binary values representing $1$ of $256=2^8$ possibilities, whereas the larger $128$ bit can hold one of $2^{128}$ possibilities.) Smaller values can be more efficiently used, and this is leveraged at the system level, but not a necessary distinction with calculus where the default size along with an occasional usage of <code>BigInt</code> suffice.</p><h3>Floating point numbers</h3><p><a href="http://en.wikipedia.org/wiki/Floating_point">Floating point</a> numbers are a computational model for the real numbers.  For floating point numbers, $64$ bits are used by default for both $32$- and $64$-bit systems, though other storage sizes can be requested. This gives a large–-but still finite–-set of real numbers that can be represented. However, there are infinitely many real numbers just between $0$ and $1$, so there is no chance that all can be represented exactly on the computer with a floating point value. Floating point then is <em>necessarily</em> an approximation for all but a subset of the real numbers. Floating point values can be viewed in normalized <a href="http://en.wikipedia.org/wiki/Scientific_notation">scientific notation</a> as $a\cdot 2^b$ where $a$ is the <em>significand</em> and $b$ is the <em>exponent</em>. The significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert < 2$, the exponent can be taken to be an integer, possibly negative.</p><p>As per IEEE Standard 754, the <code>Float64</code> type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but, rather, are much more concentrated closer to $0$.</p><div class="alert alert-success" role="alert">
+</ul><p>Having abstract types allows programmers to write functions that will work over a wide range of input values that are similar, but have different implementation details.</p><h3>Integers</h3><p>Integers are often used casually, as they come about from parsing. As with a calculator, floating point numbers <em>could</em> be used for integers, but in <code>Julia</code>–-and other languages–-it proves useful to have numbers known to have <em>exact</em> values. In <code>Julia</code> there are built-in number types for integers stored in $8$, $16$, $32$, $64$, and $128$ bits and <code>BigInt</code>s if the previous aren't large enough. ($8$ bits can hold $8$ binary values representing $1$ of $256=2^8$ possibilities, whereas the larger $128$ bit can hold one of $2^{128}$ possibilities.) Smaller values can be more efficiently used, and this is leveraged at the system level, but not a necessary distinction with calculus where the default size along with an occasional usage of <code>BigInt</code> suffice.</p><h3>Floating point numbers</h3><p><a href="http://en.wikipedia.org/wiki/Floating_point">Floating point</a> numbers are a computational model for the real numbers.  For floating point numbers, $64$ bits are used by default for both $32$- and $64$-bit systems, though other storage sizes can be requested. This gives a large–-but still finite–-set of real numbers that can be represented. However, there are infinitely many real numbers just between $0$ and $1$, so there is no chance that all can be represented exactly on the computer with a floating point value. Floating point then is <em>necessarily</em> an approximation for all but a subset of the real numbers. Floating point values can be viewed in normalized <a href="http://en.wikipedia.org/wiki/Scientific_notation">scientific notation</a> as $a\cdot 2^b$ where $a$ is the <em>significand</em> and $b$ is the <em>exponent</em>. Save for special values, the significand $a$ is normalized to satisfy $1 \leq \lvert a\rvert < 2$, the exponent can be taken to be an integer, possibly negative.</p><p>As per IEEE Standard 754, the <code>Float64</code> type gives 52 bits to the precision (with an additional implied one), 11 bits to the exponent and the other bit is used to represent the sign.  Positive, finite, floating point numbers have a range approximately between $10^{-308}$ and $10^{308}$, as 308 is about $\log_{10}\cdot 2^{1023}$. The numbers are not evenly spread out over this range, but, rather, are much more concentrated closer to $0$.</p><div class="alert alert-success" role="alert">
+    
 <div class="markdown"><p>You can discover more about the range of floating point values provided by calling a few different functions.</p>
 <ul>
 <li><p><code>typemax&#40;0.0&#41;</code> gives the largest value for the type (<code>Inf</code> in this case).</p>
@@ -178,6 +187,7 @@ DomainError()
 </li>
 </ul>
 </div> 
+
 </div>
 <h4>Scientific notation</h4><p>Floating point numbers may print in a familiar manner:</p><pre class="sourceCode julia">1.23</pre>
 <pre class="output">
@@ -234,7 +244,7 @@ false</pre>
 <pre class="output">
 0.0</pre>
 
-<h3>Rational numbers</h3><p>Rational numbers can be used when the exactness of the number is more important than the speed or wider range of values offered by floating point numbers. In <code>Julia</code> a rational number is comprised of a numerator and a denominator, each an integer of the same type, and reduced to lowest terms. The operations of addition, subtraction, multiplication, and division will keep their answers as rational numbers. As well, raising a rational number to a positive, integer value will produce a rational number.</p><p>As mentioned, these are constructed using a double slashes:</p><pre class="sourceCode julia">1//2, 2//1, 6//4</pre>
+<h3>Rational numbers</h3><p>Rational numbers can be used when the exactness of the number is more important than the speed or wider range of values offered by floating point numbers. In <code>Julia</code> a rational number is comprised of a numerator and a denominator, each an integer of the same type, and reduced to lowest terms. The operations of addition, subtraction, multiplication, and division will keep their answers as rational numbers. As well, raising a rational number to a positive, integer value will produce a rational number.</p><p>As mentioned, these are constructed using double slashes:</p><pre class="sourceCode julia">1//2, 2//1, 6//4</pre>
 <pre class="output">
 (1//2, 2//1, 3//2)</pre>
 
@@ -250,7 +260,7 @@ true</pre>
 <pre class="output">
 1771561//2985984</pre>
 
-<p>For powers, a non-integer exponent is converted to floating point, so this operation is defined:</p><pre class="sourceCode julia">(1//2)^(1//2)   # the first parentheses are necessary as `^` will be evaluated before `//`.</pre>
+<p>For powers, a non-integer exponent is converted to floating point, so this operation is defined, though will always return a floating point value:</p><pre class="sourceCode julia">(1//2)^(1//2)   # the first parentheses are necessary as `^` will be evaluated before `//`.</pre>
 <pre class="output">
 0.7071067811865476</pre>
 
@@ -290,7 +300,7 @@ true</pre>
 </div></td><td><div class="markdown"><p>true</p>
 </div></td></tr>
 <tr><td><div class="markdown"><p>closed under</p>
-</div></td><td><div class="markdown"><p><code>&#43;</code>, <code>-</code>, <code>*</code></p>
+</div></td><td><div class="markdown"><p><code>&#43;</code>, <code>-</code>, <code>*</code>, <code>^</code> (non-negative exponent)</p>
 </div></td><td><div class="markdown"><p><code>&#43;</code>, <code>-</code>, <code>*</code>,<br/> <code>/</code> (non zero denominator),<br/><code>^</code> (integer power)</p>
 </div></td><td><div class="markdown"><p><code>&#43;</code>, <code>-</code>, <code>*</code>,<br/> <code>/</code> (possibly <code>NaN</code>, <code>Inf</code>),<br/><code>^</code> (non-negative base)</p>
 </div></td></tr>
@@ -298,7 +308,7 @@ true</pre>
 </table>
 </div>
     
-<h2>Complex numbers</h2><p>Complex numbers in <code>Julia</code> are stored as two numbers, <code>re</code> and <code>im</code>, each some type of <code>Real</code> number. The special constant <code>im</code> is used to represent $i=\sqrt{-1}$.  This makes the construction of complex numbers fairly standard:</p><pre class="sourceCode julia">1 + 2im, 3 + 4.0im</pre>
+<h2>Complex numbers</h2><p>Complex numbers in <code>Julia</code> are stored as two numbers, a real and imaginary part, each some type of <code>Real</code> number. The special constant <code>im</code> is used to represent $i=\sqrt{-1}$.  This makes the construction of complex numbers fairly standard:</p><pre class="sourceCode julia">1 + 2im, 3 + 4.0im</pre>
 <pre class="output">
 (1 + 2im, 3.0 + 4.0im)</pre>
 
@@ -312,549 +322,549 @@ discr = b^2 - 4a*c
 <pre class="output">
 (-1.0 + 1.4142135623730951im, -1.0 - 1.4142135623730951im)</pre>
 
-<p>When learning calculus, the only common usage of complex numbers arises when solving polynomial equations for roots, or zeros, though they are very important for subsequent work using the concepts of calculus.</p><h2>Type stability</h2><p>One design decision of <code>Julia</code> is that it should be fast. How can <code>Julia</code> do this? In a simple model, <code>Julia</code> is an interface between the user and the computer's processor(s). Processors consume a set of instructions, the user issues a set of commands. <code>Julia</code> is in charge of the translation between the two. Ultimately <code>Julia</code> calls a compiler to create the instructions. A basic premise is the shorter the instructions, the faster they are to process. Shorter instructions can come about by being more explicit about what types of values the instructions concern. Explicitness means, there is no need to reason about what a value can be. When <code>Julia</code> can reason about the type of value involved without having to reason about the values themselves, it can work with the compiler to produce shorter lists of instructions.</p><p>So knowing the type of the output of a function can be a big advantage. In <code>Julia</code> this is known as <em>type stability</em>. In the standard <code>Julia</code> library, this is a primary design consideration.</p><h5>Example: closure</h5><p>To motivate this a bit, we discuss how mathematics can be shaped by a desire to stick to simple ideas.  A desirable algebraic property of a set of numbers and an operation–-<em>closure</em>.  That is, if one takes an operation like <code>&#43;</code> and then uses it to add two numbers in a set, will that result also be in the set? If this is so for any pair of numbers, then the set is closed with respect to the operation addition.</p><p>Lets suppose we start with the <em>natural numbers</em>: $1,2, \dots$. Natural, in that we can easily represent small values in terms of fingers. This set is closed under addition–-as a child learns when counting using their fingers. However, if we started with the odd natural numbers, this set would <em>not</em> be closed under addition–-$3+3=6$.</p><p>The natural numbers are not all the numbers we need, as once a desire for subtraction is included, we find the set isn't closed. There isn't a $0$, needed as $n-n=0$ and there aren't negative numbers. The set of integers are needed for closure under addition and subtraction.</p><p>The integers are also closed under multiplication, which for integer values can be seen as just regrouping into longer additions.</p><p>However, the integers are not closed under division–-even if you put aside the pesky issue of dividing by $0$. For that, the rational numbers must be introduced. So aside from division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.</p><p>Powers are defined for positive integers in a simple enough manner</p>$$~
+<p>When learning calculus, the only common usage of complex numbers arises when solving polynomial equations for roots, or zeros, though they are very important for subsequent work using the concepts of calculus.</p><h2>Type stability</h2><p>One design priority of <code>Julia</code> is that it should be fast. How can <code>Julia</code> do this? In a simple model, <code>Julia</code> is an interface between the user and the computer's processor(s). Processors consume a set of instructions, the user issues a set of commands. <code>Julia</code> is in charge of the translation between the two. Ultimately <code>Julia</code> calls a compiler to create the instructions. A basic premise is the shorter the instructions, the faster they are to process. Shorter instructions can come about by being more explicit about what types of values the instructions concern. Explicitness means, there is no need to reason about what a value can be. When <code>Julia</code> can reason about the type of value involved without having to reason about the values themselves, it can work with the compiler to produce shorter lists of instructions.</p><p>So knowing the type of the output of a function can be a big advantage. In <code>Julia</code> this is known as <em>type stability</em>. In the standard <code>Julia</code> library, this is a primary design consideration.</p><h5>Example: closure</h5><p>To motivate this a bit, we discuss how mathematics can be shaped by a desire to stick to simple ideas.  A desirable algebraic property of a set of numbers and an operation–-<em>closure</em>.  That is, if one takes an operation like <code>&#43;</code> and then uses it to add two numbers in a set, will that result also be in the set? If this is so for any pair of numbers, then the set is closed with respect to the operation addition.</p><p>Lets suppose we start with the <em>natural numbers</em>: $1,2, \dots$. Natural, in that we can easily represent small values in terms of fingers. This set is closed under addition–-as a child learns when counting using their fingers. However, if we started with the odd natural numbers, this set would <em>not</em> be closed under addition–-$3+3=6$.</p><p>The natural numbers are not all the numbers we need, as once a desire for subtraction is included, we find the set isn't closed. There isn't a $0$, needed as $n-n=0$ and there aren't negative numbers. The set of integers are needed for closure under addition and subtraction.</p><p>The integers are also closed under multiplication, which for integer values can be seen as just regrouping into longer additions.</p><p>However, the integers are not closed under division–-even if you put aside the pesky issue of dividing by $0$. For that, the rational numbers must be introduced. So aside from division by $0$, the rationals are closed under addition, subtraction, multiplication, and division. There is one more fundamental operation though, powers.</p><p>Powers are defined for positive integers in a simple enough manner</p>$$~
 a^n=a\cdot a \cdot a \cdots a \text{ (n times); }  a, n \text{ are integers, $n$ is positive}.
 ~$$
-<p>We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as <code>1</code> within <code>Julia</code>). We can extend the above to include negative values of $a$, but what about negative values of $n$? We can't say the integers are closed under powers, as the definition consistent with the rules that $a^{(-n)} = 1/a^n$ requires rational numbers to be defined.</p><p>Well, in the above <code>a</code> could be a rational number, is <code>a^n</code> closed for rational numbers? No again. Though it is fine for $n$ as an integer (save the odd case of $0$, simple definitions like $2^{1/2}$ are not answered within the rationals. For this, we need to introduce the <em>real</em> numbers. It is mentioned that <a href="http://tinyurl.com/bpqbkap">Aristotle</a> hinted at the irrationality of the square root of $2$. To define terms like $a^{1/n}$ for integer values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is used. Such solutions require the irrational numbers to have solutions in general. Hence the need for the real numbers (well, algebraic numbers at least, though once the exponent is no longer a rational number, the full set of real numbers are needed.)</p><p>So, save the pesky cases, the real numbers will be closed under addition, subtraction, multiplication, division, and powers–-provided the base is non-negative.</p><p>Finally for that last case, the complex numbers are introduced to give an answer to $\sqrt{-1}$.</p><hr /><p>How does this apply with <code>Julia</code>?</p><p>The point is, if we restrict our set of inputs, we can get more precise values for the output of basic operations, but to get more general inputs we need to have bigger output sets.</p><p>A similar thing happens in <code>Julia</code>. For addition say, the addition of two integers of the same type will be an integer of that type. This speed consideration is not solely for type stability, but also to avoid checking for overflow.</p><p>Another example, the division of two integers will always be a number of the same type–-floating point, as that is the only type that ensures the answer will always fit within. (The explicit use of rationals notwithstanding.) So even if two integers are the input and their answer <em>could</em> be an integer, in <code>Julia</code> it will be a floating point number, (cf. <code>2/1</code>).</p><p>Hopefully this helps explain the subtle issues around powers: in <code>Julia</code> an integer raised to an integer should be an integer, for speed, though certain cases are special cased, like <code>2^&#40;-1&#41;</code>.  However since a real number raised to a real number makes sense always when the base is non-negative, as long as real numbers are used as outputs, the expressions <code>2.0^&#40;-1&#41;</code> and <code>2^&#40;-1.0&#41;</code> are computed and real numbers (floating points) are returned. For type stability, even though $2.0^1$ could be an integer, a floating point answer is returned.</p><p>As for negative bases, <code>Julia</code> could always return complex numbers, but in addition to this being slower, it would be irksome to users. So user's must opt in. Hence <code>sqrt&#40;-1.0&#41;</code> will be an error, but the more explicit–-but mathematically equivalent–-<code>sqrt&#40;-1.0 &#43; 0im&#41;</code> will not be a domain error, but rather a complex value will be returned.</p><h2>Questions</h2><h6>Question</h6><p>The number created by <code>pi/2</code> is?</p><form name="WeaveQuestion" data-id="4l3nlZZt" data-controltype="radio">
+<p>We can define $a^0$ to be $1$, except for the special case of $0^0$, which is left undefined mathematically (though it is also defined as <code>1</code> within <code>Julia</code>). We can extend the above to include negative values of $a$, but what about negative values of $n$? We can't say the integers are closed under powers, as the definition consistent with the rules that $a^{(-n)} = 1/a^n$ requires rational numbers to be defined.</p><p>Well, in the above <code>a</code> could be a rational number, is <code>a^n</code> closed for rational numbers? No again. Though it is fine for $n$ as an integer (save the odd case of $0$, simple definitions like $2^{1/2}$ are not answered within the rationals. For this, we need to introduce the <em>real</em> numbers. It is mentioned that <a href="http://tinyurl.com/bpqbkap">Aristotle</a> hinted at the irrationality of the square root of $2$. To define terms like $a^{1/n}$ for integer values $a,n > 0$ a reference to a solution to an equation $x^n-a$ is used. Such solutions require the irrational numbers to have solutions in general. Hence the need for the real numbers (well, algebraic numbers at least, though once the exponent is no longer a rational number, the full set of real numbers are needed.)</p><p>So, save the pesky cases, the real numbers will be closed under addition, subtraction, multiplication, division, and powers–-provided the base is non-negative.</p><p>Finally for that last case, the complex numbers are introduced to give an answer to $\sqrt{-1}$.</p><hr /><p>How does this apply with <code>Julia</code>?</p><p>The point is, if we restrict our set of inputs, we can get more precise values for the output of basic operations, but to get more general inputs we need to have bigger output sets.</p><p>A similar thing happens in <code>Julia</code>. For addition say, the addition of two integers of the same type will be an integer of that type. This speed consideration is not solely for type stability, but also to avoid checking for overflow.</p><p>Another example, the division of two integers will always be a number of the same type–-floating point, as that is the only type that ensures the answer will always fit within. (The explicit use of rationals notwithstanding.) So even if two integers are the input and their answer <em>could</em> be an integer, in <code>Julia</code> it will be a floating point number, (cf. <code>2/1</code>).</p><p>Hopefully this helps explain the subtle issues around powers: in <code>Julia</code> an integer raised to an integer should be an integer, for speed, though certain cases are special cased, like <code>2^&#40;-1&#41;</code>.  However since a real number raised to a real number makes sense always when the base is non-negative, as long as real numbers are used as outputs, the expressions <code>2.0^&#40;-1&#41;</code> and <code>2^&#40;-1.0&#41;</code> are computed and real numbers (floating points) are returned. For type stability, even though $2.0^1$ could be an integer, a floating point answer is returned.</p><p>As for negative bases, <code>Julia</code> could always return complex numbers, but in addition to this being slower, it would be irksome to users. So user's must opt in. Hence <code>sqrt&#40;-1.0&#41;</code> will be an error, but the more explicit–-but mathematically equivalent–-<code>sqrt&#40;-1.0 &#43; 0im&#41;</code> will not be a domain error, but rather a complex value will be returned.</p><h2>Questions</h2><h6>Question</h6><p>The number created by <code>pi/2</code> is?</p><form name="WeaveQuestion" data-id="9QdHEilf" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4l3nlZZt" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_9QdHEilf" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4l3nlZZt" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_9QdHEilf" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4l3nlZZt" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_9QdHEilf" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4l3nlZZt" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_9QdHEilf" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4l3nlZZt" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_9QdHEilf" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="4l3nlZZt_message"></div>
+<div id="9QdHEilf_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_4l3nlZZt']").on("change", function() {
+$("input:radio[name='radio_9QdHEilf']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#4l3nlZZt_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#9QdHEilf_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#4l3nlZZt_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#9QdHEilf_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2/2</code> is?</p><form name="WeaveQuestion" data-id="sU7ZW2lO" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2/2</code> is?</p><form name="WeaveQuestion" data-id="gqNB6dQ1" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sU7ZW2lO" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_gqNB6dQ1" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sU7ZW2lO" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_gqNB6dQ1" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sU7ZW2lO" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_gqNB6dQ1" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sU7ZW2lO" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_gqNB6dQ1" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_sU7ZW2lO" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_gqNB6dQ1" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="sU7ZW2lO_message"></div>
+<div id="gqNB6dQ1_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_sU7ZW2lO']").on("change", function() {
+$("input:radio[name='radio_gqNB6dQ1']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#sU7ZW2lO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#gqNB6dQ1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#sU7ZW2lO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#gqNB6dQ1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2//2</code> is?</p><form name="WeaveQuestion" data-id="0YqFqoJn" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2//2</code> is?</p><form name="WeaveQuestion" data-id="WLQjOgHu" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0YqFqoJn" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_WLQjOgHu" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0YqFqoJn" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_WLQjOgHu" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0YqFqoJn" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_WLQjOgHu" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0YqFqoJn" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_WLQjOgHu" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0YqFqoJn" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_WLQjOgHu" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="0YqFqoJn_message"></div>
+<div id="WLQjOgHu_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_0YqFqoJn']").on("change", function() {
+$("input:radio[name='radio_WLQjOgHu']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#0YqFqoJn_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#WLQjOgHu_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#0YqFqoJn_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#WLQjOgHu_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>1 &#43; 1//2 &#43; 1/3</code> is?</p><form name="WeaveQuestion" data-id="ecqQdv1V" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>1 &#43; 1//2 &#43; 1/3</code> is?</p><form name="WeaveQuestion" data-id="kKKu9D1p" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ecqQdv1V" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_kKKu9D1p" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ecqQdv1V" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_kKKu9D1p" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ecqQdv1V" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_kKKu9D1p" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ecqQdv1V" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_kKKu9D1p" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ecqQdv1V" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_kKKu9D1p" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="ecqQdv1V_message"></div>
+<div id="kKKu9D1p_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_ecqQdv1V']").on("change", function() {
+$("input:radio[name='radio_kKKu9D1p']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#ecqQdv1V_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#kKKu9D1p_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#ecqQdv1V_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#kKKu9D1p_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2^3</code> is?</p><form name="WeaveQuestion" data-id="4xZNsThT" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2^3</code> is?</p><form name="WeaveQuestion" data-id="sPIyjHhT" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4xZNsThT" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_sPIyjHhT" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4xZNsThT" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_sPIyjHhT" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4xZNsThT" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_sPIyjHhT" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4xZNsThT" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_sPIyjHhT" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4xZNsThT" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_sPIyjHhT" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="4xZNsThT_message"></div>
+<div id="sPIyjHhT_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_4xZNsThT']").on("change", function() {
+$("input:radio[name='radio_sPIyjHhT']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#4xZNsThT_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#sPIyjHhT_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#4xZNsThT_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#sPIyjHhT_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>sqrt&#40;im&#41;</code> is?</p><form name="WeaveQuestion" data-id="dtLitaBf" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>sqrt&#40;im&#41;</code> is?</p><form name="WeaveQuestion" data-id="RdeECzAg" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_dtLitaBf" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_RdeECzAg" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_dtLitaBf" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_RdeECzAg" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_dtLitaBf" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_RdeECzAg" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_dtLitaBf" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_RdeECzAg" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_dtLitaBf" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_RdeECzAg" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="dtLitaBf_message"></div>
+<div id="RdeECzAg_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_dtLitaBf']").on("change", function() {
+$("input:radio[name='radio_RdeECzAg']").on("change", function() {
   correct = this.value == 4;
 
   if(correct) {
-     $("#dtLitaBf_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#RdeECzAg_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#dtLitaBf_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#RdeECzAg_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The number created by <code>2^&#40;-1&#41;</code> is?</p><form name="WeaveQuestion" data-id="M6COEpe6" data-controltype="radio">
+<h6>Question</h6><p>The number created by <code>2^&#40;-1&#41;</code> is?</p><form name="WeaveQuestion" data-id="38Q7lJ6H" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_M6COEpe6" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_38Q7lJ6H" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_M6COEpe6" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_38Q7lJ6H" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_M6COEpe6" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_38Q7lJ6H" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_M6COEpe6" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_38Q7lJ6H" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_M6COEpe6" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_38Q7lJ6H" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="M6COEpe6_message"></div>
+<div id="38Q7lJ6H_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_M6COEpe6']").on("change", function() {
+$("input:radio[name='radio_38Q7lJ6H']").on("change", function() {
   correct = this.value == 5;
 
   if(correct) {
-     $("#M6COEpe6_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#38Q7lJ6H_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#M6COEpe6_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#38Q7lJ6H_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The "number" created by <code>1/0</code> is?</p><form name="WeaveQuestion" data-id="uCEnZNFb" data-controltype="radio">
+<h6>Question</h6><p>The "number" created by <code>1/0</code> is?</p><form name="WeaveQuestion" data-id="knfgBz9P" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_uCEnZNFb" value="1"><div class="markdown"><p>Integer</p>
+      <input type="radio" name="radio_knfgBz9P" value="1"><div class="markdown"><p>Integer</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_uCEnZNFb" value="2"><div class="markdown"><p>Rational</p>
+      <input type="radio" name="radio_knfgBz9P" value="2"><div class="markdown"><p>Rational</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_uCEnZNFb" value="3"><div class="markdown"><p>FloatingPoint</p>
+      <input type="radio" name="radio_knfgBz9P" value="3"><div class="markdown"><p>FloatingPoint</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_uCEnZNFb" value="4"><div class="markdown"><p>Complex</p>
+      <input type="radio" name="radio_knfgBz9P" value="4"><div class="markdown"><p>Complex</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_uCEnZNFb" value="5"><div class="markdown"><p>None, an error occurs</p>
+      <input type="radio" name="radio_knfgBz9P" value="5"><div class="markdown"><p>None, an error occurs</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="uCEnZNFb_message"></div>
+<div id="knfgBz9P_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_uCEnZNFb']").on("change", function() {
+$("input:radio[name='radio_knfgBz9P']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#uCEnZNFb_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#knfgBz9P_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#uCEnZNFb_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#knfgBz9P_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is <code>&#40;2 &#43; 6&#41; &#43; 7</code> equal to  <code>2 &#43; &#40;6 &#43; 7&#41;</code>?</p><form name="WeaveQuestion" data-id="S9EtAtvy" data-controltype="radio">
+<h6>Question</h6><p>Is <code>&#40;2 &#43; 6&#41; &#43; 7</code> equal to  <code>2 &#43; &#40;6 &#43; 7&#41;</code>?</p><form name="WeaveQuestion" data-id="C8kYKiXW" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_S9EtAtvy" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_C8kYKiXW" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_S9EtAtvy" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_C8kYKiXW" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="S9EtAtvy_message"></div>
+<div id="C8kYKiXW_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_S9EtAtvy']").on("change", function() {
+$("input:radio[name='radio_C8kYKiXW']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#S9EtAtvy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#C8kYKiXW_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#S9EtAtvy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#C8kYKiXW_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Is <code>&#40;2/10 &#43; 6/10&#41; &#43; 7/10</code> equal to <code>2/10 &#43; &#40;6/10 &#43; 7/10&#41;</code>?</p><form name="WeaveQuestion" data-id="XWZSb4pm" data-controltype="radio">
+<h6>Question</h6><p>Is <code>&#40;2/10 &#43; 6/10&#41; &#43; 7/10</code> equal to <code>2/10 &#43; &#40;6/10 &#43; 7/10&#41;</code>?</p><form name="WeaveQuestion" data-id="V5rQ7dBL" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_XWZSb4pm" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_V5rQ7dBL" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_XWZSb4pm" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_V5rQ7dBL" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="XWZSb4pm_message"></div>
+<div id="V5rQ7dBL_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_XWZSb4pm']").on("change", function() {
+$("input:radio[name='radio_V5rQ7dBL']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#XWZSb4pm_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#V5rQ7dBL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#XWZSb4pm_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#V5rQ7dBL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>The following <em>should</em> compute <code>2^&#40;-1&#41;</code>, which if entered directly will return <code>0.5</code>. Does it?</p><pre class="sourceCode julia">a, b = 2, -1
 a^b</pre>
-<form name="WeaveQuestion" data-id="z8BFEtVM" data-controltype="radio">
+<form name="WeaveQuestion" data-id="grx8p8of" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_z8BFEtVM" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_grx8p8of" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_z8BFEtVM" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_grx8p8of" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="z8BFEtVM_message"></div>
+<div id="grx8p8of_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_z8BFEtVM']").on("change", function() {
+$("input:radio[name='radio_grx8p8of']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#z8BFEtVM_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#grx8p8of_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#z8BFEtVM_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#grx8p8of_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

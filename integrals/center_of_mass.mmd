@@ -72,7 +72,7 @@ As with many formulas that will end up involving a derived integral, we start wi
 
 ```
 n = 21
-xs = linspace(-1, 1, n)
+xs = range(-1, stop=1, length=n)
 cs = (xs[1:(end-1)] + xs[2:end]) / 2
 
 p = plot(legend=false);
@@ -152,9 +152,9 @@ To find it, we need to find the intersection points, then integrate. We do so nu
 ```
 using Roots, QuadGK
 h(x) = f(x) - g(x)
-a,b = fzeros(h, -3, 3) 
-top, _ = QuadGK.quadgk(x -> x*h(x), a, b)
-bottom, _ = QuadGK.quadgk(h, a, b)
+a,b = find_zeros(h, -3, 3) 
+top, _ = quadgk(x -> x*h(x), a, b)
+bottom, _ = quadgk(h, a, b)
 cm = top / bottom
 ```
 
@@ -220,21 +220,21 @@ The center of mass of this figure is found with:
 
 ```
 h(x) = g(x) - f(x)
-top, _ = QuadGK.quadgk(x -> x*h(x), 0, k)
-bottom, _ = QuadGK.quadgk(h, 0, k)
+top, _ = quadgk(x -> x*h(x), 0, k)
+bottom, _ = quadgk(h, 0, k)
 top/bottom
 ```
 
 This figure has constant slices of length $1$ for fixed values of $y$. If we were to approximate the values with blocks of height $1$, then the center of mass would be to the left of $1$---for any $k$, but the top most block would have an overhang to the right of $1$---out to a value of $k$. That is, this figure should balance:
 
 ```
-u(i) = 1/2*(2k - log(e^(2(k-1)) - i))
+u(i) = 1/2*(2k - log(exp(2(k-1)) - i))
 p = plot(legend=false);
 for i in 0:floor(phi(k))
   x = u(i)
   plot!(p, [x,x,x-1,x-1], [f(x),f(x)+1, f(x)+1, f(x)], linetype=:polygon, color=:orange);
 end
-xs = linspace(0, e)
+xs = range(0, stop=exp(1), length=50)
 plot!(p, f, 0, e, linewidth=5);
 plot!(p, g, 0, 3, linewidth=5)
 
@@ -320,9 +320,9 @@ A picture shows that this could be complicated, especially for $y > 0$, as we ne
 
 ```
 a,b = 0, 2pi
-ts = linspace(a, b)
+ts = range(a, stop=b, length=50)
 p = plot(t -> 2cos(t), t->2sin(t), a, b, legend=false, aspect_ratio=:equal);
-plot!(p, cos.(ts), 1 + sin.(ts), linetype=:polygon, color=:red);
+plot!(p, cos.(ts), 1 .+ sin.(ts), linetype=:polygon, color=:red);
 plot!(p, [-sqrt(3), sqrt(3)], [-1,-1], color=:orange);
 plot!(p, [-sqrt(3), -1],      [1,1],   color=:orange);
 plot!(p, [sqrt(3), 1],        [1,1],   color=:orange);
@@ -342,8 +342,8 @@ We use this to compute:
 
 ```
 f(y) = y < 0 ? 2*sqrt(4 - y^2) : 2* (sqrt(4 - y^2)- sqrt(1 - (y-1)^2))
-top, _ = QuadGK.quadgk( y -> y * f(y), -2, 2)
-bottom, _ = QuadGK.quadgk( f, -2, 2)
+top, _ = quadgk( y -> y * f(y), -2, 2)
+bottom, _ = quadgk( f, -2, 2)
 top/bottom
 ```
 
@@ -358,8 +358,8 @@ Find the center of mass in the $x$ variable for the region bounded by parabola $
 ```
 f(x) = sqrt(4 - x)
 a, b = 0, 4
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -373,8 +373,8 @@ Find the center of mass in the $x$ variable of the region in the first and fourt
 f(x) = 3 * sqrt(1 - (x/2)^2)
 a, b= 0, 2
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -387,8 +387,8 @@ Find the center of mass of the region in the first quadrant bounded by the funct
 f(x) = x^3 * (1-x)^4
 a, b= 0, 1
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -408,8 +408,8 @@ k, lambda = 2, 2
 f(x) = (k/lambda) * (x/lambda)^(k-1) * exp(-(x/lambda)^k)
 a, b = 0, Inf
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -431,8 +431,8 @@ m, s = 2, 4
 f(x) = 1/(4s) * sech((x-m)/2s)^2
 a,b = -Inf, Inf
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -446,8 +446,8 @@ f(y) = 2*sqrt(1 - y^2)
 a, b = 3/4, 1
 
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -460,8 +460,8 @@ Find the center of mass in the $y$ direction of the area bounded by the cosine c
 f(y) = 2*acos(y)
 a, b= 0, 1
 
-top, _ = QuadGK.quadgk(x -> x*f(x), a,b)
-bottom, _ = QuadGK.quadgk(f, a,b)
+top, _ = quadgk(x -> x*f(x), a,b)
+bottom, _ = quadgk(f, a,b)
 val = top/bottom
 numericq(val)
 ```
@@ -473,11 +473,11 @@ A penny, nickel, dime and quarter are stacked so that their right most edges ali
 ```nocode
 ds = [0.75, 0.835, 0.705, 0.955]
 rs = ds/2
-xs = rs[4] - rs
-ts = linspace(0,2pi)
+xs = rs[4] .- rs
+ts = range(0,stop=2pi, length=50)
 p = plot(legend=false, aspect_ratio=:equal);
 for i in 1:4
-  plot!(p, xs[i] + rs[i]*cos.(ts), rs[i]*sin.(ts));
+  plot!(p, xs[i] .+ rs[i]*cos.(ts), rs[i]*sin.(ts));
 end
 
 p
@@ -500,7 +500,7 @@ quarter   0.955           5.670
 ds = [0.75, 0.835, 0.705, 0.955]
 ms = [2.5, 5, 2.268, 5.670]
 rs = ds/2
-xs = rs[4] - rs
+xs = rs[4] .- rs
 val = sum(ms .* xs) / sum(ms)
 numericq(val)
 ```

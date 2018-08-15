@@ -3,6 +3,8 @@
 ```nocode, noout
 using Plots, QuadGK
 plotly()
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f), n-1) : x -> ForwardDiff.derivative(f, float(x))
 ```
 
 For two functions $x(t)$ and $y(t)$, their parametric plot over the interval $[a,b]$ is the graph of $(x(t), y(t))$ for $t$ in $[a,b]$.
@@ -55,7 +57,7 @@ The position of the car is then the superposition, or sum, of the two functions:
 ```
 A,a = 5, 2
 b, c = 6, 0
-ts = linspace(0, 2pi)
+ts = range(0, stop=2pi, length=50)
 r(t) = A*[cos(t), sin(t)]
 s(t) = a*[cos(b*t + c), sin(b*t + c)]
 p(t) = r(t) + s(t)
@@ -146,6 +148,7 @@ $$~
 To see that his gives the correct answers for a circle (concave down in quadrants I and II; concave up in quadrants III and IV) we check with `SymPy`:
 
 ```
+import LinearAlgebra: norm, det
 using SymPy
 @vars t real=true
 r(t) = [cos(t), sin(t)]
@@ -196,7 +199,7 @@ u(x) = 3sin(x)
 v(x) = 3cos(x)
 R2 = R1
 for i in 1:3
-    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
+    global R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
 end
 R2 = trigsimp(R2)
 
@@ -215,7 +218,7 @@ v(x) = 1 - cos(x)
 
 R2 = R1
 for i in 1:3
-    R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
+    global R2 = subs(R2, xs[i] => u(ts[i]), ys[i] => v(ts[i]))
 end
 R2 = trigsimp(R2)
 κ = 1 / abs(limit(R2, h, 0))
@@ -245,7 +248,7 @@ We verify again that the curvature of a circle will depend inversely on its radi
 
 ```
 using SymPy
-@vars R t real=true positive=true)
+@vars R t real=true positive=true
 r(t) = R * [cos(t), sin(t)]
 rp = diff(r(t), t, 1)
 rpp = diff(r(t), t, 2)
@@ -530,11 +533,12 @@ For the curve described by $\vec{r}(t) = \langle \sin(t)^2,~ \sin(t^2) \rangle$ 
 
 ```
 using Roots
+
 x(t) = sin(t)^2
 y(t) = sin(t^2)
 a,b = 0, 1
 f(x,y) = x - y
-val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -547,9 +551,9 @@ The curve described by $\vec{r}(t) = \langle 10t,~ 10t - 16t^2\rangle$ models th
 using Roots
 x(t) = 10t
 y(t) = 10t - 16t^2
-a,b = sort(fzeros(y, -10, 10))
+a,b = sort(find_zeros(y, -10, 10))
 f(x,y) = 1
-val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 
@@ -560,9 +564,9 @@ Integrate the function $f(x,y) = 1/(y+1)$ over the path of the arrow described b
 ```
 x(t) = 10t
 y(t) = 10t - 16t^2
-a,b = sort(fzeros(y, -10, 10))
+a,b = sort(find_zeros(y, -10, 10))
 f(x,y) = 1/(y+1)
-val, _ = QuadGK.quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
+val, _ = quadgk(t -> f(x(t), y(t)) * sqrt(D(x)(t)^2 + D(y)(t)^2), a, b)
 numericq(val)
 ```
 

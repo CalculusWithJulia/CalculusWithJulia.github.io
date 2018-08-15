@@ -130,8 +130,9 @@ x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}.
 We will use automatic derivatives, as possible:
 
 ```
-using Roots
-Base.ctranspose(f::Function) = x -> D(f)(x)
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
 ```
 
 
@@ -395,13 +396,14 @@ if it was needed each time. The `Roots` package provides the `newton`
 function.
 
 ```
-newton(sin, cos, 3)
+using Roots
+find_zero((sin, cos), 3, Roots.Newton())
 ```
 
-Or, if a derivative is not specified, one is computed using `D`:
+Or, if a derivative is not specified, one can be computed using `D`:
 
 ```
-newton(f, 2)
+find_zero((f, f'), 2, Roots.Newton())
 ```
 
 The argument `verbose=true` will force a print out of a message summarizing each step.
@@ -419,13 +421,13 @@ functions we previously used):
 ```
 f(x) = cos(x) - x
 x0 = 1
-fzero(f, x0)
+find_zero(f, x0)
 ```
 
 Compare to this related call which uses the bisection method:
 
 ```
-fzero(f, 0, 1)           ## [0,1] must be a bracketing interval
+find_zero(f, 0, 1)           ## [0,1] must be a bracketing interval
 ```
 
 For this example both give the same answer, but the bisection method
@@ -445,7 +447,7 @@ equals $g(x)$:
 f(x) = cos(x)
 g(x) = 5x
 h(x) = f(x) - g(x)
-x0 = newton(h, 0)
+x0 = find_zero((h,h'), 0, Roots.Newton())
 x0, h(x0), f(x0), g(x0)
 ```
 
@@ -464,7 +466,7 @@ there will be value where the derivative is $0$. Find that value.
 This value will be a zero of the derivative. A graph shows it should be near $1.2$, so we use that as a starting value to get the answer:
 
 ```
-fzero(f', 1.2)
+find_zero(f', 1.2)
 ```
 
 ## Convergence
@@ -588,7 +590,8 @@ convergence is linear with $\lvert e_{i+1}\rvert \approx (k-1)/k
 Look at this graph with $x_0$ marked with a point:
 
 ```nocode
-p = plot(airy, -3.3, 0, legend=false);
+import SpecialFunctions: airyai
+p = plot(airyai, -3.3, 0, legend=false);
 plot!(p, zero, -3.3, 0);
 scatter!(p, [-2.8], [0], color=:orange, markersize=5);
 annotate!(p, [(-2.8, 0, text("x₀", :below))])
@@ -679,7 +682,7 @@ Let $f(x) = x^2 - 3^x$. This has derivative $2x - 3^x \cdot
 using Roots
 f(x) = x^2 - 3^x;
 fp(x) = 2x - 3^x*log(3);
-val = newton(f, fp, 0);
+val = Roots.newton(f, fp, 0);
 numericq(val, 1e-14)
 ```
 
@@ -693,7 +696,7 @@ Let $f(x) = \exp(x) - x^4$. There are 3 zeros for this function. Which one does 
 ```
 f(x) = exp(x) - x^4;
 fp(x) = exp(x) - 4x^3;
-xstar= newton(f, fp, 2);
+xstar= Roots.newton(f, fp, 2);
 numericq(xstar, 1e-1)
 ```
 
@@ -708,7 +711,7 @@ Let $f(x) = \exp(x) - x^4$. As mentioned, there are 3 zeros for this function. W
 ```
 f(x) = exp(x) - x^4;
 fp(x) = exp(x) - 4x^3;
-xstar = newton(f, fp, 8);
+xstar = Roots.newton(f, fp, 8);
 numericq(xstar, 1e-1)
 ```
 
@@ -724,7 +727,7 @@ Starting at $\pi/8$, solve for the root returned by Newton's method
 k1=4
 f(x)  = sin(x) - cos(k1*x);
 fp(x) = cos(x) + k1*sin(k1*x);
-val = newton(f, fp, pi/(2k1));
+val = Roots.newton(f, fp, pi/(2k1));
 numericq(val)
 ```
 
@@ -735,7 +738,7 @@ Using Newton's method find a root to $f(x) = \cos(x) - x^3$ starting at $x_0 = 1
 
 ```
 f(x) = cos(x) - x^3
-val = newton(f, 1/2)
+val = Roots.newton(f,f', 1/2)
 numericq(val)
 ```
 
@@ -746,7 +749,7 @@ Use Newton's method to find a root of $f(x) = x^5 + x -1$. Make a quick graph to
 
 ```
 f(x) = x^5 + x - 1
-val = newton(f, -1)
+val = Roots.newton(f,f', -1)
 numericq(val)
 ```
 
@@ -831,20 +834,20 @@ radioq(choices, ans, keep_order=true)
 
 ###### Question
 
-Use `fzero` to find a root of $f(x) = 4x^4 - 5x^3 + 4x^2 -20x -6$ starting at $x_0 = 0$.
+Use `find_zero` to find a root of $f(x) = 4x^4 - 5x^3 + 4x^2 -20x -6$ starting at $x_0 = 0$.
 
 ```
-val = fzero(x -> 4x^4 - 5x^3 + 4x^2 -20x -6, 0)
+val = find_zero(x -> 4x^4 - 5x^3 + 4x^2 -20x -6, 0)
 numericq(val)
 ```
 
 ###### Question
 
-Use `fzero` to find a zero of $f(x) = \sin(x) - x/2$ that is *bigger* than $0$.
+Use `find_zero` to find a zero of $f(x) = \sin(x) - x/2$ that is *bigger* than $0$.
 
 ```
 f(x) = sin(x) - x/2
-val = fzero(f, 2)
+val = find_zero(f, 2)
 numericq(val)
 ```
 
@@ -865,7 +868,7 @@ function newton_baffler(x)
 end
 ```
 
-Will `fzero` find the zero at $0.0$ starting at 1 using the default option for `order`?
+Will `find_zero` find the zero at $0.0$ starting at 1 using the default option for `order`?
 
 ```
 yesnoq("yes")
@@ -902,6 +905,7 @@ radioq(choices, ans)
 Consider this crazy function defined by:
 
 ```
+import SpecialFunctions: erf
 f(x) = cos(100*x)-4*erf(30*x-10)
 ```
 
@@ -909,7 +913,7 @@ f(x) = cos(100*x)-4*erf(30*x-10)
 
 Make a plot over the interval $[-3,3]$ to see why it is called "crazy".
 
-Does `fzero` find a zero to this function starting from $0$?
+Does `find_zero` find a zero to this function starting from $0$?
 
 
 ```
@@ -919,7 +923,7 @@ yesnoq("yes")
 If so, what is the value?
 
 ```
-val = fzero(f, 0)
+val = find_zero(f, 0)
 numericq(val)
 ```
 
@@ -937,7 +941,7 @@ radioq(choices, ans, keep_order=true)
 ```
 
 
-Does `fzero` find a zero to this function starting from $1$?
+Does `find_zero` find a zero to this function starting from $1$?
 
 
 ```
@@ -977,7 +981,7 @@ numericq(val)
 What is the zero that is found?
 
 ```
-val = newton(f, 2pi)
+val = Roots.newton(f,f', 2pi)
 numericq(val)
 ```
 
@@ -1018,7 +1022,9 @@ This would be straightforward *if* we could write $y(x) = \dots$, for then we wo
 
 ```
 function findy(x)
-  newton(y -> (x^2 + x*y + y^2) - 1, sqrt(1 - x^2))
+  fn = y -> (x^2 + x*y + y^2) - 1
+  fp = y -> (x + 2y)
+  find_zero((fn, fp), sqrt(1 - x^2), Roots.Newton())
 end
 ```
 
@@ -1036,10 +1042,10 @@ So we have a means to find $y(x)$, but it is implicit. We can't readily find the
 yp(x) = (findy(x + 1e-6) - findy(x)) / 1e-6
 ```
 
-Using `fzero`, find the value $x$ which maximizes `yp`. Use this to find the point $(x,y)$ with largest $y$ value.
+Using `find_zero`, find the value $x$ which maximizes `yp`. Use this to find the point $(x,y)$ with largest $y$ value.
 
 ```
-xstar = fzero(yp, 0.5)
+xstar = find_zero(yp, 0.5)
 ystar = findy(xstar)
 choices = [L"(-0.577, 1.155)", L"(0,0)", L"(0, -0.577)", L"(0.577, 0.577)"]
 ans = 1

@@ -21,8 +21,11 @@ operator---it takes a function `f` and returns a function
 representing the tangent line.
 
 ```
-using Roots
-tangent(f, c) = x -> f(c) + D(f)(c) * (x - c)
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+
+tangent(f, c) = x -> f(c) + f'(c) * (x - c)
 ```
 
 (Recall, the `->` indicates that an anonymous function is being generated.)
@@ -70,7 +73,7 @@ plot(f, -1/2, 1/2)
 plot!(tangent(f, 0))
 ```
 
-* That $1/(1-x) \approx x$ aroun $x=0$:
+* That $1/(1-x) \approx x$ around $x=0$:
 
 ```
 f(x) = 1/(1-x)
@@ -115,7 +118,7 @@ If $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$ then the values for the actual ch
 ```
 f(x) = sin(x)
 c, deltax = 0, 0.1
-f(c + deltax) - f(c), D(f)(c) * deltax
+f(c + deltax) - f(c), f'(c) * deltax
 ```
 
 The values are pretty close. But what is $0.1$ radians? Lets use degrees. Suppose we have $\Delta x = 10^\circ$:
@@ -123,7 +126,7 @@ The values are pretty close. But what is $0.1$ radians? Lets use degrees. Suppos
 ```
 c, deltax = 0, 10*pi/180
 actual=f(c + deltax) - f(c)
-approx = D(f)(c) * deltax
+approx = f'(c) * deltax
 actual, approx
 ```
 
@@ -197,7 +200,7 @@ The manufacturer may be interested instead in comparing the valume of the actual
 (1000 - approx)/approx * 100
 ```
 
-This is off by about $3# percent. Not so bad for some applications, devastating for others.
+This is off by about $3$ percent. Not so bad for some applications, devastating for others.
 
 ##### Example from physics
 
@@ -389,7 +392,7 @@ In conclusion, basic mathematical operations involving tangent lines can be comp
 
 ```
 note("""
-The `D` operator of the `Roots` package (using the `ForwardDiff` package) for first derivatives essentially does
+The `D` operator, defined above using the `ForwardDiff` package, for first derivatives essentially does
 nothing more than work with the tangent line expression, which for a given function `f` and value `c` is summarized by two numbers `[f(c), f'(c)]`.
 """)
 ```

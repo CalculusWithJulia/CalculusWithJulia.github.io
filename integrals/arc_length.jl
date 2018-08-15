@@ -3,7 +3,7 @@ using WeavePynb, LaTeXStrings
 
 
 using Plots
-gr()
+pyplot()
 fig_size=(600, 400)
 
 
@@ -17,8 +17,8 @@ function make_arclength_graph(n)
     g(t) = cos(t)/t
     f(t) = sin(t)/t
     
-    ts = linspace(1, 4pi, 200)
-    tis = linspace(1, 4pi, ns[n])
+    ts = range(1, stop=4pi, length=200)
+    tis = range(1, stop=4pi, length=ns[n])
 
     p = plot(g, f, 1, 4pi, legend=false, size=fig_size,
              title="Approximate arc length with $(ns[n]) points")

@@ -175,6 +175,25 @@ critical points and the endpoints.
 {{{lhopital_32}}}
 
 
+### Numeric derivatives
+
+The `FowardDiff` package provides a means to numerically compute derivatives without approximations. We use it to define and operation `D` to find a derivative of a function and then overload the "prime" notation:
+
+```
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+```
+
+Now, `f'(x)` works as desired:
+
+```
+f(x) = 3x^3 - 2x
+fp(x) = 9x^2 - 2
+f'(3), fp(3)
+```
+
+
 ##### Example
 
 For the function $f(x) = x^2 \cdot e^{-x}$ find the absolute maximum over the interval $[0, 5]$.
@@ -183,11 +202,11 @@ We have that $f(x)$ is continuous on the closed interval of the
 question, and in fact differentiable on $(0,5)$, so any critical point
 will be a zero of the derivative. We can check for these with:
 
+
 ```
 using Roots
-Base.ctranspose(f::Function) = D(f)    # for f' instead of D(f)
 f(x) = x^2 * exp(-x)
-cps = fzeros(f', 0, 5)
+cps = find_zeros(f', -1, 6)
 ```
 
 We get $0$ and $2$ are critical points. The endpoints are $0$ and
@@ -200,15 +219,15 @@ f(0), f(2), f(5)
 
 We see that $f(2)$ is then the maximum.
 
-A few things. First, `fzeros` can miss some roots, in particular roots
+A few things. First, `find_zeros` can miss some roots, in particular endpoints and roots
 that just touch $0$. We should graph to verify it didn't. Second, it
 can be easier sometimes to check the values using the "dot"
 notation. If `f`, `a`,`b` are the function and the interval, then this
 would typically follow this pattern:
 
 ```
-a, b= 0, 5
-cps = fzeros(f', a, b)
+a, b = 0, 5
+cps = find_zeros(f', a, b)
 f.(cps), f(a), f(b)
 ```
 
@@ -232,7 +251,7 @@ We follow the same pattern. Since $f(x)$ is continuous on the closed interval an
 
 ```
 f(x) = exp(x) * (x^3 - x)
-cps = fzeros(f', 0, 2)
+cps = find_zeros(f', 0, 2)
 ```
 
 And checking values gives:
@@ -288,7 +307,7 @@ issues arise):
 
 ```
 f(x) = exp(x) * x * (x-1)
-fzeros(f', 0, 1)
+find_zeros(f', 0, 1)
 ```
 
 This graph illustrates the lone value for $c$ for this problem
@@ -333,7 +352,7 @@ using red.
 f(x) = x^3 - x
 a, b = -2, 1.75
 m = (f(b) - f(a)) / (b-a)
-cps = fzeros(x -> f'(x) - m, a, b)
+cps = find_zeros(x -> f'(x) - m, a, b)
 
 p = plot(f, a-1, b+1,         linewidth=3, legend=false)
 plot!(x -> f(a) + m*(x-a),    linewidth=3, color=:orange)
@@ -426,10 +445,11 @@ has slope $\Delta f/\Delta g$. The parallel lines drawn show the *tangent* lines
 ```
 g(x) = sin(x)
 f(x) = x
-ts = linspace(-pi/2, pi/2)
+ts = range(-pi/2, stop=pi/2, length=50)
 a,b = 0, pi/2
 m = (f(b) - f(a))/(g(b) - g(a))
-cps = fzeros(x -> f'(x)/g'(x) - m, -pi/2, pi/2)
+cps = find_zeros(x -> f'(x)/g'(x) - m, -pi/2, pi/2)
+c = cps[1]
 Delta = (0 + m * (c - 0)) - (g(c))
 
 p = plot(g, f, -pi/2, pi/2, linewidth=3, legend=false)

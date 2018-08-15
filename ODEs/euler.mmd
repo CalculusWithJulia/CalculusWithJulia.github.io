@@ -389,7 +389,7 @@ y_{n+1} = y_n + h \cdot F(y_{n+1}, x_{n+1}).
 
 Seems innocuous, but the value we are trying to find, $y_{n+1}$, is
 now on both sides of the equation, so is only *implicitly* defined. In
-this code, we use the `fzero` function from the `Roots` package. The
+this code, we use the `find_zero` function from the `Roots` package. The
 caveat is, this function needs a good initial guess, and the one we
 use below need not be widely applicable.
 
@@ -405,7 +405,7 @@ function back_euler(F, x0, xn, y0, n)
     for i in 1:n
         xs[i + 1] = xs[i] + h
         ## solve y[i+1] = y[i] + h * F(y[i+1], x[i+1])
-        ys[i + 1] = fzero(y -> ys[i] + h * F(y, xs[i + 1]) - y, ys[i]+h)
+        ys[i + 1] = find_zero(y -> ys[i] + h * F(y, xs[i + 1]) - y, ys[i]+h)
     end
   linterp(xs, ys)
 end
@@ -616,7 +616,7 @@ Use Euler's method to solve for $y(3)$ when $n=25$.
 
 ```
 F(y, x) = y*log(y)/x
-x0, xn, y0 = 2, 3, e
+x0, xn, y0 = 2, 3, exp(1)
 n = 25
 u = euler(F, x0, xn, y0, n)
 numericq(u(xn))

@@ -107,7 +107,7 @@ This is
 using QuadGK
 d0, d1, h = 2.5, 3.75, 4.75
 rad(x) = d0/2 + (d1/2 - d0/2)/h * x
-vol, _ = QuadGK.quadgk(x -> pi * rad(x)^2, 0, h)
+vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)
 ```
 
 So $36.9 \text{in}^3$. How many ounces is that? It is useful to know
@@ -140,7 +140,7 @@ So we need to solve $v \cdot (231/128) = \int_0^h\pi r(x)^2 dx$ for $h$ when $v=
 Let's express volume as a function of $h$:
 
 ```
-Vol(h) = QuadGK.quadgk(x -> pi * rad(x)^2, 0, h)[1]
+Vol(h) = quadgk(x -> pi * rad(x)^2, 0, h)[1]
 ```
 
 Then to solve we have:
@@ -148,14 +148,14 @@ Then to solve we have:
 ```
 using Roots
 v = 5
-h5 = fzero(h -> Vol(h) - v*231/128, 4)
+h5 = find_zero(h -> Vol(h) - v*231/128, 4)
 ```
 
 and
 
 ```
 v = 12
-h12 = fzero(h -> Vol(h) - v*231/128, 4)
+h12 = find_zero(h -> Vol(h) - v*231/128, 4)
 ```
 
 As a percentage of the total height, these are:
@@ -192,7 +192,7 @@ $V = \pi/3\cdot h^3\tan(\theta)^2$.
 
 ```
 rad(x) = 1/x
-vol, _ = QuadGK.quadgk(x -> pi*rad(x)^2, 1, Inf)
+vol, _ = quadgk(x -> pi*rad(x)^2, 1, Inf)
 ```
 
 That is a value very reminiscent of $\pi$, which it is as $\int_1^\infty 1/x^2 dx = -1/x\big|_1^\infty=1$.
@@ -233,7 +233,7 @@ rad(h) = d(h)/2
 The volume in cm$^3$ is then:
 
 ```
-V, _ = QuadGK.quadgk(h -> pi * rad(h)^2, 0, 50)
+V, _ = quadgk(h -> pi * rad(h)^2, 0, 50)
 ```
 
 For the actual shoot, the vase is to be filled with ash, to simulate a
@@ -244,7 +244,7 @@ centimeter thick
 We need to subtract $0.5$ from the radius and `a` then recompute:
 
 ```
-V_int, _ = QuadGK.quadgk(h -> pi * (rad(h) - 1/2)^2, 1/2, 50)
+V_int, _ = quadgk(h -> pi * (rad(h) - 1/2)^2, 1/2, 50)
 ```
 
 A liter of volume is $1000 \text{cm}^3$. So this is about $68$ liters, or more than 15
@@ -293,7 +293,7 @@ The answer comes by integrating:
 ```
 Rad(x) = sqrt(1 - (x-1)^2)
 rad(x) = x
-V, _ = QuadGK.quadgk(x -> pi*(Rad(x)^2 - rad(x)^2), 0, 1)
+V, _ = quadgk(x -> pi*(Rad(x)^2 - rad(x)^2), 0, 1)
 ```
 
 ## Solids with known cross section
@@ -309,7 +309,7 @@ The difference, of course, is that cross sections now have area $d^2$, as oppose
 ```
 d0, d1, h = 2.5, 3.75, 4.75
 d(x) = d0 + (d1 - d0)/h * x
-vol, _ = QuadGK.quadgk(x -> d(x)^2, 0, h)
+vol, _ = quadgk(x -> d(x)^2, 0, h)
 vol / 231 * 128
 ```
 
@@ -385,23 +385,23 @@ height $h$---for larger radius spheres this means very wide bores.
 R =5; h1 = 2*4
 
 theta = asin(h1/2/R)
-thetas = linspace(-theta, theta)
-ts = linspace(-pi, pi)
+thetas = range(-theta, stop=theta, length=100)
+ts = range(-pi, stop=pi, length=100)
 y = h1/4
 
 p = plot!(legend=false);
-plot!(p, R*cos(ts), R*sin(ts));
-plot!(p, R*cos(thetas), R*sin(thetas), color=:orange);
+plot!(p, R*cos.(ts), R*sin.(ts));
+plot!(p, R*cos.(thetas), R*sin.(thetas), color=:orange);
 
-plot!(p, [R*cos(theta), R*cos(theta)], [h1/2, -h1/2], color=:orange);
-plot!(p, [R*cos(theta), sqrt(R^2 - y^2)], [y, y], color=:orange)
+plot!(p, [R*cos.(theta), R*cos.(theta)], [h1/2, -h1/2], color=:orange);
+plot!(p, [R*cos.(theta), sqrt(R^2 - y^2)], [y, y], color=:orange)
 
-plot!(p, [0, R*cos(theta)], [0,0], color=:red);
-plot!(p,[ 0, R*cos(theta)], [0,h1/2], color=:red);
+plot!(p, [0, R*cos.(theta)], [0,0], color=:red);
+plot!(p,[ 0, R*cos.(theta)], [0,h1/2], color=:red);
 
 annotate!(p, [(.5, -2/3, "sqrt(R^2- (h/2)^2"),
-              (R*cos(theta)-.6, h1/4, "h/2"),
-              (1.5, 1.75*tan(theta), "R")])
+              (R*cos.(theta)-.6, h1/4, "h/2"),
+              (1.5, 1.75*tan.(theta), "R")])
 
 p
 
@@ -475,7 +475,7 @@ Two facts are useful:
 ```
 gft = 7.48052
 rad(h) = 5 + (3/15)*h
-a,err = QuadGK.quadgk(h -> pi*rad(h)^2, 0, 15)
+a,err = quadgk(h -> pi*rad(h)^2, 0, 15)
 val = a*gft
 numericq(val, 1e1)
 ```
@@ -519,15 +519,15 @@ The following functions find the volume as a function of height, $h$:
 ```
 r1(h) = 3 + h/5
 s1(h) = 2 + log(1 + h)
-r_vol(h) = QuadGK.quadgk(x -> pi*r1(x)^2, 0, h)[1]
-s_vol(h) = QuadGK.quadgk(x -> pi*s1(x)^2, 0, h)[1]
+r_vol(h) = quadgk(x -> pi*r1(x)^2, 0, h)[1]
+s_vol(h) = quadgk(x -> pi*s1(x)^2, 0, h)[1]
 ```
 
 * For the straight-sided glass find $h$ so that the volume is $450$.
 
 ```
 using Roots
-h450 = fzero(h -> r_vol(h) - 450, 10)
+h450 = find_zero(h -> r_vol(h) - 450, 10)
 numericq(h450)
 ```
 
@@ -535,7 +535,7 @@ numericq(h450)
 
 ```
 using Roots
-h225 = fzero(h -> r_vol(h) - 225, 10)
+h225 = find_zero(h -> r_vol(h) - 225, 10)
 numericq(h225)
 ```
 
@@ -562,7 +562,7 @@ numericq(r_vol(h450/2)/450*100, 2, units="percent")
 
 ```
 using Roots
-h450 = fzero(h -> s_vol(h) - 450, 10)
+h450 = find_zero(h -> s_vol(h) - 450, 10)
 numericq(h450)
 ```
 
@@ -570,7 +570,7 @@ numericq(h450)
 
 ```
 using Roots
-h225 = fzero(h -> s_vol(h) - 225, 10)
+h225 = find_zero(h -> s_vol(h) - 225, 10)
 numericq(h225)
 ```
 
@@ -624,7 +624,7 @@ axis around the $x$ axis. What is the volume of this ellipsoid? Find it numerica
 
 ```
 f(x) = 3*sqrt( 1 - (x/2)^2 )
-val, _ = QuadGK.quadgk(x -> pi * f(x)^2, -2, 2)
+val, _ = quadgk(x -> pi * f(x)^2, -2, 2)
 numericq(val)
 ```
 
@@ -654,7 +654,7 @@ axis. Find the volume of the solid.
 Ra(x) = sqrt(x)
 ra(x) = 1
 a,b=1,2
-val, _ = QuadGK.quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
+val, _ = quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
 numericq(val)
 ```
 
@@ -670,7 +670,7 @@ plot([x->x^3 - 1, x -> x-1], 0, 1)
 Ra(y) = cbrt(y+1)
 ra(y) = y + 1
 a,b = 0, 1
-val, _ = QuadGK.quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
+val, _ = quadgk(x -> pi * (Ra(x)^2 - ra(x)^2), a,b)
 numericq(val)
 ```
 
@@ -683,7 +683,7 @@ Rotate the region bounded by $y=e^x$, the line $x=\log(2)$ and the first quadran
 ```
 a, b = 0, exp(log(2))
 ra(y) = log(2) - log(y)
-val, _ = QuadGK.quadgk(y -> pi * ra(y)^2, a, b)
+val, _ = quadgk(y -> pi * ra(y)^2, a, b)
 numericq(val)
 ```
 
@@ -692,6 +692,7 @@ numericq(val)
 Find the volume of rotating the region bounded by the line $y=x$, $x=1$ and the $x$-axis around the line $y=x$. (The Theorem of Pappus is convenient and the fact that the centroid of the triangular region lies at $(2/3, 1/3)$.)
 
 ```
+import LinearAlgebra: norm
 cm=[2/3, 1/3]
 c = [1/2, 1/2]
 r = norm(cm - c)
@@ -711,7 +712,7 @@ using Roots
 theta = pi/4  ## we write y=x as y = x * tan(pi/4) for more generality, as this allows other slants.
 
 f(x) = x^2
-xval(u) = fzero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), u*cos(theta), 1)
+xval(u) = find_zero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), (u*cos(theta), 1))
 rad(u) = sqrt((u*cos(theta) - xval(u))^2 + (u*sin(theta) - f(xval(u)))^2)
 ```
 
@@ -721,7 +722,7 @@ With this, find the volume.
 
 ```
 a, b = 0, sqrt(2)
-val, _ = QuadGK.quadgk(u -> pi*rad(u)^2, a, b)
+val, _ = quadgk(u -> pi*rad(u)^2, a, b)
 numericq(val)
 ```
 
@@ -731,8 +732,8 @@ Repeat (find the volume) only this time with the function $f(x) = x^{20}$.
 
 ```
 f(x) = x^20
-xval(u) = fzero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), 0,sqrt(2))
+xval(u) = find_zero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), (0,sqrt(2)))
 rad(u) = sqrt((u*cos(theta) - xval(u))^2 + (u*sin(theta) - f(xval(u)))^2)
-val, _ = QuadGK.quadgk(u -> pi*rad(u)^2, a, b)
+val, _ = quadgk(u -> pi*rad(u)^2, a, b)
 numericq(val)
 ```

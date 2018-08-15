@@ -123,21 +123,20 @@ sin(c)
 (Even `pi` itself is not a "zero" due to floating point issues.)
 
 
-### The fzero function.
+### The `find_zero` function.
 
-The `Roots` package has a function `fzero` that implements the
-bisection method when called as `fzero(f, a, b)` (or `fzero(f,
-[a,b])`) where $[a,b]$ is a bracket. Its use is identical to
+The `Roots` package has a function `find_zero` that implements the
+bisection method when called as `find_zero(f, (a, b))`  where $[a,b]$ is a bracket. Its use is identical to
 `bisection` above. We will use it in the following:
 
 ```
 using Roots
-fzero(sin, 3, 4)              # alternatively: fzero(f, [a, b])
+find_zero(sin, (3, 4))
 ```
 
 ```
 alert("""
-Notice, the call `fzero(sin, 3,4)` again fits the template `action(function, args...)` that we see repeatedly.
+Notice, the call `find_zero(sin, (3,4))` again fits the template `action(function, args...)` that we see repeatedly.
 """)
 ```
 
@@ -148,11 +147,6 @@ function value at the floating point values just to the left and right
 will be negative. No specification of a tolerance is needed.
 
 
-```
-note("""
-The name `fzero` comes from MATLAB. There is a more "Julian" style, that is a bit more verbose: `find_zero(f, (a,b), Bisection())`. Where with `fzero` bisection is implicitly used from passing two numbers to `fzero`, `find_zero` makes `Bisection` explicit. As there are many other underlying algorithms for `find_zero`, being explicit can be a good thing.
-""")
-```
 
 ##### Example
 
@@ -160,7 +154,7 @@ The polynomial $f(x) = x^5 - x + 1$ has a zero between $-2$ and $-1$. Find it.
 
 ```
 f(x) = x^5 - x + 1
-c = fzero(f, -2, -1)
+c = find_zero(f, (-2, -1))
 (c, f(c))
 ```
 
@@ -180,7 +174,7 @@ plot(f, 5, 10)
 Find the zero numerically. The plot shows $f(5) < 0 < f(10)$, so $[5,10]$ is a bracket. We thus have:
 
 ```
-fzero(f, 5, 10)
+find_zero(f, (5, 10))
 ```
 
 
@@ -199,7 +193,7 @@ plot(f, -3, 3)
 It appears (and a plot over $[0,1]$ verifies) that there is one zero between $-2$ and $-1$. It is found with:
 
 ```
-fzero(f, -2, -1)
+find_zero(f, (-2, -1))
 ```
 
 
@@ -222,7 +216,7 @@ We see from the graph that it is clearly between $0$ and $2$, so all we need is 
 
 ```
 h(x) = f(x) - g(x)
-fzero(h, 0, 2)
+find_zero(h, (0, 2))
 ```
 
 
@@ -261,7 +255,7 @@ cheaper.
 Let's get a numeric value, using a simple bracket and an anonymous function:
 
 ```
-fzero(x -> plan1(x) - plan2(x), 10, 20)
+find_zero(x -> plan1(x) - plan2(x), (10, 20))
 ```
 
 ##### Example, the flight of an arrow
@@ -357,7 +351,7 @@ plot(y, 0, b - 1)
 Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we cam solve:
 
 ```
-x1 = fzero(y, b/2, b-1/10)
+x1 = find_zero(y, (b/2, b-1/10))
 ```
 
 The answer is approximately $140.7$
@@ -388,7 +382,7 @@ does the algorithm yield:
 
 ```
 f(x) = 1/x
-x0 = fzero(f, -1, 1)
+x0 = find_zero(f, (-1, 1))
 ```
 
 
@@ -408,7 +402,7 @@ at $c$ existing but being unequal. The algorithm can find $c$ when
 this type of function jumps over $0$.)
 
 
-### The fzeros function
+### The `find_zeros` function
 
 The bisection method suggests a naive means to search for all zeros within
 an interval: split the interval into many small intervals and for each that is a
@@ -419,22 +413,22 @@ to the other side; and it might miss multiple values in the same small
 interval.
 
 Still, with some engineering, this can be a useful approach, save the
-caveats. This idea is implemented in the `fzeros` function. The function is
-called like `fzero`, as in `fzeros(f, a, b)` but here the interval
+caveats. This idea is implemented in the `find_zeros` function. The function is
+called via `find_zeros(f, a, b)` but here the interval
 $[a,b]$ is not necessarily a bracketing interval.
 
 To see, we have:
 
 ```
-f(x) = sin(10*pi*x)
-fzeros(f, 0, 1)
+f(x) = cos(10*pi*x)
+find_zeros(f, 0, 1)
 ```
 
 Or for a polynomial:
 
 ```
 f(x) = x^5 - x^4 + x^3 - x^2 + 1
-fzeros(f, -10, 10)
+find_zeros(f, -10, 10)
 ```
 
 (Here $-10$ and $10$ were arbitrarily chosen. Cauchy's method could be used to be more systematic.)
@@ -442,18 +436,18 @@ fzeros(f, -10, 10)
 
 ##### Solving f(x) = g(x)
 
-Use `fzeros` to find when $e^x = x^5$ in the interval $[-20, 20]$. Verify the answers.
+Use `find_zeros` to find when $e^x = x^5$ in the interval $[-20, 20]$. Verify the answers.
 
-To proceed with `fzeros`, we define $f(x) = e^x - x^5$, as $f(x) = 0$ precisely when $e^x = x^5$.
+To proceed with `find_zeros`, we define $f(x) = e^x - x^5$, as $f(x) = 0$ precisely when $e^x = x^5$.
 The zeros are then found with:
 
 ```
 f(x) = exp(x) - x^5
-zs = fzeros(f, -20, 20)
+zs = find_zeros(f, -20, 20)
 ```
 
 
-The output of `fzeros` is a vector of values. To check that each value
+The output of `find_zeros` is a vector of values. To check that each value
 is an approximate zero can be done with the "." (broadcast) syntax:
 
 
@@ -462,7 +456,7 @@ f.(zs)
 ```
 
 (For a continuous function this should be the case that the values
-returned by `fzeros` are approximate zeros. Bear in mind that if $f$ is not
+returned by `find_zeros` are approximate zeros. Bear in mind that if $f$ is not
 continous the algorithm might find jumping points that are not zeros and may not even be in the domain of the function.)
 
 
@@ -544,7 +538,7 @@ $f(x) = e^x - x^4$. Find its value numerically:
 
 ```
 f(x) = exp(x) - x^4
-val = fzero(f, -10, 0);
+val = find_zero(f, -(10, 0));
 numericq(val, 1e-3)
 ```
 
@@ -556,7 +550,7 @@ $f(x) = e^x - x^4$. Find its value numerically:
 
 ```
 f(x) = exp(x) - x^4
-val = fzero(f, 0, 5);
+val = find_zero(f, (0, 5));
 numericq(val, 1e-3)
 ```
 
@@ -570,7 +564,7 @@ zeros on the positive $x$ axis. You are asked to find the largest
 ```
 b = 10
 f(x) =  x^2 - b * x * log(x)
-val = fzero(f, 10, 500)
+val = find_zero(f, (10, 500))
 numericq(val, 1e-3)
 ```
 
@@ -582,14 +576,14 @@ function oscillates when $x < 0$ and *no* positive roots. Find the
 solve.
 
 ```
-using SpecialFunctions
+import SpecialFunctions: airyai
 plot(airyai, -10, 10)
 ```
 
 The second largest root is:
 
 ```
-val = fzero(airyai, -5, -4);
+val = find_zero(airyai, (-5, -4));
 numericq(val, 1e-8)
 ```
 
@@ -600,7 +594,7 @@ numericq(val, 1e-8)
 Certainly $x^3$ equals $3^x$ at $x=3$. Find the largest value for which $x^3 = 3x$.
 
 ```
-val = maximum(fzeros(x -> x^3 - 3^x, 0, 20))
+val = maximum(find_zeros(x -> x^3 - 3^x, 0, 20))
 numericq(val)
 ```
 
@@ -651,7 +645,12 @@ f(t) = -(1/2)\cdot 32 t^2 + v_0t.
 The time to go up and down are found by
 the two zeros of this function. The peak time is related to a zero of
 a function given by `D(f)`, which for now we'll take as a mystery
-function, but later will be known as the derivative. (The `D` operator is loaded with the `Roots` package.)
+function, but later will be known as the derivative. Here is its definition:
+
+```
+using ForwardDiff
+D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+```
 
 Let $v_0= 390$. The three times in question can be found from the zeros of `f` and `D(f)`. What are they?
 
@@ -692,8 +691,8 @@ ground.
 
 ```
 t0 = 0.0
-tf = fzero(h, 10, 20)
-ta = fzero(D(h), t0, tf)
+tf = find_zero(h, (10, 20))
+ta = find_zero(D(h), (t0, tf))
 choices = [L"(0, 13.187, 30.0)",
 	L"(0, 32.0, 390.0)",
 	L"(0, 2.579, 13.187)"]
@@ -839,10 +838,10 @@ radioq(choices, ans)
 
 ##### Question
 
-The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibrations of rods. Using `fzeros`, what is the largest zero in the interval $[0, 6\pi]$?
+The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibrations of rods. Using `find_zeros`, what is the largest zero in the interval $[0, 6\pi]$?
 
 ```
-val = maximum(fzeros(x -> cos(x) * cosh(x) - 1, 0, 6pi))
+val = maximum(find_zeros(x -> cos(x) * cosh(x) - 1, 0, 6pi))
 numericq(val)
 ```
 

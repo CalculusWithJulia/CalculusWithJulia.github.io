@@ -199,9 +199,10 @@ between $2$ and $2.5$, say, but it isn't much work to get
 an approximate numeric answer. We add in a bit to make `f'(t)` call `D(f)(t)` to match the equations:
 
 ```
-using Roots, QuadGK
-Base.ctranspose(f::Function) = x -> D(f)(x)
-QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
+using Roots, QuadGK, ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = x -> D(f)(x)
+quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
 ```
 
 We used a numeric approach, but this can be solved by hand and the answer is surprising.
@@ -246,7 +247,7 @@ Evaluating at $78/2$ gives: $a \cdot \cosh(78/(2a)) - (a + 118) = 0$. This can b
 
 ```
 cat(x; a=1, b=0) = a*cosh(x/a) - b
-a = fzero(a -> cat(78/2, a=a, b=118 + a), 10)
+a = find_zero(a -> cat(78/2, a=a, b=118 + a), 10)
 ```
 
 Rounding, we take $a=13$. With these parameters ($a=13$, $b = 131$), we
@@ -256,7 +257,7 @@ compute the length of Johns' catenary in inches:
 a = 13
 b = 118 + a
 f(x) = cat(x, a=13, b=118+13)
-QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -78/2, 78/2)[1]
+quadgk(x -> sqrt(1 + f'(x)^2), -78/2, 78/2)[1]
 ```
 
 ##### Example
@@ -289,7 +290,7 @@ Find the  length of the cable in meters.
 a = 1298/2;
 b = -147;
 f(x) = (-b/a^2)*(x^2 - a^2);
-val, _ = QuadGK.quadgk(x -> sqrt(1 + f'(x)^2), -a, a)
+val, _ = quadgk(x -> sqrt(1 + f'(x)^2), -a, a)
 val
 ```
 
@@ -322,7 +323,7 @@ An antiderivative isn't forthcoming through `SymPy`, so we take a numeric approa
 
 
 ```
-QuadGK.quadgk(t -> sqrt(g'(t)^2 + f'(t)^2), 0, 2pi)[1]
+quadgk(t -> sqrt(g'(t)^2 + f'(t)^2), 0, 2pi)[1]
 ```
 
 The answer seems like a floating point approximation of $24$, which  suggests that  this integral is tractable. Pursuing this, the integrand simplifies:
@@ -398,7 +399,7 @@ But, despite it not being too daunting, this integral is not tractable through o
 
 ```
 a, b= 1, 2
-s(u) = QuadGK.quadgk(t -> sqrt(a^2 * sin(t)^2 + b^2 * cos(t)^2), 0, u)[1]
+s(u) = quadgk(t -> sqrt(a^2 * sin(t)^2 + b^2 * cos(t)^2), 0, u)[1]
 ```
 
 This  has a graph, which does not look familiar, but we can see is monotonically increasing, so will have an inverse function:
@@ -409,11 +410,11 @@ plot(s, 0, 2pi)
 
 The range is $[0, s(2\pi)]$.
 
-The inverse function can be found by solving, we use `fzero` for this:
+The inverse function can be found by solving, we use `find_zero` for this:
 
 ```
 using Roots
-sinv(u) = fzero(x -> s(x) - u, 0, s(2pi))
+sinv(u) = find_zero(x -> s(x) - u, (0, s(2pi)))
 ```
 
 Here we see that the new parameterization yields the same curve:
@@ -433,7 +434,7 @@ plot(t->g(s(t)), t-> f(s(t)), 0, s(2*pi))
 The length of the curve given by $f(x) = e^x$ between $0$ and $1$ is certainly longer than the length of the line connecting $(0, f(0))$ and $(1, f(1))$. What is that length?
 
 ```
-f(x) = e^x
+f(x) = exp(x)
 val = sqrt( (f(1) - f(0))^2 - (1 - 0)^2)
 numericq(val)
 ```
@@ -449,7 +450,7 @@ Now find the actual length of the curve numerically:
 
 ```
 a,b = 0, 1
-val, _ = QuadGK.quadgk(x -> sqrt(1 + exp(x)^2), a, b)
+val, _ = quadgk(x -> sqrt(1 + exp(x)^2), a, b)
 numericq(val)
 ```
 
@@ -460,7 +461,7 @@ Find the length of the graph of $f(x) = x^{3/2}$ between $0$ and $4$.
 ```
 f(x) = x^(3/2)
 a, b = 0, 4
-val, _ = QuadGK.quadgk( x -> sqrt(1 + f'(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
 numericq(val)
 ```
 
@@ -472,7 +473,7 @@ A [pursuit](http://www-history.mcs.st-and.ac.uk/Curves/Pursuit.html) curve is a 
 ```
 f(x) = x^2 - log(x)
 a, b= 1/10, 2
-val, _ = QuadGK.quadgk( x -> sqrt(1 + (f)(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(1 + (f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -485,7 +486,7 @@ Find the length of the graph of $f(x) = \tan(x)$ between $-\pi/4$ and $\pi/4$.
 ```
 f(x) = tan(x)
 a, b= -pi/4, pi/4
-val, _ = QuadGK.quadgk( x -> sqrt(1 + f'(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
 numericq(val)
 ```
 
@@ -502,7 +503,7 @@ Find the length of the graph of the function $g(x) =\int_0^x \tan(x)dx$ between 
 ```
 fp(x) = tan(x)
 a, b = 0, pi/4
-val, _ = QuadGK.quadgk(x -> sqrt(1 + fp(x)^2), a, b)
+val, _ = quadgk(x -> sqrt(1 + fp(x)^2), a, b)
 numericq(val)
 ```
 
@@ -530,7 +531,7 @@ boat has traveled between $x=1$ and $x=a$ using `quadgk`.
 ```
 a = 12
 f(x) = g(x, a);
-val = QuadGK.quadgk(x -> sqrt(1 + D(f)(x)^2), 1, a)[1];
+val = quadgk(x -> sqrt(1 + D(f)(x)^2), 1, a)[1];
 numericq(val, 1e-3)
 ```
 
@@ -553,7 +554,7 @@ A curve is parameterized by $g(t) = t + \sin(t)$ and $f(t) = \cos(t)$. Find the 
 g(t) = t + sin(t)
 f(t) = cos(t)
 a, b = 0, pi
-val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -566,7 +567,7 @@ a curve  parameterized by $g(t) = \cos(t)^3$ and $f(t) = \sin(t)^3$. Find the ar
 g(t) = cos(t)^3
 f(t) = sin(t)^3
 a, b = 0, 2pi
-val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -578,7 +579,7 @@ A curve is parameterized by $g(t) = (2t + 3)^{2/3}/3$ and $f(t) = t + t^2/2$, fo
 g(t) = (2t+3)^(2/3)/3
 f(t) = t + t^2/2
 a, b = 0, 3
-val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```
 
@@ -591,6 +592,6 @@ The cycloid is parameterized by $g(t) = a(t - \sin(t))$ and $f(t) = a(1 - \cos(t
 g(t) = t - sin(t)
 f(t) = 1 - cos(t)
 a, b = 0, 2pi
-val, _ = QuadGK.quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
+val, _ = quadgk( x -> sqrt(D(g)(x)^2 + D(f)(x)^2), a, b)
 numericq(val)
 ```

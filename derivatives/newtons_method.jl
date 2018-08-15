@@ -3,6 +3,10 @@ module newtons_method
 
 using WeavePynb, LaTeXStrings
 
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+
 using Roots
 using Plots
 #gr()
@@ -20,7 +24,7 @@ function newtons_method_graph(n, f, a, b, c)
     plot!(plt, [a, b], [0,0], color=:black)
     
 
-    ts = linspace(a,b)
+    ts = range(a, stop=b, length=50)
     for i in 1:n
         x0 = xs[end]
         x1 = x0 - f(x0)/D(f)(x0)

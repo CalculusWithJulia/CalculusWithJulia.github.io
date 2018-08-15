@@ -9,13 +9,22 @@ using Plots
 pyplot()
 fig_size=(600, 400)
 
+
+
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+
+
+
 function sketch_sin_plot_graph(i)
     f(x) = 10*sin(pi/2*x)  # [0,4]
-    zs = fzeros(f, 0, 4.1)
-    cps = fzeros(D(f), 0, 4)
-    xs = linspace(0, 4*(i-2)/6, 50)
     deltax = 1/10
     deltay = 5/10
+
+    zs = find_zeros(f, 0-deltax, 4+deltax)
+    cps = find_zeros(D(f), 0-deltax, 4+deltax)
+    xs = range(0, stop=4*(i-2)/6, length=50)
     if i == 1
         ## plot zeros
         title = "Plot the zeros"

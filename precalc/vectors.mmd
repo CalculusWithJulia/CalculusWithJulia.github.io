@@ -155,6 +155,7 @@ For example, the vector `v` has scalar multiplication defined for it:
 The `norm` function returns the magnitude of the vector (by default):
 
 ```
+import LinearAlgebra: norm
 norm(v)
 ```
 
@@ -177,11 +178,11 @@ We see above that scalar multiplication, addition, and subtraction can
 be done without new notation. This is because the usual operators have
 methods defined for vectors.
 
-Finally, to find an angle $\theta$ from a vector $\langle x,~ y\rangle$, we can employ the `atan2` function:
+Finally, to find an angle $\theta$ from a vector $\langle x,~ y\rangle$, we can employ the `atan` function using two arguments:
 
 ```
 # v  = [x, y]
-norm(v), atan2(y, x)
+norm(v), atan(y, x)
 ```
 
 ## Higher dimensional vectors
@@ -410,7 +411,7 @@ Such things can be done in *many* differents ways. Here we describe two, but wil
 
 ### Broadcasting a function call
 
-If we have a vector, `xs`, and a function, `f`, to apply to each value, there is a simple means to achieve this task. By adding a "dot" between the function name and the parenthesis that enclose the arguments, instructs `Julia` to "broadcast" the function call. The details allow for more flexibility, for this purpose, broadcasting will take each value in `xs` and apply `f` to it, returning a vector of the same size as `xs`.
+If we have a vector, `xs`, and a function, `f`, to apply to each value, there is a simple means to achieve this task. By adding a "dot" between the function name and the parenthesis that enclose the arguments, instructs `Julia` to "broadcast" the function call. The details allow for more flexibility, for this purpose, broadcasting will take each value in `xs` and apply `f` to it, returning a vector of the same size as `xs`. When more than one argument is involved, broadcasting will try to fill out different sized objects.
 
 
 
@@ -451,15 +452,16 @@ the (unbiased) [sample variance](http://tinyurl.com/p6wa4r8) of a data set. This
 $(1/(n-1))\cdot ((x_1-\bar{x})^2 + \cdots + (x_n + \bar{x})^2)$. It can be computed, with broadcasting, through:
 
 ```
+import Statistics: mean
 xs = [1, 1, 2, 3, 5, 8, 13]
 n = length(xs)
-(1/(n-1)) * sum(abs2.(xs - mean(xs)))
+(1/(n-1)) * sum(abs2.(xs .- mean(xs)))
 ```
 
 This shows many of the manipulations that can be made with
-vectors. Rather than write `.^2`, we follow the internal defintion of `var` and chose the possibly more
-performant `abs2` function which in general efficiently finds $|x|^2$
-for various number types.
+vectors. Rather than write `.^2`, we follow the  defintion of `var` and chose the possibly more
+performant `abs2` function which, in general, efficiently finds $|x|^2$
+for various number types. The `.-` uses broadcasting to subtract a scalar (`mean(xs)`) from a vector (`xs`). Without the `.`, this would error.
 
 
 ```

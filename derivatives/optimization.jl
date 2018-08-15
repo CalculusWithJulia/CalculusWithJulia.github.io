@@ -13,7 +13,7 @@ function perimeter_area_graphic_graph(n)
     plt = plot([0,0,w,w,0], [0,h,h,0,0], legend=false, size=fig_size,
                xlim=(0,10), ylim=(0,10))
     scatter!(plt, [w], [h], color=:orange, markersize=5)
-    annotate!(plt, [(w/2, h/2, "Area=$(round(w*h,1))")])
+    annotate!(plt, [(w/2, h/2, "Area=$(round(w*h,digits=1))")])
     plt
 end
 

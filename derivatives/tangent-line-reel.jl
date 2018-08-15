@@ -8,11 +8,11 @@ function make_tangent_reel(f, x0, h, xlim, ylim, fname="output.gif", n=10)
 
     a,b = xlim
 
-    xs = linspace(a, b, 1000)
+    xs = range(a, stop=b, length=1000)
     ys = map(f, xs)
     
     x = Float64[]; y = Float64[]
-    hs = [linspace(h, 1e-12, n-1), 1e-12]
+    hs = [range(h, stop=1e-12, length=n-1), 1e-12]
     function render(n, dn)
         h = hs[n+1]
         m = (f(x0 + h) - f(x0))/h

@@ -10,19 +10,19 @@ fig_size = (400, 300)
 function plot_angle(m)
     r = m*pi
     
-    ts = linspace(0, 2pi, 100)
-    tit = "$m * pi -> ($(round(cos(r), 2)), $(round(sin(r), 2)))"
+    ts = range(0, stop=2pi, length=100)
+    tit = "$m * pi -> ($(round(cos(r), digits=2)), $(round(sin(r), digits=2)))"
     p = plot(cos.(ts), sin.(ts), legend=false, aspect_ratio=:equal,title=tit)
     plot!(p, [-1,1], [0,0], color=:gray30)
     plot!(p,  [0,0], [-1,1], color=:gray30)
     
     if r > 0
-        ts = linspace(0, r, 100)
+        ts = range(0, stop=r, length=100)
     else
-        ts = linspace(r, 0, 100)
+        ts = range(r, stop=0, length=100)
     end
 
-    plot!(p, (1/2 + abs.(ts)/10pi).* cos.(ts), (1/2 + abs.(ts)/10pi) .* sin.(ts), color=:red, linewidth=3)
+    plot!(p, (1/2 .+ abs.(ts)/10pi).* cos.(ts), (1/2 .+ abs.(ts)/10pi) .* sin.(ts), color=:red, linewidth=3)
     l = 1 #1/2 + abs(r)/10pi
     plot!(p, [0,l*cos(r)], [0,l*sin(r)], color=:green, linewidth=4)
 

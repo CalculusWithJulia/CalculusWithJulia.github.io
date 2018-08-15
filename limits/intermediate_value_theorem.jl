@@ -12,12 +12,12 @@ function IVT_graph(n)
     f(x) = sin(pi*x) + 9x/10
     a,b = [0,3]
 
-    xs = linspace(a,b)
+    xs = range(a,stop=b, length=50)
 
 
     ## cheat -- pick an x, then find a y
     Δ = .2
-    x = linspace(a + Δ,b - Δ,6)[n]
+    x = range(a + Δ, stop=b - Δ, length=6)[n]
     y = f(x)
 
     plt = plot(f, a, b, legend=false, size=fig_size)
@@ -58,7 +58,7 @@ function bisecting_graph(n)
 
     err = 2.0^(1-n)
     title = "b - a = $err"
-    xs = linspace(a,b)
+    xs = range(a, stop=b, length=100)
     plt = plot(f, a, b, legend=false, size=fig_size, title=title)
     
     if n >= 1

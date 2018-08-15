@@ -575,9 +575,13 @@ For our polynomial $x^5 -x + 1$ we have the sum above is $3$. The lone
 real root is approximately $-1.1673$ which satisfies $|-1.1673| \leq
 3$.
 
-## Other numeric methods
+```
 
-Finding roots of polynomials numerically is implemented in a few `Julia` only packages: the `roots` function of the `Polynomials` package; the `roots` function of the `PolynomialRoots` package; and the `poly_roots` function of the `PolynomialZeros` package, which provides an interface to the two `roots` functions as well as other means of solving for roots.
+note(""" **Other numeric methods**
+Finding roots of polynomials numerically is implemented in a few `Julia`-only packages: the `roots` function of the `Polynomials` package; the `roots` function of the `PolynomialRoots` package; and the `poly_roots` function of the `PolynomialZeros` package, which provides an interface to the two `roots` functions as well as other means of solving for roots."""
+
+)
+```
 
 
 ## Questions
@@ -803,11 +807,12 @@ is one of $2,3,4$. By considering all 6 such possible polynomials
 ```
 using Combinatorics
 m = 0
-for (a,b,c) in permutations([2,3,4])
-    fn = x -> x^3 - a*x^2 + b*x - c
-    rts = fzeros(fn, -10, 10)
-	ans = maximum(abs.(rts))
-	m = ans > m ? ans : m
+
+for (a_,b_,c_) in permutations([2,3,4])
+    fn = x -> x^3 - a_*x^2 + b_*x - c_
+    rts_ = fzeros(fn, -10, 10)
+	global ans = maximum(abs.(rts_))
+	global m = ans > m ? ans : m
 end
 numericq(m)
 ```
@@ -842,6 +847,7 @@ yesnoq(true)
 The Chebyshev polynomials have the property that in fact all $n$ roots are real, distinct, and in $[-1, 1]$. Using `SymPy`, find the magnitude of the largest root:
 
 ```
+import LinearAlgebra: norm
 @syms x
 p = 16x^5 - 20x^3 + 5x
 rts = N.(solve(p))

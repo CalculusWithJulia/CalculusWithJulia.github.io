@@ -284,7 +284,7 @@ polynomials aren't the best approximations.  For example, in the
 tangent-line graph the parabola only intersects the cosine graph at
 $x=0$, whereas for the secant-line graph---by definition---the
 parabola intersects the graph at least $2$ times and the
-interporlating polynomial $3$ times (at $x_0$, $x_1$, and $x_2$).
+interpolating polynomial $3$ times (at $x_0$, $x_1$, and $x_2$).
 
 
 
@@ -428,9 +428,10 @@ output. `SymPy` provides the `removeO` function to strip this.
 However, we will define our own function to compute Taylor polynomials from a function. This returns a function, not a symbolic object:
 
 ```
-using Roots # for D
+using ForwardDiff
+D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f,float(x))
 function taylor_poly(f, c=0, n=2)
-     x -> sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 0:n)
+     x -> f(c) + sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 1:n)
 end	 
 ```
 
@@ -967,7 +968,7 @@ xs = 0:3
 dd = divided_differences
 g(x) = dd(f,0) + dd(f, 0,1)*x + dd(f, 0,1,2)*x*(x-1) + dd(f, 0,1,2,3)*x*(x-1)*(x-2)
 h1(x) = f(x) - g(x)
-cps = fzeros(Roots.D(h1), -1, 4)
+cps = find_zeros(D(h1), -1, 4)
 plot(h1, -1/4, 3.25, linewidth=3)
 scatter!(xs, h1.(xs))
 scatter!(cps, h1.(cps), markersize=3, marker=:square)

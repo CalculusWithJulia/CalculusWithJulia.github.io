@@ -128,7 +128,7 @@ The `quadgk` function is able to accept `Inf` and `-Inf` as endpoints of the int
 ```
 using QuadGK
 f(x) = exp(-x^2/2)
-QuadGK.quadgk(f, -Inf, Inf)
+quadgk(f, -Inf, Inf)
 ```
 
 (If may not be obvious, but this is $\sqrt{2\pi}$.)
@@ -169,9 +169,10 @@ $$~
 
 As the limit does not exist, the function is not integrable around $0$.
 
-* `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. This is why this integral produces an imaginary number for an answer, even though we just saw that it is undefined:
+* `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. In this case it returns `NaN` for an itnegral with no answer:
 
 ```
+@vars x
 integrate(1/x, (x, -1, 1))
 ```
 
@@ -188,7 +189,7 @@ But the limit as $M \rightarrow 0$ of $1/M$ is the same going to $\infty$, so th
 ### Numeric integration
 
 So far our use of the `quadgk` function specified the region to
-integrate via `a`, `b`, as in `QuadGK.quadgk(f, a, b)`. In fact, it can
+integrate via `a`, `b`, as in `quadgk(f, a, b)`. In fact, it can
 specify values in between for which the function should not be
 sampled. For example, were we to integrate $1/\sqrt{\lvert x\rvert}$
 over $[-1,1]$, we would want to avoid $0$ as a point to sample. Here
@@ -196,11 +197,11 @@ is how:
 
 ```
 f(x) = 1 / sqrt(abs(x))
-QuadGK.quadgk(f, -1, 0, 1)
+quadgk(f, -1, 0, 1)
 ```
 
-Just trying `QuadGK.quadgk(f, -1, 1)` leads to a `DomainError`, as `0` will
-be one of the points sampled. The general call is like `QuadGK.quadgk(f, a, b, c, d,...)`
+Just trying `quadgk(f, -1, 1)` leads to a `DomainError`, as `0` will
+be one of the points sampled. The general call is like `quadgk(f, a, b, c, d,...)`
 which integrates over $(a,b)$ and $(b,c)$ and $(c,d)$,
 $\dots$. The algorithm is not supposed to evaluate the function at the
 endpoints of the intervals.
@@ -321,7 +322,7 @@ Compute the integral $\int_0^\infty 1/(1+x^2) dx$.
 ```
 f(x) = 1/(1+x^2)
 a, b= 0, Inf
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -332,7 +333,7 @@ Compute the the integral $\int_1^\infty \log(x)/x^2 dx$.
 ```
 f(x) =log(x)/x^2
 a, b= 1, Inf
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 
@@ -342,7 +343,7 @@ Compute the integral $\int_0^2 (x-1)^{2/3} dx$.
 
 ```
 f(x) = cbrt((x-1)^2)
-val, _ = QuadGK.quadgk(f , 0, 1, 2)
+val, _ = quadgk(f , 0, 1, 2)
 numericq(val)
 ```
 
@@ -456,7 +457,7 @@ Find $\int_0^1 f(x) dx$.
 ```
 f(x) = 1/pi * 1/sqrt(x*(1-x))
 a, b= 0, 1
-val, _ = QuadGK.quadgk(f, a, b)
+val, _ = quadgk(f, a, b)
 numericq(val)
 ```
 

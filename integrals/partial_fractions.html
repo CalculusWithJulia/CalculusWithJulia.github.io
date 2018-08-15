@@ -9,7 +9,7 @@
 
 
 <link
-  href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
   rel="stylesheet">
 
 <style>
@@ -22,8 +22,8 @@ h6:before {content:"\2742\ ";}
 pre {display: block;}
 </style>
 
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 <!-- .julia:before {content: "julia> "} -->
 
@@ -111,8 +111,10 @@ $$ \frac{p(x)}{q(x)} = a(x) + \sum_{i=1}^k \sum_{j=1}^{n_i} \frac{a_{ij}(x)}{q_i
 \frac{a_{i1}}{q_i(x)^1} + \frac{a_{i2}}{q_i(x)^2} + \cdots + \frac{a_{in_i}}{q_i(x)^{n_i}},
 ~$$
 <p>where each $a_{ij}$ has degree less than the degree of $q_i$.</p><p>The value of this decomposition is that the terms $a_{ij}(x)/q_i(x)^j$ each have an antiderivative, and so the sum of them will also have an antiderivative.</p><div class="alert alert-info" role="alert">
+    
 <div class="markdown"><p>Many calculus texts will give some examples for finding a partial fraction decomposition. We push that work off to <code>SymPy</code>, as for all but the easiest cases–-a few are in the problems–-it can be a bit tedious.</p>
 </div> 
+
 </div>
 <p>In <code>SymPy</code>, the <code>apart</code> function will find the partial fraction decomposition. For example, here we see $n_i$ terms for each power of $q_i$</p><pre class="sourceCode julia">using SymPy
 @vars a b c A B x real=true</pre>
@@ -143,7 +145,7 @@ $$a \log{\left (- c + x \right )}$$</div>
 <p>For $j > 1$, we have powers. </p><pre class="sourceCode julia">j = symbols("j", positive=true)
 integrate(a/(x-c)^j, x)</pre>
 <div class="well well-sm">
-$$a \left(\begin{cases} \log{\left (- c + x \right )} & \text{for}\: - j = -1 \\\frac{\left(- c + x\right)^{- j + 1}}{- j + 1} & \text{otherwise} \end{cases}\right)$$</div>
+$$a \left(\begin{cases} \frac{\left(- c + x\right)^{- j + 1}}{- j + 1} & \text{for}\: - j \neq -1 \\\log{\left (- c + x \right )} & \text{otherwise} \end{cases}\right)$$</div>
 
 <h3>Quadratic factors</h3><p>When $q_i$ is quadratic, it looks like $ax^2 + bx + c$. Then $a_{ij}$ can be a constant or a linear polynomial. The latter can be written as $Ax + B$.</p><p>Rather than try to consider the general case of</p>$$~
 \frac{Ax +B }{(ax^2  + bx + c)^j},
@@ -157,11 +159,11 @@ $$- \frac{A}{6 a^{8} x^{6} + 18 a^{6} x^{4} + 18 a^{4} x^{2} + 6 a^{2}}$$</div>
 
 <p>The integrals of the type $B/((ax)^2\pm 1)$ are completed by trigonometric substitution and various reduction formulas. They can get involved, but are tractable. For example:</p><pre class="sourceCode julia">integrate(B/((a*x)^2 + 1)^4, x)</pre>
 <div class="well well-sm">
-$$\frac{B \left(15 a^{4} x^{5} + 40 a^{2} x^{3} + 33 x\right)}{48 a^{6} x^{6} + 144 a^{4} x^{4} + 144 a^{2} x^{2} + 48}$$</div>
+$$B \left(\frac{15 a^{4} x^{5} + 40 a^{2} x^{3} + 33 x}{48 a^{6} x^{6} + 144 a^{4} x^{4} + 144 a^{2} x^{2} + 48} + \frac{5 \operatorname{atan}{\left (a x \right )}}{16 a}\right)$$</div>
 
 <p>and</p><pre class="sourceCode julia">integrate(B/((a*x)^2 - 1)^4, x)</pre>
 <div class="well well-sm">
-$$B \left(- \frac{15 a^{4} x^{5} - 40 a^{2} x^{3} + 33 x}{48 a^{6} x^{6} - 144 a^{4} x^{4} + 144 a^{2} x^{2} - 48} - \frac{5}{32 a} \log{\left (x - \frac{1}{a} \right )} + \frac{5}{32 a} \log{\left (x + \frac{1}{a} \right )}\right)$$</div>
+$$B \left(- \frac{15 a^{4} x^{5} - 40 a^{2} x^{3} + 33 x}{48 a^{6} x^{6} - 144 a^{4} x^{4} + 144 a^{2} x^{2} - 48} - \frac{5 \log{\left (x - \frac{1}{a} \right )}}{32 a} + \frac{5 \log{\left (x + \frac{1}{a} \right )}}{32 a}\right)$$</div>
 
 <h2>Examples</h2><p>Find an antiderivative for $1/(x\cdot(x^2+1)^2)$.</p><p>We have a partial fraction decomposition is:</p><pre class="sourceCode julia">q = (x * (x^2 + 1)^2)
 apart(1/q)</pre>
@@ -170,7 +172,7 @@ $$- \frac{x}{x^{2} + 1} - \frac{x}{\left(x^{2} + 1\right)^{2}} + \frac{1}{x}$$</
 
 <p>We see three terms. The first and second will be done by $u$-substitution, the third by a logarithm:</p><pre class="sourceCode julia">integrate(1/q, x)</pre>
 <div class="well well-sm">
-$$\log{\left (x \right )} - \frac{1}{2} \log{\left (x^{2} + 1 \right )} + \frac{1}{2 x^{2} + 2}$$</div>
+$$\log{\left (x \right )} - \frac{\log{\left (x^{2} + 1 \right )}}{2} + \frac{1}{2 x^{2} + 2}$$</div>
 
 <hr /><p>Find an antiderivative of $1/(x^2 - 2x-3)$.</p><p>We again just let <code>SymPy</code> do the work. A partial fraction decomposition is given by:</p><pre class="sourceCode julia">q =  (x^2 - 2x - 3)
 apart(1/q)</pre>
@@ -179,233 +181,235 @@ $$- \frac{1}{4 \left(x + 1\right)} + \frac{1}{4 \left(x - 3\right)}$$</div>
 
 <p>We see what should yield two logarithmic terms:</p><pre class="sourceCode julia">integrate(1/q, x)</pre>
 <div class="well well-sm">
-$$\frac{1}{4} \log{\left (x - 3 \right )} - \frac{1}{4} \log{\left (x + 1 \right )}$$</div>
+$$\frac{\log{\left (x - 3 \right )}}{4} - \frac{\log{\left (x + 1 \right )}}{4}$$</div>
 
 <div class="alert alert-info" role="alert">
+    
 <div class="markdown"><p><code>SymPy</code> will find $\log(x)$ as an antiderivative for $1/x$, but more generally, $\log(\lvert x\rvert)$ is one.</p>
 </div> 
+
 </div>
-<h2>Questions</h2><h6>Question</h6><p>The partial fraction decomposition of $1/(x(x-1))$ must be of the form $A/x + B/(x-1)$.</p><p>What is $A$? (Use <code>SymPy</code> or just put the sum over a common denominator and solve for $A$ and $B$.)</p><form name='WeaveQuestion' data-id='t3SVomdc' data-controltype='numeric'>
+<h2>Questions</h2><h6>Question</h6><p>The partial fraction decomposition of $1/(x(x-1))$ must be of the form $A/x + B/(x-1)$.</p><p>What is $A$? (Use <code>SymPy</code> or just put the sum over a common denominator and solve for $A$ and $B$.)</p><form name='WeaveQuestion' data-id='aruyv78v' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="t3SVomdc" type="number" class="form-control">
+<input id="aruyv78v" type="number" class="form-control">
 
 </div>
   
-<div id='t3SVomdc_message'></div>
+<div id='aruyv78v_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#t3SVomdc').on('change', function() {
+$('#aruyv78v').on('change', function() {
   correct = Math.abs(this.value - -1) <= 0;
 
   if(correct) {
-     $('#t3SVomdc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#aruyv78v_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#t3SVomdc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#aruyv78v_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>What is $B$?</p><form name='WeaveQuestion' data-id='h8BJ1iho' data-controltype='numeric'>
+<p>What is $B$?</p><form name='WeaveQuestion' data-id='AIlcSLlC' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="h8BJ1iho" type="number" class="form-control">
+<input id="AIlcSLlC" type="number" class="form-control">
 
 </div>
   
-<div id='h8BJ1iho_message'></div>
+<div id='AIlcSLlC_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#h8BJ1iho').on('change', function() {
+$('#AIlcSLlC').on('change', function() {
   correct = Math.abs(this.value - 1) <= 0;
 
   if(correct) {
-     $('#h8BJ1iho_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#AIlcSLlC_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#h8BJ1iho_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#AIlcSLlC_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>The following gives the partial fraction decomposition for a rational expression:</p>$$~
 \frac{3x+5}{(1-2x)^2} = \frac{A}{1-2x} + \frac{B}{(1-2x)^2}.
 ~$$
-<p>Find $A$ (being careful with the sign):</p><form name='WeaveQuestion' data-id='dK6ADLRP' data-controltype='numeric'>
+<p>Find $A$ (being careful with the sign):</p><form name='WeaveQuestion' data-id='MocabRuk' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="dK6ADLRP" type="number" class="form-control">
+<input id="MocabRuk" type="number" class="form-control">
 
 </div>
   
-<div id='dK6ADLRP_message'></div>
+<div id='MocabRuk_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#dK6ADLRP').on('change', function() {
+$('#MocabRuk').on('change', function() {
   correct = Math.abs(this.value - -1.5) <= 0.001;
 
   if(correct) {
-     $('#dK6ADLRP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#MocabRuk_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#dK6ADLRP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#MocabRuk_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>Find $B$:</p><form name='WeaveQuestion' data-id='ug13X6RZ' data-controltype='numeric'>
+<p>Find $B$:</p><form name='WeaveQuestion' data-id='bhAvOf21' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="ug13X6RZ" type="number" class="form-control">
+<input id="bhAvOf21" type="number" class="form-control">
 
 </div>
   
-<div id='ug13X6RZ_message'></div>
+<div id='bhAvOf21_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#ug13X6RZ').on('change', function() {
+$('#bhAvOf21').on('change', function() {
   correct = Math.abs(this.value - 6.5) <= 0.001;
 
   if(correct) {
-     $('#ug13X6RZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#bhAvOf21_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#ug13X6RZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#bhAvOf21_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>The following specifies the general partial fraction decomposition for a rational expression:</p>$$~
 \frac{1}{(x+1)(x-1)^2} = \frac{A}{x+1} + \frac{B}{x-1} + \frac{C}{(x-1)^2}.
 ~$$
-<p>Find $A$:</p><form name='WeaveQuestion' data-id='nlLogtTY' data-controltype='numeric'>
+<p>Find $A$:</p><form name='WeaveQuestion' data-id='JO3E11kT' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="nlLogtTY" type="number" class="form-control">
+<input id="JO3E11kT" type="number" class="form-control">
 
 </div>
   
-<div id='nlLogtTY_message'></div>
+<div id='JO3E11kT_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#nlLogtTY').on('change', function() {
+$('#JO3E11kT').on('change', function() {
   correct = Math.abs(this.value - 0.25) <= 0.001;
 
   if(correct) {
-     $('#nlLogtTY_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#JO3E11kT_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#nlLogtTY_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#JO3E11kT_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>Find $B$:</p><form name='WeaveQuestion' data-id='GHiITiBn' data-controltype='numeric'>
+<p>Find $B$:</p><form name='WeaveQuestion' data-id='yDIJFS9x' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="GHiITiBn" type="number" class="form-control">
+<input id="yDIJFS9x" type="number" class="form-control">
 
 </div>
   
-<div id='GHiITiBn_message'></div>
+<div id='yDIJFS9x_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#GHiITiBn').on('change', function() {
+$('#yDIJFS9x').on('change', function() {
   correct = Math.abs(this.value - -0.25) <= 0.001;
 
   if(correct) {
-     $('#GHiITiBn_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#yDIJFS9x_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#GHiITiBn_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#yDIJFS9x_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>Find $C$:</p><form name='WeaveQuestion' data-id='1l0QP6iY' data-controltype='numeric'>
+<p>Find $C$:</p><form name='WeaveQuestion' data-id='JLIiK8LG' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
 
 <div class="input-group">
-<input id="1l0QP6iY" type="number" class="form-control">
+<input id="JLIiK8LG" type="number" class="form-control">
 
 </div>
   
-<div id='1l0QP6iY_message'></div>
+<div id='JLIiK8LG_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#1l0QP6iY').on('change', function() {
+$('#JLIiK8LG').on('change', function() {
   correct = Math.abs(this.value - 0.5) <= 0.001;
 
   if(correct) {
-     $('#1l0QP6iY_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#JLIiK8LG_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#1l0QP6iY_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#JLIiK8LG_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Compute the following exactly:</p>$$~
 \int_0^1 \frac{(x-2)(x-3)}{(x-4)^2\cdot(x-5)} dx
 ~$$
-<p>Is $-6\log(5) - 5\log(3) - 1/6 + 11\log(4)$ the answer?</p><form name="WeaveQuestion" data-id="4iDFylfY" data-controltype="radio">
+<p>Is $-6\log(5) - 5\log(3) - 1/6 + 11\log(4)$ the answer?</p><form name="WeaveQuestion" data-id="XyZmkt4Z" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4iDFylfY" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_XyZmkt4Z" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_4iDFylfY" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_XyZmkt4Z" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="4iDFylfY_message"></div>
+<div id="XyZmkt4Z_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_4iDFylfY']").on("change", function() {
+$("input:radio[name='radio_XyZmkt4Z']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#4iDFylfY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#XyZmkt4Z_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#4iDFylfY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#XyZmkt4Z_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -413,125 +417,125 @@ $("input:radio[name='radio_4iDFylfY']").on("change", function() {
 <h6>Question</h6><p>In the assumptions for the partial fraction decomposition is the fact that $p(x)$ and $q(x)$ share no common factors. Suppose, this isn't the case and in fact we have:</p>$$~
 \frac{p(x)}{q(x)} = \frac{(x-c)^m s(x)}{(x-c)^n t(x)}.
 ~$$
-<p>Here $s$ and $t$ are polynomials such that $s(c)$ and $t(c)$ are non-zero.</p><p>If $m > n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="aaogz2WY" data-controltype="radio">
+<p>Here $s$ and $t$ are polynomials such that $s(c)$ and $t(c)$ are non-zero.</p><p>If $m > n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="osKyAOtS" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_aaogz2WY" value="1"><div class="markdown"><p>SymPy allows it.</p>
+      <input type="radio" name="radio_osKyAOtS" value="1"><div class="markdown"><p>SymPy allows it.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_aaogz2WY" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
+      <input type="radio" name="radio_osKyAOtS" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_aaogz2WY" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
+      <input type="radio" name="radio_osKyAOtS" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="aaogz2WY_message"></div>
+<div id="osKyAOtS_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_aaogz2WY']").on("change", function() {
+$("input:radio[name='radio_osKyAOtS']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#aaogz2WY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#osKyAOtS_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#aaogz2WY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#osKyAOtS_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>If $m = n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="63xdsy5m" data-controltype="radio">
+<p>If $m = n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="B1U6LEk7" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_63xdsy5m" value="1"><div class="markdown"><p>SymPy allows it.</p>
+      <input type="radio" name="radio_B1U6LEk7" value="1"><div class="markdown"><p>SymPy allows it.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_63xdsy5m" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
+      <input type="radio" name="radio_B1U6LEk7" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_63xdsy5m" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
+      <input type="radio" name="radio_B1U6LEk7" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="63xdsy5m_message"></div>
+<div id="B1U6LEk7_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_63xdsy5m']").on("change", function() {
+$("input:radio[name='radio_B1U6LEk7']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#63xdsy5m_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#B1U6LEk7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#63xdsy5m_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#B1U6LEk7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>If $m < n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="NMkiH23e" data-controltype="radio">
+<p>If $m < n$, then why can we cancel out the $(x-c)^n$ and not have a concern?</p><form name="WeaveQuestion" data-id="XiDfvCoX" data-controltype="radio">
 <div class="form-group ">
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_NMkiH23e" value="1"><div class="markdown"><p>SymPy allows it.</p>
+      <input type="radio" name="radio_XiDfvCoX" value="1"><div class="markdown"><p>SymPy allows it.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_NMkiH23e" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
+      <input type="radio" name="radio_XiDfvCoX" value="2"><div class="markdown"><p>The value $c$ is a removable singularity, so the integral will be identical.</p>
 </div>
     </label>
     </div>
     
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_NMkiH23e" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
+      <input type="radio" name="radio_XiDfvCoX" value="3"><div class="markdown"><p>The resulting function has an identical domain and is equivalent for all $x$.</p>
 </div>
     </label>
     </div>
     
 
 
-<div id="NMkiH23e_message"></div>
+<div id="XiDfvCoX_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_NMkiH23e']").on("change", function() {
+$("input:radio[name='radio_XiDfvCoX']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#NMkiH23e_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#XiDfvCoX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#NMkiH23e_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#XiDfvCoX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 

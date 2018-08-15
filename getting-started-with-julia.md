@@ -42,13 +42,13 @@ A command is typed following the *prompt*. An example might be `2 + 2`. To send 
 
 ```verbatim
                _
-   _       _ _(_)_     |  A fresh approach to technical computing
-  (_)     | (_) (_)    |  Documentation: https://docs.julialang.org
-   _ _   _| |_  __ _   |  Type "?help" for help.
+   _       _ _(_)_     |  Documentation: https://docs.julialang.org
+  (_)     | (_) (_)    |
+   _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
   | | | | | | |/ _` |  |
-  | | |_| | | | (_| |  |  Version 0.6.0 (2017-06-19 13:05 UTC)
- _/ |\__'_|_|_|\__'_|  |  Official http://julialang.org/ release
-|__/                   |  x86_64-apple-darwin13.4.0
+  | | |_| | | | (_| |  |  Version 1.0.0 (2018-08-08)
+ _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
+|__/                   |
 
 julia> 2 + 2
 4
@@ -99,6 +99,7 @@ Pkg.update()
 Pkg.add("Plots")
 Pkg.add("SymPy")
 Pkg.add("Roots")
+Pkg.add("ForwardDiff")
 Pkg.add("ImplicitEquations")
 ```
 

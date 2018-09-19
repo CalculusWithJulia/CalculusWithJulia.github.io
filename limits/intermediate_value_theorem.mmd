@@ -87,9 +87,9 @@ function bisection(f, a, b)
   if f(b) == 0 return(b) end
   if f(a) * f(b) > 0 error("[a,b] is not a bracketing interval") end
 
-  tol = 1e-14  # small number
-  c = a + (b - a)/2
-  
+  tol = 1e-14  # small number (but should depend on size of a, b)
+  c = a/2 + b/2
+
   while abs(b-a) > tol
     if f(c) == 0 return(c) end
 
@@ -98,8 +98,9 @@ function bisection(f, a, b)
     else
        a, b = c, b
     end
-    c = a + (b - a)/2
-    
+
+    c = a/2 + b/2
+
   end
   c
 end
@@ -126,12 +127,12 @@ sin(c)
 ### The `find_zero` function.
 
 The `Roots` package has a function `find_zero` that implements the
-bisection method when called as `find_zero(f, (a, b))`  where $[a,b]$ is a bracket. Its use is identical to
+bisection method when called as `find_zero(f, (a, b))`  where $[a,b]$ is a bracket. Its use is similar to
 `bisection` above. We will use it in the following:
 
 ```
 using Roots
-find_zero(sin, (3, 4))
+find_zero(sin, (3, 4))   # use a tuple, (a, b), to specify the bracketing interval
 ```
 
 ```
@@ -245,7 +246,7 @@ we plot in that range:
 ```
 plot(plan1, 10, 20)
 plot!(plan2)
-```	      
+```
 
 
 We can see the intersection point is around 14 and that if a family
@@ -291,7 +292,7 @@ and $\gamma$ a resistance, which we take to be $1$. With this, we have
 the following `julia` definition (with a slight reworking of $\gamma$):
 
 ```
-function y(x; theta=pi/4, g=32, v0=200, gamma=1) 
+function y(x; theta=pi/4, g=32, v0=200, gamma=1)
 	 a = gamma * v0 * cos(theta)
 	 (g/a + tan(theta)) * x + g/gamma^2 * log((a-gamma^2 * x)/a)
 end
@@ -344,7 +345,7 @@ We try on the reduced interval avoiding
 the obvious *asymptote* at `b`  by subtracting $1$:
 
 ```
-plot(y, 0, b - 1) 
+plot(y, 0, b - 1)
 ```
 
 
@@ -405,7 +406,7 @@ this type of function jumps over $0$.)
 ### The `find_zeros` function
 
 The bisection method suggests a naive means to search for all zeros within
-an interval: split the interval into many small intervals and for each that is a
+an interval $(a, b)$: split the interval into many small intervals and for each that is a
 bracketing interval find a zero. This simple description has three
 flaws: it might miss values where the function doesn't't actually
 cross the $x$ axis; it might miss values where the function just dips
@@ -413,7 +414,7 @@ to the other side; and it might miss multiple values in the same small
 interval.
 
 Still, with some engineering, this can be a useful approach, save the
-caveats. This idea is implemented in the `find_zeros` function. The function is
+caveats. This idea is implemented in the `find_zeros` function of the `Roots` package. The function is
 called via `find_zeros(f, a, b)` but here the interval
 $[a,b]$ is not necessarily a bracketing interval.
 
@@ -531,19 +532,19 @@ plot(f, -2, 2)
 ## Questions
 
 
-###### Question 
+###### Question
 
 There is negative zero in the interval $[-10, 0]$ for the function
 $f(x) = e^x - x^4$. Find its value numerically:
 
 ```
 f(x) = exp(x) - x^4
-val = find_zero(f, -(10, 0));
+val = find_zero(f, (-10, 0));
 numericq(val, 1e-3)
 ```
 
 
-###### Question 
+###### Question
 
 There is  zero in the interval $[0, 5]$ for the function
 $f(x) = e^x - x^4$. Find its value numerically:
@@ -862,5 +863,3 @@ a,b = 1, 2
 k_x, k_y = 3, 4
 plot(t -> a * cos(k_x *t), t-> b * sin(k_y * t), 0, 4pi)
 ```
-
-

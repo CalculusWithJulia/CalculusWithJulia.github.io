@@ -117,9 +117,9 @@ $( document ).ready(function() {
   if f(b) == 0 return(b) end
   if f(a) * f(b) > 0 error("[a,b] is not a bracketing interval") end
 
-  tol = 1e-14  # small number
-  c = a + (b - a)/2
-  
+  tol = 1e-14  # small number (but should depend on size of a, b)
+  c = a/2 + b/2
+
   while abs(b-a) > tol
     if f(c) == 0 return(c) end
 
@@ -128,8 +128,9 @@ $( document ).ready(function() {
     else
        a, b = c, b
     end
-    c = a + (b - a)/2
-    
+
+    c = a/2 + b/2
+
   end
   c
 end</pre>
@@ -137,17 +138,17 @@ end</pre>
 bisection (generic function with 1 method)</pre>
 
 <p>This function uses a <code>while</code> loop to repeat the process of subdividing $[a,b]$. A <code>while</code> loop will repeat until the condition is no longer <code>true</code>. The above will stop for reasonably sized floating point values (within $(-100, 100)$, say). The value $c$ returned <em>need not</em> be an exact zero. Let's see:</p><pre class="sourceCode julia">c = bisection(sin, 3, 4)</pre>
-<div class="well well-sm">
-3.141592653589793</div>
+<pre class="output">
+3.141592653589793</pre>
 
 <p>This value of $c$ is a floating-point approximation to $\pi$, but is not <em>quite</em> a zero:</p><pre class="sourceCode julia">sin(c)</pre>
-<div class="well well-sm">
-1.2246467991473532e-16</div>
+<pre class="output">
+1.2246467991473532e-16</pre>
 
-<p>(Even <code>pi</code> itself is not a "zero" due to floating point issues.)</p><h3>The <code>find_zero</code> function.</h3><p>The <code>Roots</code> package has a function <code>find_zero</code> that implements the bisection method when called as <code>find_zero&#40;f, &#40;a, b&#41;&#41;</code>  where $[a,b]$ is a bracket. Its use is identical to <code>bisection</code> above. We will use it in the following:</p><pre class="sourceCode julia">using Roots
-find_zero(sin, (3, 4))</pre>
-<div class="well well-sm">
-3.141592653589793</div>
+<p>(Even <code>pi</code> itself is not a "zero" due to floating point issues.)</p><h3>The <code>find_zero</code> function.</h3><p>The <code>Roots</code> package has a function <code>find_zero</code> that implements the bisection method when called as <code>find_zero&#40;f, &#40;a, b&#41;&#41;</code>  where $[a,b]$ is a bracket. Its use is similar to <code>bisection</code> above. We will use it in the following:</p><pre class="sourceCode julia">using Roots
+find_zero(sin, (3, 4))   # use a tuple, (a, b), to specify the bracketing interval</pre>
+<pre class="output">
+3.1415926535897936</pre>
 
 <div class="alert alert-success" role="alert">
     
@@ -164,39 +165,39 @@ c = find_zero(f, (-2, -1))
 <p>We see, as before, that $f(c)$ is not quite $0$. (But you can check that <code>f&#40;prevfloat&#40;c&#41;&#41;</code> is negative, while <code>f&#40;c&#41;</code> is seen to be positive.)</p><h5>Example</h5><p>The function $f(x) = e^x - x^4$ has a zero between $5$ and $10$, as this graph shows:</p><pre class="sourceCode julia">using Plots
 f(x) = exp(x) - x^4
 plot(f, 5, 10)</pre>
-    <div id="4eec71e2-efc5-4b00-8fc3-5179fc04f056" style="width:600px;height:400px;"></div>
+    <div id="eda4754a-ab5e-4c14-a175-7399e9560e02" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('4eec71e2-efc5-4b00-8fc3-5179fc04f056');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[5.048829095098941,5.500324585841864,5.771654556528119,6.001060593578829,6.250259850165257,6.479999522673141,6.72630473203245,7.011673471692662,7.265275530555107,7.4876616827011,7.7301222832765975,7.974023893764061,8.108856103443042,8.243688313122021,8.37197775842312,8.500267203724217,8.633658460640484,8.767049717556752,8.879336742945489,8.991623768334225,9.060168633733625,9.128713499133024,9.197258364532424,9.265803229931821,9.33023742510975,9.394671620287681,9.459105815465612,9.523540010643542,9.626768588002731,9.72999716536192,9.781611454041515,9.83322574272111,9.884840031400705,9.9364543200803,9.952340740060226,9.96822716004015,9.984113580020075],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-493.93463982755816,-670.507162308297,-788.6205793837862,-893.0597013891615,-1007.9852341263304,-1111.222537573717,-1212.8854245149628,-1307.5464258616464,-1356.3952605835555,-1357.4216402138036,-1294.7545035258277,-1138.5381145664746,-999.7551822883752,-814.8005964086833,-588.4299301351966,-304.63665659567505,61.37213709446041,511.567997248304,965.8667412653867,1498.8851029655734,1867.3826870570538,2271.7004971210736,2714.6379990287014,3199.1977344338075,3695.5255175759075,4234.338568932916,4818.693061377091,5451.852159547214,6576.756246470948,7851.557107654056,8550.513334267096,9293.58844793032,10083.249060504986,10922.093983132736,11190.602053858638,11464.110540970029,11742.703362675094],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[5.0,6.0,7.0,8.0,9.0,10.0],"visible":true,"ticks":"inside","range":[4.900770560551306,10.132172114567709],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["5","6","7","8","9","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2500.0,5000.0,7500.0,10000.0],"visible":true,"ticks":"inside","range":[-1750.4253903004706,12135.707112761762],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2500","5000","7500","10000"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('eda4754a-ab5e-4c14-a175-7399e9560e02');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[5.048829095098941,5.500324585841864,5.771654556528119,6.001060593578829,6.250259850165257,6.479999522673141,6.72630473203245,7.011673471692662,7.265275530555107,7.4876616827011,7.7301222832765975,7.974023893764061,8.108856103443042,8.243688313122021,8.37197775842312,8.500267203724217,8.633658460640484,8.767049717556752,8.879336742945489,8.991623768334225,9.060168633733625,9.128713499133024,9.197258364532424,9.265803229931821,9.33023742510975,9.394671620287681,9.459105815465612,9.523540010643542,9.626768588002731,9.72999716536192,9.781611454041515,9.83322574272111,9.884840031400705,9.9364543200803,9.952340740060226,9.96822716004015,9.984113580020075],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-493.93463982755816,-670.507162308297,-788.6205793837862,-893.0597013891615,-1007.9852341263304,-1111.222537573717,-1212.8854245149628,-1307.5464258616464,-1356.3952605835555,-1357.4216402138036,-1294.7545035258277,-1138.5381145664746,-999.7551822883752,-814.8005964086833,-588.4299301351966,-304.63665659567505,61.37213709446041,511.567997248304,965.8667412653867,1498.8851029655734,1867.3826870570538,2271.7004971210736,2714.6379990287014,3199.1977344338075,3695.5255175759075,4234.338568932916,4818.693061377091,5451.852159547214,6576.756246470948,7851.557107654056,8550.513334267096,9293.58844793032,10083.249060504986,10922.093983132736,11190.602053858638,11464.110540970029,11742.703362675094],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[5.0,6.0,7.0,8.0,9.0,10.0],"visible":true,"ticks":"inside","range":[4.900770560551306,10.132172114567709],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["5","6","7","8","9","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2500.0,5000.0,7500.0,10000.0],"visible":true,"ticks":"inside","range":[-1750.4253903004706,12135.707112761762],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2500","5000","7500","10000"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Find the zero numerically. The plot shows $f(5) < 0 < f(10)$, so $[5,10]$ is a bracket. We thus have:</p><pre class="sourceCode julia">find_zero(f, (5, 10))</pre>
-<div class="well well-sm">
-8.613169456441398</div>
+<pre class="output">
+8.6131694564414</pre>
 
 <h5>Example</h5><p>Find all real zeros of $f(x) = x^3 -x + 1$ using the bisection method.</p><p>A plot will show us a bracketing interval:</p><pre class="sourceCode julia">f(x) = x^3 - x + 1
 plot(f, -3, 3)</pre>
-    <div id="5eb84da0-e61b-4a11-94c0-8447e09e9c57" style="width:600px;height:400px;"></div>
+    <div id="a20b4a84-83ea-4bc4-8cc8-9fcec4891830" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('5eb84da0-e61b-4a11-94c0-8447e09e9c57');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-2.985351271470318,-2.9707025429406357,-2.9560538144109536,-2.941405085881271,-2.805956438658394,-2.670507791435517,-2.53505914421264,-2.399610496989763,-2.3182115057838866,-2.23681251457801,-2.1554135233721334,-2.074014532166257,-1.9363709099358313,-1.7987272877054057,-1.6492077337535487,-1.4996881798016914,-1.3618443762969612,-1.224000572792231,-1.076217447176646,-0.928434321561061,-0.7572130777649336,-0.5859918339688063,-0.2816693633338713,-0.014805980758679935,0.27614673993191674,0.5688286725168725,0.730627324131649,0.8924259757464256,1.0463733101077433,1.2003206444690608,1.360390152768582,1.5204596610681032,1.655204091534587,1.7899485220010707,1.9544561989596276,2.1189638759181846,2.196284910131701,2.273605944345218,2.3509269785587343,2.4282480127722508,2.552122305603278,2.6759965984343053,2.799870891265332,2.9237451840963593,2.9428088880722694,2.96187259204818,2.98093629602409],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-22.62106118205505,-22.245966038159537,-21.874695707907218,-21.50723133089187,-18.286437234873013,-15.37451725718504,-12.756561479443763,-10.417659983264937,-9.140099577721273,-7.954699148102286,-6.858222695858607,-5.847434222440877,-4.324114363286585,-3.020910693631161,-1.836449538226002,-0.8732074713726694,-0.1638595842072892,0.39023057436030606,0.8296950531687886,1.1281329519809624,1.323048569646661,1.3847701903989196,1.2593223835354965,1.0148027350350155,0.7449113880834031,0.6152249791120568,0.6593934410473825,0.8183235986042625,1.0992977969428621,1.5290649097966003,2.1572313480273806,2.9945353052988914,3.8795595257293853,4.944895670260101,6.511369146760859,8.395200682547346,9.397863026197339,10.479308863695469,11.642311797498841,12.889645430064592,15.07068803749713,17.486702102067675,20.149092611313275,23.069264552771003,23.542281437410274,24.021715260602946,24.507607591686885],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.1643398984951503,3.1599249230489224],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-20.0,-10.0,0.0,10.0,20.0],"visible":true,"ticks":"inside","range":[-24.03492124526731,25.921467654899143],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-20","-10","0","10","20"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('a20b4a84-83ea-4bc4-8cc8-9fcec4891830');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-2.985351271470318,-2.9707025429406357,-2.9560538144109536,-2.941405085881271,-2.805956438658394,-2.670507791435517,-2.53505914421264,-2.399610496989763,-2.3182115057838866,-2.23681251457801,-2.1554135233721334,-2.074014532166257,-1.9363709099358313,-1.7987272877054057,-1.6492077337535487,-1.4996881798016914,-1.3618443762969612,-1.224000572792231,-1.076217447176646,-0.928434321561061,-0.7572130777649336,-0.5859918339688063,-0.2816693633338713,-0.014805980758679935,0.27614673993191674,0.5688286725168725,0.730627324131649,0.8924259757464256,1.0463733101077433,1.2003206444690608,1.360390152768582,1.5204596610681032,1.655204091534587,1.7899485220010707,1.9544561989596276,2.1189638759181846,2.196284910131701,2.273605944345218,2.3509269785587343,2.4282480127722508,2.552122305603278,2.6759965984343053,2.799870891265332,2.9237451840963593,2.9428088880722694,2.96187259204818,2.98093629602409],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-22.62106118205505,-22.245966038159537,-21.874695707907218,-21.50723133089187,-18.286437234873013,-15.37451725718504,-12.756561479443763,-10.417659983264937,-9.140099577721273,-7.954699148102286,-6.858222695858607,-5.847434222440877,-4.324114363286585,-3.020910693631161,-1.836449538226002,-0.8732074713726694,-0.1638595842072892,0.39023057436030606,0.8296950531687886,1.1281329519809624,1.323048569646661,1.3847701903989196,1.2593223835354965,1.0148027350350155,0.7449113880834031,0.6152249791120568,0.6593934410473825,0.8183235986042625,1.0992977969428621,1.5290649097966003,2.1572313480273806,2.9945353052988914,3.8795595257293853,4.944895670260101,6.511369146760859,8.395200682547346,9.397863026197339,10.479308863695469,11.642311797498841,12.889645430064592,15.07068803749713,17.486702102067675,20.149092611313275,23.069264552771003,23.542281437410274,24.021715260602946,24.507607591686885],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.1643398984951503,3.1599249230489224],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-20.0,-10.0,0.0,10.0,20.0],"visible":true,"ticks":"inside","range":[-24.03492124526731,25.921467654899143],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-20","-10","0","10","20"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>It appears (and a plot over $[0,1]$ verifies) that there is one zero between $-2$ and $-1$. It is found with:</p><pre class="sourceCode julia">find_zero(f, (-2, -1))</pre>
-<div class="well well-sm">
--1.3247179572447458</div>
+<pre class="output">
+-1.3247179572447458</pre>
 
 <h5>Example</h5><p>The equation $\cos(x) = x$ has just one solution, as can be seen in this plot:</p><pre class="sourceCode julia">f(x) = cos(x)
 g(x) = x
 plot(f, -pi, pi)
 plot!(g)</pre>
-    <div id="32349388-99d2-44bf-9313-6d08b1ebc151" style="width:600px;height:400px;"></div>
+    <div id="801233d9-06c7-4cb3-bde4-541266184ad1" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('32349388-99d2-44bf-9313-6d08b1ebc151');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-3.0093114571697415,-2.938390711327397,-2.8674699654850526,-2.796549219642708,-2.7256284738003638,-2.6547077279580193,-2.583786982115675,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.5704697894468143,-1.2817704024912573,-1.1270122752384375,-0.9722541479856175,-0.8826029143775475,-0.7929516807694774,-0.7033004471614073,-0.6136492135533372,-0.5339777770475866,-0.45430634054183605,-0.37463490403608546,-0.2949634675303348,-0.2250987973461395,-0.15523412716194418,-0.08536945697774888,-0.015504786793553571,0.06066645736174156,0.1368377015170367,0.2130089456723318,0.28918018982762694,0.3658041405982403,0.44242809136885364,0.519052042139467,0.5956759929100803,0.680393568789033,0.7651111446679857,0.8498287205469384,0.9345462964258912,1.015152932204099,1.095759567982307,1.1763662037605147,1.2569728395387225,1.5922216337637265,1.8744297090074906,1.9605657272395114,2.046701745471532,2.132837763703553,2.218973781935574,2.299944179619957,2.38091457730434,2.461884974988723,2.542855372673106,2.607715800727537,2.672576228781968,2.737436656836399,2.8022970848908297,2.9320179409996916,3.0617387971085535,3.0817022612288634,3.1016657253491733,3.121629189469483],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9998823427793041,-0.9995293988036598,-0.9989412511258812,-0.9981180381456108,-0.9912635930571241,-0.9794254271719193,-0.9626630585777485,-0.9410607625022607,-0.91472714760713,-0.8837946099423324,-0.8484186673058937,-0.8087771773557116,-0.7557699328130641,-0.6972745896094515,-0.6337159175071656,-0.5655554541357317,-0.4412279365948912,-0.30774917005250263,0.0003265373422794321,0.2850186875230384,0.42936003431511327,0.5634386820713227,0.6351428207544184,0.7017455165075588,0.762711819016794,0.8175520492638962,0.8607893509321662,0.8985656492394168,0.9306412845153703,0.9568127631272824,0.9747720599950522,0.9879753591208756,0.9963582404588714,0.9998798032011988,0.9981603548015344,0.9906523213158552,0.9773992437347958,0.9584779800169604,0.9338364217545462,0.9037147772592402,0.8682898111179287,0.8277694097063505,0.7773251852266979,0.7213053811863239,0.6601118151003937,0.594183414721154,0.5274900124457361,0.45737113621445946,0.38428213187023513,0.3086976330078869,-0.02142366781414069,-0.29898935098282253,-0.37997512139859785,-0.458143441848972,-0.5329147077247335,-0.6037345029902236,-0.6662343946934725,-0.7243687028469895,-0.7777564951822344,-0.8260479415646006,-0.8608407130615461,-0.8920133045781488,-0.9194346228819077,-0.9429893503466328,-0.9781194816444272,-0.9968133746723455,-0.9982071064522623,-0.9992030260843753,-0.9998007366681562],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.2490123696873634,-2.650983598956155,-2.291593234802049,-1.9877332558020173,-1.6576561495206439,-1.3533542533665823,-1.0271104600222325,-0.6491250314118676,-0.31321618929506717,-0.01865440535194355,0.30249700786444145,0.6255571120953181,0.9827413686938189,1.3225931760505758,1.6759602020142863,1.9734199691175862,2.336584629099352,2.6779701208738693,3.2248961521471067],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-3.2490123696873634,-2.650983598956155,-2.291593234802049,-1.9877332558020173,-1.6576561495206439,-1.3533542533665823,-1.0271104600222325,-0.6491250314118676,-0.31321618929506717,-0.01865440535194355,0.30249700786444145,0.6255571120953181,0.9827413686938189,1.3225931760505758,1.6759602020142863,1.9734199691175862,2.336584629099352,2.6779701208738693,3.2248961521471067],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4432296253423975,3.419113407802141],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4432296253423975,3.419113407802141],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('801233d9-06c7-4cb3-bde4-541266184ad1');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-3.0093114571697415,-2.938390711327397,-2.8674699654850526,-2.796549219642708,-2.7256284738003638,-2.6547077279580193,-2.583786982115675,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.5704697894468143,-1.2817704024912573,-1.1270122752384375,-0.9722541479856175,-0.8826029143775475,-0.7929516807694774,-0.7033004471614073,-0.6136492135533372,-0.5339777770475866,-0.45430634054183605,-0.37463490403608546,-0.2949634675303348,-0.2250987973461395,-0.15523412716194418,-0.08536945697774888,-0.015504786793553571,0.06066645736174156,0.1368377015170367,0.2130089456723318,0.28918018982762694,0.3658041405982403,0.44242809136885364,0.519052042139467,0.5956759929100803,0.680393568789033,0.7651111446679857,0.8498287205469384,0.9345462964258912,1.015152932204099,1.095759567982307,1.1763662037605147,1.2569728395387225,1.5922216337637265,1.8744297090074906,1.9605657272395114,2.046701745471532,2.132837763703553,2.218973781935574,2.299944179619957,2.38091457730434,2.461884974988723,2.542855372673106,2.607715800727537,2.672576228781968,2.737436656836399,2.8022970848908297,2.9320179409996916,3.0617387971085535,3.0817022612288634,3.1016657253491733,3.121629189469483],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9998823427793041,-0.9995293988036598,-0.9989412511258812,-0.9981180381456108,-0.9912635930571241,-0.9794254271719193,-0.9626630585777485,-0.9410607625022607,-0.91472714760713,-0.8837946099423324,-0.8484186673058937,-0.8087771773557116,-0.7557699328130641,-0.6972745896094515,-0.6337159175071656,-0.5655554541357317,-0.4412279365948912,-0.30774917005250263,0.0003265373422794321,0.2850186875230384,0.42936003431511327,0.5634386820713227,0.6351428207544184,0.7017455165075588,0.762711819016794,0.8175520492638962,0.8607893509321662,0.8985656492394168,0.9306412845153703,0.9568127631272824,0.9747720599950522,0.9879753591208756,0.9963582404588714,0.9998798032011988,0.9981603548015344,0.9906523213158552,0.9773992437347958,0.9584779800169604,0.9338364217545462,0.9037147772592402,0.8682898111179287,0.8277694097063505,0.7773251852266979,0.7213053811863239,0.6601118151003937,0.594183414721154,0.5274900124457361,0.45737113621445946,0.38428213187023513,0.3086976330078869,-0.02142366781414069,-0.29898935098282253,-0.37997512139859785,-0.458143441848972,-0.5329147077247335,-0.6037345029902236,-0.6662343946934725,-0.7243687028469895,-0.7777564951822344,-0.8260479415646006,-0.8608407130615461,-0.8920133045781488,-0.9194346228819077,-0.9429893503466328,-0.9781194816444272,-0.9968133746723455,-0.9982071064522623,-0.9992030260843753,-0.9998007366681562],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.2490123696873634,-2.650983598956155,-2.291593234802049,-1.9877332558020173,-1.6576561495206439,-1.3533542533665823,-1.0271104600222325,-0.6491250314118676,-0.31321618929506717,-0.01865440535194355,0.30249700786444145,0.6255571120953181,0.9827413686938189,1.3225931760505758,1.6759602020142863,1.9734199691175862,2.336584629099352,2.6779701208738693,3.2248961521471067],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-3.2490123696873634,-2.650983598956155,-2.291593234802049,-1.9877332558020173,-1.6576561495206439,-1.3533542533665823,-1.0271104600222325,-0.6491250314118676,-0.31321618929506717,-0.01865440535194355,0.30249700786444145,0.6255571120953181,0.9827413686938189,1.3225931760505758,1.6759602020142863,1.9734199691175862,2.336584629099352,2.6779701208738693,3.2248961521471067],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4432296253423975,3.419113407802141],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4432296253423975,3.419113407802141],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Find it.</p><p>We see from the graph that it is clearly between $0$ and $2$, so all we need is a function. (We have two.) The trick is to observe that solving $f(x) = g(x)$ is the same problem as solving for $x$ where $f(x) - g(x) = 0$. So we define the difference and use that:</p><pre class="sourceCode julia">h(x) = f(x) - g(x)
 find_zero(h, (0, 2))</pre>
-<div class="well well-sm">
-0.7390851332151607</div>
+<pre class="output">
+0.7390851332151607</pre>
 
 <h5>Example</h5><p>We wish to compare two trash collection plans</p><ul>
 <li><p>Plan 1: You pay 47.49 plus 0.77 per bag.</p>
@@ -210,14 +211,14 @@ plan2 (generic function with 1 method)</pre>
 
 <p>Assuming this is a realistic problem and an average American household might produce 10-20 bags of trash a month (yes, that seems too much!) we plot in that range:</p><pre class="sourceCode julia">plot(plan1, 10, 20)
 plot!(plan2)</pre>
-    <div id="1c304230-c53e-4568-8bdc-e9e31d0bf3dc" style="width:600px;height:400px;"></div>
+    <div id="c71d643a-3d33-4bdd-bdf3-7adbd0be16ee" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('1c304230-c53e-4568-8bdc-e9e31d0bf3dc');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[10.097658190197881,11.000649171683728,11.543309113056239,12.002121187157657,12.500519700330514,12.959999045346281,13.4526094640649,14.023346943385324,14.530551061110215,14.9753233654022,15.460244566553195,15.948047787528122,16.487376626244043,17.000534407448434,17.534099435113504,17.98324753666845,18.531606459863642,19.047080021287083,19.8729086401606],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[55.26519680645237,55.96049986219647,56.378348017053305,56.7316333141114,57.1154001692545,57.46919926491664,57.848509287329975,58.2879771464067,58.678524317054865,59.0209989913597,59.394388316245966,59.769996796396654,60.18528000220792,60.5804114937353,60.9912565650374,61.33710060323471,61.75933697409501,62.15625161639106,62.792139652923666],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[9.905591803072484,10.841249880869155,11.403541385493464,11.878951696477134,12.39538054723343,12.87148226868951,13.38191363171647,13.973298422679452,14.49885143436085,14.959714065132935,15.462178041246194,15.967628298711007,16.52646819288459,17.058190251036322,17.61105781937366,18.076454548647096,18.64465120458181,19.17877281988614,20.034477067179097],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[49.811183606144965,51.68249976173831,52.80708277098692,53.75790339295427,54.79076109446686,55.742964537379024,56.763827263432944,57.946596845358904,58.9977028687217,59.91942813026587,60.92435608249239,61.93525659742201,63.05293638576918,64.11638050207264,65.22211563874731,66.15290909729418,67.28930240916361,68.35754563977228,70.0689541343582],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[10.0,12.5,15.0,17.5,20.0],"visible":true,"ticks":"inside","range":[9.601725245149286,20.338343625102294],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["10.0","12.5","15.0","17.5","20.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[50.0,55.0,60.0,65.0,70.0],"visible":true,"ticks":"inside","range":[49.20345049029857,70.6766872502046],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["50","55","60","65","70"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('c71d643a-3d33-4bdd-bdf3-7adbd0be16ee');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[10.097658190197881,11.000649171683728,11.543309113056239,12.002121187157657,12.500519700330514,12.959999045346281,13.4526094640649,14.023346943385324,14.530551061110215,14.9753233654022,15.460244566553195,15.948047787528122,16.487376626244043,17.000534407448434,17.534099435113504,17.98324753666845,18.531606459863642,19.047080021287083,19.8729086401606],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[55.26519680645237,55.96049986219647,56.378348017053305,56.7316333141114,57.1154001692545,57.46919926491664,57.848509287329975,58.2879771464067,58.678524317054865,59.0209989913597,59.394388316245966,59.769996796396654,60.18528000220792,60.5804114937353,60.9912565650374,61.33710060323471,61.75933697409501,62.15625161639106,62.792139652923666],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[9.905591803072484,10.841249880869155,11.403541385493464,11.878951696477134,12.39538054723343,12.87148226868951,13.38191363171647,13.973298422679452,14.49885143436085,14.959714065132935,15.462178041246194,15.967628298711007,16.52646819288459,17.058190251036322,17.61105781937366,18.076454548647096,18.64465120458181,19.17877281988614,20.034477067179097],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[49.811183606144965,51.68249976173831,52.80708277098692,53.75790339295427,54.79076109446686,55.742964537379024,56.763827263432944,57.946596845358904,58.9977028687217,59.91942813026587,60.92435608249239,61.93525659742201,63.05293638576918,64.11638050207264,65.22211563874731,66.15290909729418,67.28930240916361,68.35754563977228,70.0689541343582],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[10.0,12.5,15.0,17.5,20.0],"visible":true,"ticks":"inside","range":[9.601725245149286,20.338343625102294],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["10.0","12.5","15.0","17.5","20.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[50.0,55.0,60.0,65.0,70.0],"visible":true,"ticks":"inside","range":[49.20345049029857,70.6766872502046],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["50","55","60","65","70"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>We can see the intersection point is around 14 and that if a family generates between 0-14 bags of trash per month that plan 2 would be cheaper.</p><p>Let's get a numeric value, using a simple bracket and an anonymous function:</p><pre class="sourceCode julia">find_zero(x -> plan1(x) - plan2(x), (10, 20))</pre>
-<div class="well well-sm">
-14.21951219512195</div>
+<pre class="output">
+14.21951219512195</pre>
 
 <h5>Example, the flight of an arrow</h5><p>The flight of an arrow can be modeled using various functions, depending on assumptions. Suppose an arrow is launched in the air from a height of 0 feet above the ground at an angle of $\theta = \pi/4$. With a suitable choice for the initial velocity, a model without wind resistance for the height of the arrow at a distance $x$ units away may be:</p>$$~
 j(x) = \tan(\theta) x - (1/2) \cdot g(\frac{x}{v_0 \cos\theta})^2.
@@ -230,7 +231,7 @@ j (generic function with 1 method)</pre>
 y(x) = (\frac{g}{\gamma v_0 \cos(\theta)} + \tan(\theta)) \cdot x  +
       \frac{g}{\gamma^2}\log(\frac{v_0\cos(\theta) - \gamma x}{v_0\cos(\theta)})
 ~$$
-<p>Again, $v_0$ is the initial velocity and is taken to be $200$ and $\gamma$ a resistance, which we take to be $1$. With this, we have the following <code>julia</code> definition (with a slight reworking of $\gamma$):</p><pre class="sourceCode julia">function y(x; theta=pi/4, g=32, v0=200, gamma=1) 
+<p>Again, $v_0$ is the initial velocity and is taken to be $200$ and $\gamma$ a resistance, which we take to be $1$. With this, we have the following <code>julia</code> definition (with a slight reworking of $\gamma$):</p><pre class="sourceCode julia">function y(x; theta=pi/4, g=32, v0=200, gamma=1)
 	 a = gamma * v0 * cos(theta)
 	 (g/a + tan(theta)) * x + g/gamma^2 * log((a-gamma^2 * x)/a)
 end</pre>
@@ -238,10 +239,10 @@ end</pre>
 y (generic function with 1 method)</pre>
 
 <p>For each model, we wish to find the value of $x$ after launching where the height is modeled to be 0. That is how far will the arrow travel before touching the ground?</p><p>For the model without wind resistance, we can graph the function easily enough. Let's guess the distance is no more than 500 feet:</p><pre class="sourceCode julia">plot(j, 0, 500)</pre>
-    <div id="18d8adf4-0f88-40ea-b1ea-7d2faacaac9f" style="width:600px;height:400px;"></div>
+    <div id="ff7ad012-9deb-401e-af5e-a6b72e139c2b" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('18d8adf4-0f88-40ea-b1ea-7d2faacaac9f');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[4.882909509894065,50.032458584186415,77.16545565281194,100.10605935788287,125.02598501652571,147.9999522673141,172.63047320324492,201.16734716926615,226.5275530555107,248.76616827011,273.0122283276597,297.40238937640606,324.36883131220213,350.0267203724217,376.7049717556753,399.16237683342257,426.58032299318205,452.35400106435424,493.64543200802996],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[4.863835265668613,48.02986105460374,72.40184961592706,92.08908086175168,112.52078747304368,130.47676357041226,148.78944898054388,168.79270591557008,185.4757672208569,199.25848308947582,213.3836868745123,226.64384441096968,240.196720330727,252.01175639268288,263.17966315931994,271.6978943699767,281.003705421208,288.65468724121035,298.6967819741143],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0,400.0,500.0],"visible":true,"ticks":"inside","range":[-9.77996616505001,508.30830768297403],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300","400","500"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-3.9511531355847564,307.51177037536763],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('ff7ad012-9deb-401e-af5e-a6b72e139c2b');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[4.882909509894065,50.032458584186415,77.16545565281194,100.10605935788287,125.02598501652571,147.9999522673141,172.63047320324492,201.16734716926615,226.5275530555107,248.76616827011,273.0122283276597,297.40238937640606,324.36883131220213,350.0267203724217,376.7049717556753,399.16237683342257,426.58032299318205,452.35400106435424,493.64543200802996],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[4.863835265668613,48.02986105460374,72.40184961592706,92.08908086175168,112.52078747304368,130.47676357041226,148.78944898054388,168.79270591557008,185.4757672208569,199.25848308947582,213.3836868745123,226.64384441096968,240.196720330727,252.01175639268288,263.17966315931994,271.6978943699767,281.003705421208,288.65468724121035,298.6967819741143],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0,400.0,500.0],"visible":true,"ticks":"inside","range":[-9.77996616505001,508.30830768297403],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300","400","500"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-3.9511531355847564,307.51177037536763],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Well, we haven't even seen the peak yet. Better to do a little spade work first. This is a quadratic function, so we can use <code>poly_roots</code> from <code>PolynomialZeros</code> to find the roots:</p><pre class="sourceCode julia">using PolynomialZeros
 poly_roots(j)</pre>
@@ -251,10 +252,10 @@ poly_roots(j)</pre>
  1249.9999999999998 + 0.0im</pre>
 
 <p>We see that $1250$ is the largest root. So we plot over this domain to visualize the flight:</p><pre class="sourceCode julia">plot(j, 0, 1250)</pre>
-    <div id="c58aa146-f993-42ec-befd-c931f4096c26" style="width:600px;height:400px;"></div>
+    <div id="33cd21e8-e415-45a1-ae9c-fc6fceae4c0e" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('c58aa146-f993-42ec-befd-c931f4096c26');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[6.103636887367582,12.207273774735164,68.6442101176006,125.08114646046603,158.99739279624794,192.91363913202986,221.5893937633685,250.26514839470715,281.41505546801073,312.5649625413143,341.28242160479977,369.9998806682852,400.7880318381988,431.5761830081123,467.24727546563884,502.91836792316536,534.6186252809711,566.3188826387768,594.1171516570259,621.915420675275,652.2229957472122,682.5305708191494,713.0182721300823,743.5059734410152,777.2140258607602,810.9220782805053,842.9944396057798,875.0668009310543,908.4146151601212,941.7624293891881,969.8341857363723,997.9059420835564,1032.1783747832558,1066.450807482955,1098.6679050719204,1130.8850026608857,1182.4992913404803,1234.113580020075,1242.0567900100375],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[6.073833380765314,12.088059748326092,64.87458805146514,112.56491190057437,138.77325606344442,163.1411014014994,182.30790622063472,200.1590327938873,218.05950871275985,234.40747789455168,248.10346856765068,260.4799513126489,272.2831946664091,282.56978161623096,292.5912623215887,300.5768600875651,305.96496568311863,309.7452211721906,311.7369997425798,312.49238829631145,311.90712680203774,309.8521867369781,306.3022270169878,301.26506740703786,293.96471226500773,284.8463846462861,274.4827394407695,262.4732760576867,248.2409247309123,232.22925066196763,217.3715074780264,201.25292668702014,179.864616887093,156.59694765811741,133.0109725638224,107.76429126623646,63.85563212388956,15.684517308101931,7.892734322006845],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,200.0,400.0,600.0,800.0,1000.0,1200.0],"visible":true,"ticks":"inside","range":[-30.974957706312512,1279.1353846037175],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","200","400","600","800","1000","1200"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-3.1187232667010685,321.68494494377785],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('33cd21e8-e415-45a1-ae9c-fc6fceae4c0e');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[6.103636887367582,12.207273774735164,68.6442101176006,125.08114646046603,158.99739279624794,192.91363913202986,221.5893937633685,250.26514839470715,281.41505546801073,312.5649625413143,341.28242160479977,369.9998806682852,400.7880318381988,431.5761830081123,467.24727546563884,502.91836792316536,534.6186252809711,566.3188826387768,594.1171516570259,621.915420675275,652.2229957472122,682.5305708191494,713.0182721300823,743.5059734410152,777.2140258607602,810.9220782805053,842.9944396057798,875.0668009310543,908.4146151601212,941.7624293891881,969.8341857363723,997.9059420835564,1032.1783747832558,1066.450807482955,1098.6679050719204,1130.8850026608857,1182.4992913404803,1234.113580020075,1242.0567900100375],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[6.073833380765314,12.088059748326092,64.87458805146514,112.56491190057437,138.77325606344442,163.1411014014994,182.30790622063472,200.1590327938873,218.05950871275985,234.40747789455168,248.10346856765068,260.4799513126489,272.2831946664091,282.56978161623096,292.5912623215887,300.5768600875651,305.96496568311863,309.7452211721906,311.7369997425798,312.49238829631145,311.90712680203774,309.8521867369781,306.3022270169878,301.26506740703786,293.96471226500773,284.8463846462861,274.4827394407695,262.4732760576867,248.2409247309123,232.22925066196763,217.3715074780264,201.25292668702014,179.864616887093,156.59694765811741,133.0109725638224,107.76429126623646,63.85563212388956,15.684517308101931,7.892734322006845],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,200.0,400.0,600.0,800.0,1000.0,1200.0],"visible":true,"ticks":"inside","range":[-30.974957706312512,1279.1353846037175],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","200","400","600","800","1000","1200"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-3.1187232667010685,321.68494494377785],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>As for the model with wind resistance,  a quick plot over the same interval, $[0, 1250]$ yields:</p><pre class="sourceCode julia">plot(y, 0, 1250)</pre>
 <pre class="output">
@@ -264,49 +265,49 @@ DomainError(:log, "-0.36410542413632824 will only return a complex result if cal
 <p>Oh, "Domain Error." Of course, when the argument to the logarithm is negative we will have issues. We don't have the simplicity of using <code>poly_roots</code> to find out the answer, so we solve for when $a-\gamma^2 x$ is $0$:</p><pre class="sourceCode julia">gamma = 1
 a = 200 * cos(pi/4)
 b = a/gamma^2</pre>
-<div class="well well-sm">
-141.4213562373095</div>
+<pre class="output">
+141.4213562373095</pre>
 
-<p>We try on the reduced interval avoiding the obvious <em>asymptote</em> at <code>b</code>  by subtracting $1$:</p><pre class="sourceCode julia">plot(y, 0, b - 1) </pre>
-    <div id="01c3342a-25d5-44e8-aaec-d1c750157f1c" style="width:600px;height:400px;"></div>
+<p>We try on the reduced interval avoiding the obvious <em>asymptote</em> at <code>b</code>  by subtracting $1$:</p><pre class="sourceCode julia">plot(y, 0, b - 1)</pre>
+    <div id="ffaeb84b-e13e-4048-a476-e204ee824d2c" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('01c3342a-25d5-44e8-aaec-d1c750157f1c');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.3713295515267618,14.05125138055695,21.67135587487563,28.114057245213044,35.11263676185216,41.564708040866634,48.48201035017634,56.496383440340075,63.6186124503478,69.8641654688952,76.67349474227998,83.5232937289027,91.09662242794097,98.30245358798591,102.04864982926225,105.79484607053858,108.9483453491265,112.10184462771443,115.95190981270939,119.80197499770435,121.61156241269325,123.42114982768214,125.23073724267104,127.04032465765994,128.48987434118249,129.93942402470503,131.38897370822758,132.8385233917501,133.56329823351138,134.28807307527262,135.0128479170339,135.73762275879517,136.46239760055644,137.18717244231772,137.54955986319834,137.911947284079,138.27433470495964,138.63672212584027,138.8598013897739,139.08288065370758,139.30595991764125,139.5290391815749,139.75211844550853,139.9751977094422,140.19827697337587],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.3698153190140672,13.881991698382278,21.252222755383244,27.383056181453128,33.92503254945725,39.833467476125215,46.01874290036265,52.96083706888544,58.891714665138366,63.87272470865594,69.02294681772823,73.84454233231418,78.64552804177623,82.53672612043044,84.22215358218418,85.61656711947111,86.51783884706515,87.11589866179634,87.33237686163673,86.80915275523635,86.23096341344575,85.38463042332445,84.21324153098263,82.63959061151952,81.01728661923174,78.99034851675387,76.44928348765704,73.23309805253245,71.29868592384285,69.09088570719524,66.55101621565778,63.59920606249061,60.12277703612334,55.955383772360804,53.53666603015931,50.83638213047095,47.79305090698013,44.32255807973921,41.924048818299354,39.28191941793352,36.34724929480481,33.05472094561546,29.314359733755623,24.997312539485733,19.90961818899828],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,25.0,50.0,75.0,100.0,125.0],"visible":true,"ticks":"inside","range":[-2.7934788711287113,144.36308539603135],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","25","50","75","100","125"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,20.0,40.0,60.0,80.0],"visible":true,"ticks":"inside","range":[-1.2090615272646126,89.9112537079154],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","20","40","60","80"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('ffaeb84b-e13e-4048-a476-e204ee824d2c');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.3713295515267618,14.05125138055695,21.67135587487563,28.114057245213044,35.11263676185216,41.564708040866634,48.48201035017634,56.496383440340075,63.6186124503478,69.8641654688952,76.67349474227998,83.5232937289027,91.09662242794097,98.30245358798591,102.04864982926225,105.79484607053858,108.9483453491265,112.10184462771443,115.95190981270939,119.80197499770435,121.61156241269325,123.42114982768214,125.23073724267104,127.04032465765994,128.48987434118249,129.93942402470503,131.38897370822758,132.8385233917501,133.56329823351138,134.28807307527262,135.0128479170339,135.73762275879517,136.46239760055644,137.18717244231772,137.54955986319834,137.911947284079,138.27433470495964,138.63672212584027,138.8598013897739,139.08288065370758,139.30595991764125,139.5290391815749,139.75211844550853,139.9751977094422,140.19827697337587],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.3698153190140672,13.881991698382278,21.252222755383244,27.383056181453128,33.92503254945725,39.833467476125215,46.01874290036265,52.96083706888544,58.891714665138366,63.87272470865594,69.02294681772823,73.84454233231418,78.64552804177623,82.53672612043044,84.22215358218418,85.61656711947111,86.51783884706515,87.11589866179634,87.33237686163673,86.80915275523635,86.23096341344575,85.38463042332445,84.21324153098263,82.63959061151952,81.01728661923174,78.99034851675387,76.44928348765704,73.23309805253245,71.29868592384285,69.09088570719524,66.55101621565778,63.59920606249061,60.12277703612334,55.955383772360804,53.53666603015931,50.83638213047095,47.79305090698013,44.32255807973921,41.924048818299354,39.28191941793352,36.34724929480481,33.05472094561546,29.314359733755623,24.997312539485733,19.90961818899828],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,25.0,50.0,75.0,100.0,125.0],"visible":true,"ticks":"inside","range":[-2.7934788711287113,144.36308539603135],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","25","50","75","100","125"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,20.0,40.0,60.0,80.0],"visible":true,"ticks":"inside","range":[-1.2090615272646126,89.9112537079154],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","20","40","60","80"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Now we can see the zero is around 140. A simple bracket will be $[b/2, b-1]$, so we cam solve:</p><pre class="sourceCode julia">x1 = find_zero(y, (b/2, b-1/10))</pre>
-<div class="well well-sm">
-140.77929338023057</div>
+<pre class="output">
+140.7792933802306</pre>
 
 <p>The answer is approximately $140.7$</p><p>Finally, we plot both graphs at once to see that it was a very windy day indeed.</p><pre class="sourceCode julia">plot(j, 0, 1250)
 plot!(y, 0, x1)</pre>
-    <div id="7e5705fd-ce2a-4dc9-8b6e-89e3698a99de" style="width:600px;height:400px;"></div>
+    <div id="c65420f2-70eb-4746-8050-14133142b982" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('7e5705fd-ce2a-4dc9-8b6e-89e3698a99de');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[6.103636887367582,12.207273774735164,68.6442101176006,125.08114646046603,158.99739279624794,192.91363913202986,221.5893937633685,250.26514839470715,281.41505546801073,312.5649625413143,341.28242160479977,369.9998806682852,400.7880318381988,431.5761830081123,467.24727546563884,502.91836792316536,534.6186252809711,566.3188826387768,594.1171516570259,621.915420675275,652.2229957472122,682.5305708191494,713.0182721300823,743.5059734410152,777.2140258607602,810.9220782805053,842.9944396057798,875.0668009310543,908.4146151601212,941.7624293891881,969.8341857363723,997.9059420835564,1032.1783747832558,1066.450807482955,1098.6679050719204,1130.8850026608857,1182.4992913404803,1234.113580020075,1242.0567900100375],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[6.073833380765314,12.088059748326092,64.87458805146514,112.56491190057437,138.77325606344442,163.1411014014994,182.30790622063472,200.1590327938873,218.05950871275985,234.40747789455168,248.10346856765068,260.4799513126489,272.2831946664091,282.56978161623096,292.5912623215887,300.5768600875651,305.96496568311863,309.7452211721906,311.7369997425798,312.49238829631145,311.90712680203774,309.8521867369781,306.3022270169878,301.26506740703786,293.96471226500773,284.8463846462861,274.4827394407695,262.4732760576867,248.2409247309123,232.22925066196763,217.3715074780264,201.25292668702014,179.864616887093,156.59694765811741,133.0109725638224,107.76429126623646,63.85563212388956,15.684517308101931,7.892734322006845],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.3748251008849892,14.08706833111483,21.726596640332765,28.185720598964338,35.20213964958757,41.67065740100066,48.6055920668953,56.64039397132963,63.78077770061498,70.04225077194724,76.86893717626022,83.73619645200526,91.32882973340605,98.55302871645817,102.30877409481276,106.06451947316735,109.22605709116623,112.3875947091651,116.24747379547324,120.10735288178138,121.92155297511596,123.73575306845055,125.54995316178514,127.36415325511972,128.81739787284704,130.27064249057435,131.72388710830165,133.17713172602896,133.90375403489261,134.63037634375627,135.35699865261992,136.08362096148358,136.81024327034723,137.53686557921088,137.90017673364272,138.26348788807456,138.62679904250638,138.99011019693822,139.21375809484977,139.43740599276128,139.66105389067283,139.88470178858438,140.10834968649593,140.33199758440747,140.55564548231902],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.3733031136251586,13.916913314394993,21.305198049244037,27.45068969021461,34.00783500669142,39.929419948285144,46.12770916015256,53.08312377635886,59.02380610856152,64.01136803955866,69.16587424804374,73.9877321796844,78.78228244828685,82.65749719293744,84.32902088705885,85.70411656436124,86.58354614361257,87.15290256838531,87.32129907328512,86.72840094240456,86.10639038143454,85.20618675636376,83.96746988184363,82.30788830733601,80.59799627186813,78.45983544083188,75.77347747141187,72.3602884974979,70.29882538947756,67.93700001651891,65.2067060148005,62.01367513742203,58.22208274645837,53.625844694797365,50.929096555526584,47.889854270112934,44.424219418179874,40.41310596837425,37.59939837383814,34.455566223573214,30.902480726751094,26.828639493939278,22.069676082570794,16.368555218438644,9.289414983173543],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,200.0,400.0,600.0,800.0,1000.0,1200.0],"visible":true,"ticks":"inside","range":[-35.84563384638959,1279.2772489573122],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","200","400","600","800","1000","1200"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-7.960269441855429,321.82596085179205],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('c65420f2-70eb-4746-8050-14133142b982');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[6.103636887367582,12.207273774735164,68.6442101176006,125.08114646046603,158.99739279624794,192.91363913202986,221.5893937633685,250.26514839470715,281.41505546801073,312.5649625413143,341.28242160479977,369.9998806682852,400.7880318381988,431.5761830081123,467.24727546563884,502.91836792316536,534.6186252809711,566.3188826387768,594.1171516570259,621.915420675275,652.2229957472122,682.5305708191494,713.0182721300823,743.5059734410152,777.2140258607602,810.9220782805053,842.9944396057798,875.0668009310543,908.4146151601212,941.7624293891881,969.8341857363723,997.9059420835564,1032.1783747832558,1066.450807482955,1098.6679050719204,1130.8850026608857,1182.4992913404803,1234.113580020075,1242.0567900100375],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[6.073833380765314,12.088059748326092,64.87458805146514,112.56491190057437,138.77325606344442,163.1411014014994,182.30790622063472,200.1590327938873,218.05950871275985,234.40747789455168,248.10346856765068,260.4799513126489,272.2831946664091,282.56978161623096,292.5912623215887,300.5768600875651,305.96496568311863,309.7452211721906,311.7369997425798,312.49238829631145,311.90712680203774,309.8521867369781,306.3022270169878,301.26506740703786,293.96471226500773,284.8463846462861,274.4827394407695,262.4732760576867,248.2409247309123,232.22925066196763,217.3715074780264,201.25292668702014,179.864616887093,156.59694765811741,133.0109725638224,107.76429126623646,63.85563212388956,15.684517308101931,7.892734322006845],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.3748251008849892,14.087068331114832,21.72659664033277,28.18572059896434,35.20213964958758,41.67065740100067,48.60559206689531,56.64039397132964,63.780777700615,70.04225077194725,76.86893717626023,83.73619645200527,91.32882973340607,98.5530287164582,102.30877409481279,106.06451947316738,109.22605709116624,112.38759470916511,116.24747379547327,120.10735288178141,121.92155297511599,123.73575306845058,125.54995316178517,127.36415325511975,128.81739787284707,130.27064249057437,131.72388710830168,133.177131726029,133.90375403489264,134.63037634375632,135.35699865261998,136.08362096148363,136.81024327034729,137.53686557921094,137.90017673364275,138.2634878880746,138.62679904250643,138.99011019693825,139.2137580948498,139.43740599276134,139.6610538906729,139.88470178858444,140.10834968649598,140.33199758440753,140.55564548231905],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.3733031136251586,13.916913314394996,21.30519804924404,27.450689690214617,34.00783500669142,39.929419948285144,46.12770916015257,53.08312377635886,59.02380610856152,64.01136803955868,69.16587424804375,73.9877321796844,78.78228244828686,82.65749719293746,84.32902088705885,85.70411656436124,86.58354614361255,87.1529025683853,87.3212990732851,86.72840094240456,86.10639038143452,85.20618675636373,83.96746988184363,82.30788830733597,80.59799627186811,78.45983544083182,75.7734774714118,72.36028849749782,70.29882538947746,67.93700001651872,65.20670601480029,62.01367513742174,58.22208274645803,53.62584469479698,50.92909655552636,47.88985427011268,44.424219418179305,40.41310596837391,37.59939837383777,34.45556622357236,30.902480726750127,26.82863949393817,22.06967608256946,16.368555218437052,9.28941498317252],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,200.0,400.0,600.0,800.0,1000.0,1200.0],"visible":true,"ticks":"inside","range":[-35.84563384638959,1279.2772489573122],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","200","400","600","800","1000","1200"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,100.0,200.0,300.0],"visible":true,"ticks":"inside","range":[-7.960269441855429,321.82596085179205],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","100","200","300"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <h5>Example: bisection and non-continuity</h5><p>The Bolzano theorem assumes a continuous function $f$, and when applicable, yields an algorithm to find a guaranteed zero. However, the algorithm itself does not know that the function is continuous or not, only that the function changes sign. As such, it can produce answers that are not "zeros" when used with discontinuous functions. However, this can still be fruitful, as the algorithm will yield information about crossing values of $0$, possibly at discontinuities.</p><p>For example, let $f(x) = 1/x$. Clearly the interval $[-1,1]$ is a "bracketing" interval as $f(x)$ changes sign between $a$ and $b$. What does the algorithm yield:</p><pre class="sourceCode julia">f(x) = 1/x
 x0 = find_zero(f, (-1, 1))</pre>
-<div class="well well-sm">
--0.0</div>
+<pre class="output">
+0.0</pre>
 
 <p>The function is not defined at the answer, but we do have the fact that just to the left of the answer (<code>prevfloat</code>) and just to the right of the answer (<code>nextfloat</code>) the function changes sign:</p><pre class="sourceCode julia">sign(f(prevfloat(x0))), sign(f(nextfloat(x0)))</pre>
 <pre class="output">
 (-1.0, 1.0)</pre>
 
-<p>So, the "bisection method" applied here finds a point where the function crosses $0$, either by continuity or by jumping over the $0$.  (A <code>jump</code> discontinuity at $x=c$ is defined by the left and right limits of $f$ at $c$ existing but being unequal. The algorithm can find $c$ when this type of function jumps over $0$.)</p><h3>The <code>find_zeros</code> function</h3><p>The bisection method suggests a naive means to search for all zeros within an interval: split the interval into many small intervals and for each that is a bracketing interval find a zero. This simple description has three flaws: it might miss values where the function doesn't't actually cross the $x$ axis; it might miss values where the function just dips to the other side; and it might miss multiple values in the same small interval.</p><p>Still, with some engineering, this can be a useful approach, save the caveats. This idea is implemented in the <code>find_zeros</code> function. The function is called via <code>find_zeros&#40;f, a, b&#41;</code> but here the interval $[a,b]$ is not necessarily a bracketing interval.</p><p>To see, we have:</p><pre class="sourceCode julia">f(x) = sin(10*pi*x)
+<p>So, the "bisection method" applied here finds a point where the function crosses $0$, either by continuity or by jumping over the $0$.  (A <code>jump</code> discontinuity at $x=c$ is defined by the left and right limits of $f$ at $c$ existing but being unequal. The algorithm can find $c$ when this type of function jumps over $0$.)</p><h3>The <code>find_zeros</code> function</h3><p>The bisection method suggests a naive means to search for all zeros within an interval $(a, b)$: split the interval into many small intervals and for each that is a bracketing interval find a zero. This simple description has three flaws: it might miss values where the function doesn't't actually cross the $x$ axis; it might miss values where the function just dips to the other side; and it might miss multiple values in the same small interval.</p><p>Still, with some engineering, this can be a useful approach, save the caveats. This idea is implemented in the <code>find_zeros</code> function of the <code>Roots</code> package. The function is called via <code>find_zeros&#40;f, a, b&#41;</code> but here the interval $[a,b]$ is not necessarily a bracketing interval.</p><p>To see, we have:</p><pre class="sourceCode julia">f(x) = cos(10*pi*x)
 find_zeros(f, 0, 1)</pre>
 <pre class="output">
 10-element Array{Float64,1}:
- 0.1
- 0.2
- 0.3
- 0.4
- 0.5
- 0.6
- 0.7
- 0.8
- 0.9
- 1.0</pre>
+ 0.05              
+ 0.15              
+ 0.25              
+ 0.35              
+ 0.45              
+ 0.5499999999999999
+ 0.6499999999999999
+ 0.75              
+ 0.85              
+ 0.95              </pre>
 
 <p>Or for a polynomial:</p><pre class="sourceCode julia">f(x) = x^5 - x^4 + x^3 - x^2 + 1
 find_zeros(f, -10, 10)</pre>
@@ -331,240 +332,224 @@ zs = find_zeros(f, -20, 20)</pre>
 <p>The <em>extreme value theorem</em>: If $f(x)$ is continuous over a closed  interval $[a,b]$ then $f$ has an absolute maximum and an absolute  minimum over $[a,b]$.</p>
 </blockquote><p>(By continuous over $[a,b]$ we mean continuous on $(a,b)$ and right continuous at $a$ and left continuous at $b$.)</p><p>The assumption that $[a,b]$ includes its endpoints (it is closed)  is crucial to make a guarantee. There are functions which are continuous on open intervals for which this result is not true. For example, $f(x) = 1/x$ on $(0,1)$. This function will have no smallest value or largest value, as defined above.</p><p>The extreme value theorem is an important theoretical tool for investigating maxima and minima of functions.</p><h5>Example</h5><p>The function $f(x) = \sqrt{1-x^2}$ is continuous on the interval $[-1,1]$ (in the sense above). It then has an absolute maximum, we can see to be $1$ occurring at an interior point $0$. The absolute minimum is $0$, it occurs at each endpoint.</p><h5>Example</h5><p>The function $f(x) = x \cdot e^{-x}$ on the closed interval $[0, 5]$ is continuous. Hence it has an absolute maximum, which a graph shows to be $0.4$. It has an absolute minimum, clearly the value $0$ occurring at the endpoint.</p><pre class="sourceCode julia">f(x) = x * exp(-x)
 plot(f, 0, 5)</pre>
-    <div id="03bacd4c-fa1a-4c36-b791-9bf335a9d519" style="width:600px;height:400px;"></div>
+    <div id="b838a938-f7d3-4982-a36a-2f2f16d683a8" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('03bacd4c-fa1a-4c36-b791-9bf335a9d519');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.012207273774735164,0.02441454754947033,0.036621821324205495,0.04882909509894066,0.10526603144180609,0.16170296778467153,0.21813990412753695,0.2745768404704024,0.3310137768132678,0.3874507131561332,0.44388764949899867,0.5003245858418641,0.5342408321776461,0.568157078513428,0.6020733248492098,0.6359895711849918,0.7038220638565555,0.7716545565281194,0.8290060657907967,0.886357575053474,0.9437090843161513,1.0010605935788286,1.1256602218720428,1.250259850165257,1.3651296864191989,1.4799995226731408,1.7263047320324492,2.0116734716926614,2.2652755305551073,2.4876616827011,2.7301222832765975,2.9740238937640604,3.2436883131220213,3.5002672037242175,3.7670497175567528,3.9916237683342257,4.26580322993182,4.523540010643543,4.9364543200802995],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.01205916210086503,0.023825694951794336,0.03530492428834909,0.046502089689413356,0.09474838010112979,0.13755972030126945,0.17538730762687965,0.2086491869181512,0.23773253031169186,0.26299576665846186,0.2847705702049478,0.3033637175711387,0.3131260739774988,0.3218999711415205,0.32974047811820517,0.3367000903520384,0.3481744022578021,0.3566954825486776,0.36184697675694155,0.3653160530645795,0.3672742561527359,0.3678792344114775,0.3652071710626137,0.3581123767424729,0.34858253277720025,0.33690383096366916,0.3071799333235914,0.26909076954726624,0.23513883972057573,0.206734793763108,0.17803486400475735,0.1519645496171225,0.12656778525419382,0.10567067146180732,0.087094844213499,0.07372409050046919,0.059894371923994216,0.04908287244215224,0.0354437978719474],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[-0.13552013761443177,5.084181731469466],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.05,0.1,0.15000000000000002,0.2,0.25,0.30000000000000004,0.35000000000000003],"visible":true,"ticks":"inside","range":[0.0013845599315466563,0.3785538365807959],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.05","0.10","0.15","0.20","0.25","0.30","0.35"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('b838a938-f7d3-4982-a36a-2f2f16d683a8');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.012207273774735164,0.02441454754947033,0.036621821324205495,0.04882909509894066,0.10526603144180609,0.16170296778467153,0.21813990412753695,0.2745768404704024,0.3310137768132678,0.3874507131561332,0.44388764949899867,0.5003245858418641,0.5342408321776461,0.568157078513428,0.6020733248492098,0.6359895711849918,0.7038220638565555,0.7716545565281194,0.8290060657907967,0.886357575053474,0.9437090843161513,1.0010605935788286,1.1256602218720428,1.250259850165257,1.3651296864191989,1.4799995226731408,1.7263047320324492,2.0116734716926614,2.2652755305551073,2.4876616827011,2.7301222832765975,2.9740238937640604,3.2436883131220213,3.5002672037242175,3.7670497175567528,3.9916237683342257,4.26580322993182,4.523540010643543,4.9364543200802995],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.01205916210086503,0.023825694951794336,0.03530492428834909,0.046502089689413356,0.09474838010112979,0.13755972030126945,0.17538730762687965,0.2086491869181512,0.23773253031169186,0.26299576665846186,0.2847705702049478,0.3033637175711387,0.3131260739774988,0.3218999711415205,0.32974047811820517,0.3367000903520384,0.3481744022578021,0.3566954825486776,0.36184697675694155,0.3653160530645795,0.3672742561527359,0.3678792344114775,0.3652071710626137,0.3581123767424729,0.34858253277720025,0.33690383096366916,0.3071799333235914,0.26909076954726624,0.23513883972057573,0.206734793763108,0.17803486400475735,0.1519645496171225,0.12656778525419382,0.10567067146180732,0.087094844213499,0.07372409050046919,0.059894371923994216,0.04908287244215224,0.0354437978719474],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[-0.13552013761443177,5.084181731469466],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.05,0.1,0.15000000000000002,0.2,0.25,0.30000000000000004,0.35000000000000003],"visible":true,"ticks":"inside","range":[0.0013845599315466563,0.3785538365807959],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.05","0.10","0.15","0.20","0.25","0.30","0.35"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <h5>Example</h5><p>The tangent function does not have a <em>guarantee</em> of absolute maximum or minimum over $(-\pi/2, \pi/2)$, as it is not <em>continuous</em> at the endpoints. In fact, it doesn't have either extrema – it has vertical asymptotes at each.</p><h5>Example</h5><p>The function $f(x) = x^{2/3}$ over the interval $[-2,2]$ has cusp at $0$. However, it is continuous on this closed interval, so must have an absolute maximum and absolute minimum. They can be seen from the graph to occur at the endpoints and the cusp at $x=0$, respectively:</p><pre class="sourceCode julia">f(x) = (x^2)^(1/3)
 plot(f, -2, 2)</pre>
-    <div id="c166993b-a355-4567-abe5-83ca82385fc0" style="width:600px;height:400px;"></div>
+    <div id="5984e738-0c2c-4518-8b67-257d2b6a09c2" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('c166993b-a355-4567-abe5-83ca82385fc0');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.717478298117764,-0.6189562143740406,-0.5048087185099557,-0.3906612226458709,-0.2892203991008926,-0.18777957555591424,-0.14330234512671566,-0.09882511469751709,-0.0765864994829178,-0.054347884268318526,-0.04322857666101888,-0.03210926905371924,-0.020989961446419597,-0.009870653839119958,-0.003809138824732526,0.002252376189654906,0.008313891204042337,0.01437540621842977,0.026498436247204632,0.038621466275979496,0.06286752633352923,0.08711358639107895,0.1356057065061784,0.18409782662127785,0.2816584708162631,0.3792191150112484,0.48708488275443274,0.5949506504976171,0.6975822067384955,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.5666634804571713,1.3678327442756733,1.2411197615927776,1.128710874965828,0.9998614084431804,0.8732265022602029,0.8014427653615681,0.7262842368888821,0.6339931486650137,0.5344005174142937,0.4373400806644505,0.32791823572921713,0.2738433496338165,0.21375267154402433,0.1803439094092939,0.14347902868181817,0.1231725570686971,0.10102300424160487,0.07609236700800477,0.046014772698866814,0.024390340722311138,0.017182800658731602,0.04103957846850464,0.05912167782925477,0.08888193423978925,0.11425779499970386,0.15810693326410766,0.19651268780431083,0.263948163017569,0.3236178296557959,0.4296833691819956,0.5239141726524658,0.6190652607291519,0.7073819313954018,0.7865571133083967,0.8619273819697695,1.0090726355290724,1.1250353999477714,1.2589878219506239,1.378693903880091,1.5603864616793044],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.0782397293204,2.066466461463792],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-0.029301619735221586,1.6131479008511245],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('5984e738-0c2c-4518-8b67-257d2b6a09c2');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.9609367239208475,-1.5997403313265088,-1.3826763547775045,-1.1991515251369371,-0.9997921198677943,-0.8160003818614874,-0.717478298117764,-0.6189562143740406,-0.5048087185099557,-0.3906612226458709,-0.2892203991008926,-0.18777957555591424,-0.14330234512671566,-0.09882511469751709,-0.0765864994829178,-0.054347884268318526,-0.04322857666101888,-0.03210926905371924,-0.020989961446419597,-0.009870653839119958,-0.003809138824732526,0.002252376189654906,0.008313891204042337,0.01437540621842977,0.026498436247204632,0.038621466275979496,0.06286752633352923,0.08711358639107895,0.1356057065061784,0.18409782662127785,0.2816584708162631,0.3792191150112484,0.48708488275443274,0.5949506504976171,0.6975822067384955,0.8002137629793739,1.0136397740454022,1.1932990146673805,1.4126425839454564,1.618832008514834,1.9491634560642397],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[1.5666634804571713,1.3678327442756733,1.2411197615927776,1.128710874965828,0.9998614084431804,0.8732265022602029,0.8014427653615681,0.7262842368888821,0.6339931486650137,0.5344005174142937,0.4373400806644505,0.32791823572921713,0.2738433496338165,0.21375267154402433,0.1803439094092939,0.14347902868181817,0.1231725570686971,0.10102300424160487,0.07609236700800477,0.046014772698866814,0.024390340722311138,0.017182800658731602,0.04103957846850464,0.05912167782925477,0.08888193423978925,0.11425779499970386,0.15810693326410766,0.19651268780431083,0.263948163017569,0.3236178296557959,0.4296833691819956,0.5239141726524658,0.6190652607291519,0.7073819313954018,0.7865571133083967,0.8619273819697695,1.0090726355290724,1.1250353999477714,1.2589878219506239,1.378693903880091,1.5603864616793044],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.0782397293204,2.066466461463792],"domain":[0.05100612423447069,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-0.029301619735221586,1.6131479008511245],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<p>(The definition <code>x^&#40;2/3&#41;</code> fails, can you see why?)</p><h2>Questions</h2><h6>Question</h6><p>There is negative zero in the interval $[-10, 0]$ for the function $f(x) = e^x - x^4$. Find its value numerically:</p><form name='WeaveQuestion' data-id='MeGeZhxp' data-controltype='numeric'>
+<p>(The definition <code>x^&#40;2/3&#41;</code> fails, can you see why?)</p><h2>Questions</h2><h6>Question</h6><p>There is negative zero in the interval $[-10, 0]$ for the function $f(x) = e^x - x^4$. Find its value numerically:</p><form name='WeaveQuestion' data-id='ejAmxZ1M' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="MeGeZhxp" type="number" class="form-control">
+<input id="ejAmxZ1M" type="number" class="form-control">
 
 </div>
   
-<div id='MeGeZhxp_message'></div>
+<div id='ejAmxZ1M_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#MeGeZhxp').on('change', function() {
-  correct = Math.abs(this.value - 8.6131694564414) <= 0.001;
+$('#ejAmxZ1M').on('change', function() {
+  correct = Math.abs(this.value - -0.8155534188089606) <= 0.001;
 
   if(correct) {
-     $('#MeGeZhxp_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#ejAmxZ1M_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#MeGeZhxp_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#ejAmxZ1M_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>There is  zero in the interval $[0, 5]$ for the function $f(x) = e^x - x^4$. Find its value numerically:</p><form name='WeaveQuestion' data-id='ZMoXN9Tl' data-controltype='numeric'>
+<h6>Question</h6><p>There is  zero in the interval $[0, 5]$ for the function $f(x) = e^x - x^4$. Find its value numerically:</p><form name='WeaveQuestion' data-id='ailwHxjC' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="ZMoXN9Tl" type="number" class="form-control">
+<input id="ailwHxjC" type="number" class="form-control">
 
 </div>
   
-<div id='ZMoXN9Tl_message'></div>
+<div id='ailwHxjC_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#ZMoXN9Tl').on('change', function() {
+$('#ailwHxjC').on('change', function() {
   correct = Math.abs(this.value - 1.4296118247255556) <= 0.001;
 
   if(correct) {
-     $('#ZMoXN9Tl_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#ailwHxjC_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#ZMoXN9Tl_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#ailwHxjC_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Let $f(x) = x^2 - 10 \cdot x \cdot \log(x)$. This function has two zeros on the positive $x$ axis. You are asked to find the largest (graph and bracket...).</p><form name='WeaveQuestion' data-id='Db0jINU0' data-controltype='numeric'>
+<h6>Question</h6><p>Let $f(x) = x^2 - 10 \cdot x \cdot \log(x)$. This function has two zeros on the positive $x$ axis. You are asked to find the largest (graph and bracket...).</p><form name='WeaveQuestion' data-id='xCv36iaj' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="Db0jINU0" type="number" class="form-control">
+<input id="xCv36iaj" type="number" class="form-control">
 
 </div>
   
-<div id='Db0jINU0_message'></div>
+<div id='xCv36iaj_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#Db0jINU0').on('change', function() {
-  correct = Math.abs(this.value - 35.77152063957297) <= 0.001;
+$('#xCv36iaj').on('change', function() {
+  correct = Math.abs(this.value - 35.77152063957298) <= 0.001;
 
   if(correct) {
-     $('#Db0jINU0_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#xCv36iaj_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#Db0jINU0_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#xCv36iaj_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>The <code>airyai</code> function has infinitely many negative roots, as the function oscillates when $x < 0$ and <em>no</em> positive roots. Find the <em>second largest root</em> using the graph to bracket the answer, and then solve.</p><pre class="sourceCode julia">import SpecialFunctions: airyai
 plot(airyai, -10, 10)</pre>
-    <div id="6c73ff56-e59e-4f76-a241-5890802a2a34" style="width:600px;height:400px;"></div>
+    <div id="85c92709-d38d-48d5-979a-d076efd2b9cb" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('6c73ff56-e59e-4f76-a241-5890802a2a34');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-9.951170904901058,-9.902341809802119,-9.853512714703179,-9.804683619604237,-9.776465151432804,-9.748246683261371,-9.72002821508994,-9.691809746918507,-9.663591278747074,-9.635372810575642,-9.60715434240421,-9.578935874232776,-9.550717406061343,-9.52249893788991,-9.494280469718477,-9.466062001547044,-9.437843533375611,-9.409625065204178,-9.381406597032747,-9.353188128861314,-9.32496966068988,-9.29675119251845,-9.268532724347017,-9.240314256175584,-9.183877319832717,-9.127440383489851,-9.014566510804121,-8.90169263811839,-8.845255701775525,-8.78881876543266,-8.760600297261227,-8.732381829089796,-8.704163360918363,-8.67594489274693,-8.647726424575497,-8.619507956404064,-8.591289488232631,-8.563071020061198,-8.534852551889765,-8.506634083718332,-8.4784156155469,-8.450197147375468,-8.421978679204035,-8.393760211032603,-8.36554174286117,-8.337323274689737,-8.309104806518304,-8.280886338346871,-8.252667870175438,-8.224449402004005,-8.168012465661139,-8.111575529318275,-8.055138592975409,-7.9987016566325435,-7.930869163960979,-7.863036671289416,-7.795204178617852,-7.727371685946288,-7.693455439610506,-7.659539193274725,-7.625622946938943,-7.591706700603161,-7.557790454267378,-7.523874207931597,-7.489957961595815,-7.456041715260033,-7.422125468924252,-7.388209222588469,-7.354292976252687,-7.320376729916905,-7.2864604835811235,-7.252544237245342,-7.21862799090956,-7.184711744573778,-7.150795498237995,-7.116879251902214,-7.082963005566432,-7.0490467592306505,-6.981214266559086,-6.913381773887522,-6.798678755362168,-6.683975736836813,-6.626624227574135,-6.569272718311458,-6.511921209048781,-6.454569699786104,-6.397218190523427,-6.33986668126075,-6.311190926629411,-6.282515171998073,-6.253839417366734,-6.225163662735395,-6.196487908104055,-6.167812153472717,-6.139136398841378,-6.11046064421004,-6.081784889578701,-6.053109134947363,-6.024433380316024,-5.995757625684686,-5.964607718611382,-5.933457811538078,-5.902307904464775,-5.871157997391471,-5.808858183244864,-5.746558369098257,-5.621958740805043,-5.497359112511829,-5.435059298365221,-5.372759484218614,-5.310459670072007,-5.2481598559254,-5.185860041778794,-5.123560227632186,-5.061260413485579,-4.998960599338972,-4.941525681212001,-4.88409076308503,-4.82665584495806,-4.769220926831088,-4.711786008704117,-4.654351090577146,-4.596916172450175,-4.539481254323205,-4.482046336196234,-4.424611418069262,-4.367176499942291,-4.30974158181532,-4.194871745561379,-4.080001909307437,-3.9568493046277826,-3.833696699948128,-3.772120397608301,-3.7105440952684736,-3.6489677929286466,-3.5873914905888196,-3.5258151882489925,-3.4642388859091655,-3.4026625835693385,-3.3410862812295115,-3.2795099788896844,-3.2179336765498574,-3.15635737421003,-3.094781071870203,-3.02343888695515,-2.952096702040097,-2.880754517125044,-2.809412332209991,-2.738070147294938,-2.666727962379885,-2.595385777464832,-2.524043592549779,-2.3813592227196727,-2.2386748528895666,-2.0959904830594605,-1.9533061132293543,-1.8899055985137427,-1.8265050837981314,-1.76310456908252,-1.6997040543669084,-1.636303539651297,-1.5729030249356857,-1.509502510220074,-1.4461019955044627,-1.3827014807888514,-1.3193009660732398,-1.2559004513576284,-1.192499936642017,-1.1290994219264054,-1.065698907210794,-1.0022983924951827,-0.9388978777795711,-0.8277048017065747,-0.7165117256335782,-0.6053186495605818,-0.49412557348758546,-0.2717394213415926,-0.049353269195599785,0.19310733137989744,0.43556793195539467,0.5567982322431433,0.6780285325308919,0.7992588328186405,0.9204891331063891,1.0424399383501206,1.1643907435938523,1.286341548837584,1.4082923540813155,1.530243159325047,1.6521939645687787,1.7741447698125103,1.8960955750562418,2.1657599944142025,2.4354244137721635,2.7050888331301244,2.9747532524880853,3.4879110336924772,4.001068814896869,5.068198870227011,5.966495073336902,7.063212919727282,8.09416004257417,9.745817280321198],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.08821734538357467,0.1341054209958374,0.17683435859039928,0.2154177486752949,0.23547540243631912,0.25370118257101587,0.2699589827613841,0.2841287363455291,0.2961072099022566,0.30580865661192297,0.31316532627199595,0.31812783002968653,0.32066535907007393,0.32076575765737414,0.3184354520600309,0.3136992379891326,0.30659993023579896,0.2971978791997341,0.2855703599505604,0.27181084035020237,0.25602813558253745,0.2383454571808973,0.2188993653109019,0.1978386336514771,0.15152206989316216,0.1007825464456673,-0.007905086329036437,-0.11571962069842456,-0.16546354762797383,-0.21055818288430028,-0.23097098155686774,-0.2497735578409745,-0.2668404225241681,-0.28205895318743796,-0.29533005499473414,-0.3065687182751314,-0.3157044705905238,-0.3226817217781192,-0.32746000124725066,-0.3300140875884094,-0.3303340313133234,-0.3284250722835474,-0.32430745409630135,-0.3180161383758414,-0.3096004225623477,-0.2991234653943335,-0.2866617248415995,-0.2723043137608776,-0.256152279012818,-0.23831781019503684,-0.19810085459209417,-0.15273995437043078,-0.10343987144607288,-0.05149001838826812,0.012562937092336529,0.07616216796260566,0.13701741134884593,0.1929758778338369,0.21850201699938077,0.24209602667630048,0.263558674918994,0.28271124922425017,0.29939686712051766,0.31348156926428217,0.3248551898399654,0.3334320012329457,0.33915113208343955,0.34197675991317394,0.3418980815290839,0.33892906633211045,0.33310799947914205,0.32449682354877035,0.3131802889348394,0.299264924625038,0.2828778423070041,0.26416538787381094,0.24329165536991756,0.22043687922356398,0.1695754693880605,0.11327867912668561,0.01090172053135325,-0.09246916697546345,-0.14167143525140094,-0.1877929008698533,-0.22986529786317433,-0.2670242429109659,-0.29852527507623416,-0.3237567269680731,-0.3338689440743501,-0.34224927195697397,-0.34886229456738405,-0.35368207516287126,-0.3566921641458108,-0.3578855561376299,-0.35726459762247303,-0.3548408467389611,-0.350634887025699,-0.3446760971365843,-0.3370023787347327,-0.3276598449483844,-0.3156833405328583,-0.3018806163444575,-0.28634062460727433,-0.2691614292520307,-0.2303189118244051,-0.18629176291328894,-0.086895574203478,0.020063433327571017,0.0734826702415524,0.12535664407535144,0.17462312180993672,0.22029848141952818,0.26149583379454194,0.2974402532763632,0.32748093077800655,0.3511001458510172,0.36685680818446487,0.3766418764552827,0.38036703878050176,0.378044040255017,0.369781066360693,0.3557776378563667,0.33631818651195766,0.31176449525416594,0.2825471960044124,0.2491565238460415,0.21213252737076918,0.17205493240662684,0.08519451150671394,-0.0063824811678551575,-0.1040790361396232,-0.1955903562589856,-0.2373955974751798,-0.2758110888834451,-0.31035214784648524,-0.34060551607768214,-0.36623227078710857,-0.38696935797069953,-0.40262981422072514,-0.41310176249413044,-0.4183462831145387,-0.41839427386643163,-0.41334242240001506,-0.4033484204037213,-0.38587281375467475,-0.3624656060831924,-0.3336174731209913,-0.29988185241587134,-0.26186112826215807,-0.22019293569883447,-0.17553685805815236,-0.12856175761372887,-0.03030633000014205,0.06946056891339032,0.16612136846101103,0.25576382783162577,0.2925067043711165,0.3270304119444722,0.3591559904779131,0.38873903707815655,0.41566886329082287,0.4398672834923387,0.46128708495528287,0.47991023021452517,0.4957458415871686,0.5088280161705167,0.5192135174685852,0.5269793870883815,0.5322205168092036,0.5350472178642416,0.5355828205807267,0.5339613336926252,0.5263424932224061,0.5133394541521775,0.49578864035980763,0.4745251441303466,0.4240554096007507,0.3677943965589595,0.30544433054415043,0.24641992473326257,0.2191094224583528,0.19358529530749377,0.16998451786038188,0.14837570872126377,0.12865972135668402,0.11093528533186274,0.09512960131792533,0.08114219204606271,0.06885323269361643,0.05813071720708127,0.04883645996481169,0.0408309795474024,0.027030485700278082,0.01750533371515428,0.011100581498363939,0.006898283822368043,0.0026452622791299737,0.0009494725992465748,9.267315361203521e-5,1.0811837379423747e-5,6.322108401170044e-7,3.582089225057317e-8,2.4709472757808124e-10],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-10.0,-5.0,0.0,5.0,10.0],"visible":true,"ticks":"inside","range":[-10.542080550457726,10.336726925877866],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-10","-5","0","5","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.4,-0.2,0.0,0.2,0.4],"visible":true,"ticks":"inside","range":[-0.44701358669984637,0.5642021334141415],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.4","-0.2","0.0","0.2","0.4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('85c92709-d38d-48d5-979a-d076efd2b9cb');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-9.951170904901058,-9.902341809802119,-9.853512714703179,-9.804683619604237,-9.776465151432804,-9.748246683261371,-9.72002821508994,-9.691809746918507,-9.663591278747074,-9.635372810575642,-9.60715434240421,-9.578935874232776,-9.550717406061343,-9.52249893788991,-9.494280469718477,-9.466062001547044,-9.437843533375611,-9.409625065204178,-9.381406597032747,-9.353188128861314,-9.32496966068988,-9.29675119251845,-9.268532724347017,-9.240314256175584,-9.183877319832717,-9.127440383489851,-9.014566510804121,-8.90169263811839,-8.845255701775525,-8.78881876543266,-8.760600297261227,-8.732381829089796,-8.704163360918363,-8.67594489274693,-8.647726424575497,-8.619507956404064,-8.591289488232631,-8.563071020061198,-8.534852551889765,-8.506634083718332,-8.4784156155469,-8.450197147375468,-8.421978679204035,-8.393760211032603,-8.36554174286117,-8.337323274689737,-8.309104806518304,-8.280886338346871,-8.252667870175438,-8.224449402004005,-8.168012465661139,-8.111575529318275,-8.055138592975409,-7.9987016566325435,-7.930869163960979,-7.863036671289416,-7.795204178617852,-7.727371685946288,-7.693455439610506,-7.659539193274725,-7.625622946938943,-7.591706700603161,-7.557790454267378,-7.523874207931597,-7.489957961595815,-7.456041715260033,-7.422125468924252,-7.388209222588469,-7.354292976252687,-7.320376729916905,-7.2864604835811235,-7.252544237245342,-7.21862799090956,-7.184711744573778,-7.150795498237995,-7.116879251902214,-7.082963005566432,-7.0490467592306505,-6.981214266559086,-6.913381773887522,-6.798678755362168,-6.683975736836813,-6.626624227574135,-6.569272718311458,-6.511921209048781,-6.454569699786104,-6.397218190523427,-6.33986668126075,-6.311190926629411,-6.282515171998073,-6.253839417366734,-6.225163662735395,-6.196487908104055,-6.167812153472717,-6.139136398841378,-6.11046064421004,-6.081784889578701,-6.053109134947363,-6.024433380316024,-5.995757625684686,-5.964607718611382,-5.933457811538078,-5.902307904464775,-5.871157997391471,-5.808858183244864,-5.746558369098257,-5.621958740805043,-5.497359112511829,-5.435059298365221,-5.372759484218614,-5.310459670072007,-5.2481598559254,-5.185860041778794,-5.123560227632186,-5.061260413485579,-4.998960599338972,-4.941525681212001,-4.88409076308503,-4.82665584495806,-4.769220926831088,-4.711786008704117,-4.654351090577146,-4.596916172450175,-4.539481254323205,-4.482046336196234,-4.424611418069262,-4.367176499942291,-4.30974158181532,-4.194871745561379,-4.080001909307437,-3.9568493046277826,-3.833696699948128,-3.772120397608301,-3.7105440952684736,-3.6489677929286466,-3.5873914905888196,-3.5258151882489925,-3.4642388859091655,-3.4026625835693385,-3.3410862812295115,-3.2795099788896844,-3.2179336765498574,-3.15635737421003,-3.094781071870203,-3.02343888695515,-2.952096702040097,-2.880754517125044,-2.809412332209991,-2.738070147294938,-2.666727962379885,-2.595385777464832,-2.524043592549779,-2.3813592227196727,-2.2386748528895666,-2.0959904830594605,-1.9533061132293543,-1.8899055985137427,-1.8265050837981314,-1.76310456908252,-1.6997040543669084,-1.636303539651297,-1.5729030249356857,-1.509502510220074,-1.4461019955044627,-1.3827014807888514,-1.3193009660732398,-1.2559004513576284,-1.192499936642017,-1.1290994219264054,-1.065698907210794,-1.0022983924951827,-0.9388978777795711,-0.8277048017065747,-0.7165117256335782,-0.6053186495605818,-0.49412557348758546,-0.2717394213415926,-0.049353269195599785,0.19310733137989744,0.43556793195539467,0.5567982322431433,0.6780285325308919,0.7992588328186405,0.9204891331063891,1.0424399383501206,1.1643907435938523,1.286341548837584,1.4082923540813155,1.530243159325047,1.6521939645687787,1.7741447698125103,1.8960955750562418,2.1657599944142025,2.4354244137721635,2.7050888331301244,2.9747532524880853,3.4879110336924772,4.001068814896869,5.068198870227011,5.966495073336902,7.063212919727282,8.09416004257417,9.745817280321198],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.08821734538357467,0.1341054209958374,0.17683435859039928,0.2154177486752949,0.23547540243631912,0.25370118257101587,0.2699589827613841,0.2841287363455291,0.2961072099022566,0.30580865661192297,0.31316532627199595,0.31812783002968653,0.32066535907007393,0.32076575765737414,0.3184354520600309,0.3136992379891326,0.30659993023579896,0.2971978791997341,0.2855703599505604,0.27181084035020237,0.25602813558253745,0.2383454571808973,0.2188993653109019,0.1978386336514771,0.15152206989316216,0.1007825464456673,-0.007905086329036437,-0.11571962069842456,-0.16546354762797383,-0.21055818288430028,-0.23097098155686774,-0.2497735578409745,-0.2668404225241681,-0.28205895318743796,-0.29533005499473414,-0.3065687182751314,-0.3157044705905238,-0.3226817217781192,-0.32746000124725066,-0.3300140875884094,-0.3303340313133234,-0.3284250722835474,-0.32430745409630135,-0.3180161383758414,-0.3096004225623477,-0.2991234653943335,-0.2866617248415995,-0.2723043137608776,-0.256152279012818,-0.23831781019503684,-0.19810085459209417,-0.15273995437043078,-0.10343987144607288,-0.05149001838826812,0.012562937092336529,0.07616216796260566,0.13701741134884593,0.1929758778338369,0.21850201699938077,0.24209602667630048,0.263558674918994,0.28271124922425017,0.29939686712051766,0.31348156926428217,0.3248551898399654,0.3334320012329457,0.33915113208343955,0.34197675991317394,0.3418980815290839,0.33892906633211045,0.33310799947914205,0.32449682354877035,0.3131802889348394,0.299264924625038,0.2828778423070041,0.26416538787381094,0.24329165536991756,0.22043687922356398,0.1695754693880605,0.11327867912668561,0.01090172053135325,-0.09246916697546345,-0.14167143525140094,-0.1877929008698533,-0.22986529786317433,-0.2670242429109659,-0.29852527507623416,-0.3237567269680731,-0.3338689440743501,-0.34224927195697397,-0.34886229456738405,-0.35368207516287126,-0.3566921641458108,-0.3578855561376299,-0.35726459762247303,-0.3548408467389611,-0.350634887025699,-0.3446760971365843,-0.3370023787347327,-0.3276598449483844,-0.3156833405328583,-0.3018806163444575,-0.28634062460727433,-0.2691614292520307,-0.2303189118244051,-0.18629176291328894,-0.086895574203478,0.020063433327571017,0.0734826702415524,0.12535664407535144,0.17462312180993672,0.22029848141952818,0.26149583379454194,0.2974402532763632,0.32748093077800655,0.3511001458510172,0.36685680818446487,0.3766418764552827,0.38036703878050176,0.378044040255017,0.369781066360693,0.3557776378563667,0.33631818651195766,0.31176449525416594,0.2825471960044124,0.2491565238460415,0.21213252737076918,0.17205493240662684,0.08519451150671394,-0.0063824811678551575,-0.1040790361396232,-0.1955903562589856,-0.2373955974751798,-0.2758110888834451,-0.31035214784648524,-0.34060551607768214,-0.36623227078710857,-0.38696935797069953,-0.40262981422072514,-0.41310176249413044,-0.4183462831145387,-0.41839427386643163,-0.41334242240001506,-0.4033484204037213,-0.38587281375467475,-0.3624656060831924,-0.3336174731209913,-0.29988185241587134,-0.26186112826215807,-0.22019293569883447,-0.17553685805815236,-0.12856175761372887,-0.03030633000014205,0.06946056891339032,0.16612136846101103,0.25576382783162577,0.2925067043711165,0.3270304119444722,0.3591559904779131,0.38873903707815655,0.41566886329082287,0.4398672834923387,0.46128708495528287,0.47991023021452517,0.4957458415871686,0.5088280161705167,0.5192135174685852,0.5269793870883815,0.5322205168092036,0.5350472178642416,0.5355828205807267,0.5339613336926252,0.5263424932224061,0.5133394541521775,0.49578864035980763,0.4745251441303466,0.4240554096007507,0.3677943965589595,0.30544433054415043,0.24641992473326257,0.2191094224583528,0.19358529530749377,0.16998451786038188,0.14837570872126377,0.12865972135668402,0.11093528533186274,0.09512960131792533,0.08114219204606271,0.06885323269361643,0.05813071720708127,0.04883645996481169,0.0408309795474024,0.027030485700278082,0.01750533371515428,0.011100581498363939,0.006898283822368043,0.0026452622791299737,0.0009494725992465748,9.267315361203521e-5,1.0811837379423747e-5,6.322108401170044e-7,3.582089225057317e-8,2.4709472757808124e-10],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-10.0,-5.0,0.0,5.0,10.0],"visible":true,"ticks":"inside","range":[-10.542080550457726,10.336726925877866],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-10","-5","0","5","10"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.4,-0.2,0.0,0.2,0.4],"visible":true,"ticks":"inside","range":[-0.44701358669984637,0.5642021334141415],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.4","-0.2","0.0","0.2","0.4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<p>The second largest root is:</p><form name='WeaveQuestion' data-id='xKsgebpi' data-controltype='numeric'>
+<p>The second largest root is:</p><form name='WeaveQuestion' data-id='5GyLna62' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="xKsgebpi" type="number" class="form-control">
+<input id="5GyLna62" type="number" class="form-control">
 
 </div>
   
-<div id='xKsgebpi_message'></div>
+<div id='5GyLna62_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#xKsgebpi').on('change', function() {
+$('#5GyLna62').on('change', function() {
   correct = Math.abs(this.value - -4.087949444130973) <= 1.0e-8;
 
   if(correct) {
-     $('#xKsgebpi_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#5GyLna62_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#xKsgebpi_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#5GyLna62_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>(From <a href="http://ocw.mit.edu/ans7870/resources/Strang/Edited/Calculus/Calculus.pdf">Strang</a>, p. 37)</p><p>Certainly $x^3$ equals $3^x$ at $x=3$. Find the largest value for which $x^3 = 3x$.</p><form name='WeaveQuestion' data-id='yfGqNmnt' data-controltype='numeric'>
+<h6>Question</h6><p>(From <a href="http://ocw.mit.edu/ans7870/resources/Strang/Edited/Calculus/Calculus.pdf">Strang</a>, p. 37)</p><p>Certainly $x^3$ equals $3^x$ at $x=3$. Find the largest value for which $x^3 = 3x$.</p><form name='WeaveQuestion' data-id='unHiNnMi' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="yfGqNmnt" type="number" class="form-control">
+<input id="unHiNnMi" type="number" class="form-control">
 
 </div>
   
-<div id='yfGqNmnt_message'></div>
+<div id='unHiNnMi_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#yfGqNmnt').on('change', function() {
+$('#unHiNnMi').on('change', function() {
   correct = Math.abs(this.value - 3.000000000000001) <= 0.001;
 
   if(correct) {
-     $('#yfGqNmnt_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#unHiNnMi_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#yfGqNmnt_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#unHiNnMi_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<p>Compare $x^2$ and $2^x$. They meet at $2$, where do the meet again?</p><form name="WeaveQuestion" data-id="8sBeVtjD" data-controltype="radio">
+<p>Compare $x^2$ and $2^x$. They meet at $2$, where do the meet again?</p><form name="WeaveQuestion" data-id="NjX334f7" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_8sBeVtjD" value="1"><div class="markdown"><p>Only after 2</p>
+      <input type="radio" name="radio_NjX334f7" value="1"><div class="markdown"><p>Only after 2</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_8sBeVtjD" value="2"><div class="markdown"><p>Before and after 2</p>
+      <input type="radio" name="radio_NjX334f7" value="2"><div class="markdown"><p>Before and after 2</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_8sBeVtjD" value="3"><div class="markdown"><p>Only before 2</p>
+      <input type="radio" name="radio_NjX334f7" value="3"><div class="markdown"><p>Only before 2</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="8sBeVtjD_message"></div>
+<div id="NjX334f7_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_8sBeVtjD']").on("change", function() {
+$("input:radio[name='radio_NjX334f7']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#8sBeVtjD_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#NjX334f7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#8sBeVtjD_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#NjX334f7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>Just by graphing, find a number in $b$ with $2 < b < 3$ where for values less than $b$ there is a zero beyond $b$ of $b^x - x^b$ and for values more than $b$ there isn't.</p><form name="WeaveQuestion" data-id="vksnpXgZ" data-controltype="radio">
+<p>Just by graphing, find a number in $b$ with $2 < b < 3$ where for values less than $b$ there is a zero beyond $b$ of $b^x - x^b$ and for values more than $b$ there isn't.</p><form name="WeaveQuestion" data-id="Jd8lbWXY" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_vksnpXgZ" value="1"><div class="markdown">$b \approx 2.2$
+      <input type="radio" name="radio_Jd8lbWXY" value="1"><div class="markdown">$b \approx 2.5$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_vksnpXgZ" value="2"><div class="markdown">$b \approx 2.7$
+      <input type="radio" name="radio_Jd8lbWXY" value="2"><div class="markdown">$b \approx 2.9$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_vksnpXgZ" value="3"><div class="markdown">$b \approx 2.9$
+      <input type="radio" name="radio_Jd8lbWXY" value="3"><div class="markdown">$b \approx 2.7$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_vksnpXgZ" value="4"><div class="markdown">$b \approx 2.5$
+      <input type="radio" name="radio_Jd8lbWXY" value="4"><div class="markdown">$b \approx 2.2$
 </div>
     </label>
     </div>
-    
 
-
-<div id="vksnpXgZ_message"></div>
+<div id="Jd8lbWXY_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_vksnpXgZ']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_Jd8lbWXY']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#vksnpXgZ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Jd8lbWXY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#vksnpXgZ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Jd8lbWXY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -577,43 +562,38 @@ D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))</pre>
 <pre class="output">
 D (generic function with 2 methods)</pre>
 
-<p>Let $v_0= 390$. The three times in question can be found from the zeros of <code>f</code> and <code>D&#40;f&#41;</code>. What are they?</p><form name="WeaveQuestion" data-id="CGuHonEq" data-controltype="radio">
+<p>Let $v_0= 390$. The three times in question can be found from the zeros of <code>f</code> and <code>D&#40;f&#41;</code>. What are they?</p><form name="WeaveQuestion" data-id="nzRdbv7B" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CGuHonEq" value="1"><div class="markdown">$(0.0, 12.1875, 24.375)$
+      <input type="radio" name="radio_nzRdbv7B" value="1"><div class="markdown">$(-4.9731, 0.0, 4.9731)$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CGuHonEq" value="2"><div class="markdown">$(-4.9731, 0.0, 4.9731)$
+      <input type="radio" name="radio_nzRdbv7B" value="2"><div class="markdown">$(0.0, 625.0, 1250.0)$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_CGuHonEq" value="3"><div class="markdown">$(0.0, 625.0, 1250.0)$
+      <input type="radio" name="radio_nzRdbv7B" value="3"><div class="markdown">$(0.0, 12.1875, 24.375)$
 </div>
     </label>
     </div>
-    
 
-
-<div id="CGuHonEq_message"></div>
+<div id="nzRdbv7B_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_CGuHonEq']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_nzRdbv7B']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#CGuHonEq_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#nzRdbv7B_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#CGuHonEq_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#nzRdbv7B_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -625,463 +605,413 @@ h(t) = (\frac{g}{\gamma^2} + \frac{v_0}{\gamma})(1 - e^{-\gamma t}) - \frac{gt}{
 <pre class="output">
 h (generic function with 1 method)</pre>
 
-<p>Now find the three times: $t_0$, the starting time; $t_a$, the time at the apex of the flight; and $t_f$, the time the object returns to the ground.</p><form name="WeaveQuestion" data-id="AxZPdq1u" data-controltype="radio">
+<p>Now find the three times: $t_0$, the starting time; $t_a$, the time at the apex of the flight; and $t_f$, the time the object returns to the ground.</p><form name="WeaveQuestion" data-id="NvEE1kMz" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_AxZPdq1u" value="1"><div class="markdown">$(0, 2.579, 13.187)$
+      <input type="radio" name="radio_NvEE1kMz" value="1"><div class="markdown">$(0, 13.187, 30.0)$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_AxZPdq1u" value="2"><div class="markdown">$(0, 13.187, 30.0)$
+      <input type="radio" name="radio_NvEE1kMz" value="2"><div class="markdown">$(0, 2.579, 13.187)$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_AxZPdq1u" value="3"><div class="markdown">$(0, 32.0, 390.0)$
+      <input type="radio" name="radio_NvEE1kMz" value="3"><div class="markdown">$(0, 32.0, 390.0)$
 </div>
     </label>
     </div>
-    
 
-
-<div id="AxZPdq1u_message"></div>
+<div id="NvEE1kMz_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_AxZPdq1u']").on("change", function() {
-  correct = this.value == 1;
-
-  if(correct) {
-     $("#AxZPdq1u_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#AxZPdq1u_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Part of the proof of the intermediate value theorem rests on knowing what the limit is of $f(x)$ when $f(x) > y$ for all $x$. What can we say about $L$ supposing $L = \lim_{x \rightarrow c+}f(x)$ under  this assumption on $f$?</p><form name="WeaveQuestion" data-id="VXxRb2KX" data-controltype="radio">
-<div class="form-group ">
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_VXxRb2KX" value="1"><div class="markdown"><p>It must be that $L > y$ as each $f(x)$ is.</p>
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_VXxRb2KX" value="2"><div class="markdown"><p>It must be that $L \geq y$</p>
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_VXxRb2KX" value="3"><div class="markdown"><p>It can happen that $L < y$, $L=y$, or $L>y$</p>
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="VXxRb2KX_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_VXxRb2KX']").on("change", function() {
+$("input:radio[name='radio_NvEE1kMz']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#VXxRb2KX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#NvEE1kMz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#VXxRb2KX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#NvEE1kMz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the interval is not closed? (The consequence–-the existence of an absolute maximum and minimum–-can happen even if the theorem does not apply.)</p><form name="WeaveQuestion" data-id="V2rR8Jlr" data-controltype="radio">
+<h6>Question</h6><p>Part of the proof of the intermediate value theorem rests on knowing what the limit is of $f(x)$ when $f(x) > y$ for all $x$. What can we say about $L$ supposing $L = \lim_{x \rightarrow c+}f(x)$ under  this assumption on $f$?</p><form name="WeaveQuestion" data-id="ioJt1av7" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_V2rR8Jlr" value="1"><div class="markdown">$f(x) = \sin(x),~ I=(-2\pi, 2\pi)$
+      <input type="radio" name="radio_ioJt1av7" value="1"><div class="markdown"><p>It must be that $L > y$ as each $f(x)$ is.</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_V2rR8Jlr" value="2"><div class="markdown">$f(x) = \sin(x),~ I=(-\pi, \pi)$
+      <input type="radio" name="radio_ioJt1av7" value="2"><div class="markdown"><p>It must be that $L \geq y$</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_V2rR8Jlr" value="3"><div class="markdown">$f(x) = \sin(x),~ I=(-\pi/2, \pi/2)$
+      <input type="radio" name="radio_ioJt1av7" value="3"><div class="markdown"><p>It can happen that $L < y$, $L=y$, or $L>y$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_V2rR8Jlr" value="4"><div class="markdown"><p>None of the above</p>
-</div>
-    </label>
-    </div>
-    
 
-
-<div id="V2rR8Jlr_message"></div>
+<div id="ioJt1av7_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_V2rR8Jlr']").on("change", function() {
+$("input:radio[name='radio_ioJt1av7']").on("change", function() {
+  correct = this.value == 2;
+
+  if(correct) {
+     $("#ioJt1av7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#ioJt1av7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the interval is not closed? (The consequence–-the existence of an absolute maximum and minimum–-can happen even if the theorem does not apply.)</p><form name="WeaveQuestion" data-id="6KVNGK4l" data-controltype="radio">
+<div class="form-group ">
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_6KVNGK4l" value="1"><div class="markdown">$f(x) = \sin(x),~ I=(-2\pi, 2\pi)$
+</div>
+    </label>
+    </div>
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_6KVNGK4l" value="2"><div class="markdown">$f(x) = \sin(x),~ I=(-\pi, \pi)$
+</div>
+    </label>
+    </div>
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_6KVNGK4l" value="3"><div class="markdown">$f(x) = \sin(x),~ I=(-\pi/2, \pi/2)$
+</div>
+    </label>
+    </div>
+    <div  class="radio"> 
+    <label>
+      <input type="radio" name="radio_6KVNGK4l" value="4"><div class="markdown"><p>None of the above</p>
+</div>
+    </label>
+    </div>
+
+<div id="6KVNGK4l_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_6KVNGK4l']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#V2rR8Jlr_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#6KVNGK4l_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#V2rR8Jlr_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#6KVNGK4l_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the function is not continuous?</p><form name="WeaveQuestion" data-id="zFfasqzm" data-controltype="radio">
+<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the function is not continuous?</p><form name="WeaveQuestion" data-id="mwdRe1nt" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_zFfasqzm" value="1"><div class="markdown">$f(x) = 1/x,~ I=[1,2]$
+      <input type="radio" name="radio_mwdRe1nt" value="1"><div class="markdown">$f(x) = 1/x,~ I=[1,2]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_zFfasqzm" value="2"><div class="markdown">$f(x) = 1/x,~ I=[-2, -1]$
+      <input type="radio" name="radio_mwdRe1nt" value="2"><div class="markdown">$f(x) = 1/x,~ I=[-2, -1]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_zFfasqzm" value="3"><div class="markdown">$f(x) = 1/x,~ I=[-1, 1]$
+      <input type="radio" name="radio_mwdRe1nt" value="3"><div class="markdown">$f(x) = 1/x,~ I=[-1, 1]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_zFfasqzm" value="4"><div class="markdown"><p>none of the above</p>
+      <input type="radio" name="radio_mwdRe1nt" value="4"><div class="markdown"><p>none of the above</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="zFfasqzm_message"></div>
+<div id="mwdRe1nt_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_zFfasqzm']").on("change", function() {
+$("input:radio[name='radio_mwdRe1nt']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#zFfasqzm_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#mwdRe1nt_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#zFfasqzm_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#mwdRe1nt_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the function is not continuous?</p><form name="WeaveQuestion" data-id="ndujA2gJ" data-controltype="radio">
+<h6>Question</h6><p>The extreme value theorem has two assumptions: a continuous function and a <em>closed</em> interval. Which of the following examples fails to satisfy the consequence of the  extreme value theorem because the function is not continuous?</p><form name="WeaveQuestion" data-id="riz3GyEH" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ndujA2gJ" value="1"><div class="markdown">$f(x) = \text{sign}(x),~  I=[-1, 1]$
+      <input type="radio" name="radio_riz3GyEH" value="1"><div class="markdown">$f(x) = \text{sign}(x),~  I=[-1, 1]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ndujA2gJ" value="2"><div class="markdown">$f(x) = 1/x,~      I=[-4, -1]$
+      <input type="radio" name="radio_riz3GyEH" value="2"><div class="markdown">$f(x) = 1/x,~      I=[-4, -1]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ndujA2gJ" value="3"><div class="markdown">$f(x) = \text{floor}(x),~ I=[-1/2, 1/2]$
+      <input type="radio" name="radio_riz3GyEH" value="3"><div class="markdown">$f(x) = \text{floor}(x),~ I=[-1/2, 1/2]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_ndujA2gJ" value="4"><div class="markdown"><p>none of the above</p>
+      <input type="radio" name="radio_riz3GyEH" value="4"><div class="markdown"><p>none of the above</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="ndujA2gJ_message"></div>
+<div id="riz3GyEH_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_ndujA2gJ']").on("change", function() {
+$("input:radio[name='radio_riz3GyEH']").on("change", function() {
   correct = this.value == 4;
 
   if(correct) {
-     $("#ndujA2gJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#riz3GyEH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#ndujA2gJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#riz3GyEH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The function $f(x) = x^3 - x$ is continuous over the interval $I=[-2,2]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum over $I$.</p><form name='WeaveQuestion' data-id='91R8hmei' data-controltype='numeric'>
+<h6>Question</h6><p>The function $f(x) = x^3 - x$ is continuous over the interval $I=[-2,2]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum over $I$.</p><form name='WeaveQuestion' data-id='jxn3IGKD' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="91R8hmei" type="number" class="form-control">
+<input id="jxn3IGKD" type="number" class="form-control">
 
 </div>
   
-<div id='91R8hmei_message'></div>
+<div id='jxn3IGKD_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#91R8hmei').on('change', function() {
+$('#jxn3IGKD').on('change', function() {
   correct = Math.abs(this.value - 2) <= 0;
 
   if(correct) {
-     $('#91R8hmei_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#jxn3IGKD_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#91R8hmei_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#jxn3IGKD_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>The function $f(x) = x^3 - x$ is continuous over the interval $I=[-1,1]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum over $I$.</p><form name='WeaveQuestion' data-id='j3xLlCRo' data-controltype='numeric'>
+<h6>Question</h6><p>The function $f(x) = x^3 - x$ is continuous over the interval $I=[-1,1]$. Find a value $c$ for which $M=f(c)$ is an absolute maximum over $I$.</p><form name='WeaveQuestion' data-id='2jbBiqDQ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="j3xLlCRo" type="number" class="form-control">
+<input id="2jbBiqDQ" type="number" class="form-control">
 
 </div>
   
-<div id='j3xLlCRo_message'></div>
+<div id='2jbBiqDQ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#j3xLlCRo').on('change', function() {
+$('#2jbBiqDQ').on('change', function() {
   correct = Math.abs(this.value - -0.5773502691896257) <= 0.001;
 
   if(correct) {
-     $('#j3xLlCRo_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#2jbBiqDQ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#j3xLlCRo_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#2jbBiqDQ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?</p><form name="WeaveQuestion" data-id="l5Ufp5Oe" data-controltype="radio">
+<h6>Question</h6><p>Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?</p><form name="WeaveQuestion" data-id="ZCG6Rkts" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_l5Ufp5Oe" value="1"><div class="markdown"><p>There is no value $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_ZCG6Rkts" value="1"><div class="markdown"><p>There is no value $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_l5Ufp5Oe" value="2"><div class="markdown"><p>There is just one value of $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_ZCG6Rkts" value="2"><div class="markdown"><p>There is just one value of $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_l5Ufp5Oe" value="3"><div class="markdown"><p>There are many values of $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_ZCG6Rkts" value="3"><div class="markdown"><p>There are many values of $c$ for which $f(c)$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="l5Ufp5Oe_message"></div>
+<div id="ZCG6Rkts_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_l5Ufp5Oe']").on("change", function() {
+$("input:radio[name='radio_ZCG6Rkts']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#l5Ufp5Oe_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#ZCG6Rkts_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#l5Ufp5Oe_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#ZCG6Rkts_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?</p><form name="WeaveQuestion" data-id="0Ahbh29e" data-controltype="radio">
+<h6>Question</h6><p>Consider the continuous function $f(x) = \sin(x)$ over the closed interval $I=[0, 10\pi]$. Which of these is true?</p><form name="WeaveQuestion" data-id="y6CG35im" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Ahbh29e" value="1"><div class="markdown"><p>There is no value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_y6CG35im" value="1"><div class="markdown"><p>There is no value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Ahbh29e" value="2"><div class="markdown"><p>There is just one value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_y6CG35im" value="2"><div class="markdown"><p>There is just one value $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_0Ahbh29e" value="3"><div class="markdown"><p>There are many values $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
+      <input type="radio" name="radio_y6CG35im" value="3"><div class="markdown"><p>There are many values $M$ for which $M=f(c)$, $c$ in $I$ for which $M$ is an absolute maximum over $I$.</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="0Ahbh29e_message"></div>
+<div id="y6CG35im_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_0Ahbh29e']").on("change", function() {
+$("input:radio[name='radio_y6CG35im']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#0Ahbh29e_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#y6CG35im_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#0Ahbh29e_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#y6CG35im_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>The extreme value theorem says that on a closed interval a continuous function has an extreme value $M=f(c)$ for some $c$. Does it also say that $c$ is unique? Which of these examples might help you answer this?</p><form name="WeaveQuestion" data-id="nUBeLK7Z" data-controltype="radio">
+<h6>Question</h6><p>The extreme value theorem says that on a closed interval a continuous function has an extreme value $M=f(c)$ for some $c$. Does it also say that $c$ is unique? Which of these examples might help you answer this?</p><form name="WeaveQuestion" data-id="riIZQPKd" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_nUBeLK7Z" value="1"><div class="markdown">$f(x) = \sin(x),\quad I=[-2\pi, 2\pi]$
+      <input type="radio" name="radio_riIZQPKd" value="1"><div class="markdown">$f(x) = \sin(x),\quad I=[0, 2\pi]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_nUBeLK7Z" value="2"><div class="markdown">$f(x) = \sin(x),\quad I=[0, 2\pi]$
+      <input type="radio" name="radio_riIZQPKd" value="2"><div class="markdown">$f(x) = \sin(x),\quad I=[-\pi/2, \pi/2]$
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_nUBeLK7Z" value="3"><div class="markdown">$f(x) = \sin(x),\quad I=[-\pi/2, \pi/2]$
+      <input type="radio" name="radio_riIZQPKd" value="3"><div class="markdown">$f(x) = \sin(x),\quad I=[-2\pi, 2\pi]$
 </div>
     </label>
     </div>
-    
 
-
-<div id="nUBeLK7Z_message"></div>
+<div id="riIZQPKd_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_nUBeLK7Z']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_riIZQPKd']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#nUBeLK7Z_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#riIZQPKd_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#nUBeLK7Z_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#riIZQPKd_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h5>Question</h5><p>The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibrations of rods. Using <code>find_zeros</code>, what is the largest zero in the interval $[0, 6\pi]$?</p><form name='WeaveQuestion' data-id='dgpZynCU' data-controltype='numeric'>
+<h5>Question</h5><p>The zeros of the equation $\cos(x) \cdot \cosh(x) = 1$ are related to vibrations of rods. Using <code>find_zeros</code>, what is the largest zero in the interval $[0, 6\pi]$?</p><form name='WeaveQuestion' data-id='OsrromKk' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="dgpZynCU" type="number" class="form-control">
+<input id="OsrromKk" type="number" class="form-control">
 
 </div>
   
-<div id='dgpZynCU_message'></div>
+<div id='OsrromKk_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#dgpZynCU').on('change', function() {
+$('#OsrromKk').on('change', function() {
   correct = Math.abs(this.value - 17.27875965739948) <= 0.001;
 
   if(correct) {
-     $('#dgpZynCU_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#OsrromKk_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#dgpZynCU_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#OsrromKk_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h5>Question</h5><p>A parametric equation is specified by a parameterization $(f(t), g(t)), a \leq t \leq b$. The parameterization will be continuous if and only if each function is continuous.</p><p>Suppose $k_x$ and $k_y$ are positive integers and $a, b$ are positive numbers, will the <a href="https://en.wikipedia.org/wiki/Parametric_equation#Lissajous_Curve">Lissajous</a> curve given by $(a\cos(k_x t), b\sin(k_y t))$ be continuous?</p><form name="WeaveQuestion" data-id="mqAvd9xR" data-controltype="radio">
+<h5>Question</h5><p>A parametric equation is specified by a parameterization $(f(t), g(t)), a \leq t \leq b$. The parameterization will be continuous if and only if each function is continuous.</p><p>Suppose $k_x$ and $k_y$ are positive integers and $a, b$ are positive numbers, will the <a href="https://en.wikipedia.org/wiki/Parametric_equation#Lissajous_Curve">Lissajous</a> curve given by $(a\cos(k_x t), b\sin(k_y t))$ be continuous?</p><form name="WeaveQuestion" data-id="yLXp6jz1" data-controltype="radio">
 <div class="form-group ">
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_mqAvd9xR" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_yLXp6jz1" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
-    
     <div  class="radio"> 
     <label>
-      <input type="radio" name="radio_mqAvd9xR" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_yLXp6jz1" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="mqAvd9xR_message"></div>
+<div id="yLXp6jz1_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_mqAvd9xR']").on("change", function() {
+$("input:radio[name='radio_yLXp6jz1']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#mqAvd9xR_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#yLXp6jz1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#mqAvd9xR_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#yLXp6jz1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -1089,10 +1019,10 @@ $("input:radio[name='radio_mqAvd9xR']").on("change", function() {
 <p>Here is a sample graph for $a=1, b=2, k_x=3, k_y=4$:</p><pre class="sourceCode julia">a,b = 1, 2
 k_x, k_y = 3, 4
 plot(t -> a * cos(k_x *t), t-> b * sin(k_y * t), 0, 4pi)</pre>
-    <div id="87a47f82-89a5-4236-a6e8-1d9324e102b6" style="width:600px;height:400px;"></div>
+    <div id="e1c64a68-ba04-4797-a791-44837ecc46fe" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('87a47f82-89a5-4236-a6e8-1d9324e102b6');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.0,0.9821093199149804,0.9290774325277306,0.8428018909013506,0.7263697512646394,0.5839471139413063,0.42063005461378417,0.24226227980378318,0.05522603110450817,-0.13378628010447904,-0.3180115362392381,-0.4908579070575935,-0.6461407143112099,-0.7783037279455297,-0.8826179755685469,-0.9553509515151947,-0.9939001709768878,-0.9968862904477932,-0.9642024625116118,-0.8970181589874636,-0.7977373256375195,-0.6699123657178551,-0.5181170301580778,-0.3477827625319824,-0.1650043546187989,0.023678133536623857,0.2115133858678184,0.3917804015584929,0.5580289815934403,0.7043105256526725,0.8253908811219757,0.9169376281927886,0.9756750997357736,0.9995015891261737,0.9875645521655236,0.9402911122726758,0.8593727774269122,0.747704915711709,0.6092831551065171,0.4490604144829194,0.27276968143060365,0.08671887816355096,-0.10243484451661349,-0.2879233091311653,-0.4631094861203471,-0.6217249757884948,-0.7580943001712455,-0.8673379793567139,-0.9455471259136673,-0.989923310200557,-0.9988786919844436,-0.972092835524257,-0.9105241751974628,-0.8163757214143996,-0.6930162339093321,-0.5448596829350706,-0.3772073114035758,-0.19605794920397915,-0.007893366909712247,0.18055365078890184,0.36254021327862285,0.5315545938209018,0.6815492279916331,0.807157103761985,0.9038838004888234,0.9682683053985073,0.9980068533314933,0.9920353585932581,0.9505674893877825,0.8750870224785937,0.7682947516379717,0.6340118495722394,0.47704314116489016,0.303005180306873,0.11812528195890788,-0.07098129964801639,-0.25754807380689576,-0.4348994275757909,-0.5966894882888573,-0.7371291875117791,-0.851193401784494,-0.934800758373598,-0.9849596723401104,-0.9998753895176573,-0.9790142052577144,-0.9231225611078604,-0.8342003361179188,-0.7154292884473727,-0.5710592077306961,-0.40625585182379015,-0.22691610896159095,-0.03945699907625321,0.14941393590426086,0.3329386370297614,0.5045503408691749,0.6581085472380385,0.7881187346471933,0.8899289617551795,0.9598963201568567,0.9955172826011058,0.995517282601106,0.959896320156857,0.8899289617551802,0.7881187346471942,0.6581085472380396,0.5045503408691763,0.3329386370297628,0.14941393590426233,-0.03945699907625174,-0.22691610896158954,-0.40625585182378876,-0.5710592077306949,-0.7154292884473716,-0.834200336117918,-0.9231225611078598,-0.9790142052577141,-0.9998753895176573,-0.9849596723401106,-0.9348007583735986,-0.8511934017844948,-0.7371291875117814,-0.5966894882888585,-0.43489942757579225,-0.2575480738068989,-0.07098129964801786,0.11812528195890641,0.3030051803068716,0.4770431411648889,0.6340118495722383,0.7682947516379685,0.8750870224785938,0.9505674893877831,0.9920353585932575,0.9980068533314933,0.9682683053985085,0.9038838004888241,0.8071571037619838,0.6815492279916368,0.5315545938209015,0.3625402132786275,0.18055365078890503,-0.007893366909714329,-0.19605794920397596,-0.3772073114035744,-0.5448596829350694,-0.6930162339093311,-0.8163757214143987,-0.9105241751974621,-0.9720928355242571,-0.9988786919844435,-0.989923310200557,-0.9455471259136666,-0.8673379793567155,-0.7580943001712441,-0.6217249757884988,-0.4631094861203484,-0.2879233091311633,-0.10243484451661672,0.08671887816355127,0.27276968143060054,0.4490604144829181,0.6092831551065152,0.747704915711708,0.8593727774269114,0.9402911122726753,0.9875645521655236,0.9995015891261739,0.9756750997357735,0.9169376281927885,0.8253908811219756,0.704310525652671,0.5580289815934445,0.3917804015584975,0.21151338586781637,0.02367813353662799,-0.16500435461880272,-0.3477827625319794,-0.518117030158075,-0.6699123657178534,-0.7977373256375181,-0.8970181589874627,-0.9642024625116113,-0.9968862904477931,-0.9939001709768879,-0.9553509515151949,-0.8826179755685468,-0.7783037279455296,-0.646140714311209,-0.4908579070575987,-0.3180115362392433,-0.13378628010447696,0.055226031104503595,0.24226227980378603,0.42063005461378083,0.5839471139413035,0.7263697512646373,0.8428018909013493,0.9290774325277297,0.9821093199149801,1.0],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.4998259247406167,0.9679312022856775,1.3746082852183685,1.6940480675445977,1.9059778180316784,1.9969477564407576,1.9611846221648082,1.8009580649135033,1.5264366050503373,1.1550423048271772,0.7103451052668572,0.22056699782255015,-0.2832090388499027,-0.7690116700640215,-1.2060102143592286,-1.5664712630377808,-1.8275187362748735,-1.9725856766760053,-1.9924656445420135,-1.885896989734874,-1.6596429202714515,-1.3280622862208633,-0.9121983184140325,-0.4384431536953829,0.06313709952962128,0.5607104584340278,1.0226992312846528,1.4197840447826655,1.726764550862447,1.9241587261889255,1.9994392673869559,1.9478286161710756,1.772602159386418,1.4848803618585658,1.1029230240062156,0.6509704530204253,0.15770509081495282,-0.3455687709481979,-0.8269116673042691,-1.2557759466817164,-1.6049444284031549,-1.8522576972156826,-1.9820204148855842,-1.9859973995573394,-1.8639362583048698,-1.6235834048420423,-1.2801924458542164,-0.8555561354204195,-0.37662333297943745,0.12621126262534774,0.6210360637483369,1.0764478114485754,1.4635445327341534,1.75775975772292,1.940421591081972,1.9999376937883127,1.932530972252044,1.7424792854769189,1.4418439576294335,1.0497043255289387,0.5909468992693402,0.0946859799431174,-0.4075840325803015,-0.8839873810111577,-1.3042898942303718,-1.6418177502585232,-1.8751502874016486,-1.989479432041314,-1.9775494691740052,-1.8401175146763495,-1.585905466165559,-1.2310464818163618,-0.7980611154646805,-0.3144280859345013,0.1891596155896888,0.6807426068082234,1.129123365023833,1.5058461276667554,1.7870027914297484,1.9547502015334144,1.9984425388025513,1.91530693943186,1.7106194703208262,1.3973702919866122,0.9954392589513664,0.5303342767973589,0.03157248402727689,-0.46919300558473326,-0.9401819168720074,-1.3515036972472176,-1.677054472474754,-1.8961736870010182,-1.9949552928326773,-1.9671302744727408,-1.8144645018909624,-1.5466466624306787,-1.1806733838730585,-0.7397705708330969,-0.2519194101354399,0.251919410135436,0.7397705708330933,1.1806733838730554,1.546646662430676,1.8144645018909609,1.9671302744727401,1.9949552928326775,1.8961736870010195,1.6770544724747563,1.3515036972472205,0.9401819168720108,0.46919300558473703,-0.031572484027272966,-0.5303342767973551,-0.9954392589513631,-1.3973702919866093,-1.7106194703208242,-1.915306939431859,-1.998442538802551,-1.954750201533415,-1.7870027914297502,-1.5058461276667578,-1.1291233650238361,-0.6807426068082271,-0.18915961558969271,0.31442808593449745,0.7980611154646768,1.231046481816353,1.5859054661655565,1.8401175146763453,1.9775494691740045,1.9894794320413138,1.8751502874016523,1.6418177502585256,1.3042898942303802,0.8839873810111613,0.4075840325803019,-0.09468597994310993,-0.5909468992693399,-1.0497043255289291,-1.4418439576294306,-1.7424792854769207,-1.9325309722520423,-1.9999376937883127,-1.9404215910819747,-1.7577597577229218,-1.4635445327341514,-1.0764478114485816,-0.6210360637483372,-0.1262112626253552,0.3766233329794336,0.8555561354204224,1.2801924458542107,1.623583404842042,1.8639362583048669,1.985997399557339,1.9820204148855838,1.8522576972156841,1.604944428403155,1.2557759466817222,0.8269116673042695,0.34556877094820876,-0.1577050908149489,-0.650970453020425,-1.1029230240062093,-1.4848803618585655,-1.772602159386413,-1.9478286161710747,-1.9994392673869559,-1.9241587261889275,-1.726764550862447,-1.419784044782672,-1.0226992312846561,-0.5607104584340263,-0.06313709952962698,0.4384431536953825,0.9121983184140242,1.3280622862208604,1.6596429202714533,1.8858969897348723,1.9924656445420135,1.9725856766760068,1.8275187362748744,1.5664712630377788,1.2060102143592333,0.769011670064021,0.28320903884991094,-0.22056699782254802,-0.710345105266847,-1.1550423048271734,-1.5264366050503377,-1.8009580649135,-1.961184622164808,-1.9969477564407583,-1.9059778180316798,-1.694048067544597,-1.3746082852183736,-0.9679312022856785,-0.4998259247406261,-3.91886975727153e-15],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-1.059871651203187,1.0599962616855296],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.0","-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.1199339554156116,2.1199339554156116],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('e1c64a68-ba04-4797-a791-44837ecc46fe');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[1.0,0.9821093199149804,0.9290774325277306,0.8428018909013506,0.7263697512646394,0.5839471139413063,0.42063005461378417,0.24226227980378318,0.05522603110450817,-0.13378628010447904,-0.3180115362392381,-0.4908579070575935,-0.6461407143112099,-0.7783037279455297,-0.8826179755685469,-0.9553509515151947,-0.9939001709768878,-0.9968862904477932,-0.9642024625116118,-0.8970181589874636,-0.7977373256375195,-0.6699123657178551,-0.5181170301580778,-0.3477827625319824,-0.1650043546187989,0.023678133536623857,0.2115133858678184,0.3917804015584929,0.5580289815934403,0.7043105256526725,0.8253908811219757,0.9169376281927886,0.9756750997357736,0.9995015891261737,0.9875645521655236,0.9402911122726758,0.8593727774269122,0.747704915711709,0.6092831551065171,0.4490604144829194,0.27276968143060365,0.08671887816355096,-0.10243484451661349,-0.2879233091311653,-0.4631094861203471,-0.6217249757884948,-0.7580943001712455,-0.8673379793567139,-0.9455471259136673,-0.989923310200557,-0.9988786919844436,-0.972092835524257,-0.9105241751974628,-0.8163757214143996,-0.6930162339093321,-0.5448596829350706,-0.3772073114035758,-0.19605794920397915,-0.007893366909712247,0.18055365078890184,0.36254021327862285,0.5315545938209018,0.6815492279916331,0.807157103761985,0.9038838004888234,0.9682683053985073,0.9980068533314933,0.9920353585932581,0.9505674893877825,0.8750870224785937,0.7682947516379717,0.6340118495722394,0.47704314116489016,0.303005180306873,0.11812528195890788,-0.07098129964801639,-0.25754807380689576,-0.4348994275757909,-0.5966894882888573,-0.7371291875117791,-0.851193401784494,-0.934800758373598,-0.9849596723401104,-0.9998753895176573,-0.9790142052577144,-0.9231225611078604,-0.8342003361179188,-0.7154292884473727,-0.5710592077306961,-0.40625585182379015,-0.22691610896159095,-0.03945699907625321,0.14941393590426086,0.3329386370297614,0.5045503408691749,0.6581085472380385,0.7881187346471933,0.8899289617551795,0.9598963201568567,0.9955172826011058,0.995517282601106,0.959896320156857,0.8899289617551802,0.7881187346471942,0.6581085472380396,0.5045503408691763,0.3329386370297628,0.14941393590426233,-0.03945699907625174,-0.22691610896158954,-0.40625585182378876,-0.5710592077306949,-0.7154292884473716,-0.834200336117918,-0.9231225611078598,-0.9790142052577141,-0.9998753895176573,-0.9849596723401106,-0.9348007583735986,-0.8511934017844948,-0.7371291875117814,-0.5966894882888585,-0.43489942757579225,-0.2575480738068989,-0.07098129964801786,0.11812528195890641,0.3030051803068716,0.4770431411648889,0.6340118495722383,0.7682947516379685,0.8750870224785938,0.9505674893877831,0.9920353585932575,0.9980068533314933,0.9682683053985085,0.9038838004888241,0.8071571037619838,0.6815492279916368,0.5315545938209015,0.3625402132786275,0.18055365078890503,-0.007893366909714329,-0.19605794920397596,-0.3772073114035744,-0.5448596829350694,-0.6930162339093311,-0.8163757214143987,-0.9105241751974621,-0.9720928355242571,-0.9988786919844435,-0.989923310200557,-0.9455471259136666,-0.8673379793567155,-0.7580943001712441,-0.6217249757884988,-0.4631094861203484,-0.2879233091311633,-0.10243484451661672,0.08671887816355127,0.27276968143060054,0.4490604144829181,0.6092831551065152,0.747704915711708,0.8593727774269114,0.9402911122726753,0.9875645521655236,0.9995015891261739,0.9756750997357735,0.9169376281927885,0.8253908811219756,0.704310525652671,0.5580289815934445,0.3917804015584975,0.21151338586781637,0.02367813353662799,-0.16500435461880272,-0.3477827625319794,-0.518117030158075,-0.6699123657178534,-0.7977373256375181,-0.8970181589874627,-0.9642024625116113,-0.9968862904477931,-0.9939001709768879,-0.9553509515151949,-0.8826179755685468,-0.7783037279455296,-0.646140714311209,-0.4908579070575987,-0.3180115362392433,-0.13378628010447696,0.055226031104503595,0.24226227980378603,0.42063005461378083,0.5839471139413035,0.7263697512646373,0.8428018909013493,0.9290774325277297,0.9821093199149801,1.0],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.4998259247406167,0.9679312022856775,1.3746082852183685,1.6940480675445977,1.9059778180316784,1.9969477564407576,1.9611846221648082,1.8009580649135033,1.5264366050503373,1.1550423048271772,0.7103451052668572,0.22056699782255015,-0.2832090388499027,-0.7690116700640215,-1.2060102143592286,-1.5664712630377808,-1.8275187362748735,-1.9725856766760053,-1.9924656445420135,-1.885896989734874,-1.6596429202714515,-1.3280622862208633,-0.9121983184140325,-0.4384431536953829,0.06313709952962128,0.5607104584340278,1.0226992312846528,1.4197840447826655,1.726764550862447,1.9241587261889255,1.9994392673869559,1.9478286161710756,1.772602159386418,1.4848803618585658,1.1029230240062156,0.6509704530204253,0.15770509081495282,-0.3455687709481979,-0.8269116673042691,-1.2557759466817164,-1.6049444284031549,-1.8522576972156826,-1.9820204148855842,-1.9859973995573394,-1.8639362583048698,-1.6235834048420423,-1.2801924458542164,-0.8555561354204195,-0.37662333297943745,0.12621126262534774,0.6210360637483369,1.0764478114485754,1.4635445327341534,1.75775975772292,1.940421591081972,1.9999376937883127,1.932530972252044,1.7424792854769189,1.4418439576294335,1.0497043255289387,0.5909468992693402,0.0946859799431174,-0.4075840325803015,-0.8839873810111577,-1.3042898942303718,-1.6418177502585232,-1.8751502874016486,-1.989479432041314,-1.9775494691740052,-1.8401175146763495,-1.585905466165559,-1.2310464818163618,-0.7980611154646805,-0.3144280859345013,0.1891596155896888,0.6807426068082234,1.129123365023833,1.5058461276667554,1.7870027914297484,1.9547502015334144,1.9984425388025513,1.91530693943186,1.7106194703208262,1.3973702919866122,0.9954392589513664,0.5303342767973589,0.03157248402727689,-0.46919300558473326,-0.9401819168720074,-1.3515036972472176,-1.677054472474754,-1.8961736870010182,-1.9949552928326773,-1.9671302744727408,-1.8144645018909624,-1.5466466624306787,-1.1806733838730585,-0.7397705708330969,-0.2519194101354399,0.251919410135436,0.7397705708330933,1.1806733838730554,1.546646662430676,1.8144645018909609,1.9671302744727401,1.9949552928326775,1.8961736870010195,1.6770544724747563,1.3515036972472205,0.9401819168720108,0.46919300558473703,-0.031572484027272966,-0.5303342767973551,-0.9954392589513631,-1.3973702919866093,-1.7106194703208242,-1.915306939431859,-1.998442538802551,-1.954750201533415,-1.7870027914297502,-1.5058461276667578,-1.1291233650238361,-0.6807426068082271,-0.18915961558969271,0.31442808593449745,0.7980611154646768,1.231046481816353,1.5859054661655565,1.8401175146763453,1.9775494691740045,1.9894794320413138,1.8751502874016523,1.6418177502585256,1.3042898942303802,0.8839873810111613,0.4075840325803019,-0.09468597994310993,-0.5909468992693399,-1.0497043255289291,-1.4418439576294306,-1.7424792854769207,-1.9325309722520423,-1.9999376937883127,-1.9404215910819747,-1.7577597577229218,-1.4635445327341514,-1.0764478114485816,-0.6210360637483372,-0.1262112626253552,0.3766233329794336,0.8555561354204224,1.2801924458542107,1.623583404842042,1.8639362583048669,1.985997399557339,1.9820204148855838,1.8522576972156841,1.604944428403155,1.2557759466817222,0.8269116673042695,0.34556877094820876,-0.1577050908149489,-0.650970453020425,-1.1029230240062093,-1.4848803618585655,-1.772602159386413,-1.9478286161710747,-1.9994392673869559,-1.9241587261889275,-1.726764550862447,-1.419784044782672,-1.0226992312846561,-0.5607104584340263,-0.06313709952962698,0.4384431536953825,0.9121983184140242,1.3280622862208604,1.6596429202714533,1.8858969897348723,1.9924656445420135,1.9725856766760068,1.8275187362748744,1.5664712630377788,1.2060102143592333,0.769011670064021,0.28320903884991094,-0.22056699782254802,-0.710345105266847,-1.1550423048271734,-1.5264366050503377,-1.8009580649135,-1.961184622164808,-1.9969477564407583,-1.9059778180316798,-1.694048067544597,-1.3746082852183736,-0.9679312022856785,-0.4998259247406261,-3.91886975727153e-15],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-1.059871651203187,1.0599962616855296],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.0","-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-2.1199339554156116,2.1199339554156116],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 
   </div>

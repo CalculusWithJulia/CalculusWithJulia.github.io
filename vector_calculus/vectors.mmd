@@ -12,10 +12,13 @@ gr()
 In [vectors](../precalc/vectors.html) we introduced the concept of a vector.
 A [vector](https://en.wikipedia.org/wiki/Euclidean_vector) mathematically is a geometric object with two attributes a magnitude and a direction. (The direction is undefined in the case the magnitude is $0$.) Vectors are typically visualized with an arrow, where the anchoring of the arrow is context dependent and is not particular to a given vector.
 
-Vectors and points are related, but distinct. Let's focus on 3 dimensions. Mathematically, the notation for a point is $p=(x,y,z)$ while the notation for a vector is $\hat{v} = \langle x, y, z \rangle$. The $i$th entry in a vector is referenced by a subscript: $\hat{v}_i$.
+Vectors and points are related, but distinct. Let's focus on 3 dimensions. Mathematically, the notation for a point is $p=(x,y,z)$ while the notation for a vector is $\vec{v} = \langle x, y, z \rangle$. The $i$th component in a vector is referenced by a subscript: $v_i$. With this, we may write a typical vector as $\vec{v} = \langle v_1, v_2, \dots, v_n \rangle$ and a vector in $n=3$ as $\vec{v} =\langle v_1, v_2, v_3 \rangle$.
 The different grouping notation distinguishes the two objects. As another example, the notation $\{x, y, z\}$ indicates a set. Vectors and points may be *identified* by anchoring the vector at the origin. Set's are quite different from both, as the order of their entries is not unique.
 
-In `Julia`, the notation to define a point and a vector would be similar, using square brackets to group like-type values: `[x, y, z]`. The notation `(x,y,z)` would form a [tuple](https://en.wikipedia.org/wiki/Euclidean_vector) which though similar in many respects, do not have the operations associated with a point or a vector defined for them.
+
+
+
+In `Julia`, the notation to define a point and a vector would be identical, using square brackets to group like-type values: `[x, y, z]`. The notation `(x,y,z)` would form a [tuple](https://en.wikipedia.org/wiki/Euclidean_vector) which though similar in many respects, tuples do not have the operations associated with a point or a vector defined for them.
 
 The square bracket constructor has some subtleties:
 
@@ -26,6 +29,8 @@ The square bracket constructor has some subtleties:
 
 (A vector, mathematically, is a one-dimensional collection of numbers, a matrix a two-dimensional *rectangular* collection of numbers, and an array an $n$-dimensional rectangular-like collection of numbers.)
 
+
+### Vector addition, scalar multiplication
 
 As seen earlier, vectors have some arithmetic operations defined for them. As a typical use of vectors, mathematically, is to collect the $x$, $y$, and  $z$ (in 3D) components together, operations like addition and subtraction operate component wise. With this, addition can be visualized geometrically: put the tail of $\vec{v}$ at the tip of $\vec{u}$ and draw a vector from the tail of $\vec{u}$ to the tip of $\vec{v}$ and you have $\vec{u}+\vec{v}$. This is identical by $\vec{v} + \vec{u}$ as vector addition is commutative. Unless $\vec{u}$ and $\vec{v}$ are parallel or one has $0$ length, the addition will create a vector with a different direction from the two.
 
@@ -51,16 +56,40 @@ Scalar multiplication by `2`, say, multiplies each entry by `2`:
 2 * u
 ```
 
+### The length and direction of a vector
+
+
+If a vector $\vec{v} = \langle v_1, v_2, \dots, v_n\rangle$ then the *norm* (also Euclidean norm or length) of $\vec{v}$ is defined by:
+
+$$~
+\| \vec{v} \| = \sqrt{ v_1^2 + v_2^2 + \cdots + v_n^2}.
+~$$
+
+
+The definition of a norm leads to a few properties. First, if $c$ is a scalar, $\| c\vec{v} \| = |c| \| \vec{v} \|$. The other is an analog of the triangle inequality, in which for any two vectors $\| \vec{v} + \vec{w} \| \leq \| \vec{v} \| + \| \vec{w} \|$.
+
+
+A vector with length $1$ is called a *unit* vector. Dividing a non-zero vector by its norm will yield a unit vector, a consequence of the first property above.
+
+
+The direction indicated by $\vec{v}$ can be visualized as an angle in 2 or 3 dimensions, but in higher dimensions, is harder. For 2-dimensions, we might
+associate with a vector, it's unit vector, which in turn may be identified with a point on the unit circle, which from basic trigonometry can be associated with an angle. Something similar, can be done in 3 dimensions, using two angles. However, the "direction" of a vector is best thought of in terms of its associated unit vector. With this, we have a decomposition of a vector $\vec{v}$ into a magnitude scalar and a direction when we write $\vec{v} = \|v\| \cdot (\vec{v} / \|\vec{v}\|)$.
+
+
+### Visualization
+
+
 Vectors may be visualized in 2 or 3 dimensions. In 2 dimensions, the `quiver` function may be used. To graph a vector, it must have its tail placed at a point, so two values are needed.
 
 To plot `u=[1,2]` from `p=[0,0]` we have the following usage:
 
 ```
 using Plots
+gr()       # better arrows than plotly()
 quiver([0],[0], quiver=([1],[2]))
 ```
 
-The cumbersome syntax is typical, sadly. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function:
+The cumbersome syntax is typical, sadly. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above usage looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function:
 
 ```
 xs_ys(vs) = Tuple(eltype(vs[1])[vs[i][j] for i in 1:length(vs)] for j in eachindex(first(vs)))
@@ -92,7 +121,7 @@ with `plot(xs_ys([p,p+v])...)`. To avoid all these details, we will utilize the 
 ```
 function arrow!(plt::Plots.Plot, p, v; kwargs...)
   length(p) == 2 && return quiver!(plt, xs_ys([p])..., quiver=xs_ys([v]); kwargs...)
-  length(p) == 3 && return plot!(plt, xs_ys(p, p+v)...; kwargs...)
+  length(p) == 3 && return plot!(plt, xs_ys([p, p+v])...; kwargs...)
 end
 arrow!(p,v;kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
 ```
@@ -105,6 +134,534 @@ arrow!(p, u)
 arrow!(u, v)
 arrow!(p, w)
 ```
+
+
+The distinction between a point and a vector within `Julia` is only mental. We use the same storage type. Mathematically, we can **identify** a point and a vector, but considering the vector with its tail placed at the origin. In this case, the tip of the arrow is located at the point. But this is only an identification, though a useful one. It allows us to "add" a point and a vector by imagining the point as a vector anchored at the origin.
+
+
+
+To see that a unit vector has the same "direction" as the vector, we might draw them with different widths:
+
+```
+using LinearAlgebra
+v = [2, 3]
+u = v / norm(v)
+p = [0, 0]
+plot()
+arrow!(p, v)
+arrow!(p, u, linewidth=5)
+```
+
+
+The `norm` function is in the standard library, `LinearAlgebra`, which must be loaded first through the command `using LinearAlgebra`.
+
+## Other operations on vectors
+
+There is no concept of multiplying two vectors, or for that matter dividing two vectors. However, there are two operations between vectors that are somewhat similar to multiplication.
+
+
+### The dot product
+
+The dot product between two vectors can be viewed algebraically in terms of the following product. If $\vec{v} = \langle v_1, v_2, \dots, v_n\rangle$ and $\vec{w} = \langle w_1, w_2, \dots, w_n\rangle$, then the *dot product* of $v$ and $w$ is defined by:
+
+$$~
+\vec{v} \cdot \vec{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n.
+~$$
+
+From this, we can see the relationship between the norm, or Euclidean length of a vector: $\vec{v} \cdot \vec{v} = \| \vec{v} \|^2$. We can also see that the dot product is commutative, that is $\vec{v} \cdot \vec{w} = \vec{w} \cdot \vec{v}$.
+
+The dot product has an important geometrical interpolation. Two (non-parallel) vectors will lie in the same "plane", even in higher dimensions. Within this plane, there will be an angle between them withing $[0, \pi]$. Call this angle $\theta$. (This means the angle between the two vectors is the same regardless of their order of consideration.) Then
+
+$$~
+\vec{v} \cdot \vec{w} = \|\vec{v}\| \|\vec{w}\| \cos(\theta).
+~$$
+
+If we denoted $\hat{v} = \vec{v} / \| \vec{v} \|$, the unit vector in the direction of $\vec{v}$, then by dividing, we see that
+$\cos(\theta) = \hat{v} \cdot \hat\vec{w}$. That is the angle does not depend on the magnitude of the vectors involved.
+
+The dot product is computed in `Julia` by the `dot` function, which is in the `LinearAlgebra` package of the standard library. This must be loaded (as above) before its use:
+
+```
+u = [1, 2]
+v = [2, 1]
+dot(u, v)
+```
+
+In `Julia`, the unicode operator entered by `\cdot[tab]` can also be used to mirror the math notation:
+
+```
+u ⋅ v   # u \cdot[tab] v
+```
+
+
+Continuing, to find the angle between $\vec{u}$ and $\vec{v}$, we might do this:
+
+```
+ctheta = dot(u/norm(u), v/norm(v))
+acos(ctheta)
+```
+
+
+The cosine of $\pi/2$ is $0$, so two vectors which are at right angles to each other will have a $0$ dot product:
+
+```
+u = [1, 2]
+v = [-2, 1]
+u ⋅ v
+```
+
+In two dimensions, we learn that a perpendicular line to a line with slope $m$ will have slope $-1/m$. From a 2-dimensional vector, say $\vec{u} = \langle u_1, u_2 \rangle$ the slope is $u_2/u_1$ so a perpendicular vector to $\vec{u}$ will be $\langle -u_2, u_1 \rangle$, as above. For higher dimensions, where the angle is harder to visualize, the dot product defines perpendicularness, or *orthogonality*.
+
+For example, these two vectors are orthogonal, as their dot product is $0$, even though we can't readily visualize them:
+
+```
+u = [1,2,3,4,5]
+v = [-30, 4,3,2,1]
+u ⋅ v
+```
+
+
+#### Projection
+
+From right triangle trigonometry, we learn that $\cos(\theta) = \text{adjacent}/\text{hypotenuse}$. If we use a vector, $\vec{h}$ for the hypotenuse, and $\vec{a} = \langle 1, 0 \rangle$, we have this picture:
+
+```
+h = [2, 3]
+a = [1, 0]  # unit vector
+h_hat = h / norm(h)
+theta = acos(h_hat ⋅ a)
+
+plot()
+arrow!([0,0], h)
+arrow!([0,0], norm(h) * cos(theta) * a)
+arrow!([0,0], a, linewidth=3)
+```
+
+We used vectors to find the angle made by `h`, and from there, using the length of the hypotenuse is `norm(h)`, we can identify the length of the adjacent side, it being the length of the hypotenuse times the cosine of $\theta$. Geometrically, we call the vector `norm(h) * cos(theta) * a` the *projection* of $\vec{h}$ onto $\vec{a}$, the word coming from the shadow $\vec{h}$ would cast on the direction of $\vec{a}$ were there light coming perpendicular to $\vec{a}$.
+
+The projection can be made for any pair of vectors, and in any dimension $n > 1$. The projection of $\vec{u}$ on $\vec{v}$ would be a vector of length $\vec{u}$ (the hypotenuse) times the cosine of the angle in the direction of $\vec{v}$. In dot-product notation:
+
+$$~
+proj_{\vec{v}}(\vec{u}) = \| \vec{u} \| \frac{\vec{u}\cdot\vec{v}}{\|\vec{u}\|\|\vec{v}\|} \frac{\vec{v}}{\|\vec{v}\|}.
+~$$
+
+This can simplify. After cancelling, and expressing norms in terms of dot products, we have:
+
+$$~
+proj_{\vec{v}}(\vec{u}) = \frac{\vec{u} \cdot \vec{v}}{\vec{v} \cdot \vec{v}} \vec{v} = (\vec{u} \cdot \hat{v}) \hat{v},
+~$$
+
+where $\hat{v}$ is the unit vector in the direction of $\vec{v}$.
+
+
+##### Example
+
+A pendulum, a bob on a string, swings back and forth due to the force of gravity. When the bob is displaced from rest by an angle $\theta$, then the tension force of the string on the bob, is directed along the string and has magnitude given by the *projection* of the force due to gravity.
+
+
+A [force diagram](https://en.wikipedia.org/wiki/Free_body_diagram) is a usefal visualization device of physics to illustrate the applied forces involved in a scenario. In this case the bob has two forces acting on it: a force due to tension in the string of unknown magnitude, but in the direction of the string; and a force due to gravity. The latter is in the downward direction and has magnitude $mg$, $g=9.8m/sec^2$ being the gravitational constant.
+
+```
+theta = pi/12
+m, g = 1/9.8, 9.8
+
+l = [-sin(theta), cos(theta)]
+p = -l
+Fg = [0, -m*g]
+plot(legend=false)
+arrow!(p, l)
+arrow!(p, Fg)
+scatter!(p[1:1], p[2:2], markersize=5)
+```
+
+The magnitude of the tension force is exactly that of the force of gravity projected onto $\vec{l}$, as the bob is not accelerating in that direction. The component of the gravity force in the perpendicular direction is the part of the gravitational force that causes acceleration in the pendulum. Here we find the projection onto $\vec{l}$ and visualize the two components of the gravitational force.
+
+```
+plot(legend=false, aspect_ratio=:equal)
+arrow!(p, l)
+arrow!(p, Fg)
+scatter!(p[1:1], p[2:2], markersize=5)
+
+proj = (Fg ⋅ l) / (l ⋅ l) * l   # force of gravity in direction of tension
+porth = Fg - proj              # force of gravity perpendicular to tension
+
+arrow!(p, proj)
+arrow!(p, porth, linewidth=3)
+```
+
+
+
+##### Example
+
+Starting with three vectors, we can create three orthogonal vectors using projection and subtraction. The creation of `porth` above is the pattern we will exploit.
+
+Let's begin with three vectors in $R^3$:
+
+```
+u = [1, 2, 3]
+v = [1, 1, 2]
+w = [1, 2, 4]
+```
+
+We can find a vector from `v` orthogonal to `u` using:
+
+```
+uvec(u) = u / norm(u)
+projection(u, v) = (u ⋅ uvec(v)) * uvec(v)
+
+vorth = u - projection(u, v)
+worth = w - projection(w, u) - projection(w, vorth)
+```
+
+We can verify the orthogonality through:
+
+```
+u ⋅ vorth, u ⋅ worth, vorth ⋅ worth
+```
+
+This only works when the three vectors do not all lie in the same plane. In general, this is the beginnings of the Gram-Schmidt process for creating *orthogonal* vectors from a collection of vectors.
+
+
+
+#### Algebraic properties
+
+The dot product is similar to multiplication, but different as it is an operation defined between vectors of the same dimension. However, many algebraic properties carry over:
+
+* commutative: $\vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u}$
+
+* scalar multiplication: $(c\vec{u})\cdot\vec{v} = c(\vec{u}\cdot\vec{v})$.
+
+* distributive $\vec{u} \cdot (\vec{v} + \vec{w}) = \vec{u} \cdot \vec{v} + \vec{u} \cdot \vec{w}$
+
+The last two can be combined: $\vec{u}\cdot(s \vec{v} + t \vec{w}) = s(\vec{u}\cdot\vec{v}) + t (\vec{u}\cdot\vec{w})$.
+
+But associative does not make sense, as $(\vec{u} \cdot \vec{v}) \cdot \vec{w}$ does not make sense as two dot products, as the result of the first is not a vector, but a scalar.
+
+
+
+
+### Cross product
+
+In three dimensions, there is a another operation between vectors that is similar to multiplication, though we will see with many differences.
+
+Let $\vec{u}$ and $\vec{v}$ be two 3-dimensional vectors, then the *cross* product, $\vec{u} \times \vec{v}$, is defined as a vector with length:
+
+$$~
+\| \vec{u} \times \vec{v} \| = \| \vec{u} \| \| \vec{v} \| \sin(\theta),
+~$$
+
+with $\theta$ being the angle in $[0, \pi]$ between $\vec{u}$ and $\vec{v}$.
+
+The direction of the cross product is such that it is *orthogonal* to *both* $\vec{u}$ and $\vec{v}$. To identify this, the [right-hand rule](https://en.wikipedia.org/wiki/Cross_product#Definition) is used. This rule points the right hand fingers in the direction of $\vec{u}$ and curls them towards $\vec{v}$ (so that the angle between the two vectors is in $[0, \pi]$). The thumb will point in the direction. Call this direction $\hat{n}$, a normal unit vector. Then the cross product can be defined by:
+
+$$~
+\vec{u} \times \vec{v} =  \| \vec{u} \| \| \vec{v} \| \sin(\theta) \hat{n}.
+~$$
+
+```
+note("""
+The right-hand rule is also useful to understand how standard household screws will behave when twisted with a screwdriver. If the right hand fingers curl in the direction of the twisting screwdriver, then the screw will go in or out following the direction given by the orientation of the thumb.
+""")
+```
+
+
+The right-hand rule depends on the order of consideration of the vectors. If they are reversed, the opposite direction is determined. A consequence is that the cross product is **anti**-commutative, unlike multiplication:
+
+$$~
+\vec{u} \times \vec{v} = - \vec{v} \times \vec{u}.
+~$$
+
+Mathematically, the definition in terms of its components is a bit involved:
+
+$$~
+\vec{u} \times \vec{v} = \langle u_2 v_3 - u_3 v_2, u_3 v_1 - u_1 v_3, u_1 v_2 - u_2 v_1 \rangle.
+~$$
+
+There is a matrix notation that can simplify this computation, but we will not use it.
+
+From the $\sin(\theta)$ term in the definition, we see that $\vec{u}\times\vec{u}=0$. In fact, the cross product is $0$ only if the two vectors involved are parallel or there is a zero vector.
+
+
+
+In `Julia`, the `cross` function from the `LinearAlgebra` package (part of the standard library) implements the cross product. There is also the *infix* unicode operator `\times[tab]` that can be used for similarity to traditional mathematical syntax. For example:
+
+```
+a = [1, 2, 3]
+b = [4, 2, 1]
+cross(a, b)
+```
+
+Or
+
+```
+a × b
+```
+
+We can see the anti-commutivity by comparing the last answer with:
+
+```
+b × a
+```
+
+
+Using vectors of size different than $n=3$ produces a dimension mismatch error:
+
+```
+[1, 2] × [3, 4]
+```
+
+----
+
+
+Consider this extended picture involving two vectors $\vec{u}$ and $\vec{v}$ drawn in two dimensions:
+
+```
+u = [1, 2]
+v = [2, 1]
+p = [0,0]
+
+plot(aspect_ratio=:equal)
+arrow!(p, u)
+arrow!(p, v)
+arrow!(u, v)
+arrow!(v, u)
+
+puv = (u ⋅ v) / (v ⋅ v) * v
+porth = u - puv
+arrow!(puv, porth)
+```
+
+The enclosed shape is a parallelogram. To this we added the projection of $\vec{u}$ onto $\vec{v}$ (`puv`) and then the *orthogonal* part (`porth`).
+
+The *area* of a parallelogram is the length of one side times the perpendicular height. The perpendicular height could be found from `norm(porth)`, so the area is:
+
+```
+norm(v) * norm(porth)
+```
+
+However, from trigonometry we have the height would also be the norm of $\vec{u}$ times $\sin(theta)$, a value that is given through the length of the cross product of $\vec{u}$ and $\hat{v}$, the unit vector, were these vectors viewed as 3 dimensional by adding a $0$ third component. In formulas, this is also the case:
+
+$$~
+\text{area of the parallelogram} = \| \vec{u} \times \hat{v} \| \| \vec{v} \| = \| \vec{u} \times \vec{v} \|.
+~$$
+
+We have, for our figure, after extending `u` and `v` to be three dimensional the area of the parallelogram:
+
+```
+u = [1, 2, 0]
+v = [2, 1, 0]
+norm(u × v)
+```
+
+----
+
+This analysis can be extended to the case of 3 vectors, which--when not co-lanar--will form a *parallelpiped*.
+
+```
+u,v,w = [1,2,3], [2,1,0], [1,1,1]
+plot()
+p = [0,0,0]
+
+plot(legend=false)
+arrow!(p, u); arrow!(p, v); arrow!(p, w)
+arrow!(u, v); arrow!(u, w)
+arrow!(v, u); arrow!(v, w)
+arrow!(w, u); arrow!(w, v)
+arrow!(u+v, w); arrow!(u+w, v); arrow!(v+w,u)
+```
+
+The volume of a parallelpiped is the area of a base parallelogram times the height of a perpendicular. If $\vec{u}$ and $\vec{v}$ form the base paralleolgram, then the perpendicular will have height $\|\vec{w}\| \cos(\theta)$ where the angle is the one made by $\vec{w}$ with the normal, $\vec{n}$. Since $\vec{u} \times \vec{v} = \| \vec{u} \times \vec{v}\|  \hat{n} = \hat{n}$ times the area of the base parallelogram, we have if we dot this answer with $\vec{w}$:
+
+$$~
+(\vec{u} \times \vec{v}) \cdot \vec{w} =
+\|\vec{u} \times \vec{v}\| (\vec{n} \cdot \vec{w}) =
+\|\vec{u} \times \vec{v}\| \| \vec{w}\| \cos(\theta),
+~$$
+
+that is, the area of the parallelpiped. Wait, what about $(\vec{v}\times\vec{u})\cdot\vec{w}$? That will have an opposite sign. Yes, in the above, there is an assumption that $\vec{n}$ and $\vec{w}$ have a an angle between them within $[0, \pi/2]$, otherwise an absolute value must be used, as volume is non-negative.
+
+
+#### Algebraic properties
+
+The cross product has many properties, some different from regular multiplication:
+
+* scalar multiplication: $(c\vec{u})\times\vec{v} = c(\vec{u}\times\vec{v})$
+
+* distributive over addition: $\vec{u} \times (\vec{v} + \vec{w}) = \vec{u}\times\vec{v} + \vec{u}\times\vec{w}$. There is no distributive law for, say, $\vec{u}\cdot(\vec{w}\times\vec{w})$.
+
+* *anti*-commutative: $\vec{u} \times \vec{v} = - \vec{v} \times \vec{u}$
+
+
+* *not* associative: that is there is no guarantee that $(\vec{u}\times\vec{v})\times\vec{w}$ will be equivalent to $\vec{u}\times(\vec{v}\times\vec{w})$.
+
+
+----
+
+The following shows the algebraic properties stated above hold for
+symbolic vectors. First the linearity of the dot product:
+
+```
+@vars s t u1 u2 u3 v1 v2 v3 w1 w2 w3 real=true
+u = [u1, u2, u3]
+v = [v1, v2, v3]
+w = [w1, w2, w3]
+
+u ⋅ (s*v + t*w) - (s*(u⋅v) + t*(u⋅w)) |> simplify
+```
+
+This shows the commutivity of the dot product:
+
+```
+(u ⋅ v) - (v ⋅ u) |> simplify
+```
+
+This shows the linearity of the cross product over scalar multiplication and vector addition:
+
+```
+u × (s*v + t*w) - (s*(u×v) + t*(u×w)) .|> simplify
+```
+
+(We use `.|>` to broadcast `simplify` over each component.)
+
+The cross product is anti-commutative:
+
+```
+u × v + v × u .|> simplify
+```
+
+but not associative:
+
+```
+u × (v × w) - (u × v) × w .|> simplify
+```
+
+
+----
+
+This table shows common usages of the symbols for various multiplication types: `*`, $\cdot$, and $\times$:
+
+
+| Symbol   | inputs         | output      | type                  |
+|:--------:|:-------------- |:----------- |:------                |
+| `*`      | scalar, scalar | scalar      | regular multplication |
+| `*`      | scalar, vector | vector      | scalar multiplication |
+| `*`      | vector, vector | *undefined* |                       |
+| $\cdot$  | scalar, scalar | scalar      | regular multplication |
+| $\cdot$  | scalar, vector | vector      | scalar multplication  |
+| $\cdot$  | vector, vector | scalar      | dot product           |
+| $\times$ | scalar, scalar | scalar      | regular multplication |
+| $\times$ | scalar, vector | undefined   |                       |
+| $\times$ | vector, vector | vector      | cross product         |
+
+
+----
+
+
+
+##### Example: lines and planes
+
+A line in two dimensions satisfies the equation $ax + by = c$. Suppose $a$ and $b$ are non-zero. This can be represented in vector form, as the collection of all points associated to the vectors: $p + t \vec{v}$ where $p$ is a point on the line, say $(0,c/b)$, and v is the vector $\langle b, -a \rangle$. We can verify, this for values of `t` as follows:
+
+```
+using SymPy
+@vars a b c x y t
+
+eq = c - (a*x + b*y)
+
+p = [0, c/b]
+v = [-b, a]
+li = p + t * v
+
+eq(x=>li[1], y=>li[2]) |> simplify
+```
+
+
+Let $\vec{n} = \langle a , b \rangle$, taken from the coefficients in the equation. We can see directly that $\vec{n}$ is orthogonal to $\vec{v}$. The line may then be seen as the collection of all vectors that are orthogonal to $\vec{n}$ that have their tail at the point $p$.
+
+In three dimensions, the equation of a plane is $ax + by + cz = d$. Suppose, $a$, $b$, and $c$ are non-zero, for simplicity. Setting $\vec{n} = \langle a,b,c\rangle$ by comparison, it can be seen that plane is identified with the set of all vectors orthogonal to $\vec{n}$ that are anchored at $p$.
+
+First, let $p = (0, 0, d/c)$ be a point on the plane. We find two vectors $u = \langle -b, a, 0 \rangle$ and $v = \langle 0, c, -b \rangle$. Then any point on the plane may be identified with the vector $p + s\vec{u} + t\vec{v}$. We can verify this algebraically through:
+
+```
+@vars d z s
+
+eq = d - (a*x + b*y + c * z)
+
+p = [0, 0, d/c]
+u, v = [-b, a, 0], [0, c, -b]
+pl = p + t * u + s * v
+
+subs(eq, x=>pl[1], y=>pl[2], z=>pl[3]) |> simplify
+```
+
+The above viewpoint can be reversed:
+
+> a plane is determined by two (non-parallel) vectors and a point.
+
+The parameterized version of the plane would be $p + t \vec{u} + s
+\vec{v}$, as used above.
+
+The equation of the plane can be given from $\vec{u}$ and
+$\vec{v}$. Let $\vec{n} = \vec{u} \times \vec{v}$. Then $\vec{n} \cdot
+\vec{u} = \vec{n} \cdot \vec{v} = 0$, from the properties of the cross product. As such, $\vec{n} \cdot (s
+\vec{u} + t \vec{v}) = 0$. That is, the cross product is orthogonal to
+any *linear* combination of the two vectors. This figure shows one such linear combination:
+
+
+
+```
+u = [1,2,3]
+v = [2,3,1]
+n = u × v
+p = [0,0,1]
+
+plot(legend=false)
+
+arrow!(p, u)
+arrow!(p, v)
+arrow!(p + u, v)
+arrow!(p + v, u)
+arrow!(p, n)
+
+s, t = 1/2, 1/4
+arrow!(p, s*u + t*v)
+```
+
+
+So if $\vec{n} \cdot p = d$ (identifying the point $p$ with a vector so the dot product is defined), we will have for any vector $\vec{v} = \langle x, y, z \rangle = s \vec{u} + t \vec{v}$ that
+
+$$~
+\vec{n} \cdot (p + s\vec{u} + t \vec{v}) = \vec{n} \cdot p + \vec{n} \cdot (s \vec{u} + t \vec{v}) = d + 0 = d,
+~$$
+
+But if $\vec{n} = \langle a, b, c \rangle$, then this says $d = ax + by + cz$, so from $\vec{n}$ and $p$ the equation of the plane is given.
+
+In summary:
+
+|  Object | Equation           | vector equation                  |
+|:------- |:------------------:|:-------------------------------- |
+|Line     | $ax + by = c$      | line: $p + t\vec{u}$             |
+|Plane    | $ax + by + cz = d$ | plane: $p + s\vec{u} + t\vec{v}$ |
+
+----
+
+
+##### Example
+
+You are given that the vectors $\vec{u} =\langle 6, 3, 1 \rangle$ and $\vec{v} = \langle 3, 2, 1 \rangle$ describe a plane through the point $p=[1,1,2]$. Find the equation of the plane.
+
+The key is to find the normal vector to the plane, $\vec{n} = \vec{u} \times \vec{v}$:
+
+```
+u, v, p = [6,3,1], [3,2,1], [1,1,2]
+n = u × v
+a, b, c = n
+d = n ⋅ p
+"equation of plane: $a x + $b y + $c z = $d"
+```
+
+
+
 ##### Example
 
 At [MIT opencourseware](https://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/1.-vectors-and-matrices/part-c-parametric-equations-for-curves/session-21-keplers-second-law/MIT18_02SC_MNotes_k.pdf) a discussion about Kepler's second law can be found. This law states "A planet moves in a plane, and the radius vector (from the sun to the
@@ -185,4 +742,20 @@ simplify(norm(r(t) × rp(t)))
 
 ##### XXX
 
+Give a geometric reason for this identity:
+
+$$~
+\vec{u} \cdot (\vec{v} \times \vec{w}) =
+\vec{v} \cdot (\vec{w} \times \vec{u}) =
+\vec{w} \cdot (\vec{u} \times \vec{v})
+
+
 ##### XXX
+
+Show the Jacobi relationship holds for 3 randomly chosen vectors:
+
+$$~
+\vec{a}\times(\vec{b}\times\vec{c})+
+\vec{b}\times(\vec{c}\times\vec{a})+
+\vec{c}\times(\vec{a}\times\vec{b})
+~$$

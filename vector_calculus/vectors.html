@@ -266,13 +266,13 @@ worth = w - projection(w, u) - projection(w, vorth)</pre>
 (0.499999999999998, -0.49999999999999467, -0.6071428571428544)</pre>
 
 <p>This only works when the three vectors do not all lie in the same plane. In general, this is the beginnings of the Gram-Schmidt process for creating <em>orthogonal</em> vectors from a collection of vectors.</p><h4>Algebraic properties</h4><p>The dot product is similar to multiplication, but different as it is an operation defined between vectors of the same dimension. However, many algebraic properties carry over:</p><ul>
-<li><p>scalar multiplication: $(c\vec{u})\cdot\vec{v} = c(\vec{u}\cdot\vec{v})$.</p>
-</li>
 <li><p>commutative: $\vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u}$</p>
+</li>
+<li><p>scalar multiplication: $(c\vec{u})\cdot\vec{v} = c(\vec{u}\cdot\vec{v})$.</p>
 </li>
 <li><p>distributive $\vec{u} \cdot (\vec{v} + \vec{w}) = \vec{u} \cdot \vec{v} + \vec{u} \cdot \vec{w}$</p>
 </li>
-</ul><p>But associative does not make sense, as $(\vec{u} \cdot \vec{v}) \cdot \vec{w}$ does not make sense as two dot products, as the result of the first is not a vector, but a scalar.</p><h3>Cross product</h3><p>In three dimensions, there is a another operation between vectors that is similar to multiplication, though we will see with many differences.</p><p>Let $\vec{u}$ and $\vec{v}$ be two 3-dimensional vectors, then the <em>cross</em> product, $\vec{u} \times \vec{v}$, is defined as a vector with length:</p>$$~
+</ul><p>The last two can be combined: $\vec{u}\cdot(s \vec{v} + t \vec{w}) = s(\vec{u}\cdot\vec{v}) + t (\vec{u}\cdot\vec{w})$.</p><p>But associative does not make sense, as $(\vec{u} \cdot \vec{v}) \cdot \vec{w}$ does not make sense as two dot products, as the result of the first is not a vector, but a scalar.</p><h3>Cross product</h3><p>In three dimensions, there is a another operation between vectors that is similar to multiplication, though we will see with many differences.</p><p>Let $\vec{u}$ and $\vec{v}$ be two 3-dimensional vectors, then the <em>cross</em> product, $\vec{u} \times \vec{v}$, is defined as a vector with length:</p>$$~
 \| \vec{u} \times \vec{v} \| = \| \vec{u} \| \| \vec{v} \| \sin(\theta),
 ~$$
 <p>with $\theta$ being the angle in $[0, \pi]$ between $\vec{u}$ and $\vec{v}$.</p><p>The direction of the cross product is such that it is <em>orthogonal</em> to <em>both</em> $\vec{u}$ and $\vec{v}$. To identify this, the <a href="https://en.wikipedia.org/wiki/Cross_product#Definition">right-hand rule</a> is used. This rule points the right hand fingers in the direction of $\vec{u}$ and curls them towards $\vec{v}$ (so that the angle between the two vectors is in $[0, \pi]$). The thumb will point in the direction. Call this direction $\hat{n}$, a normal unit vector. Then the cross product can be defined by:</p>$$~
@@ -364,36 +364,66 @@ arrow!(u+v, w); arrow!(u+w, v); arrow!(v+w,u)</pre>
 <p>that is, the area of the parallelpiped. Wait, what about $(\vec{v}\times\vec{u})\cdot\vec{w}$? That will have an opposite sign. Yes, in the above, there is an assumption that $\vec{n}$ and $\vec{w}$ have a an angle between them within $[0, \pi/2]$, otherwise an absolute value must be used, as volume is non-negative.</p><h4>Algebraic properties</h4><p>The cross product has many properties, some different from regular multiplication:</p><ul>
 <li><p>scalar multiplication: $(c\vec{u})\times\vec{v} = c(\vec{u}\times\vec{v})$</p>
 </li>
-<li><p><em>anti</em>-commutative: $\vec{u} \times \vec{v} = - \vec{v} \times \vec{u}$</p>
-</li>
 <li><p>distributive over addition: $\vec{u} \times (\vec{v} + \vec{w}) = \vec{u}\times\vec{v} + \vec{u}\times\vec{w}$. There is no distributive law for, say, $\vec{u}\cdot(\vec{w}\times\vec{w})$.</p>
 </li>
+<li><p><em>anti</em>-commutative: $\vec{u} \times \vec{v} = - \vec{v} \times \vec{u}$</p>
+</li>
+</ul><ul>
 <li><p><em>not</em> associative: that is there is no guarantee that $(\vec{u}\times\vec{v})\times\vec{w}$ will be equivalent to $\vec{u}\times(\vec{v}\times\vec{w})$.</p>
 </li>
-</ul><hr /><p>This table shows common usages of the symbols for various multiplication types: <code>*</code>, $\cdot$, and $\times$:</p><table><tr><th>Symbol</th><th>inputs</th><th>output</th><th>type</th></tr><tr><td><code>*</code></td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td><code>*</code></td><td>scalar, vector</td><td>vector</td><td>scalar multiplication</td></tr><tr><td><code>*</code></td><td>vector, vector</td><td><em>undefined</em></td><td></td></tr><tr><td>$\cdot$</td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td>$\cdot$</td><td>scalar, vector</td><td>vector</td><td>scalar multplication</td></tr><tr><td>$\cdot$</td><td>vector, vector</td><td>scalar</td><td>dot product</td></tr><tr><td>$\times$</td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td>$\times$</td><td>scalar, vector</td><td>undefined</td><td></td></tr><tr><td>$\times$</td><td>vector, vector</td><td>vector</td><td>cross product</td></tr></table><hr /><h5>Example: lines and planes</h5><p>A line in two dimensions satisfies the equation $ax + by = c$. Suppose $a$ and $b$ are non-zero. This can be represented in vector form, as the collection of all points associated to the vectors: $p + t \vec{v}$ where $p$ is a point on the line, say $(0,c/b)$, and v is the vector $\langle b, -a \rangle$. We can verify, this for values of <code>t</code> as follows:</p><pre class="sourceCode julia">using SymPy
-@vars a b c x y
+</ul><hr /><p>The following shows the algebraic properties stated above hold for symbolic vectors. First the linearity of the dot product:</p><pre class="sourceCode julia">using SymPy
+@vars s t u1 u2 u3 v1 v2 v3 w1 w2 w3 real=true
+u = [u1, u2, u3]
+v = [v1, v2, v3]
+w = [w1, w2, w3]
+
+u ⋅ (s*v + t*w) - (s*(u⋅v) + t*(u⋅w)) |> simplify</pre>
+<div class="well well-sm">
+\begin{equation*}0\end{equation*}</div>
+
+<p>This shows the commutivity of the dot product:</p><pre class="sourceCode julia">(u ⋅ v) - (v ⋅ u) |> simplify</pre>
+<div class="well well-sm">
+\begin{equation*}0\end{equation*}</div>
+
+<p>This shows the linearity of the cross product over scalar multiplication and vector addition:</p><pre class="sourceCode julia">u × (s*v + t*w) - (s*(u×v) + t*(u×w)) .|> simplify</pre>
+<div class="well well-sm">
+\[ \left[ \begin{array}{r}0\\0\\0\end{array} \right] \]</div>
+
+<p>(We use <code>.|&gt;</code> to broadcast <code>simplify</code> over each component.)</p><p>The cross product is anti-commutative:</p><pre class="sourceCode julia">u × v + v × u .|> simplify</pre>
+<div class="well well-sm">
+\[ \left[ \begin{array}{r}0\\0\\0\end{array} \right] \]</div>
+
+<p>but not associative:</p><pre class="sourceCode julia">u × (v × w) - (u × v) × w .|> simplify</pre>
+<div class="well well-sm">
+\[ \left[ \begin{array}{r}u_{1} v_{2} w_{2} + u_{1} v_{3} w_{3} - u_{2} v_{2} w_{1} - u_{3} v_{3} w_{1}\\- u_{1} v_{1} w_{2} + u_{2} v_{1} w_{1} + u_{2} v_{3} w_{3} - u_{3} v_{3} w_{2}\\- u_{1} v_{1} w_{3} - u_{2} v_{2} w_{3} + u_{3} v_{1} w_{1} + u_{3} v_{2} w_{2}\end{array} \right] \]</div>
+
+<hr /><p>This table shows common usages of the symbols for various multiplication types: <code>*</code>, $\cdot$, and $\times$:</p><table><tr><th>Symbol</th><th>inputs</th><th>output</th><th>type</th></tr><tr><td><code>*</code></td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td><code>*</code></td><td>scalar, vector</td><td>vector</td><td>scalar multiplication</td></tr><tr><td><code>*</code></td><td>vector, vector</td><td><em>undefined</em></td><td></td></tr><tr><td>$\cdot$</td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td>$\cdot$</td><td>scalar, vector</td><td>vector</td><td>scalar multplication</td></tr><tr><td>$\cdot$</td><td>vector, vector</td><td>scalar</td><td>dot product</td></tr><tr><td>$\times$</td><td>scalar, scalar</td><td>scalar</td><td>regular multplication</td></tr><tr><td>$\times$</td><td>scalar, vector</td><td>undefined</td><td></td></tr><tr><td>$\times$</td><td>vector, vector</td><td>vector</td><td>cross product</td></tr></table><hr /><h5>Example: lines and planes</h5><p>A line in two dimensions satisfies the equation $ax + by = c$. Suppose $a$ and $b$ are non-zero. This can be represented in vector form, as the collection of all points associated to the vectors: $p + t \vec{v}$ where $p$ is a point on the line, say $(0,c/b)$, and v is the vector $\langle b, -a \rangle$. We can verify, this for values of <code>t</code> as follows:</p><pre class="sourceCode julia">@vars a b c x y t
+
 eq = c - (a*x + b*y)
+
 p = [0, c/b]
 v = [-b, a]
-l1(t) = p + t * v
+li = p + t * v
 
-t = 3
-eq(x => l1(t)[1], y => l1(t)[2]) |> simplify</pre>
+eq(x=>li[1], y=>li[2]) |> simplify</pre>
 <div class="well well-sm">
 \begin{equation*}0\end{equation*}</div>
 
-<p>Let $\vec{n} = \langle a , b \rangle$, taken from the coefficients in the equation. We can see directly that $\vec{n}$ is orthogonal to $\vec{v}$. The line may then be seen as the collection of all vectors that are orthogonal to $\vec{n}$ that have their tail at the point $p$.</p><p>In three dimensions, the equation of a plane is $ax + by + cz = d$. Suppose, $a$, $b$, and $c$ are non-zero, for simplicity. Setting $\vec{n} = \langle a,b,c\rangle$ by comparison, it can be seen that plane is identified with the set of all vectors orthogonal to $\vec{n}$ that are anchored at $p$.</p><p>First, let $p = (0, 0, d/c)$ be a point on the plane. We find two vectors $u = \langle -b, a, 0 \rangle$ and $v = \langle 0, c, -b \rangle$. Then any point on the plane may be identified with the vector $p + s\vec{u} + t\vec{v}$. We can verify this through:</p><pre class="sourceCode julia">@vars d z
+<p>Let $\vec{n} = \langle a , b \rangle$, taken from the coefficients in the equation. We can see directly that $\vec{n}$ is orthogonal to $\vec{v}$. The line may then be seen as the collection of all vectors that are orthogonal to $\vec{n}$ that have their tail at the point $p$.</p><p>In three dimensions, the equation of a plane is $ax + by + cz = d$. Suppose, $a$, $b$, and $c$ are non-zero, for simplicity. Setting $\vec{n} = \langle a,b,c\rangle$ by comparison, it can be seen that plane is identified with the set of all vectors orthogonal to $\vec{n}$ that are anchored at $p$.</p><p>First, let $p = (0, 0, d/c)$ be a point on the plane. We find two vectors $u = \langle -b, a, 0 \rangle$ and $v = \langle 0, c, -b \rangle$. Then any point on the plane may be identified with the vector $p + s\vec{u} + t\vec{v}$. We can verify this algebraically through:</p><pre class="sourceCode julia">@vars d z s
+
 eq = d - (a*x + b*y + c * z)
+
 p = [0, 0, d/c]
 u, v = [-b, a, 0], [0, c, -b]
-l1(t, s) = p + t * u + s * v
+pl = p + t * u + s * v
 
-@vars t s
-subs(eq, x => l1(t, s)[1], y=> l1(t,s)[2], z=>l1(t,s)[3]) |> simplify</pre>
+subs(eq, x=>pl[1], y=>pl[2], z=>pl[3]) |> simplify</pre>
 <div class="well well-sm">
 \begin{equation*}0\end{equation*}</div>
 
-<p>The above can be reversed: a plane is determined by two (non-parallel) vectors and a point.</p><p>The parameterized version the plane would be $p + t \vec{u} + s \vec{v}$, as used above.</p><p>The equation of the plane can be given from $\vec{u}$ and $\vec{v}$. Let $\vec{n} = \vec{u} \times \vec{v}$. Then $\vec{n} \cdot \vec{u} = \vec{n} \cdot \vec{v} = 0$. As such, $\vec{n} \cdot (s \vec{u} + t \vec{v}) = 0$. That is, the cross product is orthogonal to any <em>linear</em> combination of the two vectors. This figure shows one such linear combination:</p><pre class="sourceCode julia">u = [1,2,3]
+<p>The above viewpoint can be reversed:</p><blockquote>
+<p>a plane is determined by two (non-parallel) vectors and a point.</p>
+</blockquote><p>The parameterized version of the plane would be $p + t \vec{u} + s \vec{v}$, as used above.</p><p>The equation of the plane can be given from $\vec{u}$ and $\vec{v}$. Let $\vec{n} = \vec{u} \times \vec{v}$. Then $\vec{n} \cdot \vec{u} = \vec{n} \cdot \vec{v} = 0$, from the properties of the cross product. As such, $\vec{n} \cdot (s \vec{u} + t \vec{v}) = 0$. That is, the cross product is orthogonal to any <em>linear</em> combination of the two vectors. This figure shows one such linear combination:</p><pre class="sourceCode julia">u = [1,2,3]
 v = [2,3,1]
 n = u × v
 p = [0,0,1]
@@ -466,13 +496,8 @@ simplify(norm(r(t) × rp(t)))</pre>
 \vec{u} \cdot (\vec{v} \times \vec{w}) =
 \vec{v} \cdot (\vec{w} \times \vec{u}) =
 \vec{w} \cdot (\vec{u} \times \vec{v})
-
-
-##### XXX
-
-Show the Jacobi relationship holds for 3 randomly chosen vectors:
-
-$$~
+~$$
+<h5>XXX</h5><p>Show the Jacobi relationship holds for 3 randomly chosen vectors:</p>$$~
 \vec{a}\times(\vec{b}\times\vec{c})+
 \vec{b}\times(\vec{c}\times\vec{a})+
 \vec{c}\times(\vec{a}\times\vec{b})

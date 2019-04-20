@@ -2,6 +2,10 @@
 
 We discuss functions of a single variable that return a vector in $R^n$. There are many parallels to univariate functions (when $n=1$).
 
+```
+using Plots
+gr()         # renders vectors better than plotly()
+```
 
 ## Definition
 
@@ -74,7 +78,20 @@ xs_ys(v,vs...) = xs_ys([v, vs...])
 xs_ys(r::Function, a, b, n=100) = xs_ys(r.(range(a, stop=b, length=n)))
 ```
 
-As also mentioned in [vectors][./vectors.html], plotting a vector can be simplified through through this interface:
+It was noted in [vectors](./vectors.html) that the `xs_ys` function
+turns a vector of points (or vectors) into a tuple of vectors
+collecting the $x$ values, the $y$ values, and, if present, the $z$
+values:
+
+```verbatim
+[[x1, y1, z1],         (⌈x1⌉,  ⌈y1⌉, ⌈z1⌉,
+ [x2, y2, z2],          |x2|, |y2|, |z2|,
+ [x3, y3, z3],   -->    |x3|, |y3|, |z3|,
+     ⋮                         ⋮
+ [xn, yn, zn]]          ⌊xn⌋,  ⌊yn⌋, ⌊zn⌋ )
+```
+
+As also mentioned in [vectors](./vectors.html), plotting a vector can be simplified through this interface:
 
 ```
 function arrow!(plt::Plots.Plot, p, v; kwargs...)
@@ -104,7 +121,11 @@ plot(xs_ys(g, 0, 6pi)...)
 arrow!([0,0, 0], g(1))
 ```
 
-Here the graph is a helix; three turns are plotted. If we write $g(t) = \langle x(t), y(t), z(t) \rangle$, as the $x$ and $y$ values trace out a circle, the $z$ value increases. Were the graph viewed from above, we would only see the $x$ and $y$ components, and the view would be circular.
+Here the graph is a helix; three turns are plotted. If we write $g(t) = \langle x(t), y(t), z(t) \rangle$, as the $x$ and $y$ values trace out a circle, the $z$ value increases. When the graph is viewed from above, as below, we see only $x$ and $y$ components, and the view is circular.
+
+```
+plot(xs_ys(g, 0, 6pi)..., camera=(0, 90))
+```
 
 
 The graph of $h$ shows that this function parameterizes a line in space. The line segment for $-2 \leq t \leq 2$ is shown below:
@@ -121,7 +142,7 @@ important, as these fundamental geometric shapes are often building
 blocks in the description of other more complicated things.
 
 The point-slope equation of a line, $y = y_0 + m \cdot (x - x_0)$
-findss an analog. The slope, $m$, is replaced with a vector $\vec{v}$
+finds an analog. The slope, $m$, is replaced with a vector $\vec{v}$
 and the point, $(x_0, y_0)$ is replaced with a vector $\vec{p}$
 identified with a point in the plane. A parameterization would then be
 $f(t) = \vec{p} + (t - t_0) \vec{v}$. From this, we have $f(t_0) =
@@ -138,10 +159,10 @@ are immediately seen, such as the period of $\sin$ and $\cos$ being
 $2\pi$, or the angles for which $\sin$ and $\cos$ are positive or even
 increasing. Further, this gives a natural parameterization for a
 vector-valued function whose plot yields the unit circle, namely
-$\vec{f}(t) = \langle \cost(t), \sin(t) \rangle$. This
+$\vec{f}(t) = \langle \cos(t), \sin(t) \rangle$. This
 parameterization starts (at $t=0$) at the point $(1, 0)$. More
 generally, we might have additional parameters $\vec{f}(t) = \vec{p} +
-R \cdot \langle \cost(\omega(t-t_0)), \sin(\omega(t-t_0)) \rangle$ to
+R \cdot \langle \cos(\omega(t-t_0)), \sin(\omega(t-t_0)) \rangle$ to
 change the origin, $\vec{p}$; the radius, $R$; the starting angle,
 $t_0$; and the rotational frequency, $\omega$.
 
@@ -152,21 +173,36 @@ $a=b$ a circle is being described. A vector valued function of the form
 $\vec{f}(t) = \langle a\cdot\cos(t),  b\cdot\sin(t) \rangle$ will trace out an ellipse.
 
 
+The above description of an ellipse is useful, but it can also be useful to reexpress the ellipse so that one of the foci is at the origin. With this, the ellipse can be given in *polar* coordinates through a description of the radius:
+
+$$~
+r(\theta) = \frac{a (1 - e^2)}{1 + e \cos(\theta)}.
+~$$
+
+Here, $a$ is the semi-major axis ($a > b$); $e$ is the *eccentricity* given by $b = a \sqrt{1 - e^2}$; and $\theta$ a polar angle.
+
+Using the conversion to Cartesian equations, we have
+$\vec{x}(\theta) = \langle r(\theta) \cos(\theta), r(\theta) \sin(\theta)\rangle$.
+
+
+
+
+
 ##### Example
 
 The [Spirograph](https://en.wikipedia.org/wiki/Spirograph) is "... a geometric drawing toy that produces mathematical roulette curves of the variety technically known as hypotrochoids and epitrochoids. It was developed by British engineer Denys Fisher and first sold in 1965." These can be used to make interesting geometrical curves.
 
-Following Wikipedia: Consider a fixed outer circle $C_o$  of radius $R$ centered at the origin. A smaller inner circle  $C_i$ of radius $r<R$ rolling inside $C_o$ and is continuously tangent to it. $C_{i}$ will be assumed never to slip on $C_{o}$ (in a real Spirograph, teeth on both circles prevent such slippage). Now assume that a point $A Alying somewhere inside $C_{i}$is located a distance $\rho <r$ from $C_{i}$'s center.
+Following Wikipedia: Consider a fixed outer circle $C_o$ of radius $R$ centered at the origin. A smaller inner circle  $C_i$ of radius $r < R$ rolling inside $C_o$ and is continuously tangent to it. $C_i$ will be assumed never to slip on $C_o$ (in a real Spirograph, teeth on both circles prevent such slippage). Now assume that a point $A Alying somewhere inside $C_{i}$is located a distance $\rho <r$ from $C_i$'s center.
 
 The center of the inner circle will move in a circular manner with radius $R-r$. The fixed point on the inner circle will rotate about this center. The accumulated angle may be described by the angle the point of contact of the inner circle with the outer circle. Call this angle $t$.
 
 Suppose the outer circle is centered a the origin and the inner circle starts ($t=0$) with center $(R-r, 0)$ and rotates around counterclockwise. Then if the point of contact makes angle $t$, the arc length along the outer circle if $Rt$. The inner circle will have moved a distance $r t'$ in the opposite direction, so $Rt =-r t'$ and solving the angle will be $t' = -(R/r)t$.
 
-If the initial position of the fixed point is at $(rho, 0)$ relative to the origin, then the following function will describe the motion:
+If the initial position of the fixed point is at $(\rho, 0)$ relative to the origin, then the following function will describe the motion:
 
 $$~
 \vec{s}(t) = (R-r) \cdot \langle \cos(t), \sin(t) \rangle +
-rho \cdot \langle \cos(\frac{R}{r}t), \sin(\frac{R}{r}t) \rangle.
+\rho \cdot \langle \cos(\frac{R}{r}t), \sin(\frac{R}{r}t) \rangle.
 ~$$
 
 
@@ -175,7 +211,7 @@ To visualize this we first define a helper function to draw a circle at point $P
 
 ```
 function circle!(plt, P, R; kwargs...)
-	plot!(xs_ys(t -> P + R*[cos(t), sin(T)], 0, 2pi)...)
+	plot!(xs_ys(t -> P + R*[cos(t), sin(t)], 0, 2pi)...)
 end
 circle!(P, R; kwargs...) = circle!(Plots.current(), P, R; kwargs...)
 ```
@@ -187,7 +223,7 @@ function spiro(t; r=2, R=5, rho=0.8*r)
 
     cent(t) = (R-r) * [cos(t), sin(t)]
 
-    p = plot(legend=false)
+    p = plot(legend=false, aspect_ratio=:equal)
     circle!(p, [0,0], R)
     circle!(p, cent(t), r)
 
@@ -202,6 +238,7 @@ end
 
 And we can see the trace for $t=\pi$:
 
+
 ```
 spiro(pi)
 ```
@@ -215,20 +252,11 @@ spiro(2pi)
 The curve does not match up at the start. For that, a second time around the outer circle is needed:
 
 ```
-spiro(2pi)
+spiro(4pi)
 ```
 
 Whether the curve will have a period or not is decided by the ratio of $R/r$ being rational or irrational.
 
-
-```
-R, r = 25, 5
-rho = 0.8*r
-
-f(t) = (R-r)*[cos(t), sin(t)] + rho * [cos((R-r)/r * t), -sin((R-r)/r * t)]
-
-plot(xs_ys(f, 0, 2pi, 1000), aspect_ratio=:equal)
-```
 
 ##### Example
 
@@ -253,22 +281,24 @@ $$~
 To visualize for some parameters, we have:
 
 ```
-R, r = 25, 5
+M, m = 25, 5
 height = 5
 S, T = 8, 2
-u(t) = [R * sin(2pi*t/T), R * cos(2pi*t/T), height*(1 +sin(2pi * t/T))]
-v(t) = [r * sin(2pi*t/S), r * cos(2pi*t/S), 0]
-f(t) = u(t) + v(t)
+outer(t) = [M * sin(2pi*t/T), M * cos(2pi*t/T), height*(1 +sin(2pi * (t-pi/2)/T))]
+inner(t) = [m * sin(2pi*t/S), m * cos(2pi*t/S), 0]
+f(t) = outer(t) + inner(t)
 plot(xs_ys(f, 0, 8, 1000)...)
 ```
 
-## limits
+## Limits and continuity
 
 The definition of a limit for a univariate function is: For every $\epsilon > 0$ there exists a $\delta > 0$ such that *if* $0 \leq |x-c| < \delta$ *then* $|f(x) - L | < \epsilon$.
 
 If this the notion of $f$ is close to $L$ is replaced by close in the sense of a norm, then the same limit definition can be used, with the new wording "... $\| \vec{f}(x) - L \| < \epsilon$".
 
 A consequence of the triangle inequality is that a vector-valued function is continuous if and only it its component functions are.
+
+The notion of continuity is identical: $f(t)$ is continuous at $t_0$ if $\lim_{t \rightarrow t_0}f(t) = f(t_0)$.
 
 ## derivatives
 
@@ -281,7 +311,6 @@ $$~
 For example, if $\vec{f}(t) = \langle \sin(t), 3\cos(t) \rangle$ and $t=\pi/4$ and $\Delta t = \pi/16$ we have this picture:
 
 ```
-gr()
 f(t) = [sin(t), 3cos(t)]
 t, Deltat = pi/4, pi/16
 df = f(t + Deltat) - f(t)
@@ -303,7 +332,7 @@ The derivative is a tangent vector to the parameterized curve, akin to the case 
 
 ```
 using ForwardDiff
-D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, x)
+D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
 Base.adjoint(f::Function) = D(f)         # allow f' to compute derivative
 ```
 
@@ -311,7 +340,7 @@ We can visualize the tangential property through a graph:
 
 ```
 f(t) = [sin(t), 3cos(t)]
-p = plot(xs_ys(f, 0, 2pi)..., legend=false)
+p = plot(xs_ys(f, 0, 2pi)..., legend=false, aspect_ratio=:equal)
 for t in [1,2,3]
     arrow!(p, f(t), f'(t))   # add arrow with tail on curve, in direction of derivative
 end
@@ -326,7 +355,7 @@ Were symbolic expressions used in place of functions, the vector-valued function
 ```
 using SymPy
 @vars t
-vvf = [sin(t), cos(t), t]
+vvf = [cos(t), sin(t), t]
 ```
 
 We will see working with these expressions is not idential to working with a vector-valued function.
@@ -378,39 +407,184 @@ The derivative of a vector valued function is similar to that of a univariate fu
 With this, the equation is simply $\vec{tl}(t) = \vec{f}(t_0) + \vec{f}'(t_0) \cdot (t - t_0)$, where the dot indicates scalar multiplication.
 
 
+
+##### Example: parabolic motion
+
+In physics, we learn that the equation $F=ma$ can be used to derive a formula for postion, when acceleration, $a$, is a constant. The resulting equation of motion is $x = x_0 + v_0t + (1/2) at^2$. Similarly, if $x(t)$ is a vector-valued postion vector, and the *second* derivative, $x''(t) =\vec{a}$, a constant, then we have: $x(t) = \vec{x_0} + \vec{v_0}t + (1/2) \vec{a} t^2$.
+
+For two dimensions, we have the force due to gravity acts downward, only in the $y$ direction. The acceleration is then $\vec{a} = \langle 0, -g \rangle$. If we start at the origin, with initial velocity $\vec{v_0} = \langle 2, 3\rangle$, then we can plot the trajectory until the object returns to ground ($y=0$) as follows:
+
+```
+gravity = 9.8
+x0, v0, a = [0,0], [2, 3], [0, -gravity]
+x(t) = x0 + v0*t + (1/2)*a*t^2
+
+using Roots
+t_0 = fzero(t -> x(t)[2], 1/10, 100)  # find when y=0
+
+plot(xs_ys(x, 0, t_0)...)
+```
+
+
 ##### Example: tractrix
 
+```noeval,nocode,noout
 https://en.wikipedia.org/wiki/Tractrix
 https://sinews.siam.org/Details-Page/a-bike-and-a-catenary
 https://www.math.psu.edu/tabachni/talks/BicycleDouble.pdf
 https://www.tandfonline.com/doi/abs/10.4169/amer.math.monthly.120.03.199
+https://projecteuclid.org/download/pdf_1/euclid.em/1259158427
+```
 
 A [tractrix](https://en.wikipedia.org/wiki/Tractrix), studied by Perrault, Newton, Huygens, and many others, is the curve along which an object moves when pulled in a horizontal plane by a line segment attached to a pulling point (Wikipedia). If the object is placed at $(a,0)$ and the puller at the origin, and the puller moves along the positive $x$ axis, then the line will always be tangent to the curve and of fixed length, so determinable from the motion of the puller. In this example $dy/dx = -\sqrt{a^2-x^2}/x$.
 
 This is the key property: "Due to the geometrical way it was defined, the tractrix has the property that the segment of its tangent, between the asymptote and the point of tangency, has constant length $a$."
 
-As a bicyle moves, the motion of the rear wheel relative to the front is a fixed length and such that the direction of motion of the rear wheel points to the front wheel. That is, the paths follow a tractrix. If we start with the rear wheel (the object) above, we can readily describe the curve for the front wheel by plotting the tangent line with length 1.
 
-For example, if the rear wheel moves according to the following parametric equation, we can plot both the rear wheel and the front wheel:
+The tracks made by the front and rear bicycle wheels also have this
+same property and similarly afford a mathematical description. We follow
+[Dunbar, Bosman, and Nooij](https://doi.org/10.2307/2691097) from *The
+Track of a Bicycle Back Tire* below, though
+[Levi and Tabachnikov](https://projecteuclid.org/download/pdf_1/euclid.em/1259158427)
+and
+[Foote, Levi, and Tabachnikov](https://www.tandfonline.com/doi/abs/10.4169/amer.math.monthly.120.03.199)
+were also consulted.  Let $a$ be the distance between the front and
+back wheels, whose postions are parameterized by $\vec{F}(t)$ and
+$\vec{B}(t)$, respectively. The key property is the distance between
+the two is always $a$, and, as the back wheel is always moving in the
+direction of the front wheel, we have $\vec{B}'(t)$ is in the
+direction of $\vec{F}(t) - \vec{B}(t)$, that is the vector
+$(\vec{F}(t)-\vec{B}(t))/a$ is a unit vector in the direction of the
+derivative of $\vec{B}$. How long is the derivative vector? That would
+be answered by the speed of the back wheel, which is related to the
+velocity of the front wheel. But only the component of the velocity in
+the direction of $\vec{F}(t)-\vec{B}(t)$, so the speed of the back
+wheel is the length of the projection of $\vec{F}'(t)$ onto the unit
+vector $(\vec{F}(t)-\vec{B}(t))/a$, which is given by the dot product.
+
+Combined, this gives the following equations relating $\vec{F}(t)$ to $\vec{B}(t)$:
+
+$$~
+s_B(t) = \vec{F}'(t) \cdot \frac{\vec{F}(t)-\vec{B}(t)}{a}, \quad
+\vec{B}'(t) = s_B(t) \frac{\vec{F}(t)-\vec{B}(t)}{a}.
+~$$
+
+This is a *differential* equation describing the motion of the back wheel in terms of the front wheel.
+
+If the back wheel trajectory is known, the relationship is much easier, as the two differ by a vector of length $a$ in the direction of $\vec{B}'(t)$, or:
+
+$$~
+F(t) = \vec{B}(t) + a \frac{\vec{B'(t)}}{\|\vec{B}'(t)\|}.
+~$$
+
+
+The differential equation above may be solved numerically, in a manner somewhat similar to what was discussed in [ODEs](../ODEs/odes.html), though here we will use the `DifferentialEquations` package to numerically solve for the solution.
+
+We can define our equation as follows, using `p` to pass in the two parameters: the wheel-base length $a$, and $F(t)$, the parameterization of the front wheel in time:
 
 ```
-using LinearAlgebra
-a, b = 0, 4
-t1, t2 = 3/4, 3/2
-rw(t) = [t, t/2 + sin(t)]
-plot(xs_ys(rw, a, b,1000)...)
+using DifferentialEquations, LinearAlgebra
 
-uvec(v) = v/norm(v)
+function bicycle(dB, B, p, t)
 
-fw(t) = rw(t) + uvec(rw'(t))
-plot!(xs_ys(fw, a, b,1000)...)
+  a, F = p   # unpack parameters
 
-arrow!(rw(t1), uvec(rw'(t1)))
-arrow!(rw(t2), uvec(rw'(t2)))
+  speed =  F'(t) ⋅ (F(t) - B) / a
+  dB[1], dB[2] = speed * (F(t) - B) / a
+
+end
+```
+
+Let's consider a few simple cases first. We suppose $a=1$ and the front wheel moves in a circle of radius $3$. Here is how we can plot two loops:
+
+```noout
+t0, t1 = 0.0, 4pi
+tspan = (t0, t1)  # time span to consider
+
+a = 1
+F(t) = 3 * [cos(t), sin(t)]
+p = (a, F)      # combine parameters
+
+B0 = F(0) - [0, a]  # some initial position for the back
+prob = ODEProblem(bicycle, B0, tspan, p)
+
+out = DifferentialEquations.solve(prob, reltol=1e-6)
+```
+
+We qualify the `solve` function, as `SymPy` also has a `solve` function.
+
+To plot the two trajectories, we could use that `out.u` holds the $x$ and $y$ components of the computed trajectory, but more simply, we can call `out` like a function. As we haven't defined `xs_ys` for objects like `out`, we use an anonymous function (the `t -> out(t)` part):
+
+```
+plt = plot(xs_ys(F, t0, t1)..., legend=false)
+plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+
+## add the bicycle as a line segment at a few times along the path
+for t in range(t0, t1, length=11)
+    plot!(plt, xs_ys([out(t), F(t)])..., linewidth=3)
+end
+plt
 ```
 
 
-XXX more challenging is identifying the motion of the rear wheel from the front. Paper, ...
+That the rear wheel track appears shorter is typical of bicycle tracks.
+
+Let's look what happens if the front wheel wobbles back and forth following a sine curve. Repeating the above, only with $F$ redefined, we have:
+
+```
+a = 1
+F(t) = [t, 2sin(t)]
+p = (a, F)
+
+B0 = F(0) - [0, a]  # some initial position for the back
+prob = ODEProblem(bicycle, B0, tspan, p)
+
+out = DifferentialEquations.solve(prob, reltol=1e-6)
+plt = plot(xs_ys(F, t0, t1)..., legend=false)
+plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+```
+
+Again, the back wheel moves less than the front.
+
+
+The motion of the back wheel need not be smooth, even if the motion of the front wheel is, as this curve illustrates:
+
+```
+a = 1
+F(t) = [cos(t), sin(t)] + [cos(2t), sin(2t)]
+p = (a, F)
+
+B0 = F(0) - [0,a]
+prob = ODEProblem(bicycle, B0, tspan, p)
+
+out = DifferentialEquations.solve(prob, reltol=1e-6)
+plt = plot(xs_ys(F, t0, t1)..., legend=false)
+plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+```
+
+The back wheel is moving backwards for part of the above trajectory.
+
+
+This effect can happen even for a front wheel motion as simple as a circle when the front wheel radius is less than the wheelbase:
+
+```
+a = 1
+F(t) = a/3 * [cos(t), sin(t)]
+p = (a, F)
+
+t0, t1 = 0.0, 25pi
+tspan = (t0, t1)
+
+B0 = F(0) - [0,a]
+prob = ODEProblem(bicycle, B0, tspan, p)
+
+out = DifferentialEquations.solve(prob, reltol=1e-6)
+plt = plot(xs_ys(F, t0, t1)..., legend=false, aspect_ratio=:equal)
+plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+```
+
+
+Later we will characterize when there are cusps in the rear-wheel trajectory.
 
 
 ### Derivative rules.
@@ -448,7 +622,7 @@ Suggesting the that a product rule like formula applies for dot products.
 For the cross product, we let `SymPy` derive a formula for us.
 
 ```
-@symfuns u1 u2 u3 v1 v2 v3
+u1, u2, u3, v1, v2, v3 = SymFunction("u1, u2, u3, v1, v2, v3")
 @vars t
 u = [u1(t), u2(t), u3(t)]
 v = [v1(t), v2(t), v3(t)]
@@ -468,6 +642,13 @@ diff.(u × v, t) - (diff.(u,t) × v + u × diff.(v,t))
 ```
 
 
+In summary, these two derivative formulas hold:
+
+$$~
+(\vec{u} \cdot \vec{v})' = \vec{u}' \cdot \vec{v} + \vec{u} \cdot \vec{v}', \quad
+(\vec{u} \times \vec{v})' = \vec{u}' \times \vec{v} + \vec{u} \times \vec{v}'.
+~$$
+
 ##### Application. Circular motion and the tangent vector.
 
 The parameterization $\vec{r}(t) = \langle \cos(t), \sin(t) \rangle$ describes a circle. Characteristic of this motion is a constant radius, or in terms of a norm: $\| \vec{r}(t) \| = c$. The norm squared, can be expressed in terms of the dot product:
@@ -479,11 +660,563 @@ $$~
 Differentiating this for the case of a constant radius yields the equation $0 = [\vec{r}\cdot\vec{r}]'(t)$, which simplifies through the product rule to $0 = 2 \vec{r}(t) \cdot \vec{r}'(t)$. That is, the two vectors are perpendicular to each other.
 
 
-## XXX KEPLER, ..,
+##### Example: Kepler's laws
 
-### T, B, N
+[Kepler](https://tinyurl.com/y38wragh)'s laws of planertary motion are summarized by:
 
-## curvature, torsion
+* The orbit of a planet is an ellipse with the Sun at one of the two foci.
+
+* A line segment joining a planet and the Sun sweeps out equal areas during equal intervals of time.
+
+* The square of the orbital period of a planet is directly proportional to the cube of the semi-major axis of its orbit.
+
+Kepler was a careful astronomer, and derived these laws empirically.
+We show next how to derive these laws using vector calculus assuming some facts on Newtonian motion, as postulated by Newton. This approach is borrowed from [Joyce](https://mathcs.clarku.edu/~djoyce/ma131/kepler.pdf).
+
+We adopt a sun-centered view of the universe, placing the sun at the origin and letting $\vec{x}(t)$ be the position of a planet relative to this origin. We can express this in terms of a magnitude and direction through $r(t) \hat{x}(t)$.
+
+Newtons laws of gravitational force between the sun and this planet is then:
+
+
+$$~
+\vec{F} = -\frac{G M m}{r^2} \hat{x}(t).
+~$$
+
+Newton law relating force and acceleration is
+
+$$~
+\vec{F} = m \vec{a} = m \ddot{\vec{x}}.
+~$$
+
+Combining, Newton states $\vec{a} = -(GM/r^2) \hat{x}$.
+
+Now to show the first law. Consider $\vec{x} \times \vec{v}$. It is constant, as:
+
+$$~
+(\vec{x} \times \vec{v})' = \vec{x}' \times \vec{v} + \vec{x} \times \vec{v}' = \vec{v} \times \vec{v} + \vec{x} \times \vec{a}.
+~$$
+
+Both terms are $\vec{0}$, as $\vec{a}$ is parallel to $\vec{x}$ by the above, and clearly $\vec{v}$ is parallel to itself.
+
+This says, $\vec{x} \times \vec{v} = \vec{c}$ is a constant vector, meaning, the motion of $\vec{x}$ must lie in a plane, as $\vec{x}$ is always orthogonal to the fixed vector $\vec{c}$.
+
+Now, by differentiating $\vec{x} = r \hat{x}$ we have:
+
+$$~
+\vec{v} = \vec{x}' = (r\hat{x})' = r' \hat{x} + r \hat{x}',
+~$$
+
+and so
+
+$$~
+\vec{c} = \vec{x} \times \vec{v} = (r\hat{x}) \times (r'\hat{x} + r \hat{x}') = r^2 (\hat{x} \times \hat{x}').
+~$$
+
+From this, we can compute $\vec{a} \times \vec{c}$:
+
+$$~
+\vec{a} \times \vec{c} = (-\frac{GM}{r^2})\hat{x} \times r^2(\hat{x} \times \hat{x}') =
+-GM \hat{x} \times (\hat{x} \times \hat{x}')
+= GM (\hat{x} \times \hat{x}')\times \hat{x}.
+~$$
+
+The last line by anti-commutivity.
+
+But, the triple cross product can be simplified through the identify $(\vec{u}\times\vec{v})\times\vec{w} = (\vec{u}\cdot\vec{w)}\vec{v} - (\vec{v}\cdot\vec{w})\vec{u}$. So, the above becomes:
+
+$$~
+\vec{a} \times \vec{c}  =  GM ((\hat{x}\cdot\hat{x})\hat{x}' - (\hat{x} \cdot \hat{x}')\hat{x}) = GM (1 \hat{x}' - 0 \hat{x}).
+~$$
+
+Now, since $\vec{c}$ is constant, we have:
+
+$$~
+(\vec{v} \times \vec{c})' =
+(\vec{a} \times \vec{c}) =
+GM \hat{x}' =
+(GM\hat{x})'.
+~$$
+
+The two sides have the same derivative, hence differ by a constant:
+
+$$~
+\vec{v} \times \vec{c} = GM \hat{x} + \vec{d}.
+~$$
+
+As $\vec{u}$ and $\vec{v}\times\vec{c}$ lie in the same plane--orthogonal to $\vec{c}$--so does $\vec{d}$. With a suitable rotation, so that $\vec{d}$ is along the $x$ axis, $\vec{c}$ is along the $z$-axis, then we have $\vec{c} = \langle 0,0,c\rangle$ and $\vec{d} = \langle d ,0,0 \rangle$, and $\vec{x} = \langle x, y, 0 \rangle$. Set $\theta$ to be the angle, then $\hat{x} = \langle \cos(\theta), \sin(\theta), 0\rangle$.
+
+Now
+
+$$~
+c^2 = \|\vec{c}\|^2 = \vec{c} \cdot \vec{c} =
+(\vec{x} \times \vec{v}) \cdot \vec{c} =
+\vec{x} \cdot (\vec{v} \times \vec{c}) =
+r\hat{x} \cdot (GM\hat{x} + \vec{d}) =
+GMr + r \hat{x} \cdot \vec{d} =
+GMr + rd \cos(\theta).
+~$$
+
+Solving, this gives the radial distance in the form of an ellipse:
+
+$$~
+r = \frac{c^2}{GM + d\cos(\theta)} =
+\frac{c^2/(GM)}{1 + (d/GM) \cos(\theta)}.
+~$$
+
+
+
+Kepler's second law can also be derived from vector calculus. This derivation follows that given at [MIT](https://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/1.-vectors-and-matrices/part-c-parametric-equations-for-curves/session-21-keplers-second-law/MIT18_02SC_MNotes_k.pdf) [opencourseware](https://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/index.htm).
+
+The second law states that the area being swept out during a time duration only depends on the duration of time, not the time. Let $\Delta t$ be this duration. Then if $\vec{x}(t)$ is the position vector, as above, we have the area swept out between $t$ and $t + \Delta t$ is visualized along the lines of:
+
+
+```
+x1(t) = [cos(t), 2 * sin(t)]
+t0, t1, Delta = 1.0, 2.0, 1/10
+plot(xs_ys(x1, 0, pi/2)...)
+
+arrow!([0,0], x1(t0)); arrow!([0,0], x1(t0 + Delta))
+arrow!(x1(t0), x1(t0+Delta)- x1(t0), linewidth=5)
+```
+
+The area swept out, is basically the half the area of the parallelogram formed by $\vec{x}(t)$ and $\Delta \vec{x}(t) = \vec{x}(t + \Delta t) - \vec{x}(t))$. This area is $(1/2) (\vec{x} \times \Delta\vec{x}(t))$.
+
+If we divide through by $\Delta t$, and take a limit we have:
+
+$$~
+\frac{dA}{dt} = \| \frac{1}{2}\lim_{\Delta t \rightarrow 0} (\vec{x} \times \frac{\vec{x}(t + \Delta t) - \vec{x}(t)}{\Delta t})\| =
+\frac{1}{2}\|\vec{x} \times \vec{v}\|.
+~$$
+
+But we saw above, that for the motion of a planet, that $\vec{x} \times \vec{v} = \vec{c}$, a constant. This says, $dA$ is a constant independent of $t$, and consequently, the area swept out over a duration of time will not depend on the particular times involved, just the duration.
+
+
+The third law relates the period to a parameter of the ellipse. We have from the above that that area of the ellipse can be found by integrating $dA$ over the period, say $T$. Letting $a$ be the semi-major axis, $b$ the semi-minor axis, then
+
+$$~
+\pi a b = \int_0^T dA = \int_0^T (1/2) \|\vec{x} \times \vec{v}\| dt = \| \vec{x} \times \vec{v}\| \frac{T}{2}.
+~$$
+
+As $c = \|\vec{x} \times \vec{v}\|$ is a constant, this allows us to express $c$ by: $2\pi a b/T$.
+
+But, we have
+
+$$~
+r(\theta) = \frac{c^2}{GM + d\cos(\theta)} = \frac{c^2/(GM)}{1 + d/(GM) \cos(\theta)}.
+~$$
+
+So, $e = d/(GM)$ and $a (1 - e^2) = c^2/(GM)$. Using $b = a \sqrt{1-e^2}$ we have:
+
+$$~
+a(1-e^2) = c^2/(GM) = (\frac{2\pi a b}{T})^2 \frac{1}{GM} =
+\frac{(2\pi)^2}{GM} \frac{a^2 (a^2(1-e^2))}{T^2},
+~$$
+
+or after cancelling $(1-e^2)$ from each side:
+
+$$~
+T^2 = \frac{(2\pi)^2}{GM} \frac{a^4}{a} = \frac{(2\pi)^2}{GM} a^3.
+~$$
+
+
+----
+
+The above shows how Newton might have derived Kepler's observational facts. Next we show, that assuming the laws of Kepler can anticipate Newton's equation for gravitational force. This follows [Wikipedia](https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Planetary_acceleration).
+
+Let $\vec{r}(t)$ be the position of the planet relative to the Sun at the origin, in two dimensions. Assume $\vec{r}(0)$ points in the $x$ direction.
+Write $\vec{r} = r \hat{r}$. Define $\hat{\theta(t)}$ to be the mappping from time $t$ to the angle  defined by $\hat{r}$ through the unit circle.
+
+Then we express the velocity ($\dot{\vec{r}}$) and acceleration ($\ddot{\vec{r}}$) in terms of the orthogonal vectors $\hat{r}$ and $\hat{\theta}$, as follows:
+
+$$~
+\frac{d}{dt}(r \hat{r}) = \dot{r} \hat{r} + r \dot{\hat{r}} =  \dot{r} \hat{r} + r \dot{\theta}\hat{\theta}.
+~$$
+
+The last equality from expressing $\hat{r(t)} = \hat{r}(\theta(t))$ and using the chain rule, noting $d(r(\theta))/d\theta = \hat{\theta}$.
+
+Continuing,
+
+$$~
+\frac{d^2}{dt^2}(r \hat{r}) =
+(\ddot{r} \hat{r} + \dot{r} \dot{\hat{r}}) +
+(\dot{r} \dot{\theta}\hat{\theta} + r \ddot{\theta}\hat{\theta} + r \dot{\theta}\dot{\hat{\theta}}).
+~$$
+
+Noting, similar to above $d\hat{\theta}/dt = d\hat{\theta}d\theta \cdot d\theta/dt = -\dot{\theta} \hat{r}$ we can express the above in terms of $\hat{r}$ and $\hat{\theta}$ as:
+
+$$~
+\vec{a} = \frac{d^2}{dt^2}(r \hat{r}) = (\ddot{r} - r (\dot{\theta})^2) \hat{r}  + (r\ddot{\theta}  + 2\dot{r}\dot{\theta}) \hat{\theta}).
+~$$
+
+That is, in general, the acceleration has a radial component and a transversal component.
+
+Kepler's second law says that the area increment over time is constant ($dA/dt$), but this area increment is approximated by the following wedge in polar coordinates: $dA = (1/2) r \cdot rd\theta$. We have then $dA/dt = r^2 \dot{\theta}$ is constant.
+
+Differentiating, we have:
+
+$$~
+0 = \frac{d(r^2 \dot{\theta})}{dt} = 2r\dot{r}\dot{\theta} + r^2 \ddot{\theta},
+~$$
+
+which is the tranversal component of the acceleration, as decomposed above. This means, that the acceleration is completely towards the Sun at the origin.
+
+Kepler's first law, relates $r$ and $\theta$ through the equation of an ellipse:
+
+$$~
+r = \frac{p}{1 + \epsilon \cos(\theta)}.
+~$$
+
+Expressing in terms of $p/r$ and differentiating in $t$ gives:
+
+$$~
+-\frac{p \dot{r}}{r^2} = -\epsilon\sin(\theta) \dot{\theta}.
+~$$
+
+Or
+
+$$~
+p\dot{r} = \epsilon\sin(\theta) r^2 \dot{\theta} = \epsilon \sin(\theta) C,
+~$$
+
+For a constant $C$, used above, as the second laws implies $r^2 \dot{\theta}$ is constant. (This constant can be expressed in terms of parameters describing the ellipse.)
+
+Differentiating again in $t$, gives:
+
+$$~
+p \ddot{r} = C\epsilon \cos(\theta) \dot{\theta} = C\epsilon \cos(\theta)\frac{C}{r^2}.
+~$$
+
+So $\ddot{r} = (C^2 \epsilon / p) \cos{\theta} (1/r^2)$.
+
+The radial acceleration from above is:
+
+$$~
+\ddot{r} - r (\dot{\theta})^2 =
+(C^2 \epsilon/p) \cos{\theta} \frac{1}{r^2} - r\frac{C^2}{r^4} = \frac{C^2}{pr^2}(\epsilon \cos(\theta) - \frac{p}{r}).
+~$$
+
+Using $p/r = 1 + \epsilon\cos(\theta)$, we have the radial acceleration is $C^2/p \cdot (1/r^2)$. That is the acceleration, is proportional to the inverse square of the position, and using the relation between $F$, force, and acceleration, we see the force on the planet follows the inverse-square law of Newton.
+
+
+
+### Moving frames of reference
+
+In the last example, it proved useful to represent vectors interms of
+other unit vectors, in that case $\hat{r}$ and $\hat{\theta}$. Here we
+discuss a coordinate system defined intrinsically by the motion along
+the trajectory of a curve.
+
+Let $r(t)$ be a smoooth vector-valued function. It gives rise to a space curve, through its graph. This curve has tangent vector $r'(t)$, indicating the direction of travel along $r$ as $t$ increases. The length of $r'(t)$ depends on the parameterization of $r$, as for any increasing, differentiable function $s(t)$, the composition $r(s(t))$ will have derivative, $r'(s(t)) s'(t)$, having the same direction as $r'(t)$ (at suitably calibrated point), but not the same magnitude, the factor of $s(t)$ being involved.
+
+To discuss properties intrinsic to the curve, the unit vector is considered:
+
+$$~
+T(t) = \frac{r'(t)}{\|r'(t)\|}.
+~$$
+
+
+The function $T(t)$ is the *torsion*.
+Now define the *normal*, $N(t)$, by:
+
+$$~
+N(t) = \frac{T'(t)}{\| T'(t) \|}.
+~$$
+
+Since $\|T(t)\| = 1$, a constant, it must be that $N(t) \cdot T(t) = 0$, that is, the two are orthogonal.
+
+Finally, define the *binormal*, $B(t) = T(t) \times N(t)$. At each time $t$, the three unit vectors are orthogonal to each other. They form a moving coordinate system for the motion along the curve that does not depend on the parameterization.
+
+We can visualize this, for example along a [Viviani](https://tinyurl.com/y4lo29mv) curve, as is done in a [Wikipedia](https://en.wikipedia.org/wiki/Frenet%E2%80%93Serret_formulas) animation:
+
+```
+function viviani(t, a=1)
+    [a*(1-cos(t)), a*sin(t), 2a*sin(t/2)]
+end
+
+
+Tangent(t) = viviani'(t)/norm(viviani'(t))
+Normal(t) = Tangent'(t)/norm(Tangent'(t))
+Binormal(t) = Tangent(t) × Normal(t)
+
+plot(xs_ys(viviani, -2pi, 2pi)..., legend=false, aspect_ratio=:equal)
+t0, t1 = -pi/4, pi
+r0, r1 = viviani(t0), viviani(t1)
+arrow!(r0, Tangent(t0)); arrow!(r0, Binormal(t0)); arrow!(r0, Normal(t0))
+arrow!(r1, Tangent(t1)); arrow!(r1, Binormal(t1)); arrow!(r1, Normal(t1))
+```
+
+
+
+
+----
+
+The *curvature* of a 3-dimensional space curve is defined by:
+
+$$~
+\kappa = \frac{\| r'(t) \times r''(t) \|}{\| r'(t) \|^3}
+~$$
+
+
+For $2$ dimensional space curves, the same formula applies after embedding a $0$ third component.
+
+
+
+This can also be defined as derivative of the tangent vector, $T$,
+*when* the curve is parameterized by arc length, a topic still to be taken up.  The vector $r'(t)$ is the direction of motion, whereas
+$r''(t)$ indicates how fast and in what direction this is
+changing. For curves with little curve in them, the two will be nearly
+parallel and the cross product small (reflecting the presence of
+$\cos(\theta)$ in the definition). For "curvy" curves, $r''$ will be
+in a direction opposite of $r'$ to the $\cos(\theta)$ term in the
+cross product will be closer to $1$.
+
+Let $r(t) = k \cdot \langle \cos(t), \sin(t), 0 \rangle$. This will have curvature:
+
+```
+@vars k positive=true
+@vars t real=true
+r1 = k * [cos(t), sin(t),0]
+norm(diff.(r1,t) × diff.(r1, t,t)) / norm(diff.(r1,t))^3 |> simplify
+```
+
+For larger circles (bigger $\|k\|$) there is less curvature.
+
+If a curve is imagined to have a tangent "circle" (second order Taylor series approximation), then the curvature of that circle matches the curvature of the curve.
+
+
 
 
 ## Arc length
+
+In [Arc length](../integrals/arc_length.html) a discussion of how to find the arc length of a parameterized curve in 2 dimensions. The general case is discussed by [Destafano](https://randomproofs.files.wordpress.com/2010/11/arc_length.pdf) who shows if the curve $C$ is parameterized by a smooth function $\vec{r}(t)$ over an interval $I$, that the arc-length of $C$ is $\int_I \| \vec{r}'(t)  \| dt$.
+
+If we associate $\vec{r}'(t)$ with the velocity, then this is the integral of the speed (the magnitude of the velocity).
+
+Let $I=[a,b]$ and $s(t): [v,w] \rightarrow [a,b]$ such that $s$ is increasing and differentiable. Then $\vec{\phi} = \vec{r} \circ s$ will have have
+
+$$~
+\text{arc length} =
+\int_v^w \| \vec{\phi}'(t)\| dt =
+\int_v^w \| \vec{r}'(s(t))\| s'(t) dt =
+\int_a^b \| \vec{r}'(u) \| du,
+~$$
+
+by a change of variable $u=s(t)$. As such the arc length is a property of the curve and not the parameterization of the curve.
+
+For some parameterization, we can define
+
+$$~
+s(t) = \int_0^t \| \vec{r}'(u) \| du
+~$$
+
+Then by the fundamental theorem of calculus, $s(t)$ is non-decreasing. If $\vec{r}'$ is assumed to be non-zero and continuous, then $s(t)$ has a derivative and an inverse which is monotonic. Using the inverse function $s^{-1}$ to change variables ($\vec{\phi} = \vec{r} \circ s^{-1}$) has
+
+$$~
+\int_0^c \| \phi'(t) \| dt =
+\int_{s^{-1}(0)}^{s^{-1}(c)} \| \vec{r}'(u) \| du =
+s(s^{-1}(c)) - s(s^{-1}(0)) =
+c
+~$$
+
+That is, the arc length from $[0,c]$ for $\phi$ is just $c$. That is the curve $C$ is parameterized by arc length.
+
+
+##### Example
+
+Viviani's curve is the itersection of sphere of radius $a$ with a cylinder of radius $a$. A parameterization was given previously by:
+
+```
+function viviani(t, a=1)
+    [a*(1-cos(t)), a*sin(t), 2a*sin(t/2)]
+end
+```
+
+The curve is traced out over the interval $[0, 4\pi]$. We try to find the arc-length:
+
+```
+@vars t a positive=true
+speed = simplify(norm(diff.(viviani(t, a), t)))
+integrate(speed, (t, 0, 4*PI))
+```
+
+We see that the answer depends linearly on $a$, but otherwise is a constant expressed as an integral. We use `QuadGk` to provide a numeric answer for the case $a=1$:
+
+```
+using QuadGK
+quadgk(viviani, 0, 4pi)
+```
+
+
+##### Example
+
+Very few parameterized curves admit a closed-form expression for parameterization by arc-length. Let's consider the helix expressed by $\langle a\cos(t), a\sin(t), bt\rangle$.
+
+```
+@vars a b t al positive=true
+helix = [a*cos(t), a*sin(t), b*t]
+speed = simplify( norm(diff.(helix, t)) )
+s = integrate(speed, (t, 0, al))
+```
+
+So `s` is a linear function. We can reparameterize by:
+
+```
+eqn = subs.(helix, t.=> al/sqrt(a^2 + b^2))
+```
+
+To see that the speed, $\| \vec{\phi}' \|$, is constantly $1$:
+
+```
+simplify(norm(diff.(eqn,al)))
+```
+
+From this, we have the arc length is:
+
+$$~
+\int_0^t \| \vec{\phi}'(u) \| du = \int_0^t 1 du = t
+~$$
+
+----
+
+Parameterizing by arc-length is only explicitly possible for a few examples, however knowing it can be done in theory, is important. Some formulas are simplified, such as the tangent, normal, and binormal. Let $\vec{r}(s)$ be parameterized by arc length, then:
+
+$$~
+\vec{T}(s)= \vec{r'}(s) / \| \vec{r}'(s) \|,\quad
+\vec{N}(s) = \vec{T}'(s) / \| \vec{T}'(s)\|,\quad
+\vec{B} = \vec{T} \times \vec{N},
+~$$
+
+As before, but further, we have if $\kappa$ is the curvature and $\tau$ the torsion, these relationships expressing the derivatives with respect to $s$ in terms of the components in the frame:
+
+$$~
+\vec{T}'(s) = \kappa \vec{N}(s),\quad
+\vec{N}'(s) = -\kappa \vec{T}(s) + \tau \vec{B}(s),\quad
+\vec{B}'(s) = -\tau \vec{N}(s).
+~$$
+
+
+##### Example
+
+[Levi and Tabachnikov](https://projecteuclid.org/download/pdf_1/euclid.em/1259158427) consider the trajectories of the front and rear bicycle wheels. Recall the notation previously used: $\vec{F}(t)$ for the front wheel, and $\vec{B}(t)$ for the rear wheel trajectories. Consider now their parameterization by arc length, using $u$ for the arc-length parameter for $\vec{F}$ and $v$ for $\vec{B}$. We define $\alpha(u)$ to be the steering angle of the bicycle. This can be found as the angle between the tangent vector of the path of $\vec{F}$ with the vector $\vec{B} - \vec{F}$. Let $\kappa$ be the curvature of the front wheel and $k$ the curvature of the back wheel.
+
+```nocode
+a = 1
+F(t) = [cos(pi/2 - t), 2sin(pi/2-t)]
+p = (a, F)
+
+to, t1 = pi/6, pi/3
+tspan = (t0, t1)
+
+t = 7pi/6
+B0 = F(t0) + a*[cos(t), sin(t)]
+prob = ODEProblem(bicycle, B0, tspan, p)
+
+out = DifferentialEquations.solve(prob, reltol=1e-6)
+plt = plot(xs_ys(F, t0, t1)..., legend=false, aspect_ratio=:equal, linewidth=3)
+plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+
+t = pi/4
+arrow!(plt, out(t), 2*(F(t) - out(t)))
+plot!(plt, xs_ys([out(t), F(t)])..., linewidth=2)
+arrow!(plt, F(t), F'(t)/norm(F'(t)))
+Fphat(t) = F'(t)/norm(F'(t))
+arrow!(plt, F(t), -Fphat'(t)/norm(Fphat'(t)))
+using LaTeXStrings
+annotate!(plt, [(-.5,1.5,L"k"),(.75,1.6,L"\kappa"), (.85, 1.3, L"\alpha")])
+
+plt
+```
+
+Levi and Tabachnikov prove in their Proposition 2.4:
+
+$$~
+\frac{d\alpha(u)}{du} + \frac{\sin(\alpha(u))}{a} = \kappa(u),\quad
+|\frac{du}{dv}| = |\cos(\alpha)|, \quad \text{and}
+k = \frac{\tan(\alpha)}{a}.
+~$$
+
+With this, when $\alpha=\pm\pi/2$, the curvature $k$ is infinite, resulting in a cusp. (This occurs when the front wheel is steered orthogonal to the direction of motion.) As was seen in previous graphs of the trajectories, a cusp can happen for quite regular front wheel trajectories.
+
+
+When a curve is parameterized by arc length, the curvature is more directly computed: it is the magnitude of the derivative of the tangent vector.
+The tangent vector is of unit length, when parametrized by arc length. This implies it's derivative will be orthogonal. If $\vec{r}(t)$ is a parameterization by arc length, then the curvature formula simplifies as:
+
+$$~
+\kappa(s) = \frac{\| \vec{r}'(s) \times \vec{r}''(s) \|}{\|\vec{r}'(s)\|^3} =
+\frac{\| \vec{r}'(s) \times \vec{r}''(s) \|}{1} =
+\| \vec{r}'(s) \| \| \vec{r}''(s) \| \sin(\theta) =
+1 \| \vec{r}''(s) \| 1 = \| \vec{r}''(s) \|.
+~$$
+
+
+So in the above, the curvature is $\kappa = \| \vec{F}''(u) \|$ and $k = \|\vec{B}''(v)\|$.
+
+On the figure, the tangent vector $\vec{F}'(u)$ is drawn, along with this unit vector rotated by $\pi/2$, call this $\vec{JF}(u)$. As $\vec{F}'$ has unit length, we have $\vec{F}''(u)$ will have this direction (plus or minus) and magnitude given by $\kappa$. Further, $\vec{JF}'(u)$ will have direction along $\vec{F}'(u)$.
+
+
+
+The relationship between the two points of contact can be viewed as a line segment of length $a$ in the direction of the tangent vector $\vec{F}'$ *rotated* by $\alpha$ degrees counter clockwise. With this, the mathematical expression can be written:
+
+$$~
+\vec{B}(u) = \vec{F}(u) - a \vec{F}' \cos(\alpha) + a \vec{JF} \sin(\alpha).
+~$$
+
+This follows by the writing the rotation out and noting that $\vec{JF}$ flips the coordinates of $\vec{F}'$ and changes a sign.
+
+We have that $\vec{B}'(u)$ is parallel to  $\vec{V} = - a \vec{F}' \cos(\alpha) + a \vec{JF} \sin(\alpha)$. Taking the derivative of $\vec{B}$ and then the cross product with $\vec{V}$ being $0$, will yield the relationship $ \frac{d\alpha(u)}{du} + \frac{\sin(\alpha(u))}{a} = \kappa(u)$.
+
+
+From the above decomposition:
+
+$$~
+\|\frac{d\vec{B}}{du}\| = |\cos(\alpha)|.
+~$$
+
+Since $\vec{B}$ is parameterized by $v$ by arc length $\| d\vec{B}/dv \| = 1$, but by the chain rule, we have then $1=\|d\vec{B}/du\| \cdot |du/dv|$, or
+$|dv/du| = \|d\vec{B}/du\|  =| \cos(\alpha)|$.
+
+$$~
+k = \| \frac{d^2\vec{B}}{dv^2}\| = \frac{d}{dv}(dB/du*du/dv) =
+\frac{d^2B}{du^2}\frac{du}{dv}\frac{du}{dv} + \frac{dB}{du}  \frac{du^2}{dv^2} =  XXX
+~$$
+
+
+
+## Questions
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+Can $F$ and $B$, pictured below, be trajectories the front and rear wheels of a bicycle?
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question
+
+
+##### Question

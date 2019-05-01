@@ -1,0 +1,835 @@
+# Scalar functions
+
+Consider a function $f: R^n \rightarrow R$. It has multiple arguments for its input (an $x_1, x_2, \dots, x_n$) and only one scalar values for an output. Some simple examples might be:
+
+$$~
+\begin{align}
+f(x,y) &= x^2 + y^2\\
+g(x,y) &= x \cdot y\\
+h(x,y) &= \sin(x) \cdot \sin(y)
+\end{align}
+~$$
+
+
+For two examples for real life consider a weather map, say of the United States, that shows the maximum predicted temperature for a given day. This visualizes a function that take a position ($x$, $y$) and returns a predicted temperature ($z$).
+
+Similarly, The elevation Point Query Service (of the [USGS](https://nationalmap.gov/epqs/)) returns the elevation in international feet or meters for a specific latitude/longitude. The longitude can be associated to an $x$ coordinate, the latitude to a $y$ coordinate, and the elevation a $z$ coordinate, and as long as the region is small enough, the $x$-$y$ coordinates can be thought to lie on a plane. (A flat earth assumption.)
+
+
+Mathematically, we may describe the values $(x,y)$ in terms of a point, $P=(x,y)$ or a vector $\vec{v} = \langle x, y \rangle$ using the identification of a point with a vector. As convenient, we may write any of $f(x,y)$, $f(P)$, or $f(\vec{v})$ to describe the evaluation of $f$ at the value $x$ and $y$
+
+
+Before proceeding with how to define such function in `Julia`, we load some useful packages and re-define some useful functions:
+
+```
+using Plots, LinearAlgebra, ForwardDiff
+
+xs_ys(vs) = Tuple(eltype(vs[1])[vs[i][j] for i in 1:length(vs)] for j in eachindex(first(vs)))
+xs_ys(r::Function, a, b, n=100) = xs_ys(r.(range(a, stop=b, length=n)))
+
+function arrow!(plt::Plots.Plot, p, v; kwargs...)
+  length(p) == 2 && return quiver!(plt, xs_ys([p])..., quiver=Tuple(xs_ys([v])); kwargs...)
+  length(p) == 3 && return plot!(plt, xs_ys([p, p+v])...; kwargs...)
+end
+arrow!(p, v; kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
+
+D(f, n=1) = n > 1 ? D(D(f), n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)   # add f' notation for functions
+```
+
+----
+
+Returning to the task at hand,
+in `Julia`, defining a scalar function is straightforward, the syntax following mathematical notation:
+
+```
+f(x,y) = x^2 + y^2
+g(x, y) = x * y
+h(x,y) = sin(x) * sin(y)
+```
+
+To call a function for values $x$ and $y$ is also similar:
+
+```
+f(1,2), g(2, 3), h(3,4)
+```
+
+It may be advantageous to have the values as a vector or a point, as in `v=[x,y]` . Splatting can be used to turn this into two arguments:
+
+```
+v = [1,2]
+f(v...)
+```
+
+Alternatively, the function may be defined using a vector argument:
+
+```
+f(v) = v[1]^2 + v[2]^2
+```
+
+Or more verbosely, but avoiding index notation:
+
+```
+function g(v)
+    x, y = v
+    x * y
+end
+```
+
+Then we have
+
+```
+f(v), g([2,3])
+```
+
+----
+
+More elegantly, and the approach we will use, is to mirror the mathematical notation through multiple dispatch. If we define `f` for multiple variables, say with:
+
+```
+f(x,y) = x^2 - 2x*y^2
+```
+
+The we can define an alternative method with just a single variable
+
+```
+f(x) = f(x...)
+```
+
+The we can call `f` with a vector or point, or by passing in the invidual components:
+
+```
+f([1,2]), f(1,2)
+```
+
+----
+
+Following a calculus perspective, we might be curious about how to visualize scalar functions? Further, how to describe the change in the function between nearby values?
+
+## Visualizing scalar functions
+
+Suppose for the moment that $f:R^2 \rightarrow R$. The equation $z = f(x,y)$ may be visualized by the set of points in 3-dimensions $\{(x,y,z): z = f(x,y)\}$. This will render as a surface, and that surface will pass a "vertical line test", in that each $(x,y)$ value corresponds to at most $1$ $z$ value.
+
+In `Julia`, plotting such a surface requires a generalization to plotting a univariate function where, typically, a grid of evenly spaced values is given between some $a$ and $b$, the corresponding $y$ or $f(x)$ values are found, and then the points are connected in a dot-to-dot manner.
+
+Here, a two-dimensional grid of $x$-$y$ values needs specifying, and the corresponding $z$ values found. As the grid will be assumed to be regular only the $x$ and $y$ values need specifying, the set of pairs can be computed. The $z$ values, it will be seen, are easily computed. This cloud of points is plotted and each cell in the $x$-$y$ plane is plotted with a surface the $x$-$y$-$z$, 3-dimensional, view. One way to plot such a surface is to tessalate the cell and then for each triangle, represent a plane made up of the 3 boundary points.
+
+
+Here is an example:
+
+
+```
+using Plots
+f(x, y) = x^2 + y^2
+
+xs = range(-2, 2, length=100)
+ys = range(-2, 2, length=100)
+
+surface(xs, ys, f)
+```
+
+The `surface` function will generate the surface, but an alternate might look more familiar. We can use `plot(xs, ys, zs)` where `zs` is not a vector, but rather a *matrix* of values corresponding to a grid described by the `xs` and `ys`. A matrix is a rectangular collection of values indexed by row and column through indices `i` and `j`. Here the values in `zs` should satisfy: the $i$th row and $j$th column entry should be $z_{ij} = f(x_i, y_j)$ where $x_i$ is the $i$th entry from the `xs` and $y_j$ the $j$th entry from the `ys`.
+
+We can generate this using a comprehension:
+
+```
+zs = [f(x,y) for y in ys, x in xs]
+surface(xs, ys, zs)
+```
+
+If remembering that the $y$ values go first, and then the $x$ values in the above is too hard, then an alternative can be used. Broadcasting `f.(xs,ys)` may not make sense, were the `xs` and `ys` not of commensurate lengths, and when it does, this call pairs off `xs` and `ys` values and passes them to `f`. What is desired here is different, where for each `xs` value there are pairs for each of the `ys` values. The syntax `xs'` can ve viewed as creating a *row* vector, where `xs` is a *column* vector. Broadcasting will create a *matrix*  of values in this case. So the following is identical to the above:
+
+```
+surface(xs, ys, f.(xs', ys))
+```
+
+
+##### Example
+
+
+
+##### Example
+
+As mentioned. In plots of univariate functions, a dot-to-dot algorithm is followed. For surfaces, the two dots are replaced by four points, which over determines a plane. Some choice is made to partition that rectangle into two triangles, and for each triangle, the 3 resulting points determines a plane, which can be suitably rendered.
+
+We can see this by forcing the surface to show just one cell, as the `xs` and `ys` below only contain $2$ values:
+
+```
+xs = [-1,1];ys = [-1,1]
+f(x,y) = x*y
+surface(xs, ys, f.(xs', ys))
+```
+
+
+Compare this, to the same region, but with many cells to represent the surface:
+
+```
+xs = ys = range(-1, 1, length=100)
+surface(xs, ys, f.(xs', ys))
+```
+
+
+### Contour plots
+
+```noeval, nocode, noout
+n,m = 25,50
+xs = range(-74.3129825592041, -74.2722129821777, length=n)
+ys = range(40.7261855236006, 40.7869834960339, length=m)
+d = DataFrame(xs =reshape([m[1] for m in [(xi,yi) for xi in xs, yi in ys]], (n*m),),
+       ys = reshape([m[2] for m in [(xi,yi) for xi in xs, yi in ys]], (n*m,)))
+# In RCall
+using RCall
+z = R"""
+library(elevatr)
+z = get_elev_point($d, prj="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+z = data.frame(z)
+"""
+elev = rcopy(DataFrame, z).elevation
+zs = reshape(elev, m, n)
+D = Dict(:xs => xs, :ys=>ys, :zs => elev)
+io = open("somocon.json", "w")
+JSON.print(io, D)
+close(io)
+```
+
+
+
+Consider the example of latitude, longitude, and elevation data describing a surface. The following graph is generated from such data, which was retrieved from the USGS website for a given area. The grid points are chosen about every 150m, so this is not too fine grained.
+
+```
+using JSON
+SC = JSON.parsefile("somocon.json")  # a local file
+xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
+gr()  # use GR backend
+surface(xs, ys, zs)
+```
+
+This shows a bit of the topography. If we look at the region from directly above, the graph looks different:
+
+```
+surface(xs, ys, zs, camera=(0, 90))
+```
+
+The rendering uses different colors to indicate height. A more typical graph, that is somewhat similar to the top down view, is a *contour* map.
+
+For a scalar function, Define a level curve as the solutions to the equations $f(x,y) = c$ for a given $c$. (Or more generally $f(\vec{x}) = c$ for a vector if dimension $2$ or more.) Plotting a selection of level curves yields a *contour* graph. These are produced with `countour` and called as above. For example, we have:
+
+```
+contour(xs, ys, zs)
+```
+
+Were one to walk along one of the contour lines, then there would be no change in elevation. The areas of greatest change in elevation -- basically the hills -- occur where the different contour lines are closest.
+
+
+The $c$ values for the levels drawn may be specified through the `levels` argument:
+
+```
+contour(xs, ys, zs, levels=[50,75,100, 125, 150, 175])
+```
+
+That shows the 50m, 75m, ... contours.
+
+If a fixed number of evenly spaced levels is desirable, then the `nlevels` argument is avaiable.
+
+
+```
+contour(xs, ys, zs, nlevels = 5)
+```
+
+
+
+If a function describes the surface, then the function may be passed as the third value:
+
+```
+plotly()
+f(x, y) = sin(x) - cos(y)
+xs = range(0, 2pi, length=100)
+ys = range(-pi, pi, length = 100)
+contour(xs, ys, f)
+```
+
+### Example
+
+A typical graphic mixes both a surface plot with a contour plot. The `PyPlots` package can be used to generate one Such graphs are not readily
+made within the `Plots` framework. Here is a workaround, where the contours are generated through the `Contours` package. This shows how to add a contour at a fixed level ($0$ below). As no hidden line algorithm is used to hide the contour line if the surface were to cover it, a transparency is specified through `alpha=0.5`:
+
+
+```
+import Contour: contours, levels, level, lines, coordinates
+xs = ys = range(-2, stop=2, length=100)
+f(x,y) = 2 + sin(x) - cos(y) # x^2 + y^2
+zs = f.(xs', ys)
+p = surface(xs, ys, zs, legend=false, fillalpha=0.5)
+
+## we add to the graphic p, then plot
+for cl in levels(contours(xs, ys, zs))
+    lvl = level(cl) # the z-value of this contour level
+    for line in lines(cl)
+        _xs, _ys = coordinates(line) # coordinates of this line segment
+        _zs = 0 * _xs
+        plot!(p, _xs, _ys, _zs, alpha=0.5)        # add curve on x-y plane
+    end
+end
+p
+```
+
+
+
+
+## Limits
+
+The notion of a limit for a univariate function: as $x$ gets close to $c$ then $f(x)$ gets close to $L$, needs some modification:
+
+> Let $f: R^n \rightarrow R$ and $C$ be a point in $R^n$. Then $\lim_{P \rightarrow C}f(P) = L$ if for every $\epsilon > 0$ there exists a $\delta > 0$ such that $|f(P) - L| < \epsilon$ whenever $0 < \| P - C \| < \delta$. (If $P=(x1, x2, \dots, x_n)$ we use $f(P) = f(x1, x2, \dots, x_n)$.)
+
+This says, informally, for any scale about $L$ there is a "ball" about $C$ for which the images of $f$ always sit in the ball.
+
+A more intuitive idea of this limit would be in terms of any continuous "path" that approaches $C$ in the $x-y$ plane. Let $\gamma$ describe the path, and $\lim_{s \rightarrow t}\gamma(s) = C$. Then $f \circ \gamma$ will be a univariate function. If there is a limit, $L$, then this composition will also have the same limit as $s \rightarrow t$. Conversely, if for every path this composition has the *same* limit, then $f$ will have a limit.
+
+
+Continuity is defined in a familiar manner: $f(P)$ is continuous at $C$ if $\lim_{P \rightarrow C} f(P) = f(C)$, where we interpret $P \rightarrow C$ in the sense of a ball about $C$.
+
+As with univariate functions continuity will be preserved under function addition, subtraction, multiplication, and division (provided there is no dividing by $0$). With this, all these functions are continous everywhere and so have limits everywhere:
+
+$$~
+f(x,y) = \sin(x + y), \quad
+g(x,y,z) = x^2 + y^2 + z^2, \quad
+h(w, x,y,z) = \sqrt{w^2 + x^2 + y^2 + z^2}.
+~$$
+
+
+
+Not all functions will have a limit though. Consider $f(x,y) = 2x^2/(x^2+y^2)$ and $C=(0,0)$. It is not defined at $C$, but may have a limit. Consider the path $x=0$ (the $y$ axis) parameterized by $\vec\gamma(t) = \langle 0, t\rangle$. Along this path $f\circ \vec\gamma(t) = 0/t^2 = 0$ so will have a limit of $0$. If the limit of $f$ exists it must be $0$. But, along  the line $y=0$ (the $x$ axis) parameterized by $\vec{\gamma}(t) = \langle t, 0 \rangle$, the function simplifies to $f\circ\vec\gamma(t)=2$, so would have a limit of $2$. As the limit along different paths is different, this function has no limit in general.
+
+
+
+
+## Partial derivatives, the gradient, and directional derivatives
+
+The composition of a scalar function with a vector-valued function
+yields a univariate function if the dimensions match. We can visualize
+this in 3 dimenstions:
+
+```
+f(x,y) = 2 - x^2 - 3y^2
+f(x) = f(x...)
+γ(t) = 2*[t, -t^2]
+xs = ys = range(-1, 1, length=100)
+surface(xs, ys, f)
+r(t) = [γ(t)..., f(γ(t))]  # to plot the path on the surface
+plot!(xs_ys(r, 0, 1/2)..., linewidth=5, color=:black)
+```
+
+But $f\circ\vec\gamma$ is a univariate function, so we  could also visualize as:
+
+```
+plot(t -> f(γ(t)), 0, 1/2)
+```
+
+With this graph, we might be led to ask about derivatives or rates of change. For this example, we can algebraically compute the composition:
+
+$$~
+(f \circ \vec\gamma)(t) = 2 - (2t) - 3(-2t^2)^2 = 2 - 2t +12t^4
+~$$
+
+From here we clearly have $f'(t) = -2 + 48t^3$. But could this be computed in terms of a "derivative" of $f$ and the derivative of $\vec\gamma$?
+
+Before answering this, we discuss *directional* derivatives along the simplifed paths $\vec\gamma_x(t) = \langle t, c\rangle$ or $\vec\gamma_y(t) = \langle c, t\rangle$.
+
+If we compose $f \circ \gamma_x$, we can visualize this as a curve on the surface from $f$ that moves in the $x-y$ plane along the line $y=c$. The derivative of this curve will satisfy:
+
+$$~
+\begin{align}
+(f \circ \vec\gamma_x)'(x) &=
+\lim_{t \rightarrow x} \frac{(f\circ\vec\gamma_x)(t) - f(\circ\vec\gamma_x(x))}{t-x}\\
+&= \lim_{t\rightarrow x} \frac{f(t, c) - f(x,c)}{t-x}\\
+&= \lim_{h \rightarrow 0} \frac{f(x+h, c) - f(x, c)}{h}.
+\end{align}
+~$$
+
+The latter expresses this to be the derivative of the function that holds the $y$ value fixed, but lets the $x$ value vary. It is the rate of change in the $x$ direction. There is special notation for this:
+
+$$~
+\begin{align}
+\frac{\partial f(x,y)}{\partial x} &=
+\lim_{h \rightarrow 0} \frac{f(x+h, y) - f(x, y)}{h},\quad\text{and analagously}\\
+\frac{\partial f(x,y)}{\partial y} &=
+\lim_{h \rightarrow 0} \frac{f(x, y+h) - f(x, y)}{h}.
+\end{align}
+~$$
+
+These are called the *partial* derivatives of $f$. The symbol $\partial$, read as "partial", is reminiscent of "$d$", but indicates the derivative is only in a given direction. Other notations exist for this:
+
+$$~
+\frac{\partial f}{\partial x}, f_x, \partial_x f,
+~$$
+
+and more generally, when $n$ may be 2 or more,
+
+$$~
+\frac{\partial f}{\partial x_i}, f_{x_i}, f_i, \partial_{x_i} f, \partial_i f.
+~$$
+
+
+The *gradient* of a scalar function $f$ is
+
+$$~
+\nabla f(x_1, x_2, \dots, x_n) = \langle
+\frac{\partial f}{\partial x_1},
+\frac{\partial f}{\partial x_2}, \dots
+\frac{\partial f}{\partial x_n} \rangle.
+~$$
+
+As seen, the gradient is a vector-valued function, but has, also, mulitvariable inputs. It is a function from $R^n \rightarrow R^n$.
+
+
+
+### Examples
+
+Let $f(x,y) = x^2 - 2xy$, then to compute the partials, we just treat the other variables like a constant. (This is consistent with the view that the partial derivative is just a regular derivative along a line where all other variables are constant.)
+
+Then
+
+$$~
+\begin{align}
+\frac{\partial (x^2 - 2xy)}{\partial x} &= 2x - 2y\\
+\frac{\partial (x^2 - 2xy)}{\partial y} &= 0 - 2x = -2x.
+\end{align}
+~$$
+
+Combining, gives $\nabla{f} = \langle 2x -2y, -2x \rangle$.
+
+
+
+If $g(x,y,z) = \sin(x) + z\cos(y)$, then
+
+$$~
+\begin{align}
+\frac{\partial g }{\partial x} &= \cos(x) + 0 = \cos(x),\\
+\frac{\partial g }{\partial y} &= 0 + z(-\sin(y)) = -z\sin(y),\\
+\frac{\partial g }{\partial z} &= 0 + \cos(y) = \cos(y).
+\end{align}
+~$$
+
+Combining, gives $\nabla{g} = \langle \cos(x), -z\sin(y), \cos(y) \rangle$.
+
+
+### Finding partial derivatives in Julia
+
+
+Two different methods are described, one for working with functions, the other symbolic expressions. This mirrors our treatment for vector-valued functions, where `ForwardDiff.derivative` was used for functions, and `SymPy`'s `diff` function for symbolic expressions.
+
+
+Suppose, we consider $f(x,y) = x^2 - 2xy$. We may define it with `Julia` through:
+
+```
+f(x,y) = x^2 - 2x*y
+f(x) = f(x...)       # to handle vectors. Need not be defined each time
+```
+
+The numeric gradient at a point, can be found from the function `ForwardDiff.gradient` through:
+
+```
+using ForwardDiff
+pt = [1, 2]
+ForwardDiff.gradient(f, pt)      # uses the f(x) call above
+```
+
+This, of course matches the computation above, where $\nabla f = \langle (2x -2y, -2x)$, so at $(1,2)$ is $(-2, 2)$, as a point in $R^2$.
+
+The `ForwardDiff.gradient` function expects function that accept a vector of values, so the method for `f(x)` is used in the computation.
+
+To make a function to find the gradient of a function, we can define the following:
+
+```
+grad(f) = x -> ForwardDiff.gradient(f, x)
+```
+
+It works as follows, where a vector of values is passed in for the point in question:
+
+```
+grad(f)([1,2]), grad(f)([3,4])
+```
+
+This expects a point or vector for its argument, and not the expanded values. Were that desired, something like this would work:
+
+```
+grad(f) = (x, xs...) -> ForwardDiff.gradient(f, vcat(x, xs...))
+grad(f)(1,2), grad(f)(3,4)
+```
+
+
+From the gradient, finding the partial derivatives involves extraction of the corresponding component. For example, were it desirable, this function could be used to find the partial in $x$:
+
+```
+partial_x(f) = x -> grad(f)(x)[1]   # first component of gradient
+```
+
+```
+note("""
+For vector-valued functions, we can overide the syntax `'` using `Base.adjoint`, as this is treated as a postfix operator in `Julia`. The symbol `\nabla` is also available in `Julia`, but it is not an operator, so can't be used as mathematically written `∇f`. *Were* the following definition made `∇(f) = x -> ForwardDiff.gradient(f, x)`, it would require parentheses to be called, as in `∇(f)`. We use `grad` instead, as using parentheses is expected for a function call.
+""")
+```
+
+
+#### Symbolic expressions
+
+The partial derivatives are more directly found with `SymPy`. As with univariate functions, the `diff` function is used by simply passing in the variable in which to find the partial derivative:
+
+```
+using SymPy
+@vars x y
+ex = x^2 - 2x*y
+diff(ex, x)
+```
+
+And evaluation:
+
+```
+diff(ex,x)(x=>1, y=>2)
+```
+
+Or
+
+```
+diff(ex, y)(x=>1, y=>2)
+```
+
+The gradient would be found by combining the two:
+
+```
+[diff(ex, x), diff(ex, y)]
+```
+
+This can be simplified through broadcasting:
+
+```
+grad_ex = diff.(ex, [x,y])
+```
+
+
+To evaluate at a point we have:
+
+```
+subs.(grad_ex, x.=>1, y.=>2)
+```
+
+This uses the same subtle trick of using `.=>` to pair of the values, inplace of `=>` to have the broadcast machinery treat the pair a single value and not two values. Alternatively, `Ref((x=>1, y=>2))` or `((x=>1, y=>2),)` could have been used.
+
+
+
+!!! note
+
+    In computer science there are two related concepts [Currying](https://en.wikipedia.org/wiki/Currying) and [Partial application](https://en.wikipedia.org/wiki/Partial_application). For a function $f(x,y)$, say, partial application is the process of fixing one of the variables, producing a new function of fewer variables. For example, fixing $y=c$, the we get a new function (of just $x$ and not $(x,y)$) $g(x) = f(x,c)$. In partial derivatives the partial derivative of $f(x,y)$ with respect to $x$ is the derivative of the function $g$, as defined above.
+
+    Currying, is related, but technically returns a function, so we think of the curried version of $f$ as a function which takes $x$ and returns the functions $y \rightarrow f(x,y)$ so that $h(x)(y) = f(x, y)$.
+
+
+### Differentiable
+
+We see here how the gradient of $f$, $\nabla{f} = \langle f_{x_1}, f_{x_2}, \dots, f_{x_n} \rangle$, plays a similar role as the derivative does for univariate functions.
+
+First, we consider the role of the derivative for univariate functions. The main characterization -- the derivative is the slope of the line that best approximates the function at a point -- is quantified by Taylor's theorem. For a function $f$ with a continuous second derivative:
+
+$$~
+f(c+h) = f(c) = f'(c)h + \frac{1}{2} f''(\xi) h^2,
+~$$
+
+for some $\xi$ within $c$ and $c+h$.
+
+We re-express this through:
+
+$$~
+(f(c+h) - f(c)) - f'(c)h  =\frac{1}{2} f''(\xi) h^2.
+~$$
+
+The right hand side is the *error* term between the function value at $c+h$ and, in this case, the linear approximation at the same value.
+
+
+If the assumptions are relaxed, and $f$ is just assumed to be *differentiable* at $x=c$, then only this is known:
+
+$$~
+(f(c+h) - f(c)) - f'(c)h  = \epsilon(h) h,
+~$$
+
+where $\epsilon(h) \rightarrow 0$ as $h \rightarrow 0$.
+
+
+It is this re-formulation of differentiable that is extended to define when a scalar function is *differentiable*.
+
+> Let $f$ be a scalar function,
+> $f$ is [differentiable](https://tinyurl.com/qj8qcbb) at a point $C$ if the first order partial derivatives exist at $C$ **and** for $\vec{h}$:
+> $$~
+> f(C + \vec{h}) - f(C) - \nabla{f}(C) \cdot \vec{h} = \vec{\epsilon}(\vec{h}) \cdot \vec{h},
+> ~$$
+> where $\vec{\epsilon}(\vec{h})$ is a vector of scalar functions $\langle \epsilon_1(\vec{h})$, $\epsilon_2(\vec{h})$, $\dots$, $\epsilon_n(\vec{h})\rangle$, each with a limit of $0$ as $\vec{h}$ goes to $\vec{0}$.
+
+
+The role of the derivative in the univariate case is played by the
+gradient in the scalar case, where $\nabla{f}(C) \cdot \vec{h}$
+replaces $f'(c)h$. For the univariate case, differentiable is simply
+the derivative existing, but saying a scalar function is
+differentiable at $C$ is a stronger statement than saying it a
+gradient or has partial derivatives at $C$, as these are assumed
+in the statement. It is also a stronger statement than saying it has
+derivatives along any line heading to $C$, as how $\vec{h}$ goes
+to $\vec{0}$ is not limited to being along lines.
+
+Later we will see how Taylor's theorem generalizes for scalar functions and interpret the gradient in geometric manners, as was done for the derivative (it being the slope of the tangent line).
+
+
+
+### The chain rule to evaluate $f\circ\vec\gamma$
+
+
+In finding a partial derivative, we restricted the surface along a curve in the $x$-$y$ plane, in this case the curve $\vec{\gamma}(t)=\langle t, c\rangle$. In general if we have a curve in the $x$-$y$ plane, $\vec{\gamma}(t)$, we can compose the scalar function $f$ with $\vec{\gamma}$ to create a univariate function. If the functions are "smooth" then this composed function should have a derivative, and some version of a "chain rule" should provide a means to compute the derivative in terms of the "derivative" of $f$ (the gradient) and the derivative of $\vec{\gamma}$ ($\vec{\gamma}'$).
+
+> Suppose $f$ is *differentiable* at $P$, and $\vec{\gamma}(t)$ is differentiable at $c$ with $\vec{\gamma}(c) = P$. Then $f\circ\vec{\gamma}$ is differentiable at $c$ with derivative $\nabla f(\vec{\gamma}(t)) \cdot \vec{\gamma}'(t)$.
+
+
+This is similar to the chain rule for univariate functions $(f\circ g)'(u) = f'(g(u)) g'(u)$ or $df/dx = df/du \cdot du/dx$. However, when we write out in components there are more terms. For example, for $n=2$ we have with $\vec{\gamma} = \langle x(t), y(t) \rangle$:
+
+$$~
+\frac{d(f\circ\vec{\gamma})}{dt} =
+\frac{\partial f}{\partial x} \frac{dx}{dt} +
+\frac{\partial f}{\partial y} \frac{dy}{dt}.
+~$$
+
+
+The proof is a consequence of the definition of differentiability of a scalar function $f$ and the derivative of $\vec\gamma$.
+
+
+Let $\vec{H} = \vec{\gamma}(t+h) - \vec\gamma(t)$. Matching the terms in the definition of differentiability shows $C= \vec\gamma(t)$ and $C+\vec{h} = \vec\gamma(t+h)$. Consequently $\vec{h} = \vec{H}$ and we have:
+
+$$~
+f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t) -
+\nabla{f}\cdot(\vec\gamma(t)) \cdot \vec{H} =
+\vec{\epsilon}(\vec{H}) \cdot \vec{H}.
+~$$
+
+
+Dividing by sides by $h$ gives:
+
+$$~
+\frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} -
+\nabla{f}(\vec\gamma(t)) \cdot\frac{\vec{H}}{h} =
+\vec{\epsilon}(\vec{H}) \cdot \frac{\vec{H}}{h}.
+~$$
+
+As $h \rightarrow 0$, $\vec{H}/h \rightarrow \vec\gamma'(t)$ and consequently $\vec{\epsilon}(\vec{H}) \cdot \vec{H} \rightarrow \vec{0}$. Simplifying, this says:
+
+$$~
+f\circ\vec\gamma'(t) =
+\lim_{h \rightarrow 0}\frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} =
+\nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t).
+~$$
+
+
+
+### Examples
+
+
+Consider the function $f(x,y) = 2 - x^2 - y^2$ and the curve $\vec\gamma(t) = t\langle \cos(t), \sin(t) \rangle$ at $t=\pi/6$. We visualize this below:
+
+
+```
+f(x,y) = 2 - x^2 - y^2
+f(x) = f(x...)
+
+γ(t) = t*[cos(t), sin(t)]
+
+xs = ys = range(-3/2, 3/2, length=100)
+surface(xs, ys, f, legend=false)
+
+r(t) = [γ(t)..., (f∘γ)(t)]
+plot!(xs_ys(r, 0, pi/2)..., linewidth=5, color=:black)
+
+t0 = pi/6
+arrow!(r(t0), r'(t0), linewidth=5, color=:black)
+```
+
+In three dimensions, the tangent line is seen, but the univariate function $f \circ \vec\gamma$ looks like:
+
+```
+plot(f∘γ, 0, pi/2)
+plot!(t -> (f∘γ)(t0) + (f∘γ)'(t0)*(t - t0))
+```
+
+From the graph, the slope of the tangent line looks to be about $-1$, using the chain rule gives the exact value:
+
+```
+ForwardDiff.gradient(f, γ(t0)) ⋅ γ'(t0)
+```
+
+We can compare this to taking the derivative after composition:
+
+```
+(f∘γ)'(t0)
+```
+
+
+
+##### Example
+
+
+Consider the following plot showing a hiking trail on a surface:
+
+```
+using JSON, CSV, DataFrames
+SC = JSON.parsefile("somocon.json")  # a local file
+lenape = CSV.File("lenape.csv") |> DataFrame
+
+xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
+
+gr()
+surface(xs, ys, zs, legend=false)
+plot!(lenape.longitude, lenape.latitude, lenape.elevation, linewidth=5, color=:black)
+```
+
+Though here it is hard to see the trail  rendered on the surface, for the hiker, such questions are far from the mind. Rather, questions such as what is the steepest part of the trail may come to mind.
+
+For this question, we can answer it in turns of the sampled data in the `lenape` variable. The steepness being the change in elevation with respect to distance in the $x$-$y$ direction. Treating latitude and longitude coordinates describing motion in a plane (as opposed to a very big sphere), we can compute the maximum steepness:
+
+```
+xs, ys, zs = lenape.longitude, lenape.latitude, lenape.elevation
+dzs = zs[2:end] - zs[1:end-1]
+dxs, dys = xs[2:end] - xs[1:end-1], ys[2:end] - ys[1:end-1]
+deltas = sqrt.(dxs.^2 + dys.^2) * 69 / 1.6 * 1000 # in meters now
+slopes = abs.(dzs ./ deltas)
+m = maximum(slopes)
+atand(maximum(slopes))   # in degrees due to the `d`
+```
+
+This is certainly too steep for a trail, which should be at most 10 degrees or so, not 58. This due to the inaccuracy in the measurements. An average might be better:
+
+```
+import Statistics: mean
+atand(mean(slopes))
+```
+
+Which seems about right for a generally uphill trail section, as this is.
+
+
+In the above example, the data is given in terms of a sample, not a functional representation. Suppose instead, the surface was generated by `f` and the path -- in the $x$-$y$ plane -- by $\gamma$. Then we could estimate the maximum and average steepness by a process like this:
+
+```
+f(x,y) = 2 - x^2 - y^2
+f(x) = f(x...)
+γ(t) = t*[cos(t), -sin(t)]
+xs = ys = range(-3/2, 3/2, length=100)
+
+plotly()
+surface(xs, ys, f, legend=false)
+r(t) = [γ(t)..., (f∘γ)(t)]
+plot!(xs_ys(r, 0, pi/2)..., linewidth=5, color=:black)
+```
+
+
+```
+using QuadGK
+
+plot(f∘γ, 0, pi/2)
+slope(t) = abs((f∘γ)'(t))
+
+1/(pi/2 - 0) * quadgk(t -> atand(slope(t)), 0, pi/2)[1]  # the average
+```
+
+the average is $50$ degrees. As for the maximum slope:
+
+```
+using Roots
+cps = fzeros(slope, 0, pi/2) # critical points
+
+append!(cps, (0, pi/2))  # add end points
+unique!(cps)
+
+M, i = findmax(slope.(cps))  # max, index
+
+cps[i], slops(cps[i])
+```
+
+The maximum slope occurs at an endpoint
+
+
+
+
+
+
+
+### Directional Derivatives
+
+The last example, how steep is the direction we are walking, is a question that can be asked when walking in a straight line in the $x$-$y$ plane. The answer has a simplified answer:
+
+Let $\vec\gamma(t) = C + t \langle a, b \rangle$ be a line that goes throught the point $C$ parallel, or in the direction of, to $\vec{v} = \langle a , b \rangle$.
+
+The the function $f \circ \vec\gamma(t)$ will have a derivative when $f$ is differentiable and by the chain rule will be:
+
+$$~
+(f\circ\vec\gamma)'(\vec\gamma(t)) = \nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t) =
+\nabla{f}(\vec\gamma(t)) \cdot \langle a, b\rangle =
+\nabla{f}(\vec\gamma(t)) \cdot \vec{v}.
+~$$
+
+At $t=0$, we see that $(f\circ\vec\gamma)'(C) = \nabla{f}(C)\cdot \vec{v}$. This defines the *directional derivative* at $C$ in the direction $\vec{v}$. This is a *natural* generalization of the partial derivatives, which, in two dimensions, are the directional derivative in the $x$ direction and the directional derivative in the $y$ direction.
+
+The following figure shows $C = (1/2, -1/2)$ and the two curves. Planes are added, as it can be easiest to visualize these curves as the intersection of the surface generated by $f$ and the vertical planes $x=C_x$ and $y=C_y$
+
+
+```nocode
+f(x,y) = 2 - x^2 - y^2
+
+xs = ys = range(-3/2, 3/2, length=100)
+surface(xs, ys, f, legend=false)
+M=f(3/2,3/2)
+
+x0,y0 = 1/2, -1/2
+plot!([-3/2, 3/2, 3/2, -3/2, -3/2], y0 .+ [0,0,0,0, 0], [M,M,2,2,M], linestyle=:dash)
+r(x) = [x, y0, f(x,y0)]
+plot!(xs_ys(r, -3/2, 3/2)..., linewidth=5, color=:black)
+
+
+plot!(x0 .+ [0,0,0,0, 0], [-3/2, 3/2, 3/2, -3/2, -3/2], [M,M,2,2,M], linestyle=:dash)
+r(y) = [x0, y, f(x0, y)]
+plot!(xs_ys(r, -3/2, 3/2)..., linewidth=5, color=:black)
+
+
+scatter!([x0],[y0],[M])
+arrow!([x0,y0,M], [1,0,0], linewidth=3)
+arrow!([x0,y0,M], [0, 1,0], linewidth=3)
+```
+
+
+We can then visualize the directional derivative by a plane through $C$ in the direction $\vec{v}$. Here we take $C=(1/2, -1/2)$, as before, and $\vec{v} = \langle 1, 1\range$:
+
+```nocode
+f(x,y) = 2 - x^2 - y^2
+f(x) = f(x...)
+xs = ys = range(-3/2, 3/2, length=100)
+p = surface(xs, ys, f, legend=false)
+M=f(3/2,3/2)
+
+x0,y0 = 1/2, -1/2
+vx, vy = 1, 1
+l1(t) = [x0, y0] .+ t*[vx, vy]
+llx, lly = l1(-1)
+rrx, rry = l1(1)
+plot!([llx, rrx, rrx, llx, llx], [lly, rry, rry, lly, lly], [M,M, 2, 2, M], linestyle=:dash)
+
+r(t) = [l1(t)..., f(l1(t))]
+plot!(xs_ys(r, -1, 1)..., linewidth=5, color=:black)
+arrow!(r(0), r'(0), linewidth=5, color=:black)
+
+
+scatter!([x0],[y0],[M])
+arrow!([x0,y0,M], [vx, vy,0], linewidth=3)
+```
+
+In this figure, we see that the directional derivative appears to be $0$, unlike the partial derivatives in $x$ and $y$, which are negative and positive, respecitively.
+
+#### Examples
+
+
+
+
+
+### Examples

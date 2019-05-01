@@ -27,7 +27,7 @@ The square bracket constructor has some subtleties:
 * `[x y z]`	 calls `hcat` to **h**orizontally con**cat**enate values together. If `x`, `y` are numbers then `[x y]` is *not* a vector, but rather a 2D array with a single row and two columns.
 * finally `[w x; y z]` calls `hvcat` to create a container with two dimensions, like a matrix.
 
-(A vector, mathematically, is a one-dimensional collection of numbers, a matrix a two-dimensional *rectangular* collection of numbers, and an array an $n$-dimensional rectangular-like collection of numbers.)
+(A vector, mathematically, is a one-dimensional collection of numbers, a matrix a two-dimensional *rectangular* collection of numbers, and an array an $n$-dimensional rectangular-like collection of numbers. In `Julia`, a vector can hold a collection of objects of arbitrary type, though generally all of the same type.)
 
 
 ### Vector addition, scalar multiplication
@@ -455,7 +455,7 @@ norm(u × v)
 
 ----
 
-This analysis can be extended to the case of 3 vectors, which--when not co-lanar--will form a *parallelpiped*.
+This analysis can be extended to the case of 3 vectors, which--when not co-planar--will form a *parallelpiped*.
 
 ```
 u,v,w = [1,2,3], [2,1,0], [1,1,1]
@@ -674,15 +674,191 @@ d = n ⋅ p
 
 
 
-
-
 ## Questions
 
-##### XXX
+###### Question
 
-##### XXX
+Let `u=[1,2,3]`, `v=[4,3,2]`, and `w=[5,2,1]`.
 
-##### XXX
+Find `u ⋅ v`:
+
+```
+u,v,w = [1,2,3], [4,3,2], [5,2,1]
+numericq(dot(u,v))
+```
+
+Are `v` and `w` orthogonal?
+
+```
+ans = dot(v,w) == 0
+yesnoq(ans)
+```
+
+Find the angle between `u` and `w`:
+
+```
+ctheta = (u ⋅ w)/norm(u)/norm(w)
+val = acos(ctheta)
+numericq(val)
+```
+
+
+Find `u ×  v`:
+
+```
+choices = [
+"`[-5, 10, -5]`",
+"`[-1, 6, -7]`",
+"`[-4, 14, -8]`"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+Find the area of the parallelogram formed by `v` and `w`
+
+```
+val = norm(v  × w)
+numericq(val)
+```
+
+Find the  volume of the parallelpiped formed by `u`, `v`, and `w`:
+
+```
+val = abs((u × v) ⋅ w)
+numericq(val)
+```
+
+
+###### Question
+
+Let $\vec{u}$ and $\vec{v}$ be 3-dimensional **unit** vectors. What is the value of
+
+$$~
+(\vec{u} \times \vec{v}) \cdot (\vec{u} \times \vec{v}) + (\vec{u} \cdot \vec{v})^2?
+~$$
+
+```
+choices = [
+L"1",
+L"0",
+"Can't say in general"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Consider the projection of $\langle 1, 2, 3\rangle$ on $\langle 3, 2, 1\rangle$. What is its length?
+
+```
+u,v = [1,2,3], [3,2,1]
+val = (u ⋅ v)/norm(v)
+numericq(val)
+```
+
+###### Question
+
+Let $\vec{u} = \langle 1, 2, 3 \rangle$ and $\vec{v} = \langle 3, 2, 1 \rangle$. Describe the plane created by these two non-parallel vectors going through the origin.
+
+```
+choices = [
+L"-4x + 8y - 4z = 0",
+L"x + 2y + z = 0",
+L"x + 2y + 3z = 6"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+
+###### Question
+
+A plane $P_1$ is *orthogonal$ to $\vec{n}_1$, a plane $P_2$ is *orthogonal* to $\vec{n}_2$. Explain why vector $\vec{v} = \vec{n}_1 \times \vec{n}_2$ is parallel to the *intersection* of $P_1$ and $P_2$.
+
+```
+choices = [
+L"$\vec{v}$ is in plane $P_1$, as it is orthogonal to $\vec{n}_1$ and $P_2$ as it is orthogonal to $\vec{n}_2$, hence it is parallel to both planes.",
+L"$\vec{n}_1$ and $\vec{n_2}$ are unit vectors, so the cross product gives the projection, which must be orthogonal to each vector, hence in the intersection"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+(From Strang). For an (analog) clock draw vectors from the center out to each of the 12 hours marked on the clock. What is the vector sum of these 12 vectors?
+
+```
+choices = [
+L"\vec{0}",
+L"\langle 12, 12 \rangle",
+L"12 \langle 1, 0 \rangle"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+If the vector to 34 o'clock is removed, (call this $\langle 1, 0 \rangle$) what expresses the sum of *all* the remaining vectors?
+
+```
+choices = [
+L"\langle -1, 0 \rangle",
+L"\langle 1, 0 \rangle",
+L"\langle 11, 11 \rangle"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Let $\vec{u}$ and $\vec{v}$ be unit vectors. Let $\vec{w} = \vec{u} + \vec{v}$. Then $\vec{u} \cdot \vec{w} = \vec{v} \cdot \vec{w}$. What is the value?
+
+```
+choices = [
+L"1 + \vec{u}\cdot\vec{v}",
+L"\vec{u} + \vec{v}",
+L"\vec{u}\cdot\vec{v} + \vec{v}\cdot \vec{v}"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+As the two are equal, which interpretation is true?
+
+```
+choices = [
+L"The angle they make with $\vec{w}$ is the same",
+L"$\vec{w}$ must also be a unit vector",
+"the two are orthogonal"
+]
+ans=1
+radioq(choices, ans)
+```
+
+
+
+###### Question
+
+Suppose $\| \vec{u} + \vec{v} \|^2 = \|\vec{u}\|^2 + \|\vec{v\|^2$. What is $\vec{u}\cdot\vec{v}$?
+
+We have $(\vec{u} + \vec{v})\cdot(\vec{u} + \vec{v}) = \vec{u}\cdot \vec{u} + 2 \vec{u}\cdot\vec{v} + \vec{v}\cdot\vec{v}$. From this, we can infer that:
+
+```
+choices = [
+L"\vec{u}\cdot\vec{v} = 0",
+L"\vec{u}\cdot\vec{v} = 2",
+L"\vec{u}\cdot\vec{v} = -(\vec{u}\cdot\vec{u} \vec{v}\cdot\vec{v})"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+
+###### Question
+
 
 Give a geometric reason for this identity:
 
@@ -692,7 +868,7 @@ $$~
 \vec{w} \cdot (\vec{u} \times \vec{v})
 ~$$
 
-##### XXX
+###### Question
 
 Show the Jacobi relationship holds for 3 randomly chosen vectors:
 

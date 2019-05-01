@@ -152,9 +152,10 @@ surface(xs, ys, f.(xs', ys))
 
 As mentioned. In plots of univariate functions, a dot-to-dot algorithm is followed. For surfaces, the two dots are replaced by four points, which over determines a plane. Some choice is made to partition that rectangle into two triangles, and for each triangle, the 3 resulting points determines a plane, which can be suitably rendered.
 
-We can see this by forcing the surface to show just one cell, as the `xs` and `ys` below only contain $2$ values:
+We can see this in the `GR` toolkit by forcing the surface to show just one cell, as the `xs` and `ys` below only contain $2$ values:
 
 ```
+gr()
 xs = [-1,1];ys = [-1,1]
 f(x,y) = x*y
 surface(xs, ys, f.(xs', ys))
@@ -218,7 +219,7 @@ For a scalar function, Define a level curve as the solutions to the equations $f
 contour(xs, ys, zs)
 ```
 
-Were one to walk along one of the contour lines, then there would be no change in elevation. The areas of greatest change in elevation -- basically the hills -- occur where the different contour lines are closest.
+Were one to walk along one of the contour lines, then there would be no change in elevation. The areas of greatest change in elevation -- basically the hills -- occur where the different contour lines are closest. In this particular area, there is a river that runs from the upper right through to the lower left and this is flanked by hills.
 
 
 The $c$ values for the levels drawn may be specified through the `levels` argument:
@@ -304,7 +305,7 @@ Not all functions will have a limit though. Consider $f(x,y) = 2x^2/(x^2+y^2)$ a
 
 
 
-## Partial derivatives, the gradient, and directional derivatives
+## Partial derivatives and the gradient
 
 The composition of a scalar function with a vector-valued function
 yields a univariate function if the dimensions match. We can visualize
@@ -313,17 +314,20 @@ this in 3 dimenstions:
 ```
 f(x,y) = 2 - x^2 - 3y^2
 f(x) = f(x...)
-γ(t) = 2*[t, -t^2]
+γ(t) = 2*[t, -t^2]   # use \gamma[tab]
 xs = ys = range(-1, 1, length=100)
 surface(xs, ys, f)
 r(t) = [γ(t)..., f(γ(t))]  # to plot the path on the surface
 plot!(xs_ys(r, 0, 1/2)..., linewidth=5, color=:black)
 ```
 
-But $f\circ\vec\gamma$ is a univariate function, so we  could also visualize as:
+
+The vector valued function `r(t) = [γ(t)..., f(γ(t))]` takes the 2-dimensional path specified by $\vec\gamma(t)$ and adds a third, $x$, direction by composing the position with `f`. In this way, a 2D path is visualized with a 3D path. This viewpoint can be reversed, as desired.
+
+However, the composition,  $f\circ\vec\gamma$, is a univariate function, so this can also be visualized by
 
 ```
-plot(t -> f(γ(t)), 0, 1/2)
+plot(t -> f ∘ γ, 0, 1/2)
 ```
 
 With this graph, we might be led to ask about derivatives or rates of change. For this example, we can algebraically compute the composition:
@@ -376,7 +380,7 @@ The *gradient* of a scalar function $f$ is
 $$~
 \nabla f(x_1, x_2, \dots, x_n) = \langle
 \frac{\partial f}{\partial x_1},
-\frac{\partial f}{\partial x_2}, \dots
+\frac{\partial f}{\partial x_2}, \dots,
 \frac{\partial f}{\partial x_n} \rangle.
 ~$$
 
@@ -514,18 +518,69 @@ To evaluate at a point we have:
 subs.(grad_ex, x.=>1, y.=>2)
 ```
 
-This uses the same subtle trick of using `.=>` to pair of the values, inplace of `=>` to have the broadcast machinery treat the pair a single value and not two values. Alternatively, `Ref((x=>1, y=>2))` or `((x=>1, y=>2),)` could have been used.
+This uses the same subtle trick of using `.=>` to pair off the values, inplace of `=>` to have the broadcast machinery treat the pair a single value and not two values. Alternatively, `Ref((x=>1, y=>2))` or `((x=>1, y=>2),)` could have been used.
 
 
+----
 
-!!! note
+!!!! note
 
     In computer science there are two related concepts [Currying](https://en.wikipedia.org/wiki/Currying) and [Partial application](https://en.wikipedia.org/wiki/Partial_application). For a function $f(x,y)$, say, partial application is the process of fixing one of the variables, producing a new function of fewer variables. For example, fixing $y=c$, the we get a new function (of just $x$ and not $(x,y)$) $g(x) = f(x,c)$. In partial derivatives the partial derivative of $f(x,y)$ with respect to $x$ is the derivative of the function $g$, as defined above.
 
-    Currying, is related, but technically returns a function, so we think of the curried version of $f$ as a function which takes $x$ and returns the functions $y \rightarrow f(x,y)$ so that $h(x)(y) = f(x, y)$.
+    Currying, is related, but technically returns a function, so we think of the curried version of $f$ as a function, $h$, which takes $x$ and returns the function $y \rightarrow f(x,y)$ so that $h(x)(y) = f(x, y)$.
 
 
-### Differentiable
+### Visualizing the gradient
+
+The gradient is not a univariate function, a simple vector-valued
+function or a scalar function, but rather a *vector field* to be
+discussed later. For the simplest $f: R^2 \rightarrow R$, the gradient
+will be a function which takes a point $(x,y)$ and returns a vector ,
+$\langle f_x(x,y), f_y(x,y) \rangle$. We can visualize this by
+plotting a vector at several points on a grid. This task is made
+easier with a function like the following, which handles the task of vectorizing the values.
+
+```
+function vfieldplot(fx, fy; xlim=(-5,5), ylim=(-5,5), n=8)
+    xs = range(xlim[1], stop=xlim[2], length=n)
+    ys = range(ylim[1], stop=ylim[2], length=n)
+
+    us = [x for x in xs for y in ys]
+    vs = [y for x in xs for y in ys]
+
+    fxs = [fx(x,y) for x in xs for y in ys]
+    fys = [fy(x,y) for x in xs for y in ys]
+
+    nms = [sqrt(fx^2 + fy^2) for fx in fxs for fy in fys]
+    mnm = maximum(nms)
+
+    dx, dy = (xlim[2]-xlim[1])/n, (ylim[2]-ylim[1])/n
+
+    lambda = 0.9 / mnm * sqrt(dx^2 + dy^2)
+
+
+    quiver(us, vs, quiver=(fxs.* lambda, fys.*lambda))
+
+end
+```
+
+
+Here we show the gradient for the scalar function $f(x,y) = 2 - x^2 - 3y^2$ over the region $[-2, 2]\times[-2,2]$ along with a contour plot:
+
+```
+f(x,y) = 2 - x^2 - 3y^2
+fx(x,y) = -2x
+fy(x,y) = -6y
+
+vfieldplot(fx, fy, xlim=(-2,2), ylim=(-2,2))
+
+xs = ys = range(-2,2, length=50)
+contour!(xs, ys, f)
+```
+
+The figure suggests a potential geometric relationship between the gradient and the contour line to be explored later.
+
+## Differentiable
 
 We see here how the gradient of $f$, $\nabla{f} = \langle f_{x_1}, f_{x_2}, \dots, f_{x_n} \rangle$, plays a similar role as the derivative does for univariate functions.
 
@@ -557,34 +612,35 @@ where $\epsilon(h) \rightarrow 0$ as $h \rightarrow 0$.
 
 It is this re-formulation of differentiable that is extended to define when a scalar function is *differentiable*.
 
-> Let $f$ be a scalar function,
-> $f$ is [differentiable](https://tinyurl.com/qj8qcbb) at a point $C$ if the first order partial derivatives exist at $C$ **and** for $\vec{h}$:
+> Let $f$ be a scalar function.
+> Then $f$ is [differentiable](https://tinyurl.com/qj8qcbb) at a point $C$ **if** the first order partial derivatives exist at $C$ **and** for $\vec{h}$ going to $\vec{0}$:
 > $$~
 > f(C + \vec{h}) - f(C) - \nabla{f}(C) \cdot \vec{h} = \vec{\epsilon}(\vec{h}) \cdot \vec{h},
 > ~$$
 > where $\vec{\epsilon}(\vec{h})$ is a vector of scalar functions $\langle \epsilon_1(\vec{h})$, $\epsilon_2(\vec{h})$, $\dots$, $\epsilon_n(\vec{h})\rangle$, each with a limit of $0$ as $\vec{h}$ goes to $\vec{0}$.
 
 
+The limits here are for limits of scalar functions, which means along any path going to $\vec{0}$, not just straight line paths, as are used to define the partial derivatives.
+
+
 The role of the derivative in the univariate case is played by the
-gradient in the scalar case, where $\nabla{f}(C) \cdot \vec{h}$
-replaces $f'(c)h$. For the univariate case, differentiable is simply
+gradient in the scalar case, where $f'(c)h$ is replaced by $\nabla{f}(C) \cdot \vec{h}$.
+For the univariate case, differentiable is simply
 the derivative existing, but saying a scalar function is
-differentiable at $C$ is a stronger statement than saying it a
-gradient or has partial derivatives at $C$, as these are assumed
-in the statement. It is also a stronger statement than saying it has
-derivatives along any line heading to $C$, as how $\vec{h}$ goes
-to $\vec{0}$ is not limited to being along lines.
+differentiable at $C$ is a stronger statement than saying it has a
+gradient or, equivalently, it has partial derivatives at $C$, as this is assumed
+in the statement along with the other condition.
 
 Later we will see how Taylor's theorem generalizes for scalar functions and interpret the gradient in geometric manners, as was done for the derivative (it being the slope of the tangent line).
 
 
 
-### The chain rule to evaluate $f\circ\vec\gamma$
+## The chain rule to evaluate $f\circ\vec\gamma$
 
 
 In finding a partial derivative, we restricted the surface along a curve in the $x$-$y$ plane, in this case the curve $\vec{\gamma}(t)=\langle t, c\rangle$. In general if we have a curve in the $x$-$y$ plane, $\vec{\gamma}(t)$, we can compose the scalar function $f$ with $\vec{\gamma}$ to create a univariate function. If the functions are "smooth" then this composed function should have a derivative, and some version of a "chain rule" should provide a means to compute the derivative in terms of the "derivative" of $f$ (the gradient) and the derivative of $\vec{\gamma}$ ($\vec{\gamma}'$).
 
-> Suppose $f$ is *differentiable* at $P$, and $\vec{\gamma}(t)$ is differentiable at $c$ with $\vec{\gamma}(c) = P$. Then $f\circ\vec{\gamma}$ is differentiable at $c$ with derivative $\nabla f(\vec{\gamma}(t)) \cdot \vec{\gamma}'(t)$.
+> Suppose $f$ is *differentiable* at $C$, and $\vec{\gamma}(t)$ is differentiable at $c$ with $\vec{\gamma}(c) = C$. Then $f\circ\vec{\gamma}$ is differentiable at $c$ with derivative $\nabla f(\vec{\gamma}(t)) \cdot \vec{\gamma}'(t)$.
 
 
 This is similar to the chain rule for univariate functions $(f\circ g)'(u) = f'(g(u)) g'(u)$ or $df/dx = df/du \cdot du/dx$. However, when we write out in components there are more terms. For example, for $n=2$ we have with $\vec{\gamma} = \langle x(t), y(t) \rangle$:
@@ -608,7 +664,7 @@ f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t) -
 ~$$
 
 
-Dividing by sides by $h$ gives:
+Dividing both sides by $h$ gives:
 
 $$~
 \frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} -
@@ -616,10 +672,10 @@ $$~
 \vec{\epsilon}(\vec{H}) \cdot \frac{\vec{H}}{h}.
 ~$$
 
-As $h \rightarrow 0$, $\vec{H}/h \rightarrow \vec\gamma'(t)$ and consequently $\vec{\epsilon}(\vec{H}) \cdot \vec{H} \rightarrow \vec{0}$. Simplifying, this says:
+As $h \rightarrow 0$, $\vec{H}/h \rightarrow \vec\gamma'(t)$ and consequently, as $\vec\gamma'(t)$ is bounded, $\vec{\epsilon}(\vec{H}) \cdot \vec{H} \rightarrow \vec{0}$. Simplifying, this says:
 
 $$~
-f\circ\vec\gamma'(t) =
+(f\circ\vec\gamma)'(t) =
 \lim_{h \rightarrow 0}\frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} =
 \nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t).
 ~$$
@@ -756,7 +812,7 @@ The maximum slope occurs at an endpoint
 
 
 
-### Directional Derivatives
+## Directional Derivatives
 
 The last example, how steep is the direction we are walking, is a question that can be asked when walking in a straight line in the $x$-$y$ plane. The answer has a simplified answer:
 

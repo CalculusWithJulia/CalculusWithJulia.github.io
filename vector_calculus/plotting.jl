@@ -12,20 +12,20 @@ Base.adjoint(r::Function) = D(r)
 
 
 ## Turn a vector of vectors into xs, ys, and optionally zs
-xs_ys(vs) = (A=hcat(vs...);[A[i,:] for i in eachindex(vs[1])])
-xs_ys(v,vs...) = xs_ys([v, vs...])
-xs_ys(r::Function, a, b, n=100) = xs_ys(r.(range(a, stop=b, length=n)))
+unzip(vs) = (A=hcat(vs...);[A[i,:] for i in eachindex(vs[1])])
+unzip(v,vs...) = unzip([v, vs...])
+unzip(r::Function, a, b, n=100) = unzip(r.(range(a, stop=b, length=n)))
 
 function arrow!(p, v; kwargs...)
 
     d = length(p)
             if d == 2
-                quiver!(xs_ys([p])..., quiver=Tuple(xs_ys([v])); kwargs...)
+                quiver!(unzip([p])..., quiver=Tuple(unzip([v])); kwargs...)
             elseif d == 3
                 # 3d quiver needs support
                 # https://github.com/JuliaPlots/Plots.jl/issues/319#issue-159652535
                 # headless arrow instead
-                plot!(xs_ys(p, p+v)...; kwargs...)
+                plot!(unzip(p, p+v)...; kwargs...)
             end
         end
 
@@ -46,7 +46,7 @@ ts = range(0, 2pi, length=100)
     plot(xs, ys)
 
     # easier
-    plot(xs_ys(r2, ts)...)
+    plot(unzip(r2, ts)...)
 
 
 
@@ -62,11 +62,11 @@ ts = range(0, 2pi, length=100)
     plot(xs, ys, zs)
 
 
-    plot(xs_ys(r, ts)...)
+    plot(unzip(r, ts)...)
 
     # 2D add an arrow to curve (p,v)
     p, v = r2(1), r2'(1)
-    plot(xs_ys(r2, ts)...)
+    plot(unzip(r2, ts)...)
 
     ## interface wants quiver([xs], [ys], quiver=(us, vs))
     asv(v) = Tuple(v[i:i] for i in eachindex(v))
@@ -81,11 +81,11 @@ ts = range(0, 2pi, length=100)
                 # 3d quiver needs support
                 # https://github.com/JuliaPlots/Plots.jl/issues/319#issue-159652535
                 # headless arrow instead
-                plot!(xs_ys(p, p+v)...; kwargs...)
+                plot!(unzip(p, p+v)...; kwargs...)
             end
         end
 # 3D add an arrow to curve (p,v)
-            plot(xs_ys(r, ,ts)..., legend=false)
+            plot(unzip(r, ,ts)..., legend=false)
             arrow!(r(1), r'(1))
 
             # plot a contour

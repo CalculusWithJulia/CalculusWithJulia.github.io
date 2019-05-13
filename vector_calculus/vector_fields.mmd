@@ -1,0 +1,388 @@
+# Functions $R^n \rightarrow R^m$
+
+
+For a scalar function $f: R^n \rightarrow R$, the gradient of $f$, $\nabla{f}$, is a function from $R^n \rightarrow R^n$. Specializing to $n=2$, a function that for each point, $(x,y)$, assigns a vector $\vec{v}$. This is an example of vector field. More generally, we  could have a [function](https://en.wikipedia.org/wiki/Multivariable_calculus) $f: R^n \rightarrow R^m$, of which we have discussed many already:
+
+| Mapping                 | Name            |
+|:-----------------------:|:---------------:|
+|$f: R\rightarrow R$      | univariate      |
+|$f: R\rightarrow R^m$    | vector-valued   |
+|$f: R^n\rightarrow R$    | scalar          |
+|$f: R^n\rightarrow R^n$  | vector field    |
+|$f: R^n\rightarrow R^m$  | multivariable   |
+
+Here we briefly discuss differentiation in general for a multivariable function.
+
+
+## The total derivative
+
+Informally, the [total derivative](https://en.wikipedia.org/wiki/Total_derivative) at $a$ is the best linear approximation of the value of a function near $a$ with respect to its arguments. If it exists, denote it $df_a$. For function $f: R^n \rightarrow R^m$ we have the total derivative at $\vec{a}$ (a point or vector in $R^n$) is a matrix $J$ (a linear transformation)  taking vectors in $R^n$ and returning, under multiplication, vectors in $R^m$ (this matrix will be $m \times n$), such that for some neighborhood of $\vec{a}$, we have:
+
+$$~
+\lim_{\vec{x} \rightarrow \vec{a}} \frac{\|f(\vec{x}) - f(\vec{a}) - J\cdot(\vec{x}-\vec{a})\|}{\|\vec{x} - \vec{a}\|} = \vec{0}.
+~$$
+
+If this holds, the function $f$ is said to be totally differerentiable, and the matrix $df_a = J =J_f$ is the total derivative.
+
+For a multivariable function $f:R^n \rightarrow R^m$, we may express the function in vector-valued form $f(\vec{x}) = \langle f_1(\vec{x}), f_2(\vec{x}),\dots,f_m(\vec{x})\rangle$. Then if the total derivative exists, it can be expressed by the [Jacobian](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant):
+
+$$~
+J = \left[
+\begin{align}{}
+\frac{\partial f_1}{\partial x_1} &\quad \frac{\partial f_1}{\partial x_2} &\dots&\quad\frac{\partial f_1}{\partial x_n}\\
+\frac{\partial f_2}{\partial x_1} &\quad \frac{\partial f_2}{\partial x_2} &\dots&\quad\frac{\partial f_2}{\partial x_n}\\
+&&\vdots&\\
+\frac{\partial f_m}{\partial x_1} &\quad \frac{\partial f_m}{\partial x_2} &\dots&\quad\frac{\partial f_m}{\partial x_n}
+\end{align}
+\right]
+~$$
+
+This may also be viewed as:
+
+$$~
+J = \left[
+\begin{align}{}
+&\nabla{f_1}'\\
+&\nabla{f_2}'\\
+&\quad\vdots\\
+&\nabla{f_m}'
+\end{align}
+\right].
+~$$
+
+The latter representing a matrix of $m$ row vectors, each with $n$ components.
+
+----
+
+After specializing the total derivative to the cases already discussed, we have:
+
+* Univariate functions. Here $f'(t)$ is also univariate. Identifying $J$ with the $1 \times 1$ matrix with component $f'(t)$, then the total derivative is just a restatement of the derivative existing.
+
+* Vector-valued functions $f(t) = \langle f_1(t), f_2(t), \dots, f_m(t) \rangle$, each component univariate. Then the derivative, $f'(t) = \langle \frac{df_1}{dt}, \frac{df_2}{dt}, \dots, \frac{df_m}{dt} \rangle$. The total derivative in this case, is a a $m \times 1$ vector of partial derivatives, and since there is only $1$ variable, would be written without partials. So the two agree.
+
+* Scalar functions $f(\vec{x}) = a$ of type $R^n \rightarrow R$. The definition of differentiability for $f$ involved existence of the partial derivatives and moreover, the fact that a limit like the above held with $ \nabla{f}(C) \cdot \vec{h}$ in place of $J\cdot(\vec{x}-\vec{a})$. Here $\vec{h}$ and $\vec{x}-\vec{a}$ are vectors in $R^n$. Were the dot product in $ \nabla{f}(C) \cdot \vec{h}$ expressed in matrix multiplication we would have for this case a $1 \times n$ matrix of the correct form:
+$$~
+J = [\nabla{f}'],
+~$$
+
+
+* For $f:R^2 \rightarrow R$, the Hessian matrix, was the matrix of 2nd partial derivatives. This may be viewed as the total derivative of the the gradient function:
+
+$$~
+\text{Hessian} =
+\left[
+\begin{align}{}
+\frac{\partial^2 f}{\partial x^2}          &\quad \frac{\partial^2 f}{\partial x \partial y}\\
+\frac{\partial^2 f}{\partial y \partial x} &\quad \frac{\partial^2 f}{\partial y \partial y}
+\end{align}
+\right],
+~$$
+
+is equivalent to:
+
+$$~
+\left[
+\begin{align}{}
+\frac{\partial \frac{\partial f}{\partial x}}{\partial x} &\quad \frac{\partial \frac{\partial f}{\partial x}}{\partial y}\\
+\frac{\partial \frac{\partial f}{\partial y}}{\partial x} &\quad \frac{\partial \frac{\partial f}{\partial y}}{\partial y}\\
+\end{align}
+\right].
+~$$
+
+
+As such, the total derivative is a generalization of what we have previously discussed.
+
+
+## The chain rule
+
+If $f:R^n \rightarrow R^m$ and $g:R^k \rightarrow R^n$, then the composition $f\circ g$ takes $R^k \rightarrow R^m$. If all three functions are are totally differentiable, then a chain rule will hold:
+
+$$~
+d(f\circ g)_a =
+\text{ total derivative of $f\circ g$ at point $a$ }
+= df_{g(a)} \circ dg_a.
+~$$
+
+If correct, this has the same formulation as the chain rule for the univariate case (derivative of outer at the inner times the derivative of the inner).
+
+First we check that the dimensions are correct: We have $df_{g(a)}$ (the total derivative of $f$ at the point $g(a)$) is an $m \times n$ matrix and $dg_a$ (the total derivative of $g$ at the point $a$) is a $n \times k$ matrix. The product of a $m \times n$ matrix with a $n \times k$ matrix is defined, and is a $m \times k$ matrix, as is $d(f \circ g)_a$.
+
+The proof that the formula is correct uses the definition of totally differentiable written as
+
+$$~
+f(b + \vec{h}) - f(b) - df_b\cdot \vec{h} = \epsilon(\vec{h}) \vec{h},
+~$$
+
+where $\epsilon(h) \rightarrow \vec{0}$ as $h \rightarrow \vec{0}$.
+
+We have, using this for *both* $f$ and $g$:
+
+$$~
+\begin{align}
+f(g(a + \vec{h})) - f(g(a)) &=
+f(g(a) + (dg_a \cdot \vec{h} + \epsilon_g \vec{h})) - f(g(a))\\
+&= f(g(a)) + df_{g(a)} \cdot (dg_a \cdot \vec{h} + \epsilon_g \vec{h}) + \epsilon_f (dg_a \cdot \vec{h} + \epsilon_g \vec{h}) - f(g(a))\\
+&= df_{g(a)} \cdot (dg_a \cdot \vec{h})  +  df_{g(a)} \cdot (\epsilon_g \vec{h}) + \epsilon_f (dg_a \cdot \vec{h}) + (\epsilon_f \cdot \epsilon_g\vec{h})
+\end{align}
+~$$
+
+The last line uses the linearity of $df$ to isolate $df_{g(a)} \cdot (dg_a \cdot \vec{h})$. Factoring out $\vec{h}$ and taking norms gives:
+
+
+$$~
+\begin{align}
+\frac{\| f(g(a+\vec{h})) - f(g(a)) - df_{g(a)}dg_a \cdot \vec{h} \|}{\| \vec{h} \|} &=
+\frac{\|  df_{g(a)}\cdot(\epsilon_g\vec{h}) + \epsilon_f (dg_a\cdot \vec{h}) + (\epsilon_f\cdot\epsilon_g\vec{h}) \|}{\| \vec{h} \|} \\
+&\leq \|  df_{g(a)}\cdot\epsilon_g + \epsilon_f (dg_a) + \epsilon_f\cdot\epsilon_g \|\frac{\|\vec{h}\|}{\| \vec{h} \|}\\
+&\rightarrow 0.
+\end{align}
+~$$
+
+
+
+### Examples
+
+Our main use of the total derivative will be change of variables.
+
+
+##### Example: polar coordinates
+
+A point $(a,b)$ in the plane can be described in polar coordinates by a radius $r$ and polar angle $\theta$. We can express this formally by $f:(a,b) \rightarrow (r, \theta)$ with
+
+$$~
+r(a,b) = \sqrt{a^2 + b^2}, \quad
+\theta(a,b) = \tan^{-1}(b/a),
+~$$
+
+the latter assuming the point is in quadrant I or IV. The Jacobian of this transformation may be found with
+
+```
+using SymPy, LinearAlgebra
+@vars a b real=true
+
+r = sqrt(a^2 + b^2)
+theta = atan(b/a)
+
+Jac = Sym[diff.(r, [a,b])';        # [∇f_1'; ∇f_2']
+          diff.(theta, [a,b])']
+
+simplify.(Jac)
+```
+
+The determinant, of geometric interest, will be
+
+```
+det(Jac) |> simplify
+```
+
+
+The determinant is of interest, as the linear mapping represented by the Jacobian changes the area of the associated coordinate vectors. How this area changes is given by the determinant.
+
+
+
+##### Example Spherical Coordinates
+In 3 dimensions a point can be described by (among other ways):
+
+* Cartesian coordinates: three coordinates relative to the $x$, $y$, and $z$ axes as $(a,b,c)$.
+* Spherical coordinates: a radius, $r$, a polar angle $\phi$, and an azimuthal angle $\theta$ measured down from the $z$ axes.
+* Cylindrical coordinates: a radius, $r$, a polar angle $\phi$, and height $z$.
+
+
+Some mappings are:
+
+|  Cartesian (x,y,z)  | Spherical ($r$, $\phi$, $\theta$) | Cylindrical ($r$, $\phi$, $\theta$)  |
+|:-------------------:|:---------------------------------:|:------------------------------------:|
+|   (1, 1, 0)         | $(\sqrt{2}, \pi/4, \pi/2)$        | $(\sqrt{2},\pi/4, 0)$                |
+|   (0, 1, 1)         | $(\sqrt{2}, 0, \pi/4)$            | $(\sqrt{2}, 0, 1)$                   |
+
+----
+
+Formulas can be found to convert between the different systems, here are a few written as multivariable functions:
+
+```
+function spherical_from_cartesian(x,y,z)
+    r = sqrt(x^2 + y^2 + z^2)
+    phi = atan(y/x)
+    theta = acos(z/r)
+    [r, phi, theta]
+end
+
+function cartesian_from_spherical(r, phi, theta)
+    x = r*sin(theta)*cos(phi)
+    y = r*sin(theta)*sin(phi)
+    z = r*cos(theta)
+    [x, y, z]
+end
+
+function cylindrical_from_cartesian(x, y, z)
+    r = sqrt(x^2 + y^2)
+    phi = atan(y/x)
+    z = z
+    [r, phi, z]
+end
+
+function cartesian_from_cylindrical(r, phi, z)
+    x = r*cos(phi)
+    y = r*sin(phi)
+    z = z
+    [x, y, z]
+end
+```
+
+The Jacobian of a transformation can be found from these conversions. For example, the conversion from spherical to cartesian would have Jacobian computed by:
+
+```
+@vars r phi theta real=true
+
+ex1 = cartesian_from_spherical(r, phi, theta)
+
+grads = [diff.(ex1[i], [r, phi, theta]) for i in 1:3]  # find gradient of each component -> [∇f_1, ∇f_2, ∇f_3]
+J1 = simplify.(vcat(grads'...))
+```
+
+This has determinant:
+
+```
+det(J1) |> simplify
+```
+
+There is no function to convert from spherical to cylindrical above, but clearly one can be made by *composition*:
+
+```
+cylindrical_from_cartesian(v) = cylindrical_from_cartesian(v...)   # allow a vector of arguments
+
+cylindrical_from_spherical(r, phi, theta) = (cylindrical_from_cartesian ∘ cartesian_from_spherical)(r, phi, theta)
+```
+
+From this composition, we could compute the Jacobian directly, as with:
+
+
+```
+ex2 = cylindrical_from_spherical(r, phi, theta)
+grads = [diff.(ex2[i], [r, phi, theta]) for i in 1:3]  # find gradient of each component -> [∇f_1, ∇f_2, ∇f_3]
+J2 = simplify.(vcat(grads'...))
+```
+
+Now to see that this last expression could have been found by the *chain rule*. To do this we need to find the Jacobian of each function; evaluate them at the proper places; and, finally, multiply the matrices. The `J1` object, found above, does one Jacobian. We now need to find that of `cylindrical_from_cartesian`:
+
+```
+@vars x y z real=true
+ex3 = cylindrical_from_cartesian(x, y, z)
+grads = [diff.(ex3[i], [x, y, z]) for i in 1:3]
+J3 = simplify.(vcat(grads'...))
+```
+
+The chain rule is not simply `J3 * J1` in the notation above, as the `J3` matrix must be evaluated at "`g(a)`", which is `ex1` from above:
+
+```
+J3_ga = subs.(J3, x .=> ex1[1], y .=> ex1[2], z .=> ex1[3]) .|> simplify  # the dots are important
+```
+
+The chain rule now says this product should be equivalent to `J2` above:
+
+```
+J3_ga * J1
+```
+
+The two are equivalent after simplification, as seen here:
+
+```
+J3_ga * J1 - J2 .|> simplify
+```
+
+
+##### Example
+
+The above examples were done symbolically. Performing the calculuation numerically is quite similar.
+Using `ForwardDiff` we can make a gradient function through:
+
+```
+using ForwardDiff
+grad(f) = x -> ForwardDiff.gradient(f, x)
+```
+
+This assumes `x` is a vector. With this, defining a Jacobian function could be done like:
+
+```
+function Jacobian(f, x)
+    n = length(f(x...))
+    grads = [grad(x -> f(x...)[i])(x) for i in 1:n]
+    vcat(grads'...)
+end
+```
+
+Using the above functions, we can verify the last example at a point:
+
+
+```
+rtp = [1, pi/3, pi/4]
+Jacobian(cylindrical_from_spherical, rtp)
+```
+
+As conmpared to:
+
+```
+cartesian_from_spherical(v) = cartesian_from_spherical(v...)
+Jacobian(cylindrical_from_cartesian, cartesian_from_spherical(rtp)) * Jacobian(cartesian_from_spherical, rtp)
+```
+
+##### Example
+
+For a change of variable problem, $f:R^n \rightarrow R^n$ and the determinant of the Jacobian quantifies how volumes get modified under the transformation. When this determinant is *non*zero, then more can be said. The [Inverse Function Theorem](https://en.wikipedia.org/wiki/Inverse_function_theorem) states
+
+> if  $F$ is a continuously differentiable function from an open set of $R^n$ into $R^n$and the total derivative is invertible at a point $p$ (i.e., the Jacobian determinant of $F$ at $p$ is non-zero), then $F$ is invertible near $p$: that is, an inverse function to $F$ is defined on some neighborhood of $q$, $q=F(p)$. Further, $F^{-1}$ will be continuously differentiable at $q$ with $J_{F^{-1}}(q) = [J_f(p)]^{-1}$, the latter being the matrix inverse. Taking determinants, $\det(J_{F^{-1}}(q)) = 1/\det(J_f(p))$.
+
+
+Assuming $F^{-1}$ exists, we can verify the last part from the chain rule, in an identical manner to the univariate case, starting with $F^{-1} \circ F$ being the identity, we would have:
+
+$$~
+J_{F^{-1}\circ F}(p) = I,
+~$$
+
+where $I$ is the *identity* matrix with entry $a_{ij} = 1$ when $i=j$ and $0$ otherwise.
+
+But the chain rule then says $J_{F^{-1}}(F(p)) J_F(p) = I$. This implies the two matrices are inverses to each other, and using the multiplicative mapping property of the determinant also implies the determinant relationship.
+
+The theorem is an existential theorem, in that it implies $F^{-1}$ exists, but doesn't indicate how to find it. When we have an inverse though, we can verify the properties implied.
+
+The transformation examples have inverses indicated. Using one of these we can verify things at a point, as done in the following:
+
+```
+F(a, b, c)= cartesian_from_spherical(a, b,c)
+F(x) = F(x...)
+F⁻¹(a,b,c) = spherical_from_cartesian(a,b,c)  # F\^-[tab]\^1[tab] to make F⁻¹
+
+p = [1, pi/3, pi/4]
+q = F(p)
+
+A1 = Jacobian(F, p)
+A2 = Jacobian(F⁻¹, q)
+
+A1 * A2
+```
+
+Up to roundoff error, this is the identity matrix.
+As for the relationship between the determinants:
+
+```
+det(A1), 1/det(A2)
+```
+
+
+
+## Questions
+
+
+###### Question
+
+###### Question
+
+###### Question
+
+###### Question
+
+###### Question
+
+###### Question
+
+###### Question

@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<!-- not TeX-AMS-MML_HTMLorMML-->
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) {
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>Functions $R^n \rightarrow R^m$</h1><p>For a scalar function $f: R^n \rightarrow R$, the gradient of $f$, $\nabla{f}$, is a function from $R^n \rightarrow R^n$. Specializing to $n=2$, a function that for each point, $(x,y)$, assigns a vector $\vec{v}$. This is an example of vector field. More generally, we  could have a <a href="https://en.wikipedia.org/wiki/Multivariable_calculus">function</a> $f: R^n \rightarrow R^m$, of which we have discussed many already:</p><table><tr><th>Mapping</th><th>Name</th></tr><tr><td>$f: R\rightarrow R$</td><td>univariate</td></tr><tr><td>$f: R\rightarrow R^m$</td><td>vector-valued</td></tr><tr><td>$f: R^n\rightarrow R$</td><td>scalar</td></tr><tr><td>$f: R^n\rightarrow R^n$</td><td>vector field</td></tr><tr><td>$f: R^n\rightarrow R^m$</td><td>multivariable</td></tr></table><p>Here we briefly discuss differentiation in general for a multivariable function.</p><h2>The total derivative</h2><p>Informally, the <a href="https://en.wikipedia.org/wiki/Total_derivative">total derivative</a> at $a$ is the best linear approximation of the value of a function near $a$ with respect to its arguments. If it exists, denote it $df_a$. For function $f: R^n \rightarrow R^m$ we have the total derivative at $\vec{a}$ (a point or vector in $R^n$) is a matrix $J$ (a linear transformation)  taking vectors in $R^n$ and returning, under multiplication, vectors in $R^m$ (this matrix will be $m \times n$), such that for some neighborhood of $\vec{a}$, we have:</p>$$~
+\lim_{\vec{x} \rightarrow \vec{a}} \frac{\|f(\vec{x}) - f(\vec{a}) - J\cdot(\vec{x}-\vec{a})\|}{\|\vec{x} - \vec{a}\|} = \vec{0}.
+~$$
+<p>If this holds, the function $f$ is said to be totally differerentiable, and the matrix $df_a = J =J_f$ is the total derivative.</p><p>For a multivariable function $f:R^n \rightarrow R^m$, we may express the function in vector-valued form $f(\vec{x}) = \langle f_1(\vec{x}), f_2(\vec{x}),\dots,f_m(\vec{x})\rangle$. Then if the total derivative exists, it can be expressed by the <a href="https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant">Jacobian</a>:</p>$$~
+J = \left[
+\begin{align}{}
+\frac{\partial f_1}{\partial x_1} &\quad \frac{\partial f_1}{\partial x_2} &\dots&\quad\frac{\partial f_1}{\partial x_n}\\
+\frac{\partial f_2}{\partial x_1} &\quad \frac{\partial f_2}{\partial x_2} &\dots&\quad\frac{\partial f_2}{\partial x_n}\\
+&&\vdots&\\
+\frac{\partial f_m}{\partial x_1} &\quad \frac{\partial f_m}{\partial x_2} &\dots&\quad\frac{\partial f_m}{\partial x_n}
+\end{align}
+\right]
+~$$
+<p>This may also be viewed as:</p>$$~
+J = \left[
+\begin{align}{}
+&\nabla{f_1}'\\
+&\nabla{f_2}'\\
+&\quad\vdots\\
+&\nabla{f_m}'
+\end{align}
+\right].
+~$$
+<p>The latter representing a matrix of $m$ row vectors, each with $n$ components.</p><hr /><p>After specializing the total derivative to the cases already discussed, we have:</p><ul>
+<li><p>Univariate functions. Here $f'(t)$ is also univariate. Identifying $J$ with the $1 \times 1$ matrix with component $f'(t)$, then the total derivative is just a restatement of the derivative existing.</p>
+</li>
+<li><p>Vector-valued functions $f(t) = \langle f_1(t), f_2(t), \dots, f_m(t) \rangle$, each component univariate. Then the derivative, $f'(t) = \langle \frac{df_1}{dt}, \frac{df_2}{dt}, \dots, \frac{df_m}{dt} \rangle$. The total derivative in this case, is a a $m \times 1$ vector of partial derivatives, and since there is only $1$ variable, would be written without partials. So the two agree.</p>
+</li>
+<li><p>Scalar functions $f(\vec{x}) = a$ of type $R^n \rightarrow R$. The definition of differentiability for $f$ involved existence of the partial derivatives and moreover, the fact that a limit like the above held with $ \nabla{f}(C) \cdot \vec{h}$ in place of $J\cdot(\vec{x}-\vec{a})$. Here $\vec{h}$ and $\vec{x}-\vec{a}$ are vectors in $R^n$. Were the dot product in $ \nabla{f}(C) \cdot \vec{h}$ expressed in matrix multiplication we would have for this case a $1 \times n$ matrix of the correct form:</p>
+</li>
+</ul>$$~
+J = [\nabla{f}'],
+~$$
+<ul>
+<li><p>For $f:R^2 \rightarrow R$, the Hessian matrix, was the matrix of 2nd partial derivatives. This may be viewed as the total derivative of the the gradient function:</p>
+</li>
+</ul>$$~
+\text{Hessian} =
+\left[
+\begin{align}{}
+\frac{\partial^2 f}{\partial x^2}          &\quad \frac{\partial^2 f}{\partial x \partial y}\\
+\frac{\partial^2 f}{\partial y \partial x} &\quad \frac{\partial^2 f}{\partial y \partial y}
+\end{align}
+\right],
+~$$
+<p>is equivalent to:</p>$$~
+\left[
+\begin{align}{}
+\frac{\partial \frac{\partial f}{\partial x}}{\partial x} &\quad \frac{\partial \frac{\partial f}{\partial x}}{\partial y}\\
+\frac{\partial \frac{\partial f}{\partial y}}{\partial x} &\quad \frac{\partial \frac{\partial f}{\partial y}}{\partial y}\\
+\end{align}
+\right].
+~$$
+<p>As such, the total derivative is a generalization of what we have previously discussed.</p><h2>The chain rule</h2><p>If $f:R^n \rightarrow R^m$ and $g:R^k \rightarrow R^n$, then the composition $f\circ g$ takes $R^k \rightarrow R^m$. If all three functions are are totally differentiable, then a chain rule will hold:</p>$$~
+d(f\circ g)_a =
+\text{ total derivative of $f\circ g$ at point $a$ }
+= df_{g(a)} \circ dg_a.
+~$$
+<p>If correct, this has the same formulation as the chain rule for the univariate case (derivative of outer at the inner times the derivative of the inner).</p><p>First we check that the dimensions are correct: We have $df_{g(a)}$ (the total derivative of $f$ at the point $g(a)$) is an $m \times n$ matrix and $dg_a$ (the total derivative of $g$ at the point $a$) is a $n \times k$ matrix. The product of a $m \times n$ matrix with a $n \times k$ matrix is defined, and is a $m \times k$ matrix, as is $d(f \circ g)_a$.</p><p>The proof that the formula is correct uses the definition of totally differentiable written as</p>$$~
+f(b + \vec{h}) - f(b) - df_b\cdot \vec{h} = \epsilon(\vec{h}) \vec{h},
+~$$
+<p>where $\epsilon(h) \rightarrow \vec{0}$ as $h \rightarrow \vec{0}$.</p><p>We have, using this for <em>both</em> $f$ and $g$:</p>$$~
+\begin{align}
+f(g(a + \vec{h})) - f(g(a)) &=
+f(g(a) + (dg_a \cdot \vec{h} + \epsilon_g \vec{h})) - f(g(a))\\
+&= f(g(a)) + df_{g(a)} \cdot (dg_a \cdot \vec{h} + \epsilon_g \vec{h}) + \epsilon_f (dg_a \cdot \vec{h} + \epsilon_g \vec{h}) - f(g(a))\\
+&= df_{g(a)} \cdot (dg_a \cdot \vec{h})  +  df_{g(a)} \cdot (\epsilon_g \vec{h}) + \epsilon_f (dg_a \cdot \vec{h}) + (\epsilon_f \cdot \epsilon_g\vec{h})
+\end{align}
+~$$
+<p>The last line uses the linearity of $df$ to isolate $df_{g(a)} \cdot (dg_a \cdot \vec{h})$. Factoring out $\vec{h}$ and taking norms gives:</p>$$~
+\begin{align}
+\frac{\| f(g(a+\vec{h})) - f(g(a)) - df_{g(a)}dg_a \cdot \vec{h} \|}{\| \vec{h} \|} &=
+\frac{\|  df_{g(a)}\cdot(\epsilon_g\vec{h}) + \epsilon_f (dg_a\cdot \vec{h}) + (\epsilon_f\cdot\epsilon_g\vec{h}) \|}{\| \vec{h} \|} \\
+&\leq \|  df_{g(a)}\cdot\epsilon_g + \epsilon_f (dg_a) + \epsilon_f\cdot\epsilon_g \|\frac{\|\vec{h}\|}{\| \vec{h} \|}\\
+&\rightarrow 0.
+\end{align}
+~$$
+<h3>Examples</h3><p>Our main use of the total derivative will be change of variables.</p><h5>Example: polar coordinates</h5><p>A point $(a,b)$ in the plane can be described in polar coordinates by a radius $r$ and polar angle $\theta$. We can express this formally by $f:(a,b) \rightarrow (r, \theta)$ with</p>$$~
+r(a,b) = \sqrt{a^2 + b^2}, \quad
+\theta(a,b) = \tan^{-1}(b/a),
+~$$
+<p>the latter assuming the point is in quadrant I or IV. The Jacobian of this transformation may be found with</p><pre class="sourceCode julia">using SymPy, LinearAlgebra
+@vars a b real=true
+
+r = sqrt(a^2 + b^2)
+theta = atan(b/a)
+
+Jac = Sym[diff.(r, [a,b])';        # [∇f_1'; ∇f_2']
+          diff.(theta, [a,b])']
+
+simplify.(Jac)</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rr}\frac{a}{\sqrt{a^{2} + b^{2}}}&\frac{b}{\sqrt{a^{2} + b^{2}}}\\- \frac{b}{a^{2} + b^{2}}&\frac{a}{a^{2} + b^{2}}\end{array}\right]\]</div>
+
+<p>The determinant, of geometric interest, will be</p><pre class="sourceCode julia">det(Jac) |> simplify</pre>
+<div class="well well-sm">
+\begin{equation*}\frac{1}{\sqrt{a^{2} + b^{2}}}\end{equation*}</div>
+
+<p>The determinant is of interest, as the linear mapping represented by the Jacobian changes the area of the associated coordinate vectors. How this area changes is given by the determinant.</p><h5>Example Spherical Coordinates</h5><p>In 3 dimensions a point can be described by (among other ways):</p><ul>
+<li><p>Cartesian coordinates: three coordinates relative to the $x$, $y$, and $z$ axes as $(a,b,c)$.</p>
+</li>
+<li><p>Spherical coordinates: a radius, $r$, a polar angle $\phi$, and an azimuthal angle $\theta$ measured down from the $z$ axes.</p>
+</li>
+<li><p>Cylindrical coordinates: a radius, $r$, a polar angle $\phi$, and height $z$.</p>
+</li>
+</ul><p>Some mappings are:</p><table><tr><th>Cartesian (x,y,z)</th><th>Spherical ($r$, $\phi$, $\theta$)</th><th>Cylindrical ($r$, $\phi$, $\theta$)</th></tr><tr><td>(1, 1, 0)</td><td>$(\sqrt{2}, \pi/4, \pi/2)$</td><td>$(\sqrt{2},\pi/4, 0)$</td></tr><tr><td>(0, 1, 1)</td><td>$(\sqrt{2}, 0, \pi/4)$</td><td>$(\sqrt{2}, 0, 1)$</td></tr></table><hr /><p>Formulas can be found to convert between the different systems, here are a few written as multivariable functions:</p><pre class="sourceCode julia">function spherical_from_cartesian(x,y,z)
+    r = sqrt(x^2 + y^2 + z^2)
+    phi = atan(y/x)
+    theta = acos(z/r)
+    [r, phi, theta]
+end
+
+function cartesian_from_spherical(r, phi, theta)
+    x = r*sin(theta)*cos(phi)
+    y = r*sin(theta)*sin(phi)
+    z = r*cos(theta)
+    [x, y, z]
+end
+
+function cylindrical_from_cartesian(x, y, z)
+    r = sqrt(x^2 + y^2)
+    phi = atan(y/x)
+    z = z
+    [r, phi, z]
+end
+
+function cartesian_from_cylindrical(r, phi, z)
+    x = r*cos(phi)
+    y = r*sin(phi)
+    z = z
+    [x, y, z]
+end</pre>
+<pre class="output">
+cartesian_from_cylindrical (generic function with 1 method)</pre>
+
+<p>The Jacobian of a transformation can be found from these conversions. For example, the conversion from spherical to cartesian would have Jacobian computed by:</p><pre class="sourceCode julia">@vars r phi theta real=true
+
+ex1 = cartesian_from_spherical(r, phi, theta)
+
+grads = [diff.(ex1[i], [r, phi, theta]) for i in 1:3]  # find gradient of each component -> [∇f_1, ∇f_2, ∇f_3]
+J1 = simplify.(vcat(grads'...))</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}\sin{\left (\theta \right )} \cos{\left (\phi \right )}&- r \sin{\left (\phi \right )} \sin{\left (\theta \right )}&r \cos{\left (\phi \right )} \cos{\left (\theta \right )}\\\sin{\left (\phi \right )} \sin{\left (\theta \right )}&r \sin{\left (\theta \right )} \cos{\left (\phi \right )}&r \sin{\left (\phi \right )} \cos{\left (\theta \right )}\\\cos{\left (\theta \right )}&0&- r \sin{\left (\theta \right )}\end{array}\right]\]</div>
+
+<p>This has determinant:</p><pre class="sourceCode julia">det(J1) |> simplify</pre>
+<div class="well well-sm">
+\begin{equation*}- r^{2} \sin{\left (\theta \right )}\end{equation*}</div>
+
+<p>There is no function to convert from spherical to cylindrical above, but clearly one can be made by <em>composition</em>:</p><pre class="sourceCode julia">cylindrical_from_cartesian(v) = cylindrical_from_cartesian(v...)   # allow a vector of arguments
+
+cylindrical_from_spherical(r, phi, theta) = (cylindrical_from_cartesian ∘ cartesian_from_spherical)(r, phi, theta)</pre>
+<pre class="output">
+cylindrical_from_spherical (generic function with 1 method)</pre>
+
+<p>From this composition, we could compute the Jacobian directly, as with:</p><pre class="sourceCode julia">ex2 = cylindrical_from_spherical(r, phi, theta)
+grads = [diff.(ex2[i], [r, phi, theta]) for i in 1:3]  # find gradient of each component -> [∇f_1, ∇f_2, ∇f_3]
+J2 = simplify.(vcat(grads'...))</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}\frac{r \sin^{2}{\left (\theta \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}&0&\frac{r^{2} \sin{\left (2 \theta \right )}}{2 \left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}\\0&1&0\\\cos{\left (\theta \right )}&0&- r \sin{\left (\theta \right )}\end{array}\right]\]</div>
+
+<p>Now to see that this last expression could have been found by the <em>chain rule</em>. To do this we need to find the Jacobian of each function; evaluate them at the proper places; and, finally, multiply the matrices. The <code>J1</code> object, found above, does one Jacobian. We now need to find that of <code>cylindrical_from_cartesian</code>:</p><pre class="sourceCode julia">@vars x y z real=true
+ex3 = cylindrical_from_cartesian(x, y, z)
+grads = [diff.(ex3[i], [x, y, z]) for i in 1:3]
+J3 = simplify.(vcat(grads'...))</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}\frac{x}{\sqrt{x^{2} + y^{2}}}&\frac{y}{\sqrt{x^{2} + y^{2}}}&0\\- \frac{y}{x^{2} + y^{2}}&\frac{x}{x^{2} + y^{2}}&0\\0&0&1\end{array}\right]\]</div>
+
+<p>The chain rule is not simply <code>J3 * J1</code> in the notation above, as the <code>J3</code> matrix must be evaluated at "<code>g&#40;a&#41;</code>", which is <code>ex1</code> from above:</p><pre class="sourceCode julia">J3_ga = subs.(J3, x .=> ex1[1], y .=> ex1[2], z .=> ex1[3]) .|> simplify  # the dots are important</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}\frac{r \sin{\left (\theta \right )} \cos{\left (\phi \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}&\frac{r \sin{\left (\phi \right )} \sin{\left (\theta \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}&0\\- \frac{\sin{\left (\phi \right )}}{r \sin{\left (\theta \right )}}&\frac{\cos{\left (\phi \right )}}{r \sin{\left (\theta \right )}}&0\\0&0&1\end{array}\right]\]</div>
+
+<p>The chain rule now says this product should be equivalent to <code>J2</code> above:</p><pre class="sourceCode julia">J3_ga * J1</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}\frac{r \sin^{2}{\left (\phi \right )} \sin^{2}{\left (\theta \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|} + \frac{r \sin^{2}{\left (\theta \right )} \cos^{2}{\left (\phi \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}&0&\frac{r^{2} \sin^{2}{\left (\phi \right )} \sin{\left (\theta \right )} \cos{\left (\theta \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|} + \frac{r^{2} \sin{\left (\theta \right )} \cos^{2}{\left (\phi \right )} \cos{\left (\theta \right )}}{\left|{r}\right| \left|{\sin{\left (\theta \right )}}\right|}\\0&\sin^{2}{\left (\phi \right )} + \cos^{2}{\left (\phi \right )}&0\\\cos{\left (\theta \right )}&0&- r \sin{\left (\theta \right )}\end{array}\right]\]</div>
+
+<p>The two are equivalent after simplification, as seen here:</p><pre class="sourceCode julia">J3_ga * J1 - J2 .|> simplify</pre>
+<div class="well well-sm">
+\[\left[ \begin{array}{rrr}0&0&0\\0&0&0\\0&0&0\end{array}\right]\]</div>
+
+<h5>Example</h5><p>The above examples were done symbolically. Performing the calculuation numerically is quite similar. Using <code>ForwardDiff</code> we can make a gradient function through:</p><pre class="sourceCode julia">using ForwardDiff
+grad(f) = x -> ForwardDiff.gradient(f, x)</pre>
+<pre class="output">
+grad (generic function with 1 method)</pre>
+
+<p>This assumes <code>x</code> is a vector. With this, defining a Jacobian function could be done like:</p><pre class="sourceCode julia">function Jacobian(f, x)
+    n = length(f(x...))
+    grads = [grad(x -> f(x...)[i])(x) for i in 1:n]
+    vcat(grads'...)
+end</pre>
+<pre class="output">
+Jacobian (generic function with 1 method)</pre>
+
+<p>Using the above functions, we can verify the last example at a point:</p><pre class="sourceCode julia">rtp = [1, pi/3, pi/4]
+Jacobian(cylindrical_from_spherical, rtp)</pre>
+<pre class="output">
+3×3 Array{Float64,2}:
+ 0.7071067811865475  0.0                  0.7071067811865475
+ 0.0                 1.0000000000000002   0.0               
+ 0.7071067811865476  0.0                 -0.7071067811865475</pre>
+
+<p>As conmpared to:</p><pre class="sourceCode julia">cartesian_from_spherical(v) = cartesian_from_spherical(v...)
+Jacobian(cylindrical_from_cartesian, cartesian_from_spherical(rtp)) * Jacobian(cartesian_from_spherical, rtp)</pre>
+<pre class="output">
+3×3 Array{Float64,2}:
+ 0.7071067811865474     0.0   0.7071067811865475   
+ 5.551115123125783e-17  1.0   5.551115123125783e-17
+ 0.7071067811865476     0.0  -0.7071067811865475   </pre>
+
+<h5>Example</h5><p>For a change of variable problem, $f:R^n \rightarrow R^n$ and the determinant of the Jacobian quantifies how volumes get modified under the transformation. When this determinant is <em>non</em>zero, then more can be said. The <a href="https://en.wikipedia.org/wiki/Inverse_function_theorem">Inverse Function Theorem</a> states</p><blockquote>
+<p>if  $F$ is a continuously differentiable function from an open set of $R^n$ into $R^n$and the total derivative is invertible at a point $p$ (i.e., the Jacobian determinant of $F$ at $p$ is non-zero), then $F$ is invertible near $p$: that is, an inverse function to $F$ is defined on some neighborhood of $q$, $q=F(p)$. Further, $F^{-1}$ will be continuously differentiable at $q$ with $J_{F^{-1}}(q) = [J_f(p)]^{-1}$, the latter being the matrix inverse. Taking determinants, $\det(J_{F^{-1}}(q)) = 1/\det(J_f(p))$.</p>
+</blockquote><p>Assuming $F^{-1}$ exists, we can verify the last part from the chain rule, in an identical manner to the univariate case, starting with $F^{-1} \circ F$ being the identity, we would have:</p>$$~
+J_{F^{-1}\circ F}(p) = I,
+~$$
+<p>where $I$ is the <em>identity</em> matrix with entry $a_{ij} = 1$ when $i=j$ and $0$ otherwise.</p><p>But the chain rule then says $J_{F^{-1}}(F(p)) J_F(p) = I$. This implies the two matrices are inverses to each other, and using the multiplicative mapping property of the determinant also implies the determinant relationship.</p><p>The theorem is an existential theorem, in that it implies $F^{-1}$ exists, but doesn't indicate how to find it. When we have an inverse though, we can verify the properties implied.</p><p>The transformation examples have inverses indicated. Using one of these we can verify things at <code>rtp</code>, defined in the last example:</p><pre class="sourceCode julia">F(a, b, c)= cartesian_from_spherical(a, b,c)
+F(x) = F(x...)
+F⁻¹(a,b,c) = spherical_from_cartesian(a,b,c)  # F\^-[tab]\^1[tab] to make F⁻¹
+
+p = rtp = [1, pi/3, pi/4]
+q = F(p)
+
+A1 = Jacobian(F, p)
+A2 = Jacobian(F⁻¹, q)
+
+A1 * A2</pre>
+<pre class="output">
+3×3 Array{Float64,2}:
+  0.3535533905932738   0.6123724356957945   0.7071067811865476
+ -1.2247448713915892   0.7071067811865478   0.0               
+  0.35355339059327384  0.6123724356957946  -0.7071067811865475</pre>
+
+<p>Up to round off error, this is the identity matrix. As for the relationship between the determinants:</p><pre class="sourceCode julia">det(A1), 1/det(A2)</pre>
+<pre class="output">
+(-0.7071067811865475, -0.7071067811865472)</pre>
+
+<h2>Questions</h2><h6>Question</h6><h6>Question</h6><h6>Question</h6><h6>Question</h6><h6>Question</h6><h6>Question</h6><h6>Question</h6>
+  </div>
+</div>
+
+</body>
+</html>

@@ -75,17 +75,19 @@ To get the `xs` and `ys` from this, is conceptually easy: just iterate of all th
 
 
 ```
-xs_ys(vs) = Tuple(eltype(vs[1])[vs[i][j] for i in 1:length(vs)] for j in eachindex(first(vs)))
+unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
 ```
+
+The name comes from how the `zip` function in base `Julia` takes two vectors returns a vector of the values paired off. This is the reverse.
 
 We define a few convenience functions, the first allows us to pass the vector of vectors entry by entry, the latter creates the values `f.(ts)` first from a specification of the interval `[a,b]` and the number of points, with a default of 100:
 
 ```
-xs_ys(v,vs...) = xs_ys([v, vs...])
-xs_ys(r::Function, a, b, n=100) = xs_ys(r.(range(a, stop=b, length=n)))
+unzip(v,vs...) = unzip([v, vs...])
+unzip(r::Function, a, b, n=100) = unzip(r.(range(a, stop=b, length=n)))
 ```
 
-It was noted in [vectors](./vectors.html) that the `xs_ys` function
+It was noted in [vectors](./vectors.html) that the `unzip` function
 turns a vector of points (or vectors) into a tuple of vectors
 collecting the $x$ values, the $y$ values, and, if present, the $z$
 values:
@@ -104,8 +106,8 @@ As also mentioned in [vectors](./vectors.html), plotting a vector can be simplif
 
 ```
 function arrow!(plt::Plots.Plot, p, v; kwargs...)
-  length(p) == 2 && return quiver!(plt, xs_ys([p])..., quiver=Tuple(xs_ys([v])); kwargs...)
-  length(p) == 3 && return plot!(plt, xs_ys([p, p+v])...; kwargs...)
+  length(p) == 2 && return quiver!(plt, unzip([p])..., quiver=Tuple(unzip([v])); kwargs...)
+  length(p) == 3 && return plot!(plt, unzip([p, p+v])...; kwargs...)
 end
 arrow!(p, v; kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
 ```
@@ -116,7 +118,7 @@ Here we show the plot of `f` over the values between $0$ and $2\pi$ and also add
 
 ```
 using Plots
-plot(xs_ys(f, 0, 2pi)...)
+plot(unzip(f, 0, 2pi)...)
 arrow!([0,0], f(1))
 ```
 
@@ -126,21 +128,21 @@ The trace of the plot is an ellipse. If we describe the components as $\vec{f}(t
 The plot of $g$ needs 3-dimensions to render. For most plotting backends, the following should work with no differences, save the additional vector is anchored in 3 dimensions now:
 
 ```
-plot(xs_ys(g, 0, 6pi)...)
+plot(unzip(g, 0, 6pi)...)
 arrow!([0,0, 0], g(1))
 ```
 
 Here the graph is a helix; three turns are plotted. If we write $g(t) = \langle x(t), y(t), z(t) \rangle$, as the $x$ and $y$ values trace out a circle, the $z$ value increases. When the graph is viewed from above, as below, we see only $x$ and $y$ components, and the view is circular.
 
 ```
-plot(xs_ys(g, 0, 6pi)..., camera=(0, 90))
+plot(unzip(g, 0, 6pi)..., camera=(0, 90))
 ```
 
 
 The graph of $h$ shows that this function parameterizes a line in space. The line segment for $-2 \leq t \leq 2$ is shown below:
 
 ```
-plot(xs_ys(h, -2, 2)...)
+plot(unzip(h, -2, 2)...)
 ```
 
 
@@ -220,7 +222,7 @@ To visualize this we first define a helper function to draw a circle at point $P
 
 ```
 function circle!(plt, P, R; kwargs...)
-	plot!(xs_ys(t -> P + R*[cos(t), sin(t)], 0, 2pi)...)
+	plot!(unzip(t -> P + R*[cos(t), sin(t)], 0, 2pi)...)
 end
 circle!(P, R; kwargs...) = circle!(Plots.current(), P, R; kwargs...)
 ```
@@ -239,7 +241,7 @@ function spiro(t; r=2, R=5, rho=0.8*r)
     tp(t) = -R/r * t
 
     s(t) = cent(t) + rho * [cos(tp(t)), sin(tp(t))]
-    plot!(xs_ys(s, 0, t, 1000)...)
+    plot!(unzip(s, 0, t, 1000)...)
 
     p
 end
@@ -296,7 +298,7 @@ S, T = 8, 2
 outer(t) = [M * sin(2pi*t/T), M * cos(2pi*t/T), height*(1 +sin(2pi * (t-pi/2)/T))]
 inner(t) = [m * sin(2pi*t/S), m * cos(2pi*t/S), 0]
 f(t) = outer(t) + inner(t)
-plot(xs_ys(f, 0, 8, 1000)...)
+plot(unzip(f, 0, 8, 1000)...)
 ```
 
 ## Limits and continuity
@@ -350,7 +352,7 @@ We can visualize the tangential property through a graph:
 
 ```
 f(t) = [3cos(t), 2sin(t)]
-p = plot(xs_ys(f, 0, 2pi)..., legend=false, aspect_ratio=:equal)
+p = plot(unzip(f, 0, 2pi)..., legend=false, aspect_ratio=:equal)
 for t in [1,2,3]
     arrow!(p, f(t), f'(t))   # add arrow with tail on curve, in direction of derivative
 end
@@ -376,7 +378,7 @@ To plot, we can avail ourselves of the the parametric plot syntax. The following
 plot(vvf..., 0, 2pi)
 ```
 
-The `xs_ys` usage, as was done above, could be used, but it would be  more trouble in this case.
+The `unzip` usage, as was done above, could be used, but it would be  more trouble in this case.
 
 To evaluate the function at a given value, say $t=2$, we can use `subs` with broadcasting to substitute into each component:
 
@@ -438,7 +440,7 @@ x(t) = x0 + v0*t + (1/2)*a*t^2
 using Roots
 t_0 = fzero(t -> x(t)[2], 1/10, 100)  # find when y=0
 
-plot(xs_ys(x, 0, t_0)...)
+plot(unzip(x, 0, t_0)...)
 ```
 
 
@@ -533,15 +535,15 @@ out = DifferentialEquations.solve(prob, reltol=1e-6)
 
 We qualify the `solve` function, as `SymPy` also has a `solve` function. The object `out` holds the answer. This object is callable, in that `out(t)` will return the numerically computed value for the answer to our equation at time point `t`.
 
-To plot the two trajectories, we could use that `out.u` holds the $x$ and $y$ components of the computed trajectory, but more simply, we  call `out` like a function. As we haven't defined `xs_ys` for objects like `out`, we use an anonymous function (the `t -> out(t)` part):
+To plot the two trajectories, we could use that `out.u` holds the $x$ and $y$ components of the computed trajectory, but more simply, we  call `out` like a function. As we haven't defined `unzip` for objects like `out`, we use an anonymous function (the `t -> out(t)` part):
 
 ```
-plt = plot(xs_ys(F, t0, t1)..., legend=false)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+plt = plot(unzip(F, t0, t1)..., legend=false)
+plot!(plt, unzip(t->out(t),  t0, t1)..., linewidth=3)
 
 ## add the bicycle as a line segment at a few times along the path
 for t in range(t0, t1, length=11)
-    plot!(plt, xs_ys([out(t), F(t)])..., linewidth=3)
+    plot!(plt, unzip([out(t), F(t)])..., linewidth=3)
 end
 plt
 ```
@@ -560,8 +562,8 @@ B0 = F(0) - [0, a]  # some initial position for the back
 prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
-plt = plot(xs_ys(F, t0, t1)..., legend=false)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+plt = plot(unzip(F, t0, t1)..., legend=false)
+plot!(plt, unzip(t->out(t),  t0, t1)..., linewidth=3)
 ```
 
 Again, the back wheel moves less than the front.
@@ -578,8 +580,8 @@ B0 = F(0) - [0,a]
 prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
-plt = plot(xs_ys(F, t0, t1)..., legend=false)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+plt = plot(unzip(F, t0, t1)..., legend=false)
+plot!(plt, unzip(t->out(t),  t0, t1)..., linewidth=3)
 ```
 
 The back wheel is moving backwards for part of the above trajectory.
@@ -611,8 +613,8 @@ B0 = F(0) - [0,a]
 prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
-plt = plot(xs_ys(F, t0, t1)..., legend=false, aspect_ratio=:equal)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+plt = plot(unzip(F, t0, t1)..., legend=false, aspect_ratio=:equal)
+plot!(plt, unzip(t->out(t),  t0, t1)..., linewidth=3)
 ```
 
 
@@ -837,7 +839,7 @@ The second law states that the area being swept out during a time duration only 
 ```
 x1(t) = [cos(t), 2 * sin(t)]
 t0, t1, Delta = 1.0, 2.0, 1/10
-plot(xs_ys(x1, 0, pi/2)...)
+plot(unzip(x1, 0, pi/2)...)
 
 arrow!([0,0], x1(t0)); arrow!([0,0], x1(t0 + Delta))
 arrow!(x1(t0), x1(t0+Delta)- x1(t0), linewidth=5)
@@ -1002,7 +1004,7 @@ Tangent(t) = viviani'(t)/norm(viviani'(t))
 Normal(t) = Tangent'(t)/norm(Tangent'(t))
 Binormal(t) = Tangent(t) × Normal(t)
 
-plot(xs_ys(viviani, -2pi, 2pi)..., legend=false, aspect_ratio=:equal)
+plot(unzip(viviani, -2pi, 2pi)..., legend=false, aspect_ratio=:equal)
 t0, t1 = -pi/3, pi/2 + 2pi/5
 r0, r1 = viviani(t0), viviani(t1)
 arrow!(r0, Tangent(t0)); arrow!(r0, Binormal(t0)); arrow!(r0, Normal(t0))
@@ -1240,12 +1242,12 @@ B0 = F(t0) + a*[cos(t), sin(t)]
 prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
-plt = plot(xs_ys(F, t0, t1)..., legend=false, aspect_ratio=:equal, linewidth=3)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., linewidth=3)
+plt = plot(unzip(F, t0, t1)..., legend=false, aspect_ratio=:equal, linewidth=3)
+plot!(plt, unzip(t->out(t),  t0, t1)..., linewidth=3)
 
 t = pi/4
 arrow!(plt, out(t), 2*(F(t) - out(t)))
-plot!(plt, xs_ys([out(t), F(t)])..., linewidth=2)
+plot!(plt, unzip([out(t), F(t)])..., linewidth=2)
 arrow!(plt, F(t), F'(t)/norm(F'(t)))
 Fphat(t) = F'(t)/norm(F'(t))
 arrow!(plt, F(t), -Fphat'(t)/norm(Fphat'(t)))
@@ -1639,18 +1641,18 @@ a = 1
 plot(t -> 0, -2, 2,aspect_ratio=:equal, legend=false)
 plot!(t -> 2a)
 r(t) = [0, a] + a*[cos(t), sin(t)]
-plot!(xs_ys(r, 0, 2pi)...)
+plot!(unzip(r, 0, 2pi)...)
 theta = pi/3
 plot!([0, 2a/tan(theta)], [0, 2a], linestyle=:dash)
 A = [2a*cot(theta), 2a]
 B = 2a*sin(theta)^2 *[ 1/tan(theta),1]
-scatter!(xs_ys([A,B])...)
+scatter!(unzip([A,B])...)
 plot!([B[1],A[1],A[1]], [B[2],B[2],A[2]], linestyle=:dash)
 delta = 0.2
 annotate!([(B[1],B[2]-delta,"B"),(A[1]+delta,A[2]-delta,"A")])
 r(theta) = [2a*cot(theta), 2a*sin(theta)^2 ]
 theta0 = pi/4
-plot!(xs_ys(r, theta0, pi-theta0)..., linewidth=3)
+plot!(unzip(r, theta0, pi-theta0)..., linewidth=3)
 P = r(theta)
 annotate!([(P[1],P[2]-delta, "P")])
 ```
@@ -1747,8 +1749,8 @@ prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
 
-plt = plot(xs_ys(F, t0, t1)..., legend=false, color=:red)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., color=:blue)
+plt = plot(unzip(F, t0, t1)..., legend=false, color=:red)
+plot!(plt, unzip(t->out(t),  t0, t1)..., color=:blue)
 ```
 
 
@@ -1782,8 +1784,8 @@ prob = ODEProblem(bicycle, B0, tspan, p)
 
 out = DifferentialEquations.solve(prob, reltol=1e-6)
 
-plt = plot(xs_ys(F, t0, t1)..., legend=false, color=:blue)
-plot!(plt, xs_ys(t->out(t),  t0, t1)..., color=:red)
+plt = plot(unzip(F, t0, t1)..., legend=false, color=:blue)
+plot!(plt, unzip(t->out(t),  t0, t1)..., color=:red)
 ```
 
 

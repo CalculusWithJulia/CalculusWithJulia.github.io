@@ -1,0 +1,188 @@
+# Vectors
+
+```nocode, noout
+using Plots, LinearAlgebra
+gr()
+```
+
+
+## Vectors
+
+
+In [vectors](../precalc/vectors.html) we introduced the concept of a vector.
+A [vector](https://en.wikipedia.org/wiki/Euclidean_vector) mathematically is a geometric object with two attributes a magnitude and a direction. (The direction is undefined in the case the magnitude is $0$.) Vectors are typically visualized with an arrow, where the anchoring of the arrow is context dependent and is not particular to a given vector.
+
+Vectors and points are related, but distinct. Let's focus on 3 dimensions. Mathematically, the notation for a point is $p=(x,y,z)$ while the notation for a vector is $\hat{v} = \langle x, y, z \rangle$. The $i$th entry in a vector is referenced by a subscript: $\hat{v}_i$.
+The different grouping notation distinguishes the two objects. As another example, the notation $\{x, y, z\}$ indicates a set. Vectors and points may be *identified* by anchoring the vector at the origin. Set's are quite different from both, as the order of their entries is not unique.
+
+In `Julia`, the notation to define a point and a vector would be similar, using square brackets to group like-type values: `[x, y, z]`. The notation `(x,y,z)` would form a [tuple](https://en.wikipedia.org/wiki/Euclidean_vector) which though similar in many respects, do not have the operations associated with a point or a vector defined for them.
+
+The square bracket constructor has some subtleties:
+
+* `[x,y,z]` calls `vect` and creates a 1-dimensional array
+* `[x; y; z]` calls `vcat` to **v**ertically con**cat**enate values together. With simple numbers the two are identical, but not in other cases. (For example, is `A` is a matrix then `[A,A]` is a vector of matrices, `[A;A]` is a matrix combined from the two pieces.
+* `[x y z]`	 calls `hcat` to **h**orizontally con**cat**enate values together. If `x`, `y` are numbers then `[x y]` is *not* a vector, but rather a 2D array with a single row and two columns.
+* finally `[w x; y z]` calls `hvcat` to create a container with two dimensions, like a matrix.
+
+(A vector, mathematically, is a one-dimensional collection of numbers, a matrix a two-dimensional *rectangular* collection of numbers, and an array an $n$-dimensional rectangular-like collection of numbers.)
+
+
+As seen earlier, vectors have some arithmetic operations defined for them. As a typical use of vectors, mathematically, is to collect the $x$, $y$, and  $z$ (in 3D) components together, operations like addition and subtraction operate component wise. With this, addition can be visualized geometrically: put the tail of $\vec{v}$ at the tip of $\vec{u}$ and draw a vector from the tail of $\vec{u}$ to the tip of $\vec{v}$ and you have $\vec{u}+\vec{v}$. This is identical by $\vec{v} + \vec{u}$ as vector addition is commutative. Unless $\vec{u}$ and $\vec{v}$ are parallel or one has $0$ length, the addition will create a vector with a different direction from the two.
+
+Another operation for vectors is *scalar* multiplication. Geometrically this changes the magnitude, but not the direction of a vector, when the *scalar* is positive. Scalar multiplication is defined component wise, like addition so the $i$th component of $c \vec{v}$ is $c$ times the $i$th component of $\vec{v}$. When the scalar is negative, the direction is "reversed."
+
+To illustrate we define two 3D vectors:
+
+```
+u, v = [1, 2, 3], [4, 3, 2]
+```
+
+The sum is component-wise summation:
+
+```
+u + v
+```
+
+For addition, as the components must pair off, the two vectors being added must be the same dimension.
+
+Scalar multiplication by `2`, say, multiplies each entry by `2`:
+
+```
+2 * u
+```
+
+Vectors may be visualized in 2 or 3 dimensions. In 2 dimensions, the `quiver` function may be used. To graph a vector, it must have its tail placed at a point, so two values are needed.
+
+To plot `u=[1,2]` from `p=[0,0]` we have the following usage:
+
+```
+using Plots
+quiver([0],[0], quiver=([1],[2]))
+```
+
+The cumbersome syntax is typical, sadly. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function:
+
+```
+xs_ys(vs) = Tuple(eltype(vs[1])[vs[i][j] for i in 1:length(vs)] for j in eachindex(first(vs)))
+```
+
+This takes a vector of vectors, and returns a tuple containing the `x` values, the `y` values, etc. So if `u=[1,2,3]`, the `xs_ys([u])` becomes `([1],[2],[3])`. And if `v=[4,5,6]`, then `xs_ys([u,v])` becomes `([1,4],[2,5],[3,6])`, etc.
+
+
+With `xy_ys` defined, we can plot a 2-D vector `v` anchored at point `p` through `quiver(xs_ys([p])..., quiver=xs_ys([v]))`.
+
+To illustrate, the following defines 3 vectors (the third through addition), then graphs all three, though in different starting points to emphasize the geometric interpretation of vector addition.
+
+```
+u = [1, 2]
+v = [4, 2]
+w = u + v
+p = [0,0]
+quiver(xs_ys([p])..., quiver=xs_ys([u]))
+quiver!(xs_ys([u])..., quiver=xs_ys([v]))
+quiver!(xs_ys([p])..., quiver=xs_ys([w]))
+```
+
+
+
+Plotting a 3-d vector is not supported in all toolkits with
+`quiver`. A line segment may be substituted and can be produced
+with `plot(xs_ys([p,p+v])...)`. To avoid all these details, we will utilize the following function to *add* a vector to an existing plot. The function requires a point, `p`, and the vector, `v`:
+
+```
+function arrow!(plt::Plots.Plot, p, v; kwargs...)
+  length(p) == 2 && return quiver!(plt, xs_ys([p])..., quiver=xs_ys([v]); kwargs...)
+  length(p) == 3 && return plot!(plt, xs_ys(p, p+v)...; kwargs...)
+end
+arrow!(p,v;kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
+```
+
+With this, the above simplifies to:
+
+```
+plot!()
+arrow!(p, u)
+arrow!(u, v)
+arrow!(p, w)
+```
+##### Example
+
+At [MIT opencourseware](https://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/1.-vectors-and-matrices/part-c-parametric-equations-for-curves/session-21-keplers-second-law/MIT18_02SC_MNotes_k.pdf) a discussion about Kepler's second law can be found. This law states "A planet moves in a plane, and the radius vector (from the sun to the
+planet) sweeps out equal areas in equal times." The first law is "The planet’s orbit in that plane is an ellipse, with the sun at one focus."
+
+The equation of an ellipse in standard form is $x^2/a^2 + y^2/b^2 =
+1$. The parameters $a$ and $b$ are called the semi-major and
+semi-minor axes. The [eccentricity](https://en.wikipedia.org/wiki/Ellipse#Eccentricity) is defined by
+$e=\sqrt{1-(b/a)^2}$.
+
+```
+ImageFile("figures/Ellipse-def0.svg.png", "An ellipse and some [notations](https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Ellipse-def0.svg/500px-Ellipse-def0.svg.png)")
+```
+
+Kepler noted that the motion of the earth around the sun, with the sun centered at the origin will follow an ellipse.
+
+In [math.stackexchange](https://math.stackexchange.com/questions/512989/equation-of-earths-orbit-around-sun-ellipse) we can learn that the *preihelion* is the smallest distance from a planet to the sun, and *aphelion* is the greatest distance. The sun is one of the two foci. For the Earth, the perihelion is 147.1 million km and the aphelion is 152.1 million km. These two distances help identify the location of the sun on the major axis of Earth's elliptical orbit.
+
+
+Earths orbit: https://en.wikipedia.org/wiki/Earth%27s_orbit
+
+
+
+Here is a picture of motion. We have $\vec{r}(t)$ as the position at time $t$ and $\Delta r$ the increment in position over a short time period:
+
+
+```
+r(t) = [cos(t), 2sin(t)]
+ts = range(0, stop=pi/3, length=100)
+plot(xs_ys(r.(ts))..., legend = false)  # plot ellipse
+t0 = pi/6
+t1 = t0 + pi/12
+Delta_r = r(t1) - r(t0)
+
+# visualize
+p = [0,0]
+arrow!(p, r(t0))
+arrow!(p, r(t1))
+arrow!(r(t0), Delta_r)
+```
+
+The area of the triangle, is half the area of the parallelogram, so--if we project into three dimensions:
+
+$$~
+A =  \frac{1}{2} \cdot \| r(t) \times \Delta r(t) \| .
+~$$
+
+The area of the  triangle is *nearly* the area in the ellipse. The ellipsoidal area swept out over a fixed time frame does not depend on the time, so the triangular area over a fixed time delta should be approximately the same. We can see this by comparing:
+
+```
+t0 = pi/6
+delta = pi/12
+t1, t2  = t0 + delta, t0 + 2delta
+r3(t) = [r(t)..., 0] # add dimension to `r`
+norm(r3(t0) × r3(t1)), norm(r3(t1) × r3(t2))
+```
+
+Dividing by $\Delta$ gives that the following should be approximately a constant: $\| r(t) \times r(t + \Delta t)/\Delta t\|$, or in the limit we would have a constant if we had a derivative.
+
+Jumping ahead, assuming `diff` computes the derivative, we verify symbolically that this is the case below, as the result is a constant independent of `t`:
+
+```
+using SymPy
+@vars a t t0 positive=true
+r(t) = [cos(t), a * sin(t), 0]
+rp(t) = diff.(r(t), t)
+simplify(norm(r(t) × rp(t)))
+```
+
+
+
+
+## Questions
+
+##### XXX
+
+##### XXX
+
+##### XXX
+
+##### XXX

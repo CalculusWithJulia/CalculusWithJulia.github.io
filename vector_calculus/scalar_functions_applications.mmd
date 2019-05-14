@@ -34,21 +34,29 @@ The partial derivatives have the geometric view of being the derivative of the u
 
 Consider $f(\vec\gamma_x)$ at a point $(a,b)$. The path has a tangent vector, which has "slope" $\frac{\partial f}{\partial x}$. and in the direction of the $x$ axis, but not the $y$ axis, as does this vector:  $\langle 1, 0, \frac{\partial f}{\partial x} \rangle$. Simlarly, this vector $\langle 0, 1, \frac{\partial f}{\partial y} \rangle$ describes the tangent line to $f(\vec\gamma_y)$ a the point.
 
-```nocode
+```
 f(x,y) = 6 - x^2 -y^2
 f(x)= f(x...)
 
 a,b = 1, -1/2
-γ_x(t) = [a, b] + t*[1,0]
-γ_y(t) = [a, b] + t*[0,1]
-tplane(x,y) = f(a,b) + grad(f)(a,b) ⋅ [x-a, y-b]
+
 
 # draw surface
 xr = 7/4
 xs = ys = range(-xr, xr, length=100)
 surface(xs, ys, f, legend=false)
 
+# visualize tangent plane as 3d polygon
+pt = [a,b]
+tplane(x) = f(pt) + grad(f)(pt) ⋅ (x - [a,b])
+
+pts = [[a-1,b-1], [a+1, b-1], [a+1, b+1], [a-1, b+1], [a-1, b-1]]
+plot!(unzip([[pt..., tplane(pt)] for pt in pts])...)
+
 # plot paths in x and y direction through (a,b)
+γ_x(t) = pt + t*[1,0]
+γ_y(t) = pt + t*[0,1]
+
 plot!(unzip(t -> [γ_x(t)..., (f∘γ_x)(t)], -xr-a, xr-a)..., linewidth=3)
 plot!(unzip(t -> [γ_y(t)..., (f∘γ_y)(t)], -xr-b, xr-b)..., linewidth=3)
 
@@ -65,9 +73,6 @@ scatter!(unzip([pt])...)
 arrow!(pt, [1,0,0], linestyle=:dash)
 arrow!(pt, [0,1,0], linestyle=:dash)
 
-# represent plane as 3d polygon
-pts = [(a-1,b-1), (a+1, b-1), (a+1, b+1), (a-1, b+1), (a-1, b-1)]
-plot!(unzip([[pt..., tplane(pt...)] for pt in pts])...)
 ```
 
 These two vectors will lie in the plane. The normal vector is found by their cross product:
@@ -111,8 +116,8 @@ which is a common form for the equation, though possibly confusing, as $\partial
 
 ```
 function tangent_plane(f, pt)
-fx, fy = ForwardDiff.gradient(f, pt)
-x -> f(x...) + fx * (x[1]-pt[1]) + fy * (x[2]-pt[2])
+  fx, fy = ForwardDiff.gradient(f, pt)
+  x -> f(x...) + fx * (x[1]-pt[1]) + fy * (x[2]-pt[2])
 end
 ```
 
@@ -120,16 +125,104 @@ It isn't so bad, but we need to specialize to the number of dimensions, use inde
 
 ```
 function tangent_plane(f, pt)
-∇f = ForwardDiff.gradient(f, pt) # using a variable ∇f
-x -> f(pt) + ∇f ⋅ (x - pt)
+  ∇f = ForwardDiff.gradient(f, pt) # using a variable ∇f
+  x -> f(pt) + ∇f ⋅ (x - pt)
 end
 ```
 
 This is much more like the compact formula and able to handle higher dimensions without rewriting.
 
 
+### Tangent plane for level curves
 
-## Newton's method to find when $f(x,y)=0$ *and* $g(x,y)$.
+Consider the surface described by $f(x,y,z) = c$, a constant. This is more general than surfaces described by $z = f(x,y)$. The concept of a tangent plne should still be applicable though. Suppose, $\vec{\gamma}(t)$ is a curve in the $x-y-z$ plane, then we have $(f\circ\vec\gamma)(t)$ is a curve on the surface and its derivative is given by the chain rule through: $\nabla{f}(\vec
+gamma(t))\cdot \vec\gamma'(t)$. But this composition is constantly the same value, so the derivative is $0$. This says that $\nabla{f}(\vec\gamma(t))$ is *orthogonal* to $\vec\gamma'(t)$ for any curve. As these tangential vectors to $\vec\gamma$ lie in the tangent plane, the tangent plane can be characterized by haveing $\nabla{f}$ as the normal.
+
+This computation was previously done in two dimensions, and showed the gradient is orthogonal to the contour lines (and points in the direction of greatest ascent). It can be generalized to higher dimensions.
+
+The surface $F(x,y,z) = z - f(x,y) = 0$ has gradient given by $\langle
+\partial{f}/\partial{x}, \partial{f}/\partial{y}\rangle$, and as seen
+above, this vector is normal to the tangent plane, so this
+generalization agrees on the easier case.
+
+
+
+##### Example
+
+Let $z = f(x,y) = \sin(x)\cos(x-y)$. Find an equation for the tangent plane at $(\pi/4, \pi/3)$.
+
+We have many possible forms to express this in, but we will use the functional description:
+
+```
+@vars x y
+vars = [x, y]
+f(x,y) = sin(x) * cos(x-y)
+f(x) = f(x...)
+
+gradf = diff.(f(x,y), vars)
+
+pt = [pi/4, pi/3]
+gradfa = subs.(gradf, x.=>pt[1], y.=>pt[2])
+
+f(pt) + gradfa ⋅ (vars - pt)
+```
+
+
+##### Example
+
+A cylinder $f(x,y,z) = (x-a)^2 + y^2 = (2a)^2$ is intersected with a sphere $g(x,y,z) = x^2 + y^2 + z^2 = a^2$. Let $V$ be the line of intersection. (Viviani's curve). Let $P$ be a point on the curve. Describe the tangent to the curve.
+
+We have the line of intersection will have tangent line  lying in the tangent plane to both surfaces. These two surfaces have normal vectors given by the gradient, or $\vec{n}_1 = \langle 2(x-a), 2y, 0 \rangle$ and $\vec{n}_2 = \langle 2x, 2y, 2z \rangle$. The cross product of these two vectors will lie in both tangent planes, so we have:
+
+$$~
+P + t (\vec{n}_1 \times \vec{n}_2),
+~$$
+
+will describe the tangent.
+
+The curve may be described parametrically by $\vec\gamma(t) = a \langle 1 + \cos(t), \sin(t), 2\sin(t/2) \rangle$. Let's see that the above is correct by verifying that the cross product of the tangent vector computed two ways is $0$:
+
+```
+a = 1
+gamma(t) = a * [1 + cos(t), sin(t), 2sin(t/2) ]
+P = gamma(1/2)
+n1(x,y,z)= [2*(x-a), 2y, 0]
+n2(x,y,z) = [2x,2y,2z]
+n1(x) = n1(x...)
+n2(x) = n2(x...)
+
+t = 1/2
+(n1(gamma(t)) × n2(gamma(t))) × gamma'(t)
+```
+
+
+
+
+
+
+## Linearization
+
+The tangent plane is the best "linear approximation" to a function at a point. "Linear" refers to mathematical properties of the tangent plane, but at a practical level it means easy to compute, as it will involve only multiplication and addition. "Approximation" is useful in that if a bit of error is an acceptable tradeoff for computational ease, the tangent plane may be used in place of the function. In the univariate case, this is known as linearization, and the tradeoff is widely used in the derivation of theoretical relationships, as well as in practice to get reasonable numeric values.
+
+Formally, this is saying:
+
+$$~
+f(\vec{x}) \approx f(\vec{a}) + ∇f(\vec{a} ⋅ (\vec{x} - \vec{a}).
+~$$
+
+The explicit meaning of $\approx$ will be made clear when the generalization of Taylor's theorem is to be stated.
+
+
+##### Example
+
+Strang, Thomas, ...
+
+##### Example
+
+
+
+
+## Newton's method to find when $f(x,y)=0$ *and* $g(x,y)=0$.
 
 Following [Strang](https://ocw.mit.edu/resources/res-18-001-calculus-online-textbook-spring-2005/textbook/MITRES_18_001_strang_13.pdf) Newton's method for a univariate function uses the idea that to find out when $f(x)$ crosses $0$, look at when the tangent line crosses zero. Let $f(x,y):R^2\rightarrow R$ and $g(x,y):R^2 \rightarrow R$ be two scalar functions. Then to find out where $f(x,y)=0$ we look at when the tangent plane crosses $0$, and similarly for $g$. These crossings will be lines, and the intersection of two (non-parallel) lines will be a point-- the next guess.
 
@@ -138,7 +231,8 @@ We have by linearization:
 $$~
 \begin{align}
 f(x,y) &\approx f(x_n, y_n)  + \frac{\partial f}{\partial x}\Delta x + \frac{\partial f}{\partial y}\Delta y \\
-g(x,y) &\approx g(x_n, y_n)  + \frac{\partial g}{\partial x}\Detla x + \frac{\partial g}{\partial y}\Delta y,
+g(x,y) &\approx g(x_n, y_n)  + \frac{\partial g}{\partial x}\Delta x + \frac{\partial g}{\partial y}\Delta y,
+\end{align}
 ~$$
 where $\Delta x = x- x_n$ and $\Delta y = y-y_n$. Setting $f(x,y)=0$ and $g(x,y)=0$, leaves these two linear equations in $\Delta x$ and $\Delta y$:
 
@@ -149,7 +243,7 @@ $$~
 \end{align}
 ~$$
 
-We can use `Julia`'s `\\` operation to solve this, if we express in matrix form.
+We can use `Julia`'s `\` operation to solve this, if we express in matrix form.
 
 
 For example, consider the [bicylinder](https://blogs.scientificamerican.com/roots-of-unity/a-few-of-my-favorite-spaces-the-bicylinder/) the interesection of two perpendicular cylinders of the same radius. If the radius is $1$, we might express these by the functions:
@@ -168,9 +262,9 @@ We can find a value where both are $1/2$ through:
 function newton_step(f, g, xn, yn)
     x = [xn, yn]
     M = [ForwardDiff.gradient(f, x)'; ForwardDiff.gradient(g, x)']
-    b = -[f(xn, yn), g(xn, yn)]
+    b = [f(xn, yn), g(xn, yn)]
     Delta = M \ b
-    x + Delta
+    x - Delta
 end
 
 
@@ -239,6 +333,125 @@ XXX
 
 ## Optimization
 
+
+
+### Gradient descent
+
+An algorithm to identify where a surface is at its minimum is [gradient descent](https://en.wikipedia.org/wiki/Gradient_descent). The gradient points in the direction of the steepest ascent of the surface and the negative gradient the direction of the steepest descent. To move to a minimum then, it make intutitive sense to move in the direction of the negative gradient. How far? That is a different question and one with different answers. Let's formulat the movement first, then discuss how far.
+
+Let $\vec{x}_0$, $\vec{x}_1$, \dots, $\vec{x}_n$ be the position of the algorithm for $n$ steps starting from an initial point $\vec{x}_0$. The difference between these points is given by:
+
+$$~
+\vec{x}_{n+1} = \vec{x}_n - \gamma \nabla{f}(\vec{x}_n),
+~$$
+
+where $\gamma$ is some scaling factor for the gradient. The above quantifies the idea: to go from $\vec{x}_n$ to $\vec{x}_{n+1}$, move along $-\nabla{f}$ by a certain amount.
+
+Let $\Delta_x =\vec{x}_{n}- \vec{x}_{n-1}$ and $\Delta_y =  \nabla{f}(\vec{x}_{n}) -  \nabla{f}(\vec{x}_{n-1})$ A variant of the Barzilai-Borwein method is to take $\gamma_n = | \Delta_x \cdot \Delta_y / \Delta_y \cdot \Delta_y$.
+
+To illustrate, take $f(x,y) = -(x^2 + y^2) \cdot e^{-(2x^2 + y^2)}$ and a starting point $\langle 1, 1 \rangle$. We have, starting with $\gamma_0 = 1$ $5$ steps taken as follows:
+
+```
+f(x,y) = -exp(-((x-1)^2 + 2(y-1/2)^2))
+f(x) = f(x...)
+
+xs = [[0.0, 0.0]] # we store a vector
+gammas = [1.0]
+
+for n in 1:5
+    xn = xs[end]
+    gamma = gammas[end]
+    xn1 = xn - gamma * grad(f)(xn)
+    dx, dy = xn1 - xn, grad(f)(xn1) - grad(f)(xn)
+    gamman1 = abs( (dx ⋅ dy) / (dy ⋅ dy) )
+
+    push!(xs, xn1)
+    push!(gammas, gamman1)
+end
+
+[(x, f(x)) for x in xs]
+```
+
+We now visualize, using the `Contour` package to draw the contour lines in the $x-y$ plane:
+
+```
+import Contour: contours, levels, level, lines, coordinates
+
+function surface_contour(xs, ys, f; offset=0)
+  p = surface(xs, ys, f, legend=false, fillalpha=0.5)
+
+  ## we add to the graphic p, then plot
+  zs = [f(x,y) for x in xs, y in ys]  # reverse order for use with Contour package
+  for cl in levels(contours(xs, ys, zs))
+    lvl = level(cl) # the z-value of this contour level
+    for line in lines(cl)
+        _xs, _ys = coordinates(line) # coordinates of this line segment
+        _zs = offset * _xs
+        plot!(p, _xs, _ys, _zs, alpha=0.5)        # add curve on x-y plane
+    end
+  end
+  p
+end
+
+
+offset = 0
+us = vs = range(-1, 2, length=100)
+surface_contour(vs, vs, f, offset=offset)
+pts = [[pt..., offset] for pt in xs]
+scatter!(unzip(pts)...)
+plot!(unzip(pts)..., linewidth=3)
+```
+
+
+### Newton's method for minimization
+
+
+A variant of Newton's method can be used to minimize a function $f:R^2 \rightarrow R$. We look for points where both partial derivatives of $f$ vanish. Let $g(x,y) = \partial f/\partial x(x,y)$ and $h(x,y) = \partial f/\partial y(x,y)$. Then applying Newton's method, as above to solve simultaneously for when $g=0$ and $h=0$, we considerd this matrix:
+
+$$~
+M = [\nabla{g}'; \nabla{h}'],
+~$$
+
+and had a step expressible in terms of the inverse of $M$ as $M^{-1} [g; h]$. In terms of the function $f$, this step is $H^{-1}\nabla{f}$, where $H$ is the Hessian matrix. [Newton](https://en.wikipedia.org/wiki/Newton%27s_method_in_optimization#Higher_dimensions)'s method then becomes:
+
+$$~
+\vec{x}_{n+1} = \vec{x}_n - [H_f(\vec{x}_n]^{-1} \nabla(f)(\vec{x}_n).
+~$$
+
+The Wikipedia page states where applicable, Newton's method converges much faster towards a local maximum or minimum than gradient descent. We can see it implemented below:
+
+```
+f(x,y) = -exp(-((x-1)^2 + 2(y-1/2)^2))
+f(x) = f(x...)
+
+
+xs = [[0.8, 0.8]] # we store a vector
+gammas = [1.0]
+
+for n in 1:5
+    xn = xs[end]
+	H, gradf = ForwardDiff.hessian(f, xn), ForwardDiff.gradient(f, xn)
+    xn1 = xn -  H \ gradf  # computes H⁻¹ ∇f
+
+    push!(xs, xn1)
+end
+
+[(x, f(x)) for x in xs]
+```
+
+As before, we can visualize the algorithm with:
+
+```
+offset = 0
+us = vs = range(0, 2, length=100)
+surface_contour(vs, vs, f, offset=offset)
+pts = [[pt..., offset] for pt in xs]
+scatter!(unzip(pts)...)
+plot!(unzip(pts)...)
+```
+
+Newton's method depends on the initial choice of $\vec{x}_0$. In this example, the algorithm will head to infinity if not started near the minimum, as the gradient has a limit of $\vec{0}$ as $\vec{x}$ gets large.
+
 ## Constrained optimization, LaGrange multipliers
 
 ## Taylor's theorem
@@ -276,9 +489,9 @@ $$~
 
 Taylor's theorem then becomes:
 
-If $f: R^n \rightarrow R$ is sufficiently smooth ($C^{k+1}) on an open convex set $S$ about $\vec{a}$ then if $\vec{a}$ and $\vec{a}+\vec{h}$ are in $S$,
+If $f: R^n \rightarrow R$ is sufficiently smooth ($C^{k+1}$) on an open convex set $S$ about $\vec{a}$ then if $\vec{a}$ and $\vec{a}+\vec{h}$ are in $S$,
 $$~
-f(\vec{a} + \vec{h}) = \sum_{|\alpha| \leq k}\frac{\partial^\alpha f}(\vec{a})}{\alpha!}\vec{h}^\alpha + R_{\vec{a},k}(\vec{h}),
+f(\vec{a} + \vec{h}) = \sum_{|\alpha| \leq k}\frac{\partial^\alpha f(\vec{a})}{\alpha!}\vec{h}^\alpha + R_{\vec{a},k}(\vec{h}),
 ~$$
 where $R_{\vec{a},k} = \sum_{|\alpha|=k+1}\partial^\alpha f(\vec{a} + c\vec{h})\frac{\vec{h}^\alpha}{\alpha!}$ for some $c$ in $(0,1)$.
 
@@ -288,26 +501,26 @@ The elegant notation masks what can be complicated expressions. Consider the sim
 
 $$~
 f(x + dx, y+dy) = f(x, y) + \frac{\partial f}{\partial x} dx + \frac{\partial f}{\partial y} dy
-+ \frac{partial^2 f}{\partial x^2} \frac{dx^2}{2} +  2\frac{partial^2 f}{\partial x\partial y} \frac{dx dy}{2} +
-+ \frac{partial^2 f}{\partial y^2} \frac{dy^2}{2} + R_{\langle x, y \rangle, k}(\langle dx, dy \rangle).
++ \frac{\partial^2 f}{\partial x^2} \frac{dx^2}{2} +  2\frac{\partial^2 f}{\partial x\partial y} \frac{dx dy}{2} +
++ \frac{\partial^2 f}{\partial y^2} \frac{dy^2}{2} + R_{\langle x, y \rangle, k}(\langle dx, dy \rangle).
 ~$$
 
-Using $\nabla$ and $H$ for the hessian, this can be expressed as:
+Using $\nabla$ and $H$ for the Hessian and $\vec{x} = \langle x, y \rangle$ and $d\vec{x} = \langle dx, dy \rangle$, this can be expressed as:
 
 $$~
-f(x + dx, y + dy) = f(x,y) + \nabla{f} \cdot \langle dx, dy \rangle + \langle dx, dy \rangle^t H \langle dx, dy \rangle +R_{\langle x, y \rangle, k}(\langle dx, dy \rangle).
+f(\vec{x} + d\vec{x}) = f(\vec{x}) + \nabla{f} \cdot d\vec{x} +  d\vec{x} \cdot (H d\vec{x}) +R_{\vec{x}, k}d\vec{x}.
 ~$$
 
 As for $R$, the full term involves terms for $\alpha = (3,0), (2,1), (1,2)$, and $(0,3)$. Using $\vec{a} = \langle x, y\rangle$ and $\vec{h}=\langle dx, dy\rangle$:
 
 $$~
-\frac{\partial^3 f(\vec{a}+c\vec{h}}{\partial x^3} \frac{dx^3}{3!}+
-\frac{\partial^3 f(\vec{a}+c\vec{h}}{\partial x^2\partial y} \frac{dx^2 dy}{2!1!} +
-\frac{\partial^3 f(\vec{a}+c\vec{h}}{\partial x\partial y^2} \frac{dxdy^2}{1!2!} +
-\frac{\partial^3 f(\vec{a}+c\vec{h}}{\partial y^3} \frac{dy^3}{3!}.
+\frac{\partial^3 f(\vec{a}+c\vec{h})}{\partial x^3} \frac{dx^3}{3!}+
+\frac{\partial^3 f(\vec{a}+c\vec{h})}{\partial x^2\partial y} \frac{dx^2 dy}{2!1!} +
+\frac{\partial^3 f(\vec{a}+c\vec{h})}{\partial x\partial y^2} \frac{dxdy^2}{1!2!} +
+\frac{\partial^3 f(\vec{a}+c\vec{h})}{\partial y^3} \frac{dy^3}{3!}.
 ~$$
 
-The exact answer is usually not as useful as the bound: $|R| \leq M/(k+1)! \|\vec{h}\|^{k+1}$.
+The exact answer is usually not as useful as the bound: $|R| \leq M/(k+1)! \|\vec{h}\|^{k+1}$, for some finite constant $M$.
 
 
 ##### Example

@@ -1,4 +1,7 @@
-# Qeuestions
+We use homegrown package `WeavePynb` to turn *.mmd and *.jl files into *.md and then *.html
+
+
+# Questions
 
 - Questions are headed by ##
 
@@ -21,15 +24,10 @@ Use this
 asdfasdfasdf
 ```
 
-# pyplot
+# Plots
 
-use
+use Plots
 
 ```
 plot(...)
-gcf()
 ```
-
-
-
-

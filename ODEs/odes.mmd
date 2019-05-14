@@ -222,7 +222,7 @@ $$~
 If $h(0) = h_0 = V(0)/A$, we can solve for $C = 2\sqrt{h_0}$, or
 
 $$~
-h(t) = \sqrt{h_0} -\frac{1}{2}\frac{a}{A}\sqrt{2g} t.
+\sqrt{h(t)} = \sqrt{h_0} -\frac{1}{2}\frac{a}{A}\sqrt{2g} t.
 ~$$
 
 
@@ -361,8 +361,9 @@ and otherwise is trapped in between, as expected.
 Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
 
 ```
+rhs(x) = x.rhs        # convenience to extract right hand side of an equation
 eq = rhs(out)    # just the right hand side
-C1 = free_symbols(eq)[2]  # there are three, this is second by inspection
+C1 = first(setdiff(free_symbols(eq), (x,a))) # fish out constant
 c1 = solve(eq(x=>0) - 1//2, C1)
 ```
 
@@ -372,11 +373,11 @@ And we plug in with:
 eq(C1 => c1[1])
 ```
 
-That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are independent variable (`x`) and tuples of conditions of the form `(SymFunction, x0, y0)`:
+That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are the function (`u(x)`) or the independent variable (`x`) and tuples of conditions of the form `(SymFunction, x0, y0)` to the `ics` argument:
 
 ```
 x0, y0 = 0, 1//2
-dsolve(eqn, x, (u, x0, y0))
+dsolve(eqn, u(x), ics=(u, x0, y0))
 ```
 
 ##### Example: Hooke's law
@@ -405,7 +406,7 @@ conditions on the function and its derivative (expressed through
 
 ```
 @vars a positive=true
-dsolve(eqn, x, (u, 0, -a), (u', 0, 0))
+dsolve(eqn, x, ics = ((u, 0, -a), (u', 0, 0)))
 ```
 
 
@@ -432,7 +433,7 @@ dsolve(eqn)
 That long error message can be summarized: no easy answer is forthcoming for this equation. In general, for the first-order initial value problem characterized by $y'(x) = F(y,x)$, there are conditions ([Peano](http://tinyurl.com/h663wba) and [Picard-Lindelof](http://tinyurl.com/3rbde5e)) that can guarantee the existence (and uniqueness) of equation locally, but there may not be an accompanying method to actually find it. This particular problem has a solution, but it can not be written in terms of elementary functions.
 
 However, as [Huygens](https://en.wikipedia.org/wiki/Christiaan_Huygens) first noted, if the angles involved are small, then we approximate the solution through the linearization $\sin(\theta(t)) \approx \theta(t)$. The resulting equation for an approximate answer is just that of Hooke:
-	
+
 
 $$~
 \theta''(t) + \frac{g}{l}\theta(t) = 0
@@ -444,7 +445,7 @@ If we pull the bob back an angle $a$ and release it then the initial conditions 
 
 ```
 eqn = u''(x) + g/l * u(x)
-dsolve(eqn, x, (u, 0, a), (u', 0, 0))
+dsolve(eqn, x, ics=((u, 0, a), (u', 0, 0)))
 ```
 
 
@@ -552,8 +553,8 @@ Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(
 @vars x0 y0 v0 alpha g real=true
 @vars x y t
 u = SymFunction("u")
-a1 = dsolve(u''(t) + 0, t, (u, 0, x0), (u', 0, v0 * cos(alpha)))
-a2 = dsolve(u''(t) - g, t, (u, 0, y0), (u', 0, v0 * sin(alpha)))
+a1 = dsolve(u''(t) + 0, t, ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
+a2 = dsolve(u''(t) - g, t, ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
 ts = solve(x - rhs(a1), t)[1]
 y = simplify(rhs(a2)(t => ts))
 ```
@@ -576,8 +577,8 @@ We now attempt to solve these:
 ```
 gamma = symbols("gamma")
 u = SymFunction("u")
-a1 = dsolve(u''(t) + gamma * u'(t),     t, (u, 0, x0), (u', 0, v0 * cos(alpha)))
-a2 = dsolve(u''(t) + gamma * u'(t) + g, t, (u, 0, y0), (u', 0, v0 * sin(alpha)))
+a1 = dsolve(u''(t) + gamma * u'(t),     t, ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
+a2 = dsolve(u''(t) + gamma * u'(t) + g, t, ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
 ts = solve(x - rhs(a1), t)[1]
 y = simplify(rhs(a2)(t => ts))
 ```
@@ -638,7 +639,7 @@ p
 ```
 
 Such solutions are called [integral
-curves](https://en.wikipedia.org/wiki/Integral_curve). 
+curves](https://en.wikipedia.org/wiki/Integral_curve).
 These graphs illustrate the fact that the slope field is tangent to the graph of any
 integral curve.
 
@@ -698,7 +699,7 @@ What is $y(3/2)$?
 ```
 u = SymFunction("u")
 x = symbols("x")
-out = dsolve(u'(x) - u(x)^2, x, (u, 1, 1))
+out = dsolve(u'(x) - u(x)^2, x, ics=(u, 1, 1))
 val = N(rhs(out(3/2)))
 numericq(val)
 ```
@@ -716,14 +717,14 @@ Use your answer to find $y(1)$.
 
 ```
 eqn = u'(x) - (1 + x^2 + u(x)^2 + x^2 * u(x)^2)
-out = dsolve(eqn, x, (u, 0, 1))
+out = dsolve(eqn, x, ics=(u, 0, 1))
 val = N(rhs(out)(1))
 numericq(val)
 ```
 
 ##### Question
 
-A population is modeled by $y(x)$. The rate of population growth is generally proportional to the population ($k y(x)$), but as the population gets large, the rate is curtailed $(1 - y(x)/M)$. 
+A population is modeled by $y(x)$. The rate of population growth is generally proportional to the population ($k y(x)$), but as the population gets large, the rate is curtailed $(1 - y(x)/M)$.
 
 Solve the initial value problem
 
@@ -736,7 +737,7 @@ when $k=1$, $M=100$, and $y(0) = 20$. Find the value of $y(5)$.
 ```
 k, M = 1, 100
 eqn = u'(x) - k * u(x) * (1 - u(x)/M)
-out = dsolve(eqn, x, (u, 0, 20))
+out = dsolve(eqn, x, ics=(u, 0, 20))
 val = N(rhs(out)(5))
 numericq(val)
 ```
@@ -754,7 +755,7 @@ Find the value of the solution at $t=2\pi$.
 
 ```
 eqn = u'(x) - (sin(x) - u(x)/x)
-out = dsolve(eqn, x, (u, PI, 1))
+out = dsolve(eqn, x, ics=(u, PI, 1))
 val = N(rhs(out(2PI)))
 numericq(val)
 ```
@@ -772,7 +773,7 @@ Find $u(5)$ using `SymPy`.
 
 ```
 eqn = u'(x) - exp(-x)*u(x)
-out = dsolve(eqn, x, (u, 0, 1))
+out = dsolve(eqn, x, ics=(u, 0, 1))
 val = N(rhs(out)(5))
 numericq(val)
 ```
@@ -791,7 +792,7 @@ can be solved with `SymPy`. What is the value of $c(5)$?
 u = SymFunction("u")
 x = symbols("x")
 eqn = diff(x^2*u'(x), x)
-out = dsolve(eqn, x, (u, 1, 2), (u, 10, 1)) |> rhs
+out = dsolve(eqn, x, ics=((u, 1, 2), (u, 10, 1))) |> rhs
 out(5)  # 10/9
 choices = [L"10/9", L"3/2", L"9/10", L"8/9"]
 ans = 1

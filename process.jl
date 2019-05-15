@@ -7,8 +7,8 @@ mdhtml(fname) = markdownToHTML(fname, BRAND_HREF="toc.html", BRAND_NAME="Calculu
 
 ## process top-level files
 markdownToHTML("toc.md")
-cp("toc.md", "README.md", force=true)
-cp("toc.html", "index.html", force=true)
+cp("toc.md", "README.md", remove_destination=true)
+cp("toc.html", "index.html", remove_destination=true)
 
 
 mdhtml("getting-started-with-julia.md")
@@ -54,3 +54,4 @@ mdhtml("bibliography.md")
 ## ## cd("vector_calculus") do
 ## ##     include("process.jl")
 ## ## end
+

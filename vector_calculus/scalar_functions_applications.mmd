@@ -34,6 +34,38 @@ The partial derivatives have the geometric view of being the derivative of the u
 
 Consider $f(\vec\gamma_x)$ at a point $(a,b)$. The path has a tangent vector, which has "slope" $\frac{\partial f}{\partial x}$. and in the direction of the $x$ axis, but not the $y$ axis, as does this vector:  $\langle 1, 0, \frac{\partial f}{\partial x} \rangle$. Simlarly, this vector $\langle 0, 1, \frac{\partial f}{\partial y} \rangle$ describes the tangent line to $f(\vec\gamma_y)$ a the point.
 
+
+These two vectors will lie in the plane. The normal vector is found by their cross product:
+
+```
+using SymPy
+@vars f_x f_y
+n = [1, 0, f_x] × [0, 1, f_y]
+```
+
+Let $\vec{x} = \langle a, b, f(a,b)$. The tangent plane at $\vec{x}$ then is described by all vectors $\vec{v}$ with $\vec{n}\cdot(\vec{v} - \vec{x})  = 0$. Using $\vec{v} = \langle u,v,w\rangle$, we have:
+
+$$~
+[-\frac{\partial f}{\partial x}, -\frac{\partial f}{\partial y}, 1] \cdot [x-a, y-b, z - f(a,b)] = 0,
+~$$
+
+or,
+
+$$~
+z = f(a,b) + \frac{\partial f}{\partial x} (x-a) + \frac{\partial f}{\partial y} (y-b),
+~$$
+
+which is more compactly expressed as
+
+$$~
+z = f(a,b) + \nabla(f) \cdot \langle x-a, y-b \rangle.
+~$$
+
+This form would then generalize to scalar functions from $R^n \rightarrow R$. This is consistent with the definition of $f$ being differentiable, where $\grad{f}$ plays the role of the slope in the formulas.
+
+
+The following figure illustrates the above for the function $f(x,y) = 6 - x^2 - y^2$:
+
 ```
 f(x,y) = 6 - x^2 -y^2
 f(x)= f(x...)
@@ -74,36 +106,6 @@ arrow!(pt, [1,0,0], linestyle=:dash)
 arrow!(pt, [0,1,0], linestyle=:dash)
 
 ```
-
-These two vectors will lie in the plane. The normal vector is found by their cross product:
-
-```
-using SymPy
-@vars f_x f_y
-n = [1, 0, f_x] × [0, 1, f_y]
-```
-
-Let $\vec{x} = \langle a, b, f(a,b)$. The tangent plane at $\vec{x}$ then is described by all vectors $\vec{v}$ with $\vec{n}\cdot(\vec{v} - \vec{x})  = 0$. Using $\vec{v} = \langle u,v,w\rangle$, we have:
-
-$$~
-[-\frac{\partial f}{\partial x}, -\frac{\partial f}{\partial y}, 1] \cdot [x-a, y-b, z - f(a,b)] = 0,
-~$$
-
-or,
-
-$$~
-z = f(a,b) + \frac{\partial f}{\partial x} (x-a) + \frac{\partial f}{\partial y} (y-b),
-~$$
-
-which is more compactly expressed as
-
-$$~
-z = f(a,b) + \nabla(f) \cdot \langle x-a, y-b \rangle.
-~$$
-
-This form would then generalize to scalar functions from $R^n \rightarrow R$. This is consistent with the definition of $f$ being differentiable, where $\grad{f}$ plays the role of the slope in the formulas.
-
-
 #### Alternate forms
 
 The equation for the tangent plane is often expressed in a more explicit form. For $n=2$, if we set $dx = x-a$ and $dy=y-a$, then the equation for the plane becomes:
@@ -135,8 +137,7 @@ This is much more like the compact formula and able to handle higher dimensions 
 
 ### Tangent plane for level curves
 
-Consider the surface described by $f(x,y,z) = c$, a constant. This is more general than surfaces described by $z = f(x,y)$. The concept of a tangent plne should still be applicable though. Suppose, $\vec{\gamma}(t)$ is a curve in the $x-y-z$ plane, then we have $(f\circ\vec\gamma)(t)$ is a curve on the surface and its derivative is given by the chain rule through: $\nabla{f}(\vec
-gamma(t))\cdot \vec\gamma'(t)$. But this composition is constantly the same value, so the derivative is $0$. This says that $\nabla{f}(\vec\gamma(t))$ is *orthogonal* to $\vec\gamma'(t)$ for any curve. As these tangential vectors to $\vec\gamma$ lie in the tangent plane, the tangent plane can be characterized by haveing $\nabla{f}$ as the normal.
+Consider the surface described by $f(x,y,z) = c$, a constant. This is more general than surfaces described by $z = f(x,y)$. The concept of a tangent plne should still be applicable though. Suppose, $\vec{\gamma}(t)$ is a curve in the $x-y-z$ plane, then we have $(f\circ\vec\gamma)(t)$ is a curve on the surface and its derivative is given by the chain rule through: $\nabla{f}(\vec\gamma(t))\cdot \vec\gamma'(t)$. But this composition is constantly the same value, so the derivative is $0$. This says that $\nabla{f}(\vec\gamma(t))$ is *orthogonal* to $\vec\gamma'(t)$ for any curve. As these tangential vectors to $\vec\gamma$ lie in the tangent plane, the tangent plane can be characterized by haveing $\nabla{f}$ as the normal.
 
 This computation was previously done in two dimensions, and showed the gradient is orthogonal to the contour lines (and points in the direction of greatest ascent). It can be generalized to higher dimensions.
 
@@ -161,7 +162,7 @@ f(x) = f(x...)
 
 gradf = diff.(f(x,y), vars)
 
-pt = [pi/4, pi/3]
+pt = [PI/4, PI/3]
 gradfa = subs.(gradf, x.=>pt[1], y.=>pt[2])
 
 f(pt) + gradfa ⋅ (vars - pt)
@@ -222,9 +223,7 @@ Strang, Thomas, ...
 
 
 
-## Newton's method to find when $f(x,y)=0$ *and* $g(x,y)=0$.
 
-Following [Strang](https://ocw.mit.edu/resources/res-18-001-calculus-online-textbook-spring-2005/textbook/MITRES_18_001_strang_13.pdf) Newton's method for a univariate function uses the idea that to find out when $f(x)$ crosses $0$, look at when the tangent line crosses zero. Let $f(x,y):R^2\rightarrow R$ and $g(x,y):R^2 \rightarrow R$ be two scalar functions. Then to find out where $f(x,y)=0$ we look at when the tangent plane crosses $0$, and similarly for $g$. These crossings will be lines, and the intersection of two (non-parallel) lines will be a point-- the next guess.
 
 We have by linearization:
 
@@ -333,6 +332,10 @@ XXX
 
 ## Optimization
 
+
+Generalizations of Bolazano, Extreme value theorem
+
+first/second derivative test
 
 
 ### Gradient descent
@@ -452,6 +455,11 @@ plot!(unzip(pts)...)
 
 Newton's method depends on the initial choice of $\vec{x}_0$. In this example, the algorithm will head to infinity if not started near the minimum, as the gradient has a limit of $\vec{0}$ as $\vec{x}$ gets large.
 
+
+### Using `Optim.jl` for optimization
+
+
+
 ## Constrained optimization, LaGrange multipliers
 
 ## Taylor's theorem
@@ -524,14 +532,6 @@ The exact answer is usually not as useful as the bound: $|R| \leq M/(k+1)! \|\ve
 
 
 ##### Example
-
-Newton's method to find a minimum ...
-
-
-
-
-
-## Newton's method
 
 
 

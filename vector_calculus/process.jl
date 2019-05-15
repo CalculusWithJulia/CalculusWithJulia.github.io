@@ -13,9 +13,9 @@ fnames = ["polar_coordinates",
           "vector_valued_functions",
           "scalar_functions",
           "scalar_function_applications",
-          "vector_fields"
 #          "optimization",
 #          "lagrange_multipliers",
+          "vector_fields"
 #          "double_integrals",
 #          "integral_polar_coordinates",
 #          "triple_integrals",
@@ -25,7 +25,14 @@ fnames = ["polar_coordinates",
 #          "integral_theorems"
 ]
 
-[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")g;markdownToHTML("$nm.md")) for nm in fnames]
+function process_file(nm)
+    include("$nm.jl")
+    mmd_to_md("$nm.mmd")
+    markdownToHTML("$nm.md")
+    markdownToHTML("$nm.md")
+end
+
+process_files() = [process_file(nm) for nm in fnames]
 
 
 

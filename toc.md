@@ -188,13 +188,29 @@ Ordinary differential equations are an application of integration and the fundam
 
 Univariate functions take a single number as an input and return a number as the output. Notationally, we write $f: R \rightarrow R$. More generally, a function might have several input variables and might return several output variables, notationally $f: R^n \rightarrow R^m$, for positive, integer values of $n$ and $m$. Special cases are when $n=1$ (a space curve) or when $m=1$ (a scalar-valued function). Many of the concepts of calculus for univariate functions carry over, with suitable modifications.
 
+
+Polar coordinates are an often useful alternative to describing location in the $x-y$ plane.
+
 - [Polar Coordinates](vector_calc/polar_coordinates.html)
+
+The calculus of functions involving more than $1$ variable is greatly simplified by the introduction of vectors and matrices. These objects, and their associated properties, allow many of the concepts of calculus of a single variable to be carried over.
 
 - [Vectors](vector_calc/vectors.html)
 
+In general we will consider multivariable functions from $R^n$ into $R^m$ (functions of $n$ variables that return $m$ different values), but it is helpful to specialize to two cases first. These are vector valued functions ($f: R \righarrow R^n$) and scalar functions ($f:R^n \rightarrow R$).
+
 - [Vector-valued functions](vector_calc/vector_valued_functions.html)
 
-- XXX
+- [Scalar functions and their derivatives](vector_calc/scalar_functions.html)
+
+
+We discuss applications of the derivative for scalar functions. These include linearization, optimization, and constrained optimization.
+
+- [Applications for scalar functions](vector_calc/scalar_functions_applications.html)
+
+The derivative of a mulitvariable function is discussed here. We will see that with the proper notation, many formulas from single variable calculus will hold with slight modifications.
+
+- [Vector fields](vector_calc/scalar_functions_applications.html)
 
 ## Bibliography
 

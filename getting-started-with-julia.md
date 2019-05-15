@@ -4,13 +4,13 @@ Julia is a freely available open-source programming language aimed at technical 
 
 As it is open source, indeed with a liberal MIT license, it can be
 installed for free on many types of computers (though not phones or
-tablets). 
+tablets).
 
 
 We recommend taking advantage of
 [JuliaBox](http://www.juliabox.org), which  provides a web-based interface to `Julia`
 built around `Jupyter`, a wildly succesful platform for interacting
-with different open-source software programs. For JuliaBox, a Google account is needed. 
+with different open-source software programs. For JuliaBox, a Google account is needed.
 
 
 ### Installing Julia locally
@@ -73,6 +73,7 @@ interface can be installed relatively easily by following these steps:
 * Run these commands to install two packages:
 
 ```verbatim
+using Pkg     # loads a built in package for subsequent use
 Pkg.update()
 Pkg.add("PyCall")
 Pkg.add("IJulia")

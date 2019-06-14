@@ -8,17 +8,10 @@ mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus w
 
 
 
-fnames = ["polar_coordinates",
-          "vectors",
-          "vector_valued_functions",
-          "scalar_functions",
-          "scalar_function_applications",
-#          "optimization",
-#          "lagrange_multipliers",
-          "vector_fields"
-#          "double_integrals",
-#          "integral_polar_coordinates",
-#          "triple_integrals",
+fnames = [
+          "double_triple_integrals",
+
+
 #          "parameterized_surfaces",
 #          "surface_integrals",
 #          "line_integrals",

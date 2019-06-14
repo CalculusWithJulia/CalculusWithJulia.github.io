@@ -191,26 +191,44 @@ Univariate functions take a single number as an input and return a number as the
 
 Polar coordinates are an often useful alternative to describing location in the $x-y$ plane.
 
-- [Polar Coordinates](vector_calc/polar_coordinates.html)
+- [Polar Coordinates](differentiable_vector_calculus/polar_coordinates.html)
 
 The calculus of functions involving more than $1$ variable is greatly simplified by the introduction of vectors and matrices. These objects, and their associated properties, allow many of the concepts of calculus of a single variable to be carried over.
 
-- [Vectors](vector_calc/vectors.html)
+- [Vectors](differentiable_vector_calculus/vectors.html)
 
 In general we will consider multivariable functions from $R^n$ into $R^m$ (functions of $n$ variables that return $m$ different values), but it is helpful to specialize to two cases first. These are vector valued functions ($f: R \righarrow R^n$) and scalar functions ($f:R^n \rightarrow R$).
 
-- [Vector-valued functions](vector_calc/vector_valued_functions.html)
+- [Vector-valued functions](differentiable_vector_calculus/vector_valued_functions.html)
 
-- [Scalar functions and their derivatives](vector_calc/scalar_functions.html)
+- [Scalar functions and their derivatives](differentiable_vector_calculus/scalar_functions.html)
 
 
 We discuss applications of the derivative for scalar functions. These include linearization, optimization, and constrained optimization.
 
-- [Applications for scalar functions](vector_calc/scalar_functions_applications.html)
+- [Applications for scalar functions](differentiable_vector_calculus/scalar_functions_applications.html)
 
 The derivative of a mulitvariable function is discussed here. We will see that with the proper notation, many formulas from single variable calculus will hold with slight modifications.
 
-- [Vector fields](vector_calc/scalar_functions_applications.html)
+- [Vector fields](differentiable_vector_calculus/scalar_functions_applications.html)
+
+----
+
+Integral vector calculus begins with a generalization of integration to compute area to integration to compute volume (and its generalization to higher dimensions). Then continues, as the concept lends itself to integration over curves and surfaces.
+
+We begin with the generalization of the Riemann integral to compute area to the computation of volume and its higher dimensional interpretations.
+
+- [Double and triple integrals](integral_vector_calculus/double_triple_integrals.html")
+
+
+XXX integration along paths
+
+
+XXX integration over surfaces
+
+
+
+
 
 ## Bibliography
 

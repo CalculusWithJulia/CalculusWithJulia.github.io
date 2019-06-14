@@ -8,7 +8,7 @@
 Calcul Diferentiel
 [link](http://gallica.bnf.fr/ark:/12148/bpt6k90196z/f16.image)
 
-* 
+*
 Analyse des infiniment petits, pour l'intelligence des lignes courbes
 by L'Hospital, marquis de, 1661-1704
 
@@ -33,6 +33,9 @@ http://www.cds.caltech.edu/~marsden/volume/Calculus/
 
 * David Guichard (also Neal Koblitz)
 http://www.whitman.edu/mathematics/calculus/
+
+* Open Stax
+https://math.libretexts.org/Bookshelves/Calculus/Book%3A_Calculus_(OpenStax)
 
 * Joyner Differential Calculus with Sage based on Granville's text
 http://wdjoyner.com/teach/calc1-sage/

@@ -31,33 +31,32 @@ The multidimensional case will prove to be similar where a Riemann sum is used t
 
 ----
 
-Before beginning, we will utilize the following to illustrate the concepts within `Julia`:
+Before beginning, we will use several features and packages loaded by
 
 ```
-using Plots, ForwardDiff, SymPy, HCubature, QuadGK, LinearAlgebra
-
-unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
-unzip(r::Function, a, b, n=100) = unzip(r.(range(a, stop=b, length=n)))
-
-function arrow!(plt::Plots.Plot, p, v; kwargs...)
-  length(p) == 2 && return quiver!(plt, unzip([p])..., quiver=Tuple(unzip([v])); kwargs...)
-  length(p) == 3 && return plot!(plt, unzip([p, p+v])...; kwargs...)
-end
-arrow!(p, v; kwargs...) = arrow!(Plots.current(), p, v; kwargs...);
+using CalculusWithJulia
 ```
+
 
 
 ## Integration theory
 
 ```
-ImageFile("figures/chrysler-building-in-new-york.jpg", """How to estimate the volume contained within the Chrysler Building? One way might be to break the building up into tall vertical blocks based on its skyline;  compute the volume of each block using the formula of volume as area of the base times the height; and finally add up the computed volumes This is the basic idea of finding volumes under surfaces using Riemann integration.""")
+ImageFile("figures/chrysler-building-in-new-york.jpg", """How to estimate the volume contained within the Chrysler Building? One way might be to break the building up into tall vertical blocks based on its skyline;  compute the volume of each block using the formula of volume as area of the base times the height; and, finally, adding up the computed volumes This is the basic idea of finding volumes under surfaces using Riemann integration.""")
+```
+
+```
+ImageFile("figures/chrysler-nano-block.png", """
+Computing the volume of a nano-block construction of the Chrysler building is easier than trying to find an actual tree at the Chrysler building, as we can easily compute the volume of columns of equal-sized blocks. Riemann sums are similar.
+"""
+)
 ```
 
 The definition of the  multi-dimensional integral is more involved then the one-dimensional case due to the possibly increased complexity of the region. This will require additional [steps](https://math.okstate.edu/people/lebl/osu4153-s16/chapter10-ver1.pdf). The basic approach is as follows.
 
 First, let $R = [a_1, b_1] \times [a_2, b_2] \times \cdots \times [a_n, b_n]$ be a closed rectangular region. If $n=2$, this is a rectangle, and if $n=3$, a box. We begin by defining integration over closed rectangular regions. For each side, a partition $P_i$ is chosen based on $a_i = x_{i0} < x_{i1} < \cdots < x_{ik} = b_i$. Then a sub-rectangular region would be of the form $R' = P_{1j_1} \times P_{2j_2} \times \cdots \times P_{nj_n}$, where $P_{ij_i}$ is one of the partitioning sub intervals of $[a_i, b_i]$. Set $\Delta R' = \Delta P_{1j_1} \cdot \Delta P_{2j_2} \cdot\cdots\cdot\Delta P_{nj_n}$ to be the $n$-dimensional volume of the sub-rectangular region.
 
-For each sub-rectangular region, we can define $m(f,R')$ to be $\inf_{u \text{ in } R'} f(u)$ and $M(f, R') = \sup_{u \text{ in } R'} f(u)$. If we enumerate all the sub-rectangular regions, we can define $m(f, P) = \sum_i m(f, R_i) \Delta v_i$ and $M(f,P) = \sum_i M(f, R_i)\Delta R_i$, as in the one-dimensional case. These are upper and lower sums, and, as before, would bound the Riemann sum formed by choosing any $c_i$ in $R_i$ and computing $S(f,P) = \sum_i f(c_i) \Delta R_i$.
+For each sub-rectangular region, we can define $m(f,R')$ to be $\inf_{u \text{ in } R'} f(u)$ and $M(f, R') = \sup_{u \text{ in } R'} f(u)$. If we enumerate all the sub-rectangular regions, we can define $m(f, P) = \sum_i m(f, R_i) \Delta R_i$ and $M(f,P) = \sum_i M(f, R_i)\Delta R_i$, as in the one-dimensional case. These are upper and lower sums, and, as before, would bound the Riemann sum formed by choosing any $c_i$ in $R_i$ and computing $S(f,P) = \sum_i f(c_i) \Delta R_i$.
 
 
 
@@ -67,19 +66,19 @@ As with the one-dimensional case, $f$ is Riemann integrable over $R$ if the limi
 When $f$ is Riemann integrable over a rectangular region $R$, we denote the limit by any of:
 
 $$~
-\int_R f(x) dV, \quad \int_R f(x_1, \dots, x_n) dx_1 \cdot\cdots\cdot dx_n, \quad\int_R f(\vec{x}) d\vec{x}.
+\iint_R f(x) dV, \quad \iint_R fdV, \quad \iint_R f(x_1, \dots, x_n) dx_1 \cdot\cdots\cdot dx_n, \quad\iint_R f(\vec{x}) d\vec{x}.
 ~$$
 
-A key fact that requires proof is
+A key fact, requiring proof, is:
 
-> Any continuous function $f$ is Riemann integrable over a closed, bounded rectangular region.
+> Any continuous function, $f$, is Riemann integrable over a closed, bounded rectangular region.
 
 ----
 
 As with one-dimensional integrals, from the Riemann sum definition, several familiar properties for integrals follow. Let $V(R)$ be the volume of $R$ found by multiplying the side-lengths together.
 
 
-* A constant is Riemann integrable: $\int_R c dV = c V(R)$.
+* A constant is Riemann integrable and: $\iint_R c dV = c V(R)$.
 
 
 > Linearity
@@ -87,13 +86,13 @@ As with one-dimensional integrals, from the Riemann sum definition, several fami
 
 * For integrable $f$ and $g$ and constants $a$ and $b$:
 $$~
-\int_R (af(x) + bg(x))dV = a\int_R f(x)dV + b\int_R g(x) dV.
+\iint_R (af(x) + bg(x))dV = a\iint_R f(x)dV + b\iint_R g(x) dV.
 ~$$
 
 * If $R$ and $R'$ are *disjoint* rectangular regions (possibly sharing a boundary), then the integral over the union is defined by linearity:
 
 $$~
-\int_{R \cup R'} f(x) dV = \int_R f(x)dV + \int_{R'} f(x) dV.
+\iint_{R \cup R'} f(x) dV = \iint_R f(x)dV + \iint_{R'} f(x) dV.
 ~$$
 
 > Monotonicity
@@ -101,14 +100,14 @@ $$~
 * As $f$ is bounded, let $m \leq f(x) \leq M$ for all $x$ in $R$. Then
 
 $$~
-m V(R) \leq \int_R f(\vec{x}) dV \leq MV(R).
+m V(R) \leq \iint_R f(x) dV \leq MV(R).
 ~$$
 
-* If $f$ and $g$ are integrable *and* $f(x) \leq g(x)$, then the integrals have the same property, namely $\int_R f dV \leq \int_R gdV$.
+* If $f$ and $g$ are integrable *and* $f(x) \leq g(x)$, then the integrals have the same property, namely $\iint_R f dV \leq \iint_R gdV$.
 
-* If $S \subset R$, both closed rectangles, then if $f$ is integrable over $R$ it will be also over $S$ and, when $f\geq 0$, $\int_S f dV \leg \int_R fdV$.
+* If $S \subset R$, both closed rectangles, then if $f$ is integrable over $R$ it will be also over $S$ and, when $f\geq 0$, $\iint_S f dV \leq \iint_R fdV$.
 
-* If $f$ is bounded and integrable, then $|\int_R fdV| \leq \int_R |f| dV$.
+* If $f$ is bounded and integrable, then $|\iint_R fdV| \leq \iint_R |f| dV$.
 
 ### HCubature
 
@@ -121,7 +120,7 @@ To illustrate, to integrate the function $f(x,y) = x^2 + 5y^2$ over the region $
 
 
 ```
-using HCubature
+using HCubature  # loaded by CalculusWithJulia
 
 f(x,y) = x^2 + 5y^2
 f(v) = f(v...)  # f accepts a vector
@@ -295,9 +294,9 @@ p
 ```
 
 
-Let $C_i$ enumerate all the cell shown,  assume $f$ is extended to be $0$ outside the region,  and let $c_i$ be a point in the cell. Then the Riemann sum $\sum_i f(c_i) V(C_i)$ can be visualized three identical ways:
+Let $C_i$ enumerate all the cells shown,  assume $f$ is extended to be $0$ outside the region,  and let $c_i$ be a point in the cell. Then the Riemann sum $\sum_i f(c_i) V(C_i)$ can be visualized three identical ways:
 
-* as a linear sum over the indices $i$, as written, leading to $\int_R f(x) dV$.
+* as a linear sum over the indices $i$, as written, leading to $\iint_R f(x) dV$.
 * by indexing the cells by row ($i$) and column ($j$) and summing as $\sum_i (\sum_j f(x_{ij}, y_{ij}) \Delta y_j) \Delta x_i$.
 * by indexing the cells by row ($i$) and column ($j$) and summing as $\sum_j (\sum_i f(x_{ij}, y_{ij}) \Delta x_i) \Delta y_j$.
 
@@ -310,18 +309,19 @@ $I(x) =  \int_{-2}^2 f(x,y) dy$. Like partial derivatives, this integrates in $y
 
 The question then: under what conditions will the three integrals be equal?
 
-> [Fubini](https://math.okstate.edu/people/lebl/osu4153-s16/chapter10-ver1.pdf). Let $R \times S$ be a closed rectangular region in $R^n \times R^m$. Suppose $f$ is bounded. Define $f_x(y) = f(x,y)$ and $f^y(x) = f(x,y)$ where $x$ is in $R^n$ and $y$ in $R^m$.  *If* $f_x$ is integrable then
-$$~
-\int_{R\times S}fdV = \int_R (\int_S f_x(y) dy) dx = \int_R \int_S f(x,y) dy dx.
-~$$
+> [Fubini](https://math.okstate.edu/people/lebl/osu4153-s16/chapter10-ver1.pdf). Let $R \times S$ be a closed rectangular region in $R^n \times R^m$. Suppose $f$ is bounded. Define $f_x(y) = f(x,y)$ and $f^y(x) = f(x,y)$ where $x$ is in $R^n$ and $y$ in $R^m$.  *If* $f_x$ and $f^y$ are integrable then
+> $$~
+> \iint_{R\times S}fdV = \iint_R \left(\iint_S f_x(y) dy\right) dx
+> = \iint_S \left(\iint_R f^y(x) dx\right) dy.
+> ~$$
 
-Similarly, if $f^y$ is integrable for all $y$, then $\int_{R\times S}fdV =\int_S \int_R f(x,y) dx dy$.
+Similarly, if $f^y$ is integrable for all $y$, then $\iint_{R\times S}fdV =\iint_S \iint_R f(x,y) dx dy$.
 
 An immediate corollary is that the above holds for continuous functions when $R$ and $S$ are bounded, the case described here.
 
 The case of continuous functions was known to [Euler](https://en.wikipedia.org/wiki/Fubini%27s_theorem#History), Lebesgue (1904) discussed bounded functions, as in our statement, and Fubini and Tonnelli (1907 and 1909) generalized the statement to more general functions than continuous functions, thereby earning naming rights.
 
-In [Ferzola](https://doi.org/10.2307/2687130) we can read a summary of Euler's thinking of 1769 when trying to understand the integral of a function $f(x,y)$ over a bounded domain $R$ enclosed by arcs in the $x-y$ plane. (That is, the area below $g(x)$ and above $h(x)$ over the interval $[a,b]$.) Euler wrote the answer as $\int_a^b dx (\int_{g(x)}^{h(x)} f(x,y)dy)$. Ferzola writes that Euler saw this integral yielding a *volume* as the integral $\int_{g(x)}^{h(x)} f(x,y)dy$ gives the area of a slice (parallel to the $y$ axis) and integrating in $x$ adds these slices to give a volume. This is the typical usage of Fubini's theorem today.
+In [Ferzola](https://doi.org/10.2307/2687130) we can read a summary of Euler's thinking of 1769 when trying to understand the integral of a function $f(x,y)$ over a bounded domain $R$ enclosed by arcs in the $x$-$y$ plane. (That is, the area below $g(x)$ and above $h(x)$ over the interval $[a,b]$.) Euler wrote the answer as $\int_a^b dx (\int_{g(x)}^{h(x)} f(x,y)dy)$. Ferzola writes that Euler saw this integral yielding a *volume* as the integral $\int_{g(x)}^{h(x)} f(x,y)dy$ gives the area of a slice (parallel to the $y$ axis) and integrating in $x$ adds these slices to give a volume. This is the typical usage of Fubini's theorem today.
 
 ```
 ImageFile("figures/strang-slicing.png", L"""Figure 14.2 of Strang illustrating the slice when either $x$ is fixed or $y$ is fixed. The inner integral computes the shared area, the outer integral adds the areas up to compute volume.""")
@@ -355,7 +355,7 @@ V = 8 \int_0^{a/2} (\int_0^x h(1-\frac{2x}{a}) dy) dx =
 ### `SymPy`'s `integrate`
 
 
-The `integrate` function of `SymPy` uses various algorithms to symbolically integrate definite (and indefinite) integrals. In the section on [integrals](../integrals/ftc.html) its use for one-dimensional integrals was shown. For multi-dimensional integrals the usage is similar, the syntax following somewhat the Fubini-notation.
+The `integrate` function of `SymPy` uses various algorithms to symbolically integrate definite (and indefinite) integrals. In the section on [integrals](../integrals/ftc.html) its use for one-dimensional integrals was shown. For multi-dimensional integrals the usage is similar, the syntax following, somewhat, the Fubini-like notation.
 
 For example, to perform the integral
 
@@ -369,7 +369,7 @@ the call would look like:
 integrate(f(x,y), (y, h(x), g(x)), (x, a, b))
 ```
 
-That is, the variable to integrate and the endpoints are passed as tuples. (Unlike `hcubature` which always uses two tuples to specify the bounds, `integrate` uses $n$ tuples to specify an $n$-dimensional integral.) The iteration happens from left to write, so in the above the `y` integral is done (and as seen, may depend on the variable `x`) and then the `x` integral is performed. The above uses `f(x,y)`, `h(x)` and `g(x)`, but these may be simple symbolic expressions and not function calls using symbolic variables.
+That is, the variable to integrate and the endpoints are passed as tuples. (Unlike `hcubature` which always uses two tuples to specify the bounds, `integrate` uses $n$ tuples to specify an $n$-dimensional integral.) The iteration happens from left to write, so in the above the `y` integral is done (and, as seen, may depend on the variable `x`) and then the `x` integral is performed. The above uses `f(x,y)`, `h(x)` and `g(x)`, but these may be simple symbolic expressions and not function calls using symbolic variables.
 
 
 ##### Example
@@ -410,7 +410,7 @@ integrate(f(x,y), (y, h(x), g(x)), (x, -sqrt(Sym(5)), sqrt(Sym(5))))
 
 ##### Example
 
-Find the volume above the $x-y$ plane when a cylinder, $x^2 + y^2 = 2^2$ is intersected by a plane $3x + 4y + 5z = 6$.
+Find the volume above the $x$-$y$ plane when a cylinder, $x^2 + y^2 = 2^2$ is intersected by a plane $3x + 4y + 5z = 6$.
 
 We solve for $z = (1/5)\cdot(6 - 3x - 4y)$ and take $R$ as the disk at the origin of radius $2$:
 
@@ -454,7 +454,7 @@ integrate(f(x,y), (y, h(x), g(x)), (x, 0, 10))
 
 ##### Example
 
-Let $r=1$ and define three cyliders along the $x$, $y$, and $z$ axes by: $y^2+z^2 = r^2$, $x^2 + z^2 = r^2$, and $x^2 + y^2 = r^2$. What is the enclosed [volume](http://mathworld.wolfram.com/SteinmetzSolid.html)?
+Let $r=1$ and define three cylinders along the $x$, $y$, and $z$ axes by: $y^2+z^2 = r^2$, $x^2 + z^2 = r^2$, and $x^2 + y^2 = r^2$. What is the enclosed [volume](http://mathworld.wolfram.com/SteinmetzSolid.html)?
 
 Using the cylinder along the $z$ axis, we have the volume sits above and below the disk $R = x^2 + y^2 \leq r^2$. By symmetry, we can double the volume that sits above the disk to answer the question.
 
@@ -515,7 +515,7 @@ A/B
 
 ##### Example: Density
 
-The area of a region $R$ can be computed by $\int_R 1 dA$. If the region is physical, say a disc, then its mass can be of interest. If the mass is uniform with density $\rho$, then the mass would be $\int_R \rho dA$. If the mass is non uniform, say it is a function $\rho(x,y)$, then the integral to find the mass becomes $\int_R \rho(x,y) dA$. (In a Riemann sum, the term $\rho(c_{ij}) \Delta x_i\Delta y_j$ would be the mass of a constant-density solid, the integral just adds these up to find total mass.)
+The area of a region $R$ can be computed by $\iint_R 1 dA$. If the region is physical, say a disc, then its mass can be of interest. If the mass is uniform with density $\rho$, then the mass would be $\iint_R \rho dA$. If the mass is non uniform, say it is a function $\rho(x,y)$, then the integral to find the mass becomes $\iint_R \rho(x,y) dA$. (In a Riemann sum, the term $\rho(c_{ij}) \Delta x_i\Delta y_j$ would be the mass of a constant-density solid, the integral just adds these up to find total mass.)
 
 Find the mass of a disc bounded by the two parabolas $y=2 - x^2$ and $y = -3 + 2x^2$ with density function given by $\rho(x,y) = x^2y^2$.
 
@@ -557,11 +557,16 @@ integrate(cos(x^2), (y, 0, x), (x, 0, 1))
 
 The computationally efficient way to perform multiple integrals numerically would be to use `hcubature`. However, this function is defined only for *rectangular* regions. In the event of non-rectangular regions, the suggested performant way would be to find a suitable transformation (below).
 
-However, for simple problems, where ease of expressing a region is preferred to computational efficiency, the following function,  `fubini`, can be used. The `fubini` function is defined in terms of iterated uses of the `quadgk` function, previously used for one-dimensional integrals. The function allows the endpoints to be expressed through a numeric constant *or* a function of the previous variables.
+However, for simple problems, where ease of expressing a region is preferred to computational efficiency, the following function,  `fubini`, can be used. It is included in the `CalculusWithJulia` package.
+
+The `fubini` function is defined in terms of iterated uses of the
+`quadgk` function, previously used for one-dimensional integrals. The
+function allows the endpoints to be expressed through a numeric
+constant *or* a function of the previous variables.
 
 The use of `FWrapper` is technical, it prevents `quadgk` from specializing on the anonymous function that gets passed to it, which in this usage will prove significantly faster.
 
-```
+```noeval
 using QuadGK
 struct FWrapper
     f
@@ -644,7 +649,7 @@ sin(1)/2
 
 ## Triple integrals
 
-Triple integrals are identical in theory to double integrals, though the computations can be more involved and the regions more complicated to describe. The main regions (emphasized by Strang) to understand are: box, prism, cylinder, cone, tetrahedron, and sphere. Here we compute the volumes of these using a triple integral of the form $\int_R 1 dV$.
+Triple integrals are identical in theory to double integrals, though the computations can be more involved and the regions more complicated to describe. The main regions (emphasized by Strang) to understand are: box, prism, cylinder, cone, tetrahedron, and sphere. Here we compute the volumes of these using a triple integral of the form $\iint_R 1 dV$.
 
 
 * Box. Consider the box-like, or "rectangular," region $[0,a]\times [0,b] \times [0,c]$. This has volume $abc$ which we see here using Fubini's theorem:
@@ -661,24 +666,24 @@ The function to integrate is $f(x,y) = (1 - ay)/b$ over the region bounded by $[
 
 ```
 f(x,y,z) = Sym(1)
-integrate(f(x,y,z), (z, 0, (1- a*y)/b), (y, 0, 1/a), (x, 0, c))
+integrate(f(x,y,z), (z, 0, (1 - a*y)/b), (y, 0, 1/a), (x, 0, c))
 ```
 
 Which, as expected, is half the volume of the box $[0,c] \times [0, 1/a] \times [0, 1/b]$.
 
-* Tetrahedron. Consider the volume formed by $x,y,z \geq 0$ and bounded by $ax+by+cz = 1$ where $a,b,c \geq 0$. The volume is a tetrahedron. The base in the $x-y$ plane is a triangle with vertices $(1/a, 0, 0)$ and $(0, 1/b, 0)$.
-(The third easy-to-find point is $(0, 0, 1/c)$). The line connnecting the points in the $x-y$ plane is $ax + by = 1$. With this, the integral to compute the volume is
+* Tetrahedron. Consider the volume formed by $x,y,z \geq 0$ and bounded by $ax+by+cz = 1$ where $a,b,c \geq 0$. The volume is a tetrahedron. The base in the $x$-$y$ plane is a triangle with vertices $(1/a, 0, 0)$ and $(0, 1/b, 0)$.
+(The third easy-to-find point is $(0, 0, 1/c)$). The line connnecting the points in the $x$-$y$ plane is $ax + by = 1$. With this, the integral to compute the volume is
 
 ```
 @vars x y z a b c
 f(x,y,z) = Sym(1)
-integrate(f(x,y,z), (z, 0, (1 - a*x - b*y)/c), (y, 0, (1-a*x)/b), (x, 0, 1/a))
+integrate(f(x,y,z), (z, 0, (1 - a*x - b*y)/c), (y, 0, (1 - a*x)/b), (x, 0, 1/a))
 ```
 
 This is $1/6$th the volume of the box.
 
 
-* Cone. Consider a cone formed by the function $z = f(x,y) = a - b(x^2+y^2)^{1/2}$ ($a,b > 0$) and the $x-y$ plane. This will have radius $r = a/b$ and height $a$. The volume is given by this integral:
+* Cone. Consider a cone formed by the function $z = f(x,y) = a - b(x^2+y^2)^{1/2}$ ($a,b > 0$) and the $x$-$y$ plane. This will have radius $r = a/b$ and height $a$. The volume is given by this integral:
 
 $$~
 \int_{x=-r}^r \int_{y=-\sqrt{r^2 - x^2}}^{\sqrt{r^2-x^2}} \int_0^{a - b(x^2 + y^2)} 1 dz dy dx.
@@ -792,10 +797,10 @@ plot!(p,unzip(G.(us, vs'))...)                                      # plots cons
 
 pt = [us[k1 * n],vs[k2*n]]
 P, U, V = G(pt...), lambda * J(pt)*[1,0], lambda *  J(pt)*[0,1]
-arrow!(p, P, U, color=:blue, linewidth=2)
-arrow!(p, P+V, U, color=:red, linewidth=1)
-arrow!(p, P, V, color=:blue, linewidth=2)
-arrow!(p, P+U, V, color=:red, linewidth=1)
+arrow!(P, U, color=:blue, linewidth=2)
+arrow!(P+V, U, color=:red, linewidth=1)
+arrow!(P, V, color=:blue, linewidth=2)
+arrow!(P+U, V, color=:red, linewidth=1)
 p
 end
 
@@ -856,9 +861,9 @@ The absolute value of the determinant of the Jacobian
 is the multiplying factor that is seen in the change of variable formula for all dimensions:
 
 > [Change of variable](https://en.wikipedia.org/wiki/Integration_by_substitution#Substitution_for_multiple_variables) Let $U$ be an open set in $R^n$, $G:U \rightarrow R^n$ be an *injective* differentiable function with *continuous* partial derivatives. If $f$ is continous and compactly supported, then
-$$~
-\int_{G(S)} f(\vec{x}) dV = \int_S (f \circ G)(\vec{u}) |\det(J_G)(\vec{u})| dU.
-~$$
+> $$~
+> \iint_{G(S)} f(\vec{x}) dV = \iint_S (f \circ G)(\vec{u}) |\det(J_G)(\vec{u})| dU.
+> ~$$
 
 
 For the one-dimensional case, there is no absolute value, but there the interval is reversed, producing "negative" area. This is not the case here, where $S$ is parameterized to give positive volume.
@@ -869,12 +874,12 @@ The term "functional determinant" is found for the value $\det(J_G)$, as is the 
 
 ### Two dimensional change of variables
 
-Now we see several examples of two-dimesional transformations.
+Now we see several examples of two-dimensional transformations.
 
 #### Polar integrals
 
 
-We have [seen](../differentiable_vector_calculus/polar_coordinates.html) how to compute area in polar coordinates through the formula $A = \int (1/2) r^2(\theta) d\theta$. This formula can be derived as follows. Consider a region $R$ parameterized in polar coordinates by $r(\theta)$ for $a \leq \theta \leq b$. The area of this region would be $\int_R fdA$. Let $G(r, \theta) = r \langle \cos\theta, \sin\theta\rangle$. Then
+We have [seen](../differentiable_vector_calculus/polar_coordinates.html) how to compute area in polar coordinates through the formula $A = \int (1/2) r^2(\theta) d\theta$. This formula can be derived as follows. Consider a region $R$ parameterized in polar coordinates by $r(\theta)$ for $a \leq \theta \leq b$. The area of this region would be $\iint_R fdA$. Let $G(r, \theta) = r \langle \cos\theta, \sin\theta\rangle$. Then
 
 $$~
 J_G = \left[
@@ -893,7 +898,7 @@ That is, for *polar coordinates* $dx dy = r dr d\theta$ ($r \geq 0$).
 So by the change of variable formula, we have:
 
 $$~
-A = \int_R 1 dx dy = \int_a^b \int_0^{r(\theta)} 1 r dr d\theta = \int_a^b \frac{r^2(\theta)}{2} d\theta.
+A = \iint_R 1 dx dy = \int_a^b \int_0^{r(\theta)} 1 r dr d\theta = \int_a^b \frac{r^2(\theta)}{2} d\theta.
 ~$$
 
 The key is noting that the region, $S$ described by $\theta$ running from $a$ to $b$ and $r$ running from $0$ to $r(\theta)$, maps onto $R$ through the change of variables. As polar coordinates is just a renaming, this is clear to see.
@@ -903,7 +908,7 @@ The key is noting that the region, $S$ described by $\theta$ running from $a$ to
 Now consider finding the volume of a sphere using polar coordinates. We have, with $\rho$ being the radius:
 
 $$~
-V = 2 \int_R \sqrt{\rho^2 - x^2 - y^2} dy dx,
+V = 2 \iint_R \sqrt{\rho^2 - x^2 - y^2} dy dx,
 ~$$
 
 where $R$ is the disc of radius $\rho$. Using polar coordinates, we have $x^2 + y^2 = r^2$ and the expression becomes:
@@ -1019,7 +1024,7 @@ v & u
 \right) = u.
 ~$$
 
-So,  $\int_R f(x,y) dA = \int_0^1\int_0^1 f(u, uv) u du dv$. Here we illustrate with a generic monomial:
+So,  $\iint_R f(x,y) dA = \int_0^1\int_0^1 f(u, uv) u du dv$. Here we illustrate with a generic monomial:
 
 ```
 @vars n m positive=true
@@ -1070,7 +1075,7 @@ A, B[1], A - B[1]
 
 Consider the region, $R$, bounded by $y=0$, $x=e^{-n}$, $x=e^n$, and $y=1/x$. An integral over this region may be computed with the help of the transform $G(u,v) = v \langle e^u, e^{-u}\rangle$ which takes the box $[-n, n] \times [0,1]$ onto $R$.
 
-With this, we compute $\int_R x^2 y^3 dA$ using `SymPy` to compute the Jacobian:
+With this, we compute $\iint_R x^2 y^3 dA$ using `SymPy` to compute the Jacobian:
 
 ```
 @vars u v n
@@ -1085,42 +1090,42 @@ integrate(f(G(u,v)) * abs(det(Jac)), (u, -n, n), (v, 0, 1))
 
 ##### Centroid:
 
-The center of mass is a balancing point of a region. In two dimensions it is a point $\langle \bar{x}, \bar{y}\rangle$. These are found by the following formulas:
+The center of mass is a balancing point of a region with density $\rho(x,y)$. In two dimensions it is a point $\langle \bar{x}, \bar{y}\rangle$. These are found by the following formulas:
 
 $$~
-A = \int_R \rho(x,y) dA, \quad \bar{x} = \frac{1}{A} \int_R x \rho(x,y) dA, \quad
-\bar{y} = \frac{1}{A} \int_R y \rho(x,y) dA.
+A = \iint_R \rho(x,y) dA, \quad \bar{x} = \frac{1}{A} \iint_R x \rho(x,y) dA, \quad
+\bar{y} = \frac{1}{A} \iint_R y \rho(x,y) dA.
 ~$$
 
 The $x$ value can be seen in terms of Fubini by integrating in $y$ first:
 
 $$~
-\int_R x \rho(x,y) dA = \int_{x=a}^b (\int_{y=h(x)}^{g(x)} \rho(x,y) dy) dx.
+\iint_R x \rho(x,y) dA = \int_{x=a}^b (\int_{y=h(x)}^{g(x)} \rho(x,y) dy) dx.
 ~$$
 
-The inner integral is the mass of a slice at a value along the $x$ axis. The center of mass is formed then by the mass times the distance from the origin. The center of mass is a "balance" point, in the sense that $\int_R (x - \bar{x}) dA = 0$ and $\int_R (y-\bar{y})dA = 0$.
+The inner integral is the mass of a slice at a value along the $x$ axis. The center of mass is formed then by the mass times the distance from the origin. The center of mass is a "balance" point, in the sense that $\iint_R (x - \bar{x}) dA = 0$ and $\iint_R (y-\bar{y})dA = 0$.
 
 For example, the center of mass of the upper half *unit* disc will have a centroid with $\bar{x} = 0$, by symmetry. We can see this by integrating in *Cartesian* coordinates, as follows
 
 $$~
-\int_R x dA = \int_{y=0}^1 \int_{x=-\sqrt{1-y^2}}^{\sqrt{1 - y^2}} x dx dy.
+\iint_R x dA = \int_{y=0}^1 \int_{x=-\sqrt{1-y^2}}^{\sqrt{1 - y^2}} x dx dy.
 ~$$
 
 The inner integral is $0$ as it an integral of an *odd* function over an interval symmetric about $0$.
 
 
-The value of $\bar{y}$ is found from:
+The value of $\bar{y}$ is found using polar coordinate transformation from:
 
 $$~
-\int_R y dA = \int_{r=0}^1 \int_{\theta=0}^{\pi} (r\sin(\theta))r d\theta dr =
+\iint_R y dA = \int_{r=0}^1 \int_{\theta=0}^{\pi} (r\sin(\theta))r d\theta dr =
 \int_{r=0}^1 r^2 dr \int_{\theta=0}^{\pi}\sin(\theta) = \frac{1}{3} \cdot 2.
 ~$$
 
-The third equals sign uses separability. The answer for the center of mass is this value divided by the area, or $2/(3\pi)$.
+The third equals sign uses separability. The answer for $\bar{ is this value divided by the area, or $2/(3\pi)$.
 
 ##### Example: Moment of intertia
 
-The moment of [interia](https://en.wikipedia.org/wiki/Moment_of_inertia) of a point mass about an axis is $I = mr^2$ where $m$ is the mass and $r$ the distance to the axis. The moment of inertia of a body is the sum of the moment of inertia of each piece. If $R$ is a region in the $x-y$ plane with density $\rho(x,y)$ and the axis is the $y$ axis, then an approximate moment of intertia would be $\sum (x_i)^2\rho(x_i, y_i)\Delta x_i \Delta y_i$ which would lead to $I = \int_R x^2\rho(x,y) dA$.
+The moment of [interia](https://en.wikipedia.org/wiki/Moment_of_inertia) of a point mass about an axis is $I = mr^2$ where $m$ is the mass and $r$ the distance to the axis. The moment of inertia of a body is the sum of the moment of inertia of each piece. If $R$ is a region in the $x$-$y$ plane with density $\rho(x,y)$ and the axis is the $y$ axis, then an approximate moment of intertia would be $\sum (x_i)^2\rho(x_i, y_i)\Delta x_i \Delta y_i$ which would lead to $I = \iint_R x^2\rho(x,y) dA$.
 
 Let $R$ be the half disc contained by $x^2 + y^2 = 1$ and $y \geq 0$. Let $\rho(x,y) = xy^2$. Find the moment of inertia.
 
@@ -1144,10 +1149,10 @@ integrate(x^2 * rho(x, y), (theta, -PI/2, PI/2), (r, 0, 1))
 
 (Strang) Find the moment of inertia about the $y$ axis of the unit square tilted *counter*-clockwise an angle $0 \leq \alpha \leq \pi/2$.
 
-The counterclockwise rotation of the unit square is $G(u,v) = \langle \cos(\alpha)u-\sin(\alpha)v, \sin(\alpha)u + \cos(\alpha) v\rangle$. This comes from the above formulafor clockwise rotation using $-\alpha$. This transformation has Jacobian determinant $1$, as the area is not deformed. With this, we have
+The counterclockwise rotation of the unit square is $G(u,v) = \langle \cos(\alpha)u-\sin(\alpha)v, \sin(\alpha)u + \cos(\alpha) v\rangle$. This comes from the above formula for clockwise rotation using $-\alpha$. This transformation has Jacobian determinant $1$, as the area is not deformed. With this, we have
 
 $$~
-\int_R x^2 dA = \int_{G(U)} (f\circ G)(u) |J_G(u)| dU,
+\iint_R x^2 dA = \iint_{G(U)} (f\circ G)(u) |\det(J_G(u))| dU,
 ~$$
 
 which is computed with:
@@ -1167,7 +1172,7 @@ Let $R$ be a ring with inner radius $4$ and outer radius $5$. Find its moment of
 The integral to compute is:
 
 $$~
-\int_R x^2 dA,
+\iint_R x^2 dA,
 ~$$
 
 with domain that is easy to describe in polar coordinates:
@@ -1186,7 +1191,7 @@ The change of variables formula is no different between dimensions $2$ and $3$ (
 #### Cylindrical coordinates
 
 
-Polar coordinates describe the $x-y$ plane in terms of a radius $r$ and angle $\theta$. *Cylindrical* coordinates describe the $x-y-z$ plane in terms of $r, \theta$ and $z$. A transformation is:
+Polar coordinates describe the $x$-$y$ plane in terms of a radius $r$ and angle $\theta$. *Cylindrical* coordinates describe the $x-y-z$ plane in terms of $r, \theta$, and $z$. A transformation is:
 
 $$~
 G(r,\theta, z) = \langle r\cos(\theta), r\sin(\theta), z\rangle.
@@ -1198,7 +1203,7 @@ This has Jacobian determinant $r$, similar to polar coordinates.
 
 ##### Example
 
-Returning to the volume of a cone above the $x-y$ plane under $z = a - b(x^2 + y^2)^{12}$. This yielded the integral in Cartesian coordinates:
+Returning to the volume of a cone above the $x$-$y$ plane under $z = a - b(x^2 + y^2)^{12}$. This yielded the integral in Cartesian coordinates:
 
 $$~
 \int_{x=-r}^r \int_{y=-\sqrt{r^2 - x^2}}^{\sqrt{r^2-x^2}} \int_0^{a - b(x^2 + y^2)} 1 dz dy dx,
@@ -1209,7 +1214,7 @@ where $r=a/b$. This is *much* simpler in Cylindrical coordinates, as the region 
 The volume then is:
 
 $$~
-\int_{theta=0}^{2\pi} \int_{r=0}^{a/b} \int{z=0}^{a - br} 1 r dz dr d\theta =
+\int_{theta=0}^{2\pi} \int_{r=0}^{a/b} \int_{z=0}^{a - br} 1 r dz dr d\theta =
 2\pi \int_{r=0}^{a/b} (a-br)r dr = \frac{\pi a^3}{3b^2}.
 ~$$
 
@@ -1218,7 +1223,7 @@ This is in agreement with $\pi r^2 h/3$.
 
 ----
 
-Find the centroid for the cone. First in the $x$ direction, $\int_R x dV$ is found by:
+Find the centroid for the cone. First in the $x$ direction, $\iint_R x dV$ is found by:
 
 ```
 @vars r theta z a b
@@ -1264,13 +1269,17 @@ integrate(1 * r, (z, -sqrt(4-r^2), sqrt(4-r^2)), (r, 0, a), (theta,0, 2PI))
 
 #### Spherical integrals
 
-Spherical coordinates describe a point in space by a radius from the origin, $r$ or $\rho$; a azimuthal angle $\theta$ in $[0, 2\pi]$ and an *inclination* angle $\phi$ (also called polar angle) in $[0, \pi]$. The $z$ axis is the direction of the zenith and gives a reference line to define the inclination angle. The $x-y$ plane is the reference plane, with the $x$ axis giving a reference direction for the azimuth measurement.
+Spherical coordinates describe a point in space by a radius from the origin, $r$ or $\rho$; a azimuthal angle $\theta$ in $[0, 2\pi]$ and an *inclination* angle $\phi$ (also called polar angle) in $[0, \pi]$. The $z$ axis is the direction of the zenith and gives a reference line to define the inclination angle. The $x$-$y$ plane is the reference plane, with the $x$ axis giving a reference direction for the azimuth measurement.
 
 
 The exact formula to relate $(\rho, \theta, \phi)$ to $(x,y,z)$ is given by
 
 $$~
-G(\rho, \theta, \phi) = \rho \langle \sin(\phi)\cos(\theta), \sin(\phi)\sin(\theta), \cos(\phi).
+G(\rho, \theta, \phi) = \rho \langle
+\sin(\phi)\cos(\theta),
+\sin(\phi)\sin(\theta),
+\cos(\phi)
+\rangle.
 ~$$
 
 
@@ -1283,12 +1292,12 @@ The Jabobian can be computed to be $\rho^2\sin(\phi)$.
 ```
 @vars ρ theta phi
 G(ρ, theta, phi) = ρ * [sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi)]
-det(G(ρ, theta, phi).jacobian([ρ, theta, phi])) |> simplify
+det(G(ρ, theta, phi).jacobian([ρ, theta, phi])) |> simplify |> abs
 ```
 
 ##### Example
 
-Computing the volume of a sphere is a challenge (for SymPy) in Cartesian coordinates, but a breeze in spherical coordinates. Using $r^2\sin(\phi)$ as the multiplying factot, the volume is simply:
+Computing the volume of a sphere is a challenge (for SymPy) in Cartesian coordinates, but a breeze in spherical coordinates. Using $r^2\sin(\phi)$ as the multiplying factor, the volume is simply:
 
 $$~
 \int_{\theta=0}^{2\pi} \int_{\phi=0}^{\pi} \int_{r=0}^R 1 \cdot r^2 \sin(\phi) dr d\phi d\theta =
@@ -1304,7 +1313,7 @@ Compute the volume of the ellipsoid, $R$, described by $(x/a)^2 + (y/v)^2 + (z/c
 We first change variables via $G(u,v,w) = \langle ua, vb, wc \rangle$. This maps the unit sphere, $S$, given by $u^2 + v^2 + w^2 \leq 1$ into the ellipsoid. Then
 
 $$~
-\int_R 1 dV = \int_S 1 |\det(J_G)| dU
+\iint_R 1 dV = \iint_S 1 |\det(J_G)| dU
 ~$$
 
 But the Jacobian is a constant:
@@ -1325,7 +1334,7 @@ So the answer is $abc V(S) = 4\pi abc/3$
 Suppose $f(x,y) = f_1(x)f_2(y)$ and $R = [a_1, b_1] \times [a_2,b_2]$ is a rectangular region. Is this true?
 
 $$~
-\int_R f dA = (\int_{a_1}^{b_1} f_1(x) dx) \cdot (\int_{a_2}^{b_2} f_2(y) dy).
+\iint_R f dA = (\int_{a_1}^{b_1} f_1(x) dx) \cdot (\int_{a_2}^{b_2} f_2(y) dy).
 ~$$
 
 ```
@@ -1343,7 +1352,7 @@ radioq(choices, ans)
 Which integrals of the following are $0$ by symmetry? Let $R$ be the unit disc.
 
 $$~
-a = \int_R x dA, \quad b = \int_R (x^2 + y^2) dA, \quad c = \int_R xy dA
+a = \iint_R x dA, \quad b = \iint_R (x^2 + y^2) dA, \quad c = \iint_R xy dA
 ~$$
 
 ```
@@ -1362,9 +1371,9 @@ radioq(choices, ans)
 Let $R$ be the unit disc. Which integrals can be found from common geometric formulas (e.g., known formulas for the sphere, cone, pyramid, ellipse, ...)
 
 $$~
-a = \int_R (1 - (x^2+y2)) dA, \quad
-b = \int_R (1 - \sqrt{x^2 + y^2}) dA, \quad
-c = \int_R (1 - (x^2 + y^2)^2 dA
+a = \iint_R (1 - (x^2+y2)) dA, \quad
+b = \iint_R (1 - \sqrt{x^2 + y^2}) dA, \quad
+c = \iint_R (1 - (x^2 + y^2)^2 dA
 ~$$
 
 
@@ -1478,7 +1487,7 @@ Compute the determinant of the Jacobian of the composition of a clockwise rotati
 choices = [
 L"It is $1$, as each is area preserving",
 L"It is $r$, as the rotation uses polar coordinates",
-L"It is $r^2 \sin(\phi)$, as the rotations using spherical coordinates"
+L"It is $r^2 \sin(\phi)$, as the rotations use spherical coordinates"
 ]
 ans = 1
 radioq(choices, ans)
@@ -1486,7 +1495,7 @@ radioq(choices, ans)
 
 ###### Question
 
-A wedge, $R$, is specified by $0 \leq r \leq a$, $0 \leq \theta \leg b$.
+A wedge, $R$, is specified by $0 \leq r \leq a$, $0 \leq \theta \leq b$.
 
 ```
 @vars r theta a b

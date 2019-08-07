@@ -10,12 +10,10 @@ mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus w
 
 fnames = [
           "double_triple_integrals",
-
-
-#          "parameterized_surfaces",
-#          "surface_integrals",
-#          "line_integrals",
-#          "integral_theorems"
+          "line_integrals",
+          "div_grad_curl",
+          "stokes_theorem",
+          "review"
 ]
 
 function process_file(nm, twice=false)

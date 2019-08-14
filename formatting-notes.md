@@ -9,7 +9,7 @@
 
 # Examples
 
-Examples are headed with #####
+Examples are headed with ##### (h5)
 
 Each example gets and h5 so that an icon appears
 
@@ -29,7 +29,3 @@ use
 plot(...)
 gcf()
 ```
-
-
-
-

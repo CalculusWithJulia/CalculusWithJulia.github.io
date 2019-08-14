@@ -23,18 +23,12 @@ function process_file(nm, twice=false)
     twice && markdownToHTML("$nm.md")
 end
 
-process_files() = [process_file(nm) for nm in fnames]
+process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
 
 
 
 
 """
-## TODO
-
-
-
-
-
-
-
+## TODO integral_vector_calculus
+* more questions
 """

@@ -1,21 +1,48 @@
 # Polar Coordinates and Curves
 
-```nocode, noout
-using Plots, QuadGK
-plotly()
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f) = D(f)
-```
 
 The description of the $x$-$y$ plane via Cartesian coordinates is not
 the only possible way, though one that is most familiar. Here we discuss
 a different means. Instead of talking about over and up from an
 origin, we focus on a direction and a distance from the origin.
 
+We begin by loading our package providing access to the necessary packages:
+
+```
+using CalculusWithJulia
+```
+
+
 ## Definition of polar coordinates
 
-Polar coordinates parameterize the plane though an angle $\theta$ made from the positive ray of the $x$ axis and a radius $r$. To recover the Cartesian coordinates from the pair $(r,\theta)$, we have these formulas from [right](http://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates) triangle geometry:
+Polar coordinates parameterize the plane though an angle $\theta$ made from the positive ray of the $x$ axis and a radius $r$.
+
+```nocode
+gr()
+theta = pi/6
+rr = 1
+
+p = plot(xticks=nothing, yticks=nothing, border=:none, aspect_ratio=:equal, xlim=(-.1,1), ylim=(-.1,3/4))
+plot!([0,rr*cos(theta)], [0, rr*sin(theta)], legend=false, color=:blue, linewidth=2)
+scatter!([rr*cos(theta)],[rr*sin(theta)], markersize=3, color=:blue)
+arrow!([0,0], [0,3/4], color=:black)
+arrow!([0,0], [1,0], color=:black)
+ts = range(0, theta, length=50)
+rr = 1/6
+plot!(rr*cos.(ts), rr*sin.(ts), color=:black)
+plot!([cos(theta),cos(theta)],[0, sin(theta)], linestyle=:dash, color=:gray)
+plot!([0,cos(theta)],[sin(theta), sin(theta)], linestyle=:dash, color=:gray)
+annotate!([
+        (1/5*cos(theta/2), 1/5*sin(theta/2), L"\theta"),
+        (1/2*cos(theta*1.2), 1/2*sin(theta*1.2), L"r"),
+        (cos(theta), sin(theta)+.05, L"(x,y)"),
+        (cos(theta),-.05, L"x"),
+        (-.05, sin(theta),L"y")
+        ])
+```
+
+
+To recover the Cartesian coordinates from the pair $(r,\theta)$, we have these formulas from [right](http://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates) triangle geometry:
 
 $$~
 x = r \cos(\theta),~ y = r \sin(\theta).
@@ -52,15 +79,18 @@ rad*cos(theta), rad*sin(theta)
 
 This figure illustrates:
 
-```
-using Plots
-p = plot([-5,5], [0,0],  color=:blue, legend=false, title="(-3,4) Cartesian or (5, 2.21...) polar")
+```nocode
+gr()
+p = plot([-5,5], [0,0],  color=:blue, legend=false, title=L"$(-3,4)$ Cartesian or $(5, 2.21...)$ polar")
 plot!([0,0],  [-5,5], color=:blue)
 plot!([-3,0], [4,0])
 scatter!([-3], [4])
-Outputonly(p)
+p
 ```
 
+```nocode, noout
+plotly()
+```
 
 The case where $r < 0$ is handled by going 180 degrees in the opposite direction, in other
 words the point $(r, \theta)$ can be described as well by $(-r,\theta+\pi)$.
@@ -87,23 +117,32 @@ The case where $r_0 > R$ will not be defined for all values of $\theta$, only wh
 
 ## Examples
 
-To help visualize some polar curves, we  first define a helper function for plotting:
+The `Plots.jl` package provides a means to visualize polar plots through `plot(thetas, rs, proj=:polar)`. For example, to plot a circe with $r_0=1/2$ and $\gamma=\pi/6$ we would have:
 
 ```
-polar_plot(r, a=0, b=2pi; kwargs...) = plot(t -> r(t)*cos(t), t -> r(t)*sin(t), a, b; kwargs...)
-polar_plot!(r, a=0, b=2pi; kwargs...) = plot!(t -> r(t)*cos(t), t -> r(t)*sin(t), a, b; kwargs...)
+R, r0, gamma = 1, 1/2, pi/6
+r(theta) = r0 * cos(theta-gamma) + sqrt(R^2 - r0^2*sin(theta-gamma)^2)
+ts = range(0, 2pi, length=100)
+rs = r.(ts)
+plot(ts, rs, proj=:polar, legend=false)
 ```
 
-`Plots` will make a parametric plot when called as `plot(function, function, a,b)`. This
+To avoid having to create values for $\theta$ and values for $r$, the `CalculusWithJulia` package provides a helper function, `plot_polar`. It is essentially this:
+
+```noeval
+plot_polar(r, a, b; kwargs...) = plot(t -> r(t)*cos(t), t -> r(t)*sin(t), a, b; kwargs...)
+```
+
+We will use this in the following, as the graphs are a bit more familiar and the calling pattern similar to how we have plotted functions.
+
+As `Plots` will make a parametric plot when called as `plot(function, function, a,b)`, the above
 function creates two such functions using the relationship $x=r\cos(\theta)$ and $y=r\sin(\theta)$.
 
 
-Using `polar_plot`,  we can plot circles with the following. We have to be a bit careful for the general circle, as when center is farther away from the origin that the radius ($R$), then not all angles will be acceptable and there are two functions needed to describe the radius, as this comes from a quadratic equation and both the "plus" and "minus" terms are used.
+Using `plot_polar`,  we can plot circles with the following. We have to be a bit careful for the general circle, as when center is farther away from the origin that the radius ($R$), then not all angles will be acceptable and there are two functions needed to describe the radius, as this comes from a quadratic equation and both the "plus" and "minus" terms are used.
 
 ```
 R=4; r(t) = R;
-
-
 
 function plot_general_circle!(r0, gamma, R)
     # law of cosines has if gamma=0, |theta| <= asin(R/r0)
@@ -113,14 +152,14 @@ function plot_general_circle!(r0, gamma, R)
 
     if R < r0
         theta = asin(R/r0)-1e-6                 # avoid round off issues
-        polar_plot!(r, gamma-theta, gamma+theta)
-        polar_plot!(l, gamma-theta, gamma+theta)
+        plot_polar!(r, gamma-theta, gamma+theta)
+        plot_polar!(l, gamma-theta, gamma+theta)
 	else
-		polar_plot!(r, 0, 2pi)
+		plot_polar!(r, 0, 2pi)
 	end
 end
 
-polar_plot(r, 0, 2pi, aspect_ratio=:equal)
+plot_polar(r, 0, 2pi, aspect_ratio=:equal, legend=false)
 plot_general_circle!(2, 0, 2)
 plot_general_circle!(3, 0, 1)
 ```
@@ -140,7 +179,7 @@ r(\theta) = a \sin(k\theta)
 ```
 a, k = 4, 5
 r(theta) = a * sin(k * theta)
-polar_plot(r, 0, pi)
+plot_polar(r, 0, pi)
 ```
 
 This graph has radius $0$ whenever $\sin(k\theta) = 0$ or $k\theta
@@ -162,9 +201,9 @@ r(\theta) = -b \cos(\theta) + 4a \cos(\theta) \sin(2\theta)
 
 
 ```
-a, b= 4, 2
+a, b = 4, 2
 r(theta) = -b * cos(theta) + 4a * cos(theta) * sin(2theta)
-polar_plot(r)
+plot_polar(r, 0, 2pi)
 ```
 
 The folium has radial part $0$ when $\cos(\theta) = 0$ or
@@ -175,20 +214,20 @@ $a_0=\sin^{-1}(1/8)/2=0.0626...$ and $\pi/2 - a_0$, $\pi+a_0$ and $3\pi/2 - a_0$
 
 ```
 a0 = (1/2) * asin(1/8)
-polar_plot(r, a0, pi/2-a0)
+plot_polar(r, a0, pi/2 - a0)
 ```
 
 
 The second---which is too small to appear in the initial plot without zooming in---with
 
 ```
-polar_plot(r, pi/2-a0, pi/2)
+plot_polar(r, pi/2 - a0, pi/2)
 ```
 
 The third with
 
 ```
-polar_plot(r, pi/2, pi+a0)
+plot_polar(r, pi/2, pi + a0)
 ```
 
 The plot repeats from there, so the initial plot could have been made over $[0, \pi + a_0]$.
@@ -204,7 +243,7 @@ r(\theta) = b + 2a\cos(\theta)
 ```
 a,b = 4, 2
 r(theta) = b + 2a*cos(theta)
-polar_plot(r)
+plot_polar(r, 0, 2pi)
 ```
 
 ##### Example
@@ -215,7 +254,7 @@ half period:
 
 ```
 r(theta) = sqrt(abs(cos(theta/8)))
-polar_plot(r, 0, 8pi)
+plot_polar(r, 0, 8pi)
 ```
 
 ## Area of polar graphs
@@ -224,7 +263,7 @@ Consider the [cardioid](http://www-history.mcs.st-and.ac.uk/Curves/Cardioid.html
 
 ```
 r(theta) = 2(1 + cos(theta))
-polar_plot(r, 0, 2pi)
+plot_polar(r, 0, 2pi)
 ```
 
 How much area is contained in the graph?
@@ -238,7 +277,7 @@ The area can be approximated by wedges (not rectangles). For example, here we se
 ```nocode
 gr()
 r(theta) = 1/(1 + (1/3)cos(theta))
-p = polar_plot(r, 0, pi/2, legend=false, linewidth=3, aspect_ratio=:equal)
+p = plot_polar(r, 0, pi/2, legend=false, linewidth=3, aspect_ratio=:equal)
 t0, t1, t2, t3 = collect(range(pi/12, pi/2 - pi/12, length=4))
 
 for s in (t0,t1,t2,t3)
@@ -411,9 +450,6 @@ with antiderivative $4\sqrt{2\cos(\theta) + 2} \cdot \tan(\theta/2)$,
 but `SymPy` isn't able to find it. Instead we give a numeric answer:
 
 ```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)
 quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
 ```
 
@@ -465,7 +501,6 @@ $$~
 Numerically then we have:
 
 ```
-using Roots
 dinner = 1 + 5/8
 douter = 5 + 1/4
 r(b,t) = dinner/2 + b*t
@@ -563,7 +598,6 @@ $$~
 Numerically, what is the slope of the tangent line when $\theta = \pi/4$?
 
 ```
-using Roots
 r(theta) = 2cos(theta)
 g(theta) = r(theta)*cos(theta)
 f(theta) = r(theta)*sin(theta)
@@ -661,7 +695,6 @@ curve traced out by $r(\theta) = \sqrt{\cos(2\theta)}$ between
 $-\pi/4$ and $\pi/4$. What is the answer (numerically)?
 
 ```
-using Roots
 r(theta) = sqrt(cos(2theta))
 val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)

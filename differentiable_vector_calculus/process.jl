@@ -12,14 +12,8 @@ fnames = ["polar_coordinates",
           "vectors",
           "vector_valued_functions",
           "scalar_functions",
-          "scalar_function_applications",
+          "scalar_functions_applications",
           "vector_fields"
-#          "double_integrals",
-#          "integral_polar_coordinates",
-#          "triple_integrals",
-#          "surface_integrals",
-#          "line_integrals",
-#          "integral_theorems"
 ]
 
 function process_file(nm, twice=false)
@@ -29,18 +23,14 @@ function process_file(nm, twice=false)
     twice && markdownToHTML("$nm.md")
 end
 
-process_files() = [process_file(nm) for nm in fnames]
-
-
+process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
 
 
 """
-## TODO
+## TODO differential_vector_calcululs
 
-
-
-
-
-
+### Add questions for scalar_function_applications
+* Newton's method??
+* optimization. Find least squares for perpendicular distance using the same 3 points...??
 
 """

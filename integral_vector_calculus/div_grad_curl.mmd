@@ -75,7 +75,7 @@ p
 
 ```nocode,noeval,noout
 ImageFile("figures/divergence-derivation.png",L"""
-A box-like region, $R$, with surface $S$. The surface integral over a face of $S$, $\oint_{S_i} F \cdot \hat{N} dA$, can be approximated by the dot product of the function, $F$, at a point on the face dotted with the unit normal times the area of the face. The surface area over the closed surface would be approxmated by $6$ such sums.
+A box-like region, $R$, with surface $S$. The surface integral over a face of $S$, $\oint_{S_i} F \cdot \hat{N} dA$, can be approximated by the dot product of the function, $F$, at a point on the face dotted with the unit normal times the area of the face. The surface area over the closed surface would be approximated by $6$ such sums.
 """)
 ```
 
@@ -147,8 +147,6 @@ Before considering the curl for $n=3$, we derive a related quantity in $n=2$. Th
 ```nocode
 gr()
 using LaTeXStrings
-_bar(x) = sum(x)/length(x)
-_shrink(x, xbar, offset) = xbar .+ (1-offset/100)*(x.-xbar)
 function apoly!(plt::Plots.Plot, ps; offset=5, kwargs...)
     xs, ys = unzip(ps)
     xbar, ybar = _bar.((xs, ys))
@@ -219,24 +217,6 @@ Consider now a similar scenario for the $n=3$ case. Let $F=\langle F_x, F_y,F_z\
 
 ```nocode
 pyplot()
-using LaTeXStrings
-_bar(x) = sum(x)/length(x)
-_shrink(x, xbar, offset) = xbar .+ (1-offset/100)*(x .- xbar)
-function apoly!(plt::Plots.Plot, ps; offset=5, kwargs...)
-    xs, ys = unzip(ps)
-    xbar, ybar = _bar.((xs, ys))
-    xs, ys = _shrink.(xs, xbar, offset), _shrink.(ys, ybar, offset)
-
-    plot!(plt, xs, ys; kwargs...)
-    xn = [xs[end],ys[end]]
-    x0 = [xs[1], ys[1]]
-    dxn = 0.95*(x0 - xn)
-
-    arrow!(plt, xn, dxn; kwargs...)
-
-    plt
-end
-apoly!(ps;offset=5,kwargs...) = apoly!(Plots.current(), ps; offset=offset, kwargs...)
 
 dx = .5
 dy = .250
@@ -369,7 +349,7 @@ $$~
 
 Had, the opposite face with outward normal $\hat{j}$ been chosen, the answer would differ by a factor of $-1$.
 
-Similarly, let $S_3$ be the face with outward normal $\hat{i}$ and curve $C_3$ bouding it with parameterization chosen so that the right hand rule points in the direction of $\hat{i}$. This will give
+Similarly, let $S_3$ be the face with outward normal $\hat{i}$ and curve $C_3$ bounding it with parameterization chosen so that the right hand rule points in the direction of $\hat{i}$. This will give
 
 
 $$~
@@ -528,7 +508,7 @@ The  divergence can be found symbolically:
 Or numerically:
 
 ```
-(∇ ⋅ F)(1,2,3)   # a numeric compuation. Also can call (∇ ⋅ F)([1,2,3])
+(∇ ⋅ F)(1,2,3)   # a numeric computation. Also can call (∇ ⋅ F)([1,2,3])
 ```
 
 
@@ -595,7 +575,7 @@ plot!(p, unzip(t -> (r0+dr) * [cos(t), sin(t)], t0, t0 + dt)..., linewidth=3)
 p
 ```
 
-```nocode
+```nocode, noout
 plotly()
 ```
 
@@ -605,7 +585,7 @@ $$~
 \nabla\cdot{F} = \lim \frac{1}{\Delta{V}} \oint_S F\cdot\hat{N} dA.
 ~$$
 
-In the vectorfield above, the shape along the curved edges has constant magnitude field. On the left curved edge, the length is smaller and the field is smaller than on the right. The flux across the left edge will be less than the flux across the right edge, and a net flux will exist. That is, there is divergence.
+In the vector field above, the shape along the curved edges has constant magnitude field. On the left curved edge, the length is smaller and the field is smaller than on the right. The flux across the left edge will be less than the flux across the right edge, and a net flux will exist. That is, there is divergence.
 
 
 Now, were the field on the right edge less, it might be that the two balance out and there is no divergence. This occurs with the inverse square laws, such as for gravity and electric field:
@@ -613,8 +593,8 @@ Now, were the field on the right edge less, it might be that the two balance out
 ```
 @vars x y z real=true
 R = [x,y,z]
-Rhat = R/norm(T)
-VF = (1/norm(R)^2) * rhat
+Rhat = R/norm(R)
+VF = (1/norm(R)^2) * Rhat
 ∇ ⋅ VF  |> simplify
 ```
 
@@ -849,28 +829,10 @@ $$~
 
 This is zero under the assumption that the second partial derivatives are continuous.
 
-From the microscopic picture of a box this can also be seen. Again we focus on just the appearance of the $F_z$ component function. Let the faces with normals $\hat{i}, \hat{j},-\hat{i}, -\hat{j}$ be labled $A, B, C$, and $D$. This figure shows $A$ (enclosed in blue) and $B$ (enclosed in green):
+From the microscopic picture of a box this can also be seen. Again we focus on just the appearance of the $F_z$ component function. Let the faces with normals $\hat{i}, \hat{j},-\hat{i}, -\hat{j}$ be labeled $A, B, C$, and $D$. This figure shows $A$ (enclosed in blue) and $B$ (enclosed in green):
 
 ```nocode
 gr()
-using LaTeXStrings
-_bar(x) = sum(x)/length(x)
-_shrink(x, xbar, offset) = xbar .+ (1-offset/100)*(x .- xbar)
-function apoly!(plt::Plots.Plot, ps; offset=5, kwargs...)
-    xs, ys = unzip(ps)
-    xbar, ybar = _bar.((xs, ys))
-    xs, ys = _shrink.(xs, xbar, offset), _shrink.(ys, ybar, offset)
-
-    plot!(plt, xs, ys; kwargs...)
-    xn = [xs[end],ys[end]]
-    x0 = [xs[1], ys[1]]
-    dxn = 0.95*(x0 - xn)
-
-    arrow!(plt, xn, dxn; kwargs...)
-
-    plt
-end
-apoly!(ps;offset=5,kwargs...) = apoly!(Plots.current(), ps; offset=offset, kwargs...)
 
 dx = .5
 dy = .250
@@ -908,7 +870,7 @@ ex = (-F_z(p2...) + F_z(p3...))*Δz +   # face A
 (F_z(p2...) - F_z(p1...))*Δz      # face D
 ```
 
-The term for face $A$, say, should be divided by $\Delta{y}\Delta{z}$ for the curl approximation, but this will be multiplied by the same amount for the divengence calculation, so it isn't written.
+The term for face $A$, say, should be divided by $\Delta{y}\Delta{z}$ for the curl approximation, but this will be multiplied by the same amount for the divergence calculation, so it isn't written.
 
 The expression above simplifies to:
 
@@ -941,7 +903,7 @@ The Helmholtz decomposition says not really. It states that vector fields that d
 
 From [Wikipedia](https://en.wikipedia.org/wiki/Helmholtz_decomposition) we have this formulation:
 
-Let $F$ be a vector field on a **bounded** domain $V$ which is twice continuosly differentiable. Let $S$ be the surface enclosing $V$. Then $F$ can be decomposed into a curl-free  component and a divergence-free component:
+Let $F$ be a vector field on a **bounded** domain $V$ which is twice continuously differentiable. Let $S$ be the surface enclosing $V$. Then $F$ can be decomposed into a curl-free  component and a divergence-free component:
 
 $$~
 F = -\nabla(\phi) + \nabla\times A.
@@ -1027,7 +989,7 @@ dS_u = \|  h_v dv \hat{e}_v \times  h_w dw \hat{e}_w \| = h_v h_w dv dw \| \hat{
 
 This uses orthogonality, so $\hat{e}_v \times \hat{e}_w$ is parallel to $\hat{e}_u$ and has unit length. Similarly, $dS_v = h_u h_w du dw$ and $dS_w = h_u h_v du dv$ .
 
-The volume element is found by *projecting* $d\vec{r}$ onto the $\hat{e}_u$, $\hat{e}_v$, $\hat{e}_w$ coordinate system through $(d\vec{r} \cdot\hat{e}_u) \hat{e}_u$, $(d\vec{r} \cdot\hat{e}_v) \hat{e}_v$, and $(d\vec{r} \cdot\hat{e}_w) \hat{e}_w$. Then forming the triple scalar product to compute the volume of the parallelpiped:
+The volume element is found by *projecting* $d\vec{r}$ onto the $\hat{e}_u$, $\hat{e}_v$, $\hat{e}_w$ coordinate system through $(d\vec{r} \cdot\hat{e}_u) \hat{e}_u$, $(d\vec{r} \cdot\hat{e}_v) \hat{e}_v$, and $(d\vec{r} \cdot\hat{e}_w) \hat{e}_w$. Then forming the triple scalar product to compute the volume of the parallelepiped:
 
 $$~
 \left[(d\vec{r} \cdot\hat{e}_u) \hat{e}_u\right] \cdot
@@ -1181,7 +1143,7 @@ df =
 \frac{1}{h_w}\frac{\partial{f}}{\partial{w}} h_wdw.
 ~$$
 
-But, as was used above, $d\vec{r} \cdot \hat{e}_u = h_u du$, etc. so $df$ can be reexpressed as:
+But, as was used above, $d\vec{r} \cdot \hat{e}_u = h_u du$, etc. so $df$ can be re-expressed as:
 
 $$~
 df = (\frac{1}{h_u}\frac{\partial{f}}{\partial{u}}\hat{e}_u +
@@ -1387,7 +1349,7 @@ radioq(choices, ans)
 
 ###### Question
 
-Based on this vectorfield plot
+Based on this vector-field plot
 
 ```nocode
 gr()

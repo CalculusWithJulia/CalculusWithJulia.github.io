@@ -82,7 +82,7 @@ rp = diff.(r(t),t)  # r'
 area = integrate((rho ∘ r)(t) * norm(rp), (t, 0, PI))
 ```
 
-Continuing, we could find the center of mass by interating $\int_C z (f\circ \vec{r}) \|r'\| dt$:
+Continuing, we could find the center of mass by integrating $\int_C z (f\circ \vec{r}) \|r'\| dt$:
 
 ```
 Mz = integrate(r(t)[3] * (rho ∘ r)(t) * norm(rp), (t, 0, PI))
@@ -127,11 +127,11 @@ which is $1$ on the path $C$. So $\int_C B\cdot\hat{T} ds = \int_C ds = 2\pi$. S
 
 ### Line integrals and vector fields; work and flow
 
-As defined above, the line integral is defined for a scalar function, but this can be generalized. If $F:R^n \rightarrow R^n$ is a vector field, then each component is a scalar function, so the integral $\int (F\circ\vec{r}) \|\vec{r}'\| dt$ can be defined component by compontent to yield a vector.
+As defined above, the line integral is defined for a scalar function, but this can be generalized. If $F:R^n \rightarrow R^n$ is a vector field, then each component is a scalar function, so the integral $\int (F\circ\vec{r}) \|\vec{r}'\| dt$ can be defined component by component to yield a vector.
 
 However, it proves more interesting to define an integral
 incorporating how properties of the path interact with the vector
-field. The key is $\vec{r}'(t) dt = \hat{T} \| \vec{r}'(t)\|dt$ describes both the mangitude of how the parameterization stretches an interval but also a direction the path is taking. This direction allows interaction with the vector field.
+field. The key is $\vec{r}'(t) dt = \hat{T} \| \vec{r}'(t)\|dt$ describes both the magnitude of how the parameterization stretches an interval but also a direction the path is taking. This direction allows interaction with the vector field.
 
 The canonical example is [work](https://en.wikipedia.org/wiki/Work_(physics)), which is a measure of a
 force times a distance. For an object following a path, the work done is still a force times a distance, but only that force in the direction of the motion is considered. (The *constraint force* keeping the object on the path does no work.) Mathematically, $\hat{T}$ describes the direction of motion along a path, so the work done in moving an object over a small segment of the path is $(F\cdot\hat{T}) \Delta{s}$. Adding up incremental amounts of work leads to a Riemann sum for a line integral involving a vector field.
@@ -202,10 +202,11 @@ That this is non-zero reflects a feature of the vector field. In this case, the 
 
 Let $F$ be the force of gravity exerted by a mass $M$ on a mass $m$ a distance $\vec{r}$ away, that is $F(\vec{r}) = -(GMm/\|\vec{r}\|^2)\hat{r}$.
 
-Let $\vec{r}(t) = \langle 1-t, 0, t\rangle$, $0 \leq t \leq 1$. For concretenesss, we take $G M m$ to be $10$. Then the work to move the mass is given by:
+Let $\vec{r}(t) = \langle 1-t, 0, t\rangle$, $0 \leq t \leq 1$. For concreteness, we take $G M m$ to be $10$. Then the work to move the mass is given by:
 
 ```
 using QuadGK
+uvec(v) = v/norm(v) # unit vector
 GMm = 10
 F(r) = - GMm /norm(r)^2 * uvec(r)
 r(t) = [1-t, 0, t]
@@ -280,7 +281,7 @@ There are technical assumptions about curves and regions that are necessary for 
 
 * Let $C$ be a [Jordan](https://en.wikipedia.org/wiki/Jordan_curve_theorem) curve--- a non-self-intersecting continuous loop in the plane. Such a curve divides the plane into two regions, one bounded and one unbounded. The normal to a Jordan curve is assumed to be in the direction of the unbounded part.
 
-* Further, we will assume that our curves are *piecewise smooth*. That is comprised of finitely many smooth pieces, continously connected.
+* Further, we will assume that our curves are *piecewise smooth*. That is comprised of finitely many smooth pieces, continuously connected.
 
 * The region enclosed by a closed curve has an *interior*, $D$, which we assume is an *open* set (one for which every point in $D$ has some "ball" about it entirely within $D$ as well.)
 
@@ -414,12 +415,12 @@ plotly()
 ```
 
 
-The flow integral is typcically computed for a closed (Jordan) curve, measuring the total flow out of a region. In this case, the integral is written $\oint_C (F\cdot\hat{N})ds$.
+The flow integral is typically computed for a closed (Jordan) curve, measuring the total flow out of a region. In this case, the integral is written $\oint_C (F\cdot\hat{N})ds$.
 
 
 ```
 note(L"""
-For a Jordan curve, the positive orientation of the curve is such that the normal direction (proportional to $\hat{T}'$) points away from the bounded interior. For a non-closed path, the choice of parameterization will determine the normal and the integral for flow across a curve is dependent--upto its sign--on this choice.
+For a Jordan curve, the positive orientation of the curve is such that the normal direction (proportional to $\hat{T}'$) points away from the bounded interior. For a non-closed path, the choice of parameterization will determine the normal and the integral for flow across a curve is dependent--up to its sign--on this choice.
 """)
 ```
 
@@ -620,7 +621,7 @@ arrow!(Pt + v2/2, v1/2, linewidth=1, linetype=:dashed, color=:red)
 arrow!(Pt, (1/4)*(v1 × v2), linewidth=3, color=:blue)
 ```
 
-The figure shows that a cell on the grid in the $u-v$ plane of area $\Delta{u}\Delta{v}$ maps to a cell of the partition with surface area $\Delta{S}$ which can be *approximated* by a part of the tangent plane described by two vectors $\vec{v}_1 = \partial{\Phi}/\partial{u}$ and $\vec{v}_2 = \partial{\Phi}/\partial{v}$. These two vectors have cross product which a) points in the direction of the normal vector, and b) has magnitude yielding the approxiation $\Delta{S} \approx \|\vec{v}_1 \times \vec{v}_2\|\Delta{u}\Delta{v}$.
+The figure shows that a cell on the grid in the $u-v$ plane of area $\Delta{u}\Delta{v}$ maps to a cell of the partition with surface area $\Delta{S}$ which can be *approximated* by a part of the tangent plane described by two vectors $\vec{v}_1 = \partial{\Phi}/\partial{u}$ and $\vec{v}_2 = \partial{\Phi}/\partial{v}$. These two vectors have cross product which a) points in the direction of the normal vector, and b) has magnitude yielding the approximation $\Delta{S} \approx \|\vec{v}_1 \times \vec{v}_2\|\Delta{u}\Delta{v}$.
 
 If we were to integrate the function $G(x,y, z)$ over the *surface* $S$, then an approximating Riemann sum could be produced by $G(c) \| \vec{v}_1 \times \vec{v}_2\| \Delta u \Delta v$, for some point $c$ on the surface.
 
@@ -727,9 +728,9 @@ norm((v1 × v2)/H(x)) .|> simplify
 
 Consider the *upper* half sphere, $S$. Compute $\int_S z dS$.
 
-Were the half sphere made of a thin uniform material, this would be computed to find the $z$ dierction of the centroid.
+Were the half sphere made of a thin uniform material, this would be computed to find the $z$ direction of the centroid.
 
-We use the spherical cooridinates to parameterize:
+We use the spherical coordinates to parameterize:
 
 $$~
 \Phi(\theta, \phi) = \langle \cos(\phi)\cos(\theta), \cos(\phi)\sin(\theta), \sin(\phi) \rangle
@@ -782,7 +783,7 @@ When the surface is described by a function, $z=f(x,y)$, the parameterization is
 
 ##### Example
 
-Suppose a vector field $F(x,y,z) = \langle 0, y, -z \rangle$ is given. Let $S$ be the surface of the parabaloid $y = x^2 + z^2$ between $y=0$ and $y=4$. Compute the surface integral $\int_S F\cdot \hat{N} dS$.
+Suppose a vector field $F(x,y,z) = \langle 0, y, -z \rangle$ is given. Let $S$ be the surface of the paraboloid $y = x^2 + z^2$ between $y=0$ and $y=4$. Compute the surface integral $\int_S F\cdot \hat{N} dS$.
 
 This is a surface of revolution about the $y$ axis, so a parameterization is
 $\Phi(y,\theta) = \langle \sqrt{y} \cos(\theta), y, \sqrt{y}\sin(\theta) \rangle$. The surface normal is given by:
@@ -813,7 +814,7 @@ F(x,y,z) = [1, y, z]
 F(v) = F(v...)
 ```
 
-The surface has three faces, with different outward pointing normals for each. Let $S_1$ be the unit disk in the $x-y$ plane with normal $-\hat{k}$; $S_2$ be the top part, with normal $\langle \langle-1, 0, 1\rangle$ (as the plane is $-1x + 0y + 1z = 1$); and $S_3$ be the cylindrical part with outward pointing norml $\vec{r}$.
+The surface has three faces, with different outward pointing normals for each. Let $S_1$ be the unit disk in the $x-y$ plane with normal $-\hat{k}$; $S_2$ be the top part, with normal $\langle \langle-1, 0, 1\rangle$ (as the plane is $-1x + 0y + 1z = 1$); and $S_3$ be the cylindrical part with outward pointing normal $\vec{r}$.
 
 
 Integrating over $S_1$, we have the parameterization $\Phi(r,\theta) = \langle r\cos(\theta), r\sin(\theta), 0\rangle$:
@@ -872,7 +873,7 @@ A1 + A2 + A3
 
 ##### Example
 
-Two point charges with charges $q$ and $q_0$ will exert an electrostatic force of attraction or repulsion according to [Coulomb](https://en.wikipedia.org/wiki/Coulomb%27s_law)'s law. The Coulumb force is $kqq_0\vec{r}/\|\vec{r}\|^3$.
+Two point charges with charges $q$ and $q_0$ will exert an electrostatic force of attraction or repulsion according to [Coulomb](https://en.wikipedia.org/wiki/Coulomb%27s_law)'s law. The Coulomb force is $kqq_0\vec{r}/\|\vec{r}\|^3$.
 This force is proportional to the product of the charges, $qq_0$, and inversely proportional to the square of the distance between them.
 
 The electric field is a vector field is the field generated by the force on a test charge, and is given by $E = kq\vec{r}/\|\vec{r}\|^3$.
@@ -913,7 +914,7 @@ A1 = hcubature(r -> E(Phi(r)-a) ⋅ normal(r) * norm(SE(r)), (0.0,0.0), (2pi, 1p
 A1[1]
 ```
 
-The answer is $4\pi$, regardless of the choice of `a`, as long as it is *inside* the surface. (We see above, some fussyness in the limits of integration. `HCubature` does some conversion of the limits, but does not *currently* do well with mixed types, so in the above only floating point values are used.)
+The answer is $4\pi$, regardless of the choice of `a`, as long as it is *inside* the surface. (We see above, some fussiness in the limits of integration. `HCubature` does some conversion of the limits, but does not *currently* do well with mixed types, so in the above only floating point values are used.)
 
 When `a` is *outside* the surface, the answer is *always*:
 
@@ -1102,7 +1103,7 @@ The function $F = \nabla{f}$ is
 ```
 choices = [
 "Not continuous everywhere",
-"Continuous everywehere"
+"Continuous everywhere"
 ]
 ans = 1
 radioq(choices, ans)

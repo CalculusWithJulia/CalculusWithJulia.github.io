@@ -9,7 +9,8 @@ Theses notes are a bit different in that `Julia` is primarily used for the numer
 Our real goal is to get at the concepts using technology as much as possible without getting bogged down in the mechanics of the computer language. We feel `Julia` has a very natural syntax that makes the initial start up not so much more difficult than using a calculator. The notes restrict themselves to a reduced set of computational concepts. This set is sufficient for working the problems in mathematics, but do not cover thoroughly many aspects of programming. (Those who are interested can go off on their own and `Julia` provides a rich opportunity to do so.) Within this restricted set, are operators that make many of the computations of calculus reduce to a function call of the form `action(function, arguments...)`. With a small collection of actions that can be composed, many of the problems associated with introductory calculus can be attacked.
 
 
-These notes are presented in pages covering a fairly focused concept, in a spirit similar to a section of a book. Just like a book, there are try-it-yourself questions at the end of each page. All have self-graded answers.
+These notes are presented in pages covering a fairly focused concept, in a spirit similar to a section of a book. Just like a book, there are try-it-yourself questions at the end of each page. All have a limited number of self-graded answers. These notes borrow ideas from many sources including [Strang](https://ocw.mit.edu/resources/res-18-001-calculus-online-textbook-spring-2005/), [Knill](http://www.math.harvard.edu/~knill/teaching), [Schey](https://www.amazon.com/Div-Grad-Curl-All-That/dp/0393925161/), Thomas Calculus, Rogawski and Adams, and several Wikipedia pages.
+
 
 ## Getting started with Julia
 
@@ -186,10 +187,10 @@ Ordinary differential equations are an application of integration and the fundam
 
 ## Multivariable calculus
 
-Univariate functions take a single number as an input and return a number as the output. Notationally, we write $f: R \rightarrow R$. More generally, a function might have several input variables and might return several output variables, notationally $f: R^n \rightarrow R^m$, for positive, integer values of $n$ and $m$. Special cases are when $n=1$ (a space curve) or when $m=1$ (a scalar-valued function). Many of the concepts of calculus for univariate functions carry over, with suitable modifications.
+Univariate functions take a single number as an input and return a number as the output. Notationally, we write $f: R \rightarrow R$. More generally, a function might have several input variables and might return several output variables, notationally $F: R^n \rightarrow R^m$, for positive, integer values of $n$ and $m$. Special cases are when $n=1$ (a space curve) or when $m=1$ (a scalar-valued function). Many of the concepts of calculus for univariate functions carry over, with suitable modifications.
 
 
-Polar coordinates are an often useful alternative to describing location in the $x-y$ plane.
+Polar coordinates are an often useful alternative to describing location in the $x$-$y$ plane.
 
 - [Polar Coordinates](differentiable_vector_calculus/polar_coordinates.html)
 
@@ -197,7 +198,7 @@ The calculus of functions involving more than $1$ variable is greatly simplified
 
 - [Vectors](differentiable_vector_calculus/vectors.html)
 
-In general we will consider multivariable functions from $R^n$ into $R^m$ (functions of $n$ variables that return $m$ different values), but it is helpful to specialize to two cases first. These are vector valued functions ($f: R \righarrow R^n$) and scalar functions ($f:R^n \rightarrow R$).
+In general we will consider multivariable functions from $R^n$ into $R^m$ (functions of $n$ variables that return $m$ different values), but it is helpful to specialize to two cases first. These are vector valued functions ($f: R \rightarrow R^n$) and scalar functions ($f:R^n \rightarrow R$).
 
 - [Vector-valued functions](differentiable_vector_calculus/vector_valued_functions.html)
 
@@ -210,32 +211,58 @@ We discuss applications of the derivative for scalar functions. These include li
 
 The derivative of a mulitvariable function is discussed here. We will see that with the proper notation, many formulas from single variable calculus will hold with slight modifications.
 
-- [Vector fields](differentiable_vector_calculus/scalar_functions_applications.html)
+- [Vector fields](differentiable_vector_calculus/vector_fields.html)
 
 ----
 
-Integral vector calculus begins with a generalization of integration to compute area to integration to compute volume (and its generalization to higher dimensions). Then continues, as the concept lends itself to integration over curves and surfaces.
+Integral vector calculus begins with a generalization of integration to compute area to integration to compute volumes (and its generalization to higher dimensions). The integration concept is then extended to  integration over curves and surfaces. With this, generalizations of the fundamental theorem of calculus are discussed.
 
 We begin with the generalization of the Riemann integral to compute area to the computation of volume and its higher dimensional interpretations.
 
-- [Double and triple integrals](integral_vector_calculus/double_triple_integrals.html")
+- [Double and triple integrals](integral_vector_calculus/double_triple_integrals.html)
+
+Line and surface integrals are computed by 1- and 2-dimensional integrals, but offer new interpretations, espcially when vector fields are considered.
+
+- [Line and surface integrals](integral_vector_calculus/line_integrals.html)
+
+There are three main operations in differential vector calculus, the gradient, the divergence, and the curl. This is an introduction to the two latter ones.
+
+- [Divergence and curl](integral_vector_calculus/div_grad_curl.html)
 
 
-XXX integration along paths
+The fundamental theorem of calculus states that a definite integral over an interval can be computed using a related function and the boundary points of the interval. The fundamental theorem of line integrals is a higher dimensional analog. In this section, related theorems are considered: Green's theorem in $2$ dimensions and Stokes' theorem and the divergence theorem in $3$ dimensions.
+
+- [Green's theorem, Stokes' theorem, and the divergence theorem](integral_vector_calculus/stokes_theorem.html)
 
 
-XXX integration over surfaces
 
+----
 
+Here is a quick review of the math topics discussed on vector calculus.
 
+- [Review of vector calculus](integral_vector_calculus/review.html)
 
 
 ## Bibliography
 
 - [Bibliography](bibliography.html)
 
+## A quick review
+
+- [Quick notes](quick-notes.html)
+
+
+## Miscellaneous
+
+- Some different [interfaces](julia_interfaces.html) interfaces to `Julia`.
+
+- The [CalculusWithJulia](calculus_with_julia.html) package.
+
+- [Unicode symbol](unicode.html) usage in `Julia`.
+
 
 ----
+
 
 
 

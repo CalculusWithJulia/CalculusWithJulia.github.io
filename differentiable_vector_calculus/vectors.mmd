@@ -1,7 +1,7 @@
 # Vectors and matrices
 
 ```nocode, noout
-using Plots, LinearAlgebra
+using CalculusWithJulia, Plots, LinearAlgebra
 gr()
 ```
 
@@ -33,9 +33,10 @@ As seen earlier, vectors have some arithmetic operations defined for them. As a 
 
 Another operation for vectors is *scalar* multiplication. Geometrically this changes the magnitude, but not the direction of a vector, when the *scalar* is positive. Scalar multiplication is defined component wise, like addition so the $i$th component of $c \vec{v}$ is $c$ times the $i$th component of $\vec{v}$. When the scalar is negative, the direction is "reversed."
 
-To illustrate we define two 3D vectors:
+To illustrate we first load our package and define two 3D vectors:
 
 ```
+using CalculusWitJulia
 u, v = [1, 2, 3], [4, 3, 2]
 ```
 
@@ -87,9 +88,9 @@ gr()       # better arrows than plotly()
 quiver([0],[0], quiver=([1],[2]))
 ```
 
-The cumbersome syntax is typical here. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above usage looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function:
+The cumbersome syntax is typical here. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above usage looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function from the `CalculusWithJulia` package:
 
-```
+```noeval
 unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
 ```
 
@@ -114,20 +115,13 @@ quiver!(unzip([p])..., quiver=unzip([w]))
 
 Plotting a 3-d vector is not supported in all toolkits with
 `quiver`. A line segment may be substituted and can be produced
-with `plot(unzip([p,p+v])...)`. To avoid all these details, we will utilize the following function to *add* a vector to an existing plot. The function requires a point, `p`, and the vector, `v`:
+with `plot(unzip([p,p+v])...)`. To avoid all these details, the `CalculusWithJulia` provides the `arrow!` function to *add* a vector to an existing plot. The function requires a point, `p`, and the vector, `v`:
 
-```
-function arrow!(plt::Plots.Plot, p, v; kwargs...)
-  length(p) == 2 && return quiver!(plt, unzip([p])..., quiver=unzip([v]); kwargs...)
-  length(p) == 3 && return plot!(plt, unzip([p, p+v])...; kwargs...)
-end
-arrow!(p,v;kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
-```
 
 With this, the above simplifies to:
 
 ```
-plot!()
+plot(legend=false)
 arrow!(p, u)
 arrow!(u, v)
 arrow!(p, w)
@@ -145,13 +139,13 @@ using LinearAlgebra
 v = [2, 3]
 u = v / norm(v)
 p = [0, 0]
-plot()
+plot(legend=false)
 arrow!(p, v)
 arrow!(p, u, linewidth=5)
 ```
 
 
-The `norm` function is in the standard library, `LinearAlgebra`, which must be loaded first through the command `using LinearAlgebra`.
+The `norm` function is in the standard library, `LinearAlgebra`, which must be loaded first through the command `using LinearAlgebra`. (Though here it is redundant, as that package is loaded when the `CalculusWithJulia` package is loaded.)
 
 ## Aside: review of `Julia`'s use of dots to work with containers
 
@@ -190,7 +184,7 @@ f.(xs, ys)
 This matches `xs` and `ys` to pass `(0,0)` and then `(1,1)` to `f`, returning `0` and `2`. Now consider
 
 ```
-xs = [0, 1]; ys = [0 1]
+xs = [0, 1]; ys = [0 1]  # xs is a column vector, ys a row vector
 f.(xs, ys)
 ```
 
@@ -225,7 +219,7 @@ $$~
 If we denoted $\hat{v} = \vec{v} / \| \vec{v} \|$, the unit vector in the direction of $\vec{v}$, then by dividing, we see that
 $\cos(\theta) = \hat{v} \cdot \hat{w}$. That is the angle does not depend on the magnitude of the vectors involved.
 
-The dot product is computed in `Julia` by the `dot` function, which is in the `LinearAlgebra` package of the standard library. This must be loaded (as above) before its use:
+The dot product is computed in `Julia` by the `dot` function, which is in the `LinearAlgebra` package of the standard library. This must be loaded (as above) before its use either directly or through the `CalculusWithJulia` package:
 
 ```
 u = [1, 2]
@@ -250,21 +244,21 @@ acos(ctheta)
 ```
 
 
-The cosine of $\pi/2$ is $0$, so two vectors which are at right angles to each other will have a $0$ dot product:
+The cosine of $\pi/2$ is $0$, so two vectors which are at right angles to each other will have a dot product of  $0$:
 
 ```
 u = [1, 2]
-v = [-2, 1]
+v = [2, -1]
 u ⋅ v
 ```
 
-In two dimensions, we learn that a perpendicular line to a line with slope $m$ will have slope $-1/m$. From a 2-dimensional vector, say $\vec{u} = \langle u_1, u_2 \rangle$ the slope is $u_2/u_1$ so a perpendicular vector to $\vec{u}$ will be $\langle -u_2, u_1 \rangle$, as above. For higher dimensions, where the angle is harder to visualize, the dot product defines perpendicularness, or *orthogonality*.
+In two dimensions, we learn that a perpendicular line to a line with slope $m$ will have slope $-1/m$. From a 2-dimensional vector, say $\vec{u} = \langle u_1, u_2 \rangle$ the slope is $u_2/u_1$ so a perpendicular vector to $\vec{u}$ will be $\langle u_2, -u_1 \rangle$, as above. For higher dimensions, where the angle is harder to visualize, the dot product defines perpendicularness, or *orthogonality*.
 
 For example, these two vectors are orthogonal, as their dot product is $0$, even though we can't readily visualize them:
 
 ```
-u = [1,2,3,4,5]
-v = [-30,4,3,2,1]
+u = [1, 2, 3, 4, 5]
+v = [-30, 4, 3, 2, 1]
 u ⋅ v
 ```
 
@@ -279,7 +273,7 @@ a = [1, 0]  # unit vector
 h_hat = h / norm(h)
 theta = acos(h_hat ⋅ a)
 
-plot()
+plot(legend=false)
 arrow!([0,0], h)
 arrow!([0,0], norm(h) * cos(theta) * a)
 arrow!([0,0], a, linewidth=3)
@@ -304,7 +298,7 @@ where $\hat{v}$ is the unit vector in the direction of $\vec{v}$.
 
 ##### Example
 
-A pendulum, a bob on a string, swings back and forth due to the force of gravity. When the bob is displaced from rest by an angle $\theta$, then the tension force of the string on the bob, is directed along the string and has magnitude given by the *projection* of the force due to gravity.
+A pendulum, a bob on a string, swings back and forth due to the force of gravity. When the bob is displaced from rest by an angle $\theta$, then the tension force of the string on the bob is directed along the string and has magnitude given by the *projection* of the force due to gravity.
 
 
 A [force diagram](https://en.wikipedia.org/wiki/Free_body_diagram) is a useful visualization device of physics to illustrate the applied forces involved in a scenario. In this case the bob has two forces acting on it: a force due to tension in the string of unknown magnitude, but in the direction of the string; and a force due to gravity. The latter is in the downward direction and has magnitude $mg$, $g=9.8m/sec^2$ being the gravitational constant.
@@ -354,10 +348,10 @@ w = [1, 2, 4]
 We can find a vector from `v` orthogonal to `u` using:
 
 ```
-uvec(u) = u / norm(u)
-projection(u, v) = (u ⋅ uvec(v)) * uvec(v)
+unit_vec(u) = u / norm(u)
+projection(u, v) = (u ⋅ unit_vec(v)) * unit_vec(v)
 
-vorth = u - projection(u, v)
+vorth = v - projection(v, u)
 worth = w - projection(w, u) - projection(w, vorth)
 ```
 
@@ -367,13 +361,13 @@ We can verify the orthogonality through:
 u ⋅ vorth, u ⋅ worth, vorth ⋅ worth
 ```
 
-This only works when the three vectors do not all lie in the same plane. In general, this is the beginnings of the Gram-Schmidt process for creating *orthogonal* vectors from a collection of vectors.
+This only works when the three vectors do not all lie in the same plane. In general, this is the beginnings of the [Gram-Schmidt](https://en.wikipedia.org/wiki/Gram-Schmidt_process) process for creating *orthogonal* vectors from a collection of vectors.
 
 
 
 #### Algebraic properties
 
-The dot product is similar to multiplication, but different as it is an operation defined between vectors of the same dimension. However, many algebraic properties carry over:
+The dot product is similar to multiplication, but different, as it is an operation defined between vectors of the same dimension. However, many algebraic properties carry over:
 
 * commutative: $\vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u}$
 
@@ -383,7 +377,7 @@ The dot product is similar to multiplication, but different as it is an operatio
 
 The last two can be combined: $\vec{u}\cdot(s \vec{v} + t \vec{w}) = s(\vec{u}\cdot\vec{v}) + t (\vec{u}\cdot\vec{w})$.
 
-But associative does not make sense, as $(\vec{u} \cdot \vec{v}) \cdot \vec{w}$ does not make sense as two dot products, as the result of the first is not a vector, but a scalar.
+But associative does not make sense, as $(\vec{u} \cdot \vec{v}) \cdot \vec{w}$ does not make sense as two dot products: the result of the first is not a vector, but a scalar.
 
 ## Matrices
 
@@ -413,7 +407,7 @@ M = \left[
 -3& 6 & 9
 \end{array}
 \right],\quad
-\vec{x} = \langle x, y , z\rangle, \quad \text{ and }
+\vec{x} = \langle x, y , z\rangle,\quad
 \vec{b} = \langle 10, 11, 12\rangle,
 ~$$
 
@@ -432,7 +426,7 @@ called an identify matrix.
 
 Matrices, like vectors, have scalar multiplication defined for them. then scalar multiplication of a matrix $M$ by $c$ just multiplies each entry by $c$, so the new matrix would have components defined by $cm_{ij}$.
 
-Matrices of the same size, like vectors, have addition defined for them. As with scalar multiplication, this  defined component wise. So $A+B$ is the matrix with $ij$ entry $A_{ij} + B_{ij}$.
+Matrices of the same size, like vectors, have addition defined for them. As with scalar multiplication, addition is defined component wise. So $A+B$ is the matrix with $ij$ entry $A_{ij} + B_{ij}$.
 
 ### Matrix multiplication
 
@@ -442,11 +436,13 @@ $$~
 (AB)_{ij} = A_{i:} \cdot B_{:j}.
 ~$$
 
-That is, if we view the $i$th row of $A$ and the $j$th column of B as a *vector*, then the $ij$ entry is the dot product.
+That is, if we view the $i$th row of $A$ and the $j$th column of B as  *vectors*, then the $ij$ entry is the dot product.
 
 This is why $M$ in the example above, has the coefficients for each equation in a row and not a column, and why $\vec{x}$ is thought of as a $n\times 1$ matrix (a column vector) and not as a row vector.
 
 Matrix multiplication between $A$ and $B$ is not, in general, commutative. Not only may the sizes not permit $BA$ to be found when $AB$ may be, there is just no guarantee when the sizes match that the components will be the same.
+
+----
 
 Matrices have other operations defined on them. We mention three here:
 
@@ -587,7 +583,17 @@ This confirms how each entry (`(A*B)[i,j]`) is from a dot product (`A[i,:]  ⋅ 
 When the multiplication is broadcasted though, with `.*`, the operation will be component wise:
 
 ```
-M .* M   # component wise
+M .* M   # component wise (Hadamard product)
+```
+
+----
+
+
+The determinant is found through `det` provided by the built-in `LinearAlgebra` package:
+
+```
+using LinearAlgebra  # loaded with the CalculusWithJulia package
+det(M)
 ```
 
 ----
@@ -620,11 +626,10 @@ and
 [u'; v']
 ```
 
-The determinant is found through `det` provided by the built-in `LinearAlgebra` package:
-
 ```
-using LinearAlgebra
-det(M)
+note("""
+The adjoint is defined *recursively* in `Julia`. In the `CalculusWithJulia` package, we overload the '\'' notation for *functions* to yield a univariate derivative found with automatic differentiation. This can lead to problems: if we have a matrix of functions, `M`, and took the transpose with `M'`, then the entries of `M'` would be the derivatives of the functions in `M`--not the original functions. This is very much likely to not be what is desired. The `CalculusWithJulia` package commits **type piracy** here *and* abuses the generic idea for '\'' in Julia. In general type piracy is very much frowned upon, as it can change expected behaviour. It is defined in `CalculusWithJulia`, as that package is intended only to act as a means to ease users into the wider package ecosystem of `Julia`.
+""")
 ```
 
 ----
@@ -664,7 +669,7 @@ $$~
 
 ```
 note("""
-The right-hand rule is also useful to understand how standard household screws will behave when twisted with a screwdriver. If the right hand fingers curl in the direction of the twisting screwdriver, then the screw will go in or out following the direction given by the orientation of the thumb.
+The right-hand rule is also useful to understand how standard household screws will behave when twisted with a screwdriver. If the right hand fingers curl in the direction of the twisting screwdriver, then the screw will go in or out following the direction pointed to by the thumb.
 """)
 ```
 
@@ -690,7 +695,7 @@ $$~
 u_1   & u_2   & u_3\\
 v_1   & v_2   & v_3
 \end{array}
-\right].
+\right] =
 ~$$
 
 From the $\sin(\theta)$ term in the definition, we see that $\vec{u}\times\vec{u}=0$. In fact, the cross product is $0$ only if the two vectors involved are parallel or there is a zero vector.
@@ -724,13 +729,13 @@ Using vectors of size different than $n=3$ produces a dimension mismatch error:
 [1, 2] × [3, 4]
 ```
 
-(It can prove useful to pad 2-dimesional vectors into 3-dimensional vectors by adding a $0$ third component. We will see this in the discussion on curvature in the plane.)
+(It can prove useful to pad 2-dimensional vectors into 3-dimensional vectors by adding a $0$ third component. We will see this in the discussion on curvature in the plane.)
 
 
 Let's see that the matrix definition will be identical (after identifications) to `cross`:
 
 ```
-using SymPy, LinearAlgebra
+using SymPy, LinearAlgebra  # already loaded with the CalculusWithJulia package
 @vars i j k
 M = [i j k; 3 4 5; 3 6 7]
 det(M) |> simplify
@@ -814,6 +819,13 @@ $$~
 that is, the area of the parallelepiped. Wait, what about $(\vec{v}\times\vec{u})\cdot\vec{w}$? That will have an opposite sign. Yes, in the above, there is an assumption that $\vec{n}$ and $\vec{w}$ have a an angle between them within $[0, \pi/2]$, otherwise an absolute value must be used, as volume is non-negative.
 
 
+```
+note(L"""
+The triple-scalar product, $\vec{u}\cdot(\vec{v}\times\vec{w})$, gives the volume of the parallelepiped up to sign. If the sign of this is positive, the 3 vectors are said to have a *positive* orientation, if they triple-scalar product is negative, the vectors have a *negative* orientation.
+""")
+```
+
+
 #### Algebraic properties
 
 The cross product has many properties, some different from regular multiplication:
@@ -839,7 +851,6 @@ The following shows the algebraic properties stated above hold for
 symbolic vectors. First the linearity of the dot product:
 
 ```
-using SymPy
 @vars s t u1 u2 u3 v1 v2 v3 w1 w2 w3 real=true
 u = [u1, u2, u3]
 v = [v1, v2, v3]
@@ -1244,6 +1255,41 @@ choices = [
 "The triple product describes a volume up to sign, this combination preserves the sign",
 "The vectors are *orthogonal*, so these are all zero",
 "The vectors are all unit lengths, so these are all 1"
+]
+ans = 1
+radioq(choices, ans)
+```
+
+###### Question
+
+Snell's law in planar form is $n_1\sin(\theta_1) = n_2\sin(\theta_2)$ where $n_i$ is a constant depending on the medium.
+
+```
+f(t) = sin(t)
+p = plot(ylim=(.2,1.5), xticks=nothing, yticks=nothing, border=:none, legend=false, aspect_ratio=:equal)
+plot!(f, pi/6, pi/2, linewidth=4, color=:blue)
+t0 = pi/3
+p0 = [t0, f(t0)]
+Normal = [f'(t0), -t0]
+arrow!(p0, .5 * Normal, linewidth=4, color=:red )
+incident = (Normal + [.5, 0]) * .5
+arrow!(p0 - incident, incident, linewidth=4, color=:black)
+out = -incident + [.1,0]
+arrow!(p0, -out, linewidth=4, color=:black)
+annotate!([(0.8, 1.0, L"\hat{v}_1"),
+        (.6, .75, L"n_1"),
+        (1.075, 0.7, L"\hat{n}"),
+        (1.25, 0.7, L"\hat{v}_2"),
+        (1.5, .75, L"n_2")
+        ])
+```
+
+In vector form, we can express it using *unit* vectors through:
+
+```
+choices = [
+L"n1 (\hat{v_1}\times\hat{n}) = n2  (\hat{v_2}\times\hat{n})",
+L"n1 (\hat{v_1}\times\hat{n}) = -n2  (\hat{v_2}\times\hat{n})"
 ]
 ans = 1
 radioq(choices, ans)

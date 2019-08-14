@@ -20,22 +20,11 @@ Similarly,  a weather map, say of the United States, may show the maximum predic
 Mathematically, we may describe the values $(x,y)$ in terms of a point, $P=(x,y)$ or a vector $\vec{v} = \langle x, y \rangle$ using the identification of a point with a vector. As convenient, we may write any of $f(x,y)$, $f(P)$, or $f(\vec{v})$ to describe the evaluation of $f$ at the value $x$ and $y$
 
 
-Before proceeding with how to define such functions in `Julia`, we load some useful packages and re-define some previously used functions:
+Before proceeding with how to define such functions in `Julia`, we load our package:
+
 
 ```
-using Plots, LinearAlgebra, ForwardDiff
-
-unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
-unzip(r::Function, a, b, n=100) = unzip(r.(range(a, stop=b, length=n)))
-
-function arrow!(plt::Plots.Plot, p, v; kwargs...)
-  length(p) == 2 && return quiver!(plt, unzip([p])..., quiver=Tuple(unzip([v])); kwargs...)
-  length(p) == 3 && return plot!(plt, unzip([p, p+v])...; kwargs...)
-end
-arrow!(p, v; kwargs...) = arrow!(Plots.current(), p, v; kwargs...)
-
-D(f, n=1) = n > 1 ? D(D(f), n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)   # add f' notation for functions
+using CalculusWithJulia
 ```
 
 ----
@@ -96,7 +85,7 @@ f(x,y) = x^2 - 2x*y^2
 The we can define an alternative method with just a single variable and use splatting to turn it into multiple variables:
 
 ```
-f(x) = f(x...)
+f(v) = f(v...)
 ```
 
 The we can call `f` with a vector or point:
@@ -105,7 +94,7 @@ The we can call `f` with a vector or point:
 f([1,2])
 ```
 
-or by passing in the invidual components:
+or by passing in the individual components:
 
 ```
 f(1,2)
@@ -120,7 +109,7 @@ the change in the function between nearby values?
 ## Visualizing scalar functions
 
 Suppose for the moment that $f:R^2 \rightarrow R$. The equation $z = f(x,y)$ may be visualized by the set of points in 3-dimensions $\{(x,y,z): z = f(x,y)\}$. This will render as a surface, and that surface will pass a "vertical line test", in that each $(x,y)$ value corresponds to at most one $z$ value.
-We will see alternatives for describing surfaces beyond through a function of the form $z=f(x,y)$. These are similar to how a curve in the $x-y$ plane can be described by a function of the form $y=f(x)$ but also through an equation of the form $F(x,y) = c$ or through a parametric description, such as is used for planar curves. For now though we focus on the case where $z=f(x,y)$.
+We will see alternatives for describing surfaces beyond through a function of the form $z=f(x,y)$. These are similar to how a curve in the $x$-$y$ plane can be described by a function of the form $y=f(x)$ but also through an equation of the form $F(x,y) = c$ or through a parametric description, such as is used for planar curves. For now though we focus on the case where $z=f(x,y)$.
 
 
 
@@ -133,7 +122,7 @@ Here is an example:
 
 
 ```
-using Plots
+using Plots     # loaded with CalculusWithJulia
 f(x, y) = x^2 + y^2
 
 xs = range(-2, 2, length=100)
@@ -142,7 +131,11 @@ ys = range(-2, 2, length=100)
 surface(xs, ys, f)
 ```
 
-The `surface` function will generate the surface. (Using `surface` as a function name is equivalent to `plot(xs, ys, f, seriestype=:surface)`.)
+The `surface` function will generate the surface.
+
+```
+note("""Using `surface` as a function name is equivalent to `plot(xs, ys, f, seriestype=:surface)`.""")
+```
 
 We can also use `surface(xs, ys, zs)` where `zs` is not a vector, but
 rather a *matrix* of values corresponding to a grid described by the
@@ -167,17 +160,17 @@ surface(xs, ys, f.(xs', ys))
 
 ----
 
-An alternate to `surface` is `wireframe`, which doesn't use shading, but rather shows the grid in the $x-y$ plane mapped to the surface:
+An alternate to `surface` is `wireframe`, which doesn't use shading, but rather shows the grid in the $x$-$y$ plane mapped to the surface:
 
 ```
-wireframe(xs, ys, f)
+wireframe(xs, ys, f)   # gr() or pyplot() wireplots render better than plotly()
 ```
 
 
 
 ##### Example
 
-The surface $f(x,y) = x^2 - y^2$ has a saddle, as this shows:
+The surface $f(x,y) = x^2 - y^2$ has a "saddle," as this shows:
 
 ```
 f(x,y) = x^2 - y^2
@@ -225,7 +218,7 @@ z = data.frame(z)
 elev = rcopy(DataFrame, z).elevation
 zs = reshape(elev, m, n)
 D = Dict(:xs => xs, :ys=>ys, :zs => elev)
-io = open("somocon.json", "w")
+io = open("data/somocon.json", "w")
 JSON.print(io, D)
 close(io)
 ```
@@ -236,7 +229,7 @@ Consider the example of latitude, longitude, and elevation data describing a sur
 
 ```
 using JSON
-SC = JSON.parsefile("somocon.json")  # a local file
+SC = JSON.parsefile("data/somocon.json")  # a local file
 xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
 gr()  # use GR backend
 surface(xs, ys, zs)
@@ -250,7 +243,7 @@ surface(xs, ys, zs, camera=(0, 90))
 
 The rendering uses different colors to indicate height. A more typical graph, that is somewhat similar to the top down view, is a *contour* map.
 
-For a scalar function, Define a level curve as the solutions to the equations $f(x,y) = c$ for a given $c$. (Or more generally $f(\vec{x}) = c$ for a vector if dimension $2$ or more.) Plotting a selection of level curves yields a *contour* graph. These are produced with `countour` and called as above. For example, we have:
+For a scalar function, Define a *level curve* as the solutions to the equations $f(x,y) = c$ for a given $c$. (Or more generally $f(\vec{x}) = c$ for a vector if dimension $2$ or more.) Plotting a selection of level curves yields a *contour* graph. These are produced with `contour` and called as above. For example, we have:
 
 ```
 contour(xs, ys, zs)
@@ -267,7 +260,7 @@ contour(xs, ys, zs, levels=[50,75,100, 125, 150, 175])
 
 That shows the 50m, 75m, ... contours.
 
-If a fixed number of evenly spaced levels is desirable, then the `nlevels` argument is avaiable.
+If a fixed number of evenly spaced levels is desirable, then the `nlevels` argument is available.
 
 
 ```
@@ -322,7 +315,7 @@ We can see that at the minimum of the surface, the contour lines are nested clos
 ##### Example
 
 
-The figure shows a weather map from 1943 with countour lines based on atmospheric pressure. These are also know as *isolines*.
+The figure shows a weather map from 1943 with contour lines based on atmospheric pressure. These are also know as *isolines*.
 
 ```
 ImageFile("figures/daily-map.jpg", """
@@ -389,7 +382,7 @@ Formally we define a ball of radius $r$ about a point $C$ to be all points $P$ w
 
 
 In the univariate case, it can be useful to characterize a limit at $x=c$ existing if *both* the left and right limits exist and the two are equal. Generalizing to getting close in $R^m$ leads to
-the intuitive idea of a limit existing in terms of any continuous "path" that approaches $C$ in the $x-y$ plane has a limit and all are equal. Let $\gamma$ describe the path, and $\lim_{s \rightarrow t}\gamma(s) = C$. Then $f \circ \gamma$ will be a univariate function. If there is a limit, $L$, then this composition will also have the same limit as $s \rightarrow t$. Conversely, if for *every* path this composition has the *same* limit, then $f$ will have a limit.
+the intuitive idea of a limit existing in terms of any continuous "path" that approaches $C$ in the $x$-$y$ plane has a limit and all are equal. Let $\gamma$ describe the path, and $\lim_{s \rightarrow t}\gamma(s) = C$. Then $f \circ \gamma$ will be a univariate function. If there is a limit, $L$, then this composition will also have the same limit as $s \rightarrow t$. Conversely, if for *every* path this composition has the *same* limit, then $f$ will have a limit.
 
 The "two path corollary" is a trick to show a limit does not exist--just find two paths where there is a limit, but they differ, then a limit does not exist in general.
 
@@ -397,7 +390,7 @@ The "two path corollary" is a trick to show a limit does not exist--just find tw
 
 Continuity is defined in a familiar manner: $f(P)$ is continuous at $C$ if $\lim_{P \rightarrow C} f(P) = f(C)$, where we interpret $P \rightarrow C$ in the sense of a ball about $C$.
 
-As with univariate functions continuity will be preserved under function addition, subtraction, multiplication, and division (provided there is no dividing by $0$). With this, all these functions are continous everywhere and so have limits everywhere:
+As with univariate functions continuity will be preserved under function addition, subtraction, multiplication, and division (provided there is no dividing by $0$). With this, all these functions are continuous everywhere and so have limits everywhere:
 
 $$~
 f(x,y) = \sin(x + y), \quad
@@ -439,10 +432,10 @@ f(x) = f(x...)
 xs = ys = range(-1, 1, length=100)
 surface(xs, ys, f)
 r3(t) = [γ(t)..., f(γ(t))]  # to plot the path on the surface
-plot!(unzip(r3, 0, 1/2)..., linewidth=5, color=:black)
+plot_parametric_curve!(r3, 0, 1/2, linewidth=5, color=:black)
 
 r2(t) = [γ(t)..., 0]
-plot!(unzip(r2, 0, 1/2)..., linewidth=5, color=:black) # in the $x-y$ plane
+plot_parametric_curve!(r2, 0, 1/2, linewidth=5, color=:black) # in the $x$-$y$ plane
 ```
 
 
@@ -462,14 +455,14 @@ $$~
 
 From here we clearly have $f'(t) = -2 + 48t^3$. But could this be computed in terms of a "derivative" of $f$ and the derivative of $\vec\gamma$?
 
-Before answering this, we discuss *directional* derivatives along the simplifed paths $\vec\gamma_x(t) = \langle t, c\rangle$ or $\vec\gamma_y(t) = \langle c, t\rangle$.
+Before answering this, we discuss *directional* derivatives along the simplified paths $\vec\gamma_x(t) = \langle t, c\rangle$ or $\vec\gamma_y(t) = \langle c, t\rangle$.
 
-If we compose $f \circ \vec\gamma_x$, we can visualize this as a curve on the surface from $f$ that moves in the $x-y$ plane along the line $y=c$. The derivative of this curve will satisfy:
+If we compose $f \circ \vec\gamma_x$, we can visualize this as a curve on the surface from $f$ that moves in the $x$-$y$ plane along the line $y=c$. The derivative of this curve will satisfy:
 
 $$~
 \begin{align}
 (f \circ \vec\gamma_x)'(x) &=
-\lim_{t \rightarrow x} \frac{(f\circ\vec\gamma_x)(t) - f(\circ\vec\gamma_x(x))}{t-x}\\
+\lim_{t \rightarrow x} \frac{(f\circ\vec\gamma_x)(t) - (f\circ\vec\gamma_x)(x)}{t-x}\\
 &= \lim_{t\rightarrow x} \frac{f(t, c) - f(x,c)}{t-x}\\
 &= \lim_{h \rightarrow 0} \frac{f(x+h, c) - f(x, c)}{h}.
 \end{align}
@@ -480,7 +473,7 @@ The latter expresses this to be the derivative of the function that holds the $y
 $$~
 \begin{align}
 \frac{\partial f(x,y)}{\partial x} &=
-\lim_{h \rightarrow 0} \frac{f(x+h, y) - f(x, y)}{h},\quad\text{and analagously}\\
+\lim_{h \rightarrow 0} \frac{f(x+h, y) - f(x, y)}{h},\quad\text{and analogously}\\
 \frac{\partial f(x,y)}{\partial y} &=
 \lim_{h \rightarrow 0} \frac{f(x, y+h) - f(x, y)}{h}.
 \end{align}
@@ -508,7 +501,7 @@ $$~
 \frac{\partial f}{\partial x_n} \rangle.
 ~$$
 
-As seen, the gradient is a vector-valued function, but has, also, mulitvariable inputs. It is a function from $R^n \rightarrow R^n$.
+As seen, the gradient is a vector-valued function, but has, also, multivariable inputs. It is a function from $R^n \rightarrow R^n$.
 
 
 
@@ -560,30 +553,34 @@ The numeric gradient at a point, can be found from the function `ForwardDiff.gra
 ```
 using ForwardDiff
 pt = [1, 2]
-ForwardDiff.gradient(f, pt)      # uses the f(x) call above
+ForwardDiff.gradient(f, pt)      # uses the f(v) call above
 ```
 
 This, of course matches the computation above, where $\nabla f = \langle (2x -2y, -2x)$, so at $(1,2)$ is $(-2, 2)$, as a point in $R^2$.
 
 The `ForwardDiff.gradient` function expects a function that accepts a vector of values, so the method for `f(v)` is needed for the computation.
 
-To make a function to find the gradient of a function, we can define the following:
 
-```
-grad(f) = x -> ForwardDiff.gradient(f, x)
+To go from a function that takes a point to a function of that point, we have the following definition. This takes advantage of `Julia`'s multiple dispatch to add a new method for the `gradient` generic. This is done in the `CalculusWithJulia` package along the lines of:
+
+```noeval
+FowardDiff.gradient(f::Function) = x -> ForwardDiff.gradient(f, x)
 ```
 
 It works as follows, where a vector of values is passed in for the point in question:
 
 ```
-grad(f)([1,2]), grad(f)([3,4])
+gradient(f)([1,2]), gradient(f)([3,4])
 ```
 
 This expects a point or vector for its argument, and not the expanded values. Were that desired, something like this would work:
 
+```noeval
+ForwardDiff.gradient(f::Function) = (x, xs...) -> ForwardDiff.gradient(f, vcat(x, xs...))
 ```
-grad(f) = (x, xs...) -> ForwardDiff.gradient(f, vcat(x, xs...))
-grad(f)([1,2]), grad(f)(3,4)
+
+```
+gradient(f)([1,2]), gradient(f)(3,4)
 ```
 
 
@@ -605,7 +602,7 @@ partial_x(f, y) = x -> ForwardDiff.derivative(u -> f(u,y), x)
 
 ```
 note("""
-For vector-valued functions, we can overide the syntax `'` using `Base.adjoint`, as `'` is treated as a postfix operator in `Julia` for the `adjoint` operation. The symbol `\\nabla` is also available in `Julia`, but it is not an operator, so can't be used as mathematically written `∇f` (this could be used as a name though). *Were* the following definition made `∇(f) = x -> ForwardDiff.gradient(f, x)`, it would require parentheses to be called, as in `∇(f)`. We use `grad` instead, as using parentheses is expected for a function call.
+For vector-valued functions, we can overide the syntax `'` using `Base.adjoint`, as `'` is treated as a postfix operator in `Julia` for the `adjoint` operation. The symbol `\\nabla` is also available in `Julia`, but it is not an operator, so can't be used as mathematically written `∇f` (this could be used as a name though). In `CalculusWithJulia` a definition is made so essentially `∇(f) = x -> ForwardDiff.gradient(f, x)`. It does require parentheses to be called, as in `∇(f)`.
 """)
 ```
 
@@ -652,55 +649,67 @@ To evaluate at a point we have:
 subs.(grad_ex, x.=>1, y.=>2)
 ```
 
-This uses the same subtle trick of using `.=>` to pair off the values, inplace of `=>` to have the broadcast machinery treat the pair as a single value and not two values. Alternatively, `Ref((x=>1, y=>2))` or `((x=>1, y=>2),)` could have been used.
+This uses the same subtle trick of using `.=>` to pair off the values, in place of `=>` to have the broadcast machinery treat the pair as a single value and not two values. Alternatively, `Ref((x=>1, y=>2))` or `((x=>1, y=>2),)` could have been used. (Again, this will be unnecessary as of Julia `1.3.0`.)
 
+
+The `gradient` function from `CalculusWithJulia` is defined to find the symbolic gradient. It uses `free_symbols` to specify the number and order of the variables, but that may be wrong; they are specified below:
+
+```
+gradient(ex, [x, y])   # [∂f/∂x, ∂f/∂y]
+```
+
+To use `∇` and specify the variables, a tuple (grouping parentheses) is used:
+
+```
+∇((ex, [x,y]))
+```
 
 ----
 
-!!! note
+In computer science there are two related concepts [Currying](https://en.wikipedia.org/wiki/Currying) and [Partial application](https://en.wikipedia.org/wiki/Partial_application). For a function $f(x,y)$, say, partial application is the process of fixing one of the variables, producing a new function of fewer variables. For example, fixing $y=c$, the we get a new function (of just $x$ and not $(x,y)$) $g(x) = f(x,c)$. In partial derivatives the partial derivative of $f(x,y)$ with respect to $x$ is the derivative of the function $g$, as defined above.
 
-    In computer science there are two related concepts [Currying](https://en.wikipedia.org/wiki/Currying) and [Partial application](https://en.wikipedia.org/wiki/Partial_application). For a function $f(x,y)$, say, partial application is the process of fixing one of the variables, producing a new function of fewer variables. For example, fixing $y=c$, the we get a new function (of just $x$ and not $(x,y)$) $g(x) = f(x,c)$. In partial derivatives the partial derivative of $f(x,y)$ with respect to $x$ is the derivative of the function $g$, as defined above.
-
-    Currying, is related, but technically returns a function, so we think of the curried version of $f$ as a function, $h$, which takes $x$ and returns the function $y \rightarrow f(x,y)$ so that $h(x)(y) = f(x, y)$.
+Currying, is related, but technically returns a function, so we think of the curried version of $f$ as a function, $h$, which takes $x$ and returns the function $y \rightarrow f(x,y)$ so that $h(x)(y) = f(x, y)$.
 
 
 ### Visualizing the gradient
 
 The gradient is not a univariate function, a simple vector-valued
-function, or a scalar function, but rather a *vector field* to be
-discussed later. For the case, $f: R^2 \rightarrow R$, the gradient
+function, or a scalar function, but rather a *vector field* (which will  be
+discussed later). For the case, $f: R^2 \rightarrow R$, the gradient
 will be a function which takes a point $(x,y)$ and returns a vector ,
-$\langle f_x(x,y), f_y(x,y) \rangle$. We can visualize this by
+$\langle \partial{f}/\partial{x}(x,y), \partial{f}/\partial{y}(x,y) \rangle$. We can visualize this by
 plotting a vector at several points on a grid. This task is made
-easier with a function like the following, which handles the task of vectorizing the values. This is written to add to an existing plot:
+easier with a function like the following, which handles the task of vectorizing the values. It is provided within the `CalculusWithJulia` package:
 
-```
-function vectorfieldplot!(plt, V; xlim=(-5,5), ylim=(-5,5), n=10, kwargs...)
+```noeval
+function vectorfieldplot!(V; xlim=(-5,5), ylim=(-5,5), nx=10, ny=10, kwargs...)
 
-    dx, dy = (xlim[2]-xlim[1])/n, (ylim[2]-ylim[1])/n
+    dx, dy = (xlim[2]-xlim[1])/nx, (ylim[2]-ylim[1])/ny
     xs, ys = xlim[1]:dx:xlim[2], ylim[1]:dy:ylim[2]
 
     ps = [[x,y] for x in xs for y in ys]
     vs = V.(ps)
     λ = 0.9 * min(dx, dy) / maximum(norm.(vs))
 
-    quiver!(plt, unzip(ps)..., quiver=unzip(λ * vs))
+    quiver!(unzip(ps)..., quiver=unzip(λ * vs))
 
 end
-vectorfieldplot!(V; kwargs...) = vectorfieldplot!(Plots.current(), V; kwargs...)
 ```
 
 
 Here we show the gradient for the scalar function $f(x,y) = 2 - x^2 - 3y^2$ over the region $[-2, 2]\times[-2,2]$ along with a contour plot:
 
 ```
-gr()
+gr()  # better arrows
+
 f(x,y) = 2 - x^2 - 3y^2
+f(v) = f(v...)
 
 xs = ys = range(-2,2, length=50)
 
-p = contour(xs, ys, f, nlevels=7)
-vectorfieldplot!(p, grad(f), xlim=(-2,2), ylim=(-2,2))
+p = contour(xs, ys, f, nlevels=12)
+vectorfieldplot!(p, gradient(f), xlim=(-2,2), ylim=(-2,2), nx=10, ny=10)
+
 p
 ```
 
@@ -741,9 +750,9 @@ It is this characterization of differentiable that is generalized to define when
 > Let $f$ be a scalar function.
 > Then $f$ is [differentiable](https://tinyurl.com/qj8qcbb) at a point $C$ **if** the first order partial derivatives exist at $C$ **and** for $\vec{h}$ going to $\vec{0}$:
 > $$~
-> f(C + \vec{h}) - f(C) - \nabla{f}(C) \cdot \vec{h} = \vec{\epsilon}(\vec{h}) \cdot \vec{h},
+> \|f(C + \vec{h}) - f(C) - \nabla{f}(C) \cdot \vec{h}\| = \mathcal{o}(\|\vec{h}\|),
 > ~$$
-> where $\vec{\epsilon}(\vec{h})$ is a vector of scalar functions $\langle \epsilon_1(\vec{h})$, $\epsilon_2(\vec{h})$, $\dots$, $\epsilon_n(\vec{h})\rangle$, each with a limit of $0$ as $\vec{h}$ goes to $\vec{0}$.
+> where $ \mathcal{o}(\|\vec{h}\|) $ means that dividing the left hand side by $\|\vec{h}\|$ and taking a limit as $\vec{h}\rightarrow 0$ the limit will be $0$..
 
 
 The limits here are for limits of scalar functions, which means along any path going to $\vec{0}$, not just straight line paths, as are used to define the partial derivatives. Hidden above, is an assumption that there is some open set around $C$ for which $f$ is defined for $f(C + \vec{h})$ when $C+\vec{h}$ is in this open set.
@@ -757,7 +766,7 @@ differentiable at $C$ is a stronger statement than saying it has a
 gradient or, equivalently, it has partial derivatives at $C$, as this is assumed
 in the statement along with the other condition.
 
-Later we will see how Taylor's theorem generalizes for scalar functions and interpret the gradient in geometrically, as was done for the derivative (it being the slope of the tangent line).
+Later we will see how Taylor's theorem generalizes for scalar functions and interpret the gradient geometrically, as was done for the derivative (it being the slope of the tangent line).
 
 
 
@@ -778,34 +787,8 @@ $$~
 ~$$
 
 
-The proof is a consequence of the definition of differentiability of a scalar function $f$ and the derivative of $\vec\gamma$.
-
-
-Let $\vec{H} = \vec{\gamma}(t+h) - \vec\gamma(t)$. Matching the terms in the definition of differentiability shows $C= \vec\gamma(t)$ and $C+\vec{h} = \vec\gamma(t+h)$. Consequently $\vec{h} = \vec{H}$ and we have:
-
-$$~
-f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t) -
-\nabla{f}\cdot(\vec\gamma(t)) \cdot \vec{H} =
-\vec{\epsilon}(\vec{H}) \cdot \vec{H}.
-~$$
-
-
-Dividing both sides by $h$ gives:
-
-$$~
-\frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} -
-\nabla{f}(\vec\gamma(t)) \cdot\frac{\vec{H}}{h} =
-\vec{\epsilon}(\vec{H}) \cdot \frac{\vec{H}}{h}.
-~$$
-
-As $h \rightarrow 0$, $\vec{H}/h \rightarrow \vec\gamma'(t)$ and consequently, as $\vec\gamma'(t)$ is bounded, $\vec{\epsilon}(\vec{H}) \cdot \vec{H} \rightarrow \vec{0}$. Simplifying, this says:
-
-$$~
-(f\circ\vec\gamma)'(t) =
-\lim_{h \rightarrow 0}\frac{f\circ\vec\gamma(t+h) - f\circ\vec\gamma(t)}{h} =
-\nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t).
-~$$
-
+The proof is a consequence of the definition of differentiability and
+will be shown in more generality later.
 
 
 ##### Example
@@ -816,6 +799,7 @@ Consider the function $f(x,y) = 2 - x^2 - y^2$ and the curve $\vec\gamma(t) = t\
 
 ```
 plotly()
+
 f(x,y) = 2 - x^2 - y^2
 f(x) = f(x...)
 
@@ -825,7 +809,7 @@ xs = ys = range(-3/2, 3/2, length=100)
 surface(xs, ys, f, legend=false)
 
 r(t) = [γ(t)..., (f∘γ)(t)]
-plot!(unzip(r, 0, pi/2)..., linewidth=5, color=:black)
+plot_parametric_curve!(r, 0, pi/2, linewidth=5, color=:black)
 
 t0 = pi/6
 arrow!(r(t0), r'(t0), linewidth=5, color=:black)
@@ -859,8 +843,8 @@ Consider the following plot showing a hiking trail on a surface:
 
 ```
 using JSON, CSV, DataFrames
-SC = JSON.parsefile("somocon.json")  # a local file
-lenape = CSV.File("lenape.csv") |> DataFrame
+SC = JSON.parsefile("data/somocon.json")  # a local file
+lenape = CSV.File("data/lenape.csv") |> DataFrame
 
 xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
 
@@ -904,7 +888,7 @@ xs = ys = range(-3/2, 3/2, length=100)
 plotly()
 surface(xs, ys, f, legend=false)
 r(t) = [γ(t)..., (f∘γ)(t)]
-plot!(unzip(r, 0, pi/2)..., linewidth=5, color=:black)
+plot_parametric_curve!(r, 0, pi/2, linewidth=5, color=:black)
 ```
 
 
@@ -943,14 +927,14 @@ The maximum slope occurs at an endpoint
 
 The last example, how steep is the direction we are walking, is a question that can be asked when walking in a straight line in the $x$-$y$ plane. The answer has a simplified answer:
 
-Let $\vec\gamma(t) = C + t \langle a, b \rangle$ be a line that goes throught the point $C$ parallel, or in the direction of, to $\vec{v} = \langle a , b \rangle$.
+Let $\vec\gamma(t) = C + t \langle a, b \rangle$ be a line that goes through the point $C$ parallel, or in the direction of, to $\vec{v} = \langle a , b \rangle$.
 
-The the function $f \circ \vec\gamma(t)$ will have a derivative when $f$ is differentiable and by the chain rule will be:
+Then the function $f \circ \vec\gamma(t)$ will have a derivative when $f$ is differentiable and by the chain rule will be:
 
 $$~
 (f\circ\vec\gamma)'(\vec\gamma(t)) = \nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t) =
 \nabla{f}(\vec\gamma(t)) \cdot \langle a, b\rangle =
-\nabla{f}(\vec\gamma(t)) \cdot \vec{v}.
+\vec{v} \cdot \nabla{f}(\vec\gamma(t)).
 ~$$
 
 At $t=0$, we see that $(f\circ\vec\gamma)'(C) = \nabla{f}(C)\cdot \vec{v}$.
@@ -959,7 +943,7 @@ At $t=0$, we see that $(f\circ\vec\gamma)'(C) = \nabla{f}(C)\cdot \vec{v}$.
 This defines the *directional derivative* at $C$ in the direction $\vec{v}$:
 
 $$~
-\text{Directional derivative} = \nabla_{vec{v}}(f) =  \nabla{f} \cdot \vec{v}.
+\text{Directional derivative} = \nabla_{\vec{v}}(f) =  \nabla{f} \cdot \vec{v}.
 ~$$
 
 If $\vec{v}$ is a *unit* vector, then the value of the directional derivative is the rate of increase in $f$ in the direction of $\vec{v}$.
@@ -980,12 +964,12 @@ M=f(3/2,3/2)
 x0,y0 = 1/2, -1/2
 plot!([-3/2, 3/2, 3/2, -3/2, -3/2], y0 .+ [0,0,0,0, 0], [M,M,2,2,M], linestyle=:dash)
 r(x) = [x, y0, f(x,y0)]
-plot!(unzip(r, -3/2, 3/2)..., linewidth=5, color=:black)
+plot_parametric_curve!(r, -3/2, 3/2, linewidth=5, color=:black)
 
 
 plot!(x0 .+ [0,0,0,0, 0], [-3/2, 3/2, 3/2, -3/2, -3/2], [M,M,2,2,M], linestyle=:dash)
 r(y) = [x0, y, f(x0, y)]
-plot!(unzip(r, -3/2, 3/2)..., linewidth=5, color=:black)
+plot_parametric_curve!(r, -3/2, 3/2, linewidth=5, color=:black)
 
 
 scatter!([x0],[y0],[M])
@@ -1011,7 +995,7 @@ rrx, rry = l1(1)
 plot!([llx, rrx, rrx, llx, llx], [lly, rry, rry, lly, lly], [M,M, 2, 2, M], linestyle=:dash)
 
 r(t) = [l1(t)..., f(l1(t))]
-plot!(unzip(r, -1, 1)..., linewidth=5, color=:black)
+plot_parametric_curve!(r, -1, 1, linewidth=5, color=:black)
 arrow!(r(0), r'(0), linewidth=5, color=:black)
 
 
@@ -1019,7 +1003,7 @@ scatter!([x0],[y0],[M])
 arrow!([x0,y0,M], [vx, vy,0], linewidth=3)
 ```
 
-In this figure, we see that the directional derivative appears to be $0$, unlike the partial derivatives in $x$ and $y$, which are negative and positive, respecitively.
+In this figure, we see that the directional derivative appears to be $0$, unlike the partial derivatives in $x$ and $y$, which are negative and positive, respectively.
 
 
 ##### Example
@@ -1032,8 +1016,8 @@ $$~
 
 ##### Example
 
-Suppose $f(x,y)$ describes a surface, and $\vec\gamma(t)$ parameterizes a path in the $x-y$ plane. Then the vector valued function $\vec{r}(t) = \langle
-\vec\gamma_1(t), \vec\gamma_2(t), (f\circ\vec\gamma)(t)\rangle$ describes a path on the surface. The maximum steepness of the this path is found by maximing the slope of the directional derivative in the direction of the tangent line. This would be the function of $t$:
+Suppose $f(x,y)$ describes a surface, and $\vec\gamma(t)$ parameterizes a path in the $x$-$y$ plane. Then the vector valued function $\vec{r}(t) = \langle
+\vec\gamma_1(t), \vec\gamma_2(t), (f\circ\vec\gamma)(t)\rangle$ describes a path on the surface. The maximum steepness of the this path is found by maximizing the slope of the directional derivative in the direction of the tangent line. This would be the function of $t$:
 
 $$~
 \nabla{f}(\vec\gamma(t)) \cdot \vec{T}(t),
@@ -1048,7 +1032,7 @@ We have $\nabla{f} = \langle -2x, -2y \rangle$ and $\vec\gamma'(t) = -\langle(\c
 ```
 f(x,y) = 2 - x^2 - y^2
 gamma(t) = (pi-t) * [cos(t), sin(t)]
-dd(t) = grad(f)(gamma(t))  ⋅ gamma'(t)
+dd(t) = gradient(f)(gamma(t))  ⋅ gamma'(t)
 
 using Roots
 cps = fzeros(dd, 0, pi)
@@ -1071,24 +1055,23 @@ xs = ys = range(-2, 2, length=100)
 p = surface(xs, ys, f, legend=false)
 
 γ(t) = [cos(t), sin(t), f(cos(t), sin(t))]
-plot!(p, unzip(γ, 0, 2pi)..., linewidth=2)
+plot_parametric_curve!(γ, 0, 2pi, linewidth=2)
 
 t =7pi/4;
-@show unzip(γ(t))
 scatter!(p, unzip([γ(t)])...)
 
 
 rad(t) = 1 * [cos(t), sin(t)]
 γ(t) = [rad(t)..., 0]
-plot!(p, unzip(γ, 0, 2pi)..., linestyle=:dash)
+plot_parametric_curve!(γ, 0, 2pi, linestyle=:dash)
 
 
 
-arrow!(p, γ(t), γ'(t))
-arrow!(p, γ(t), [ForwardDiff.gradient(f, rad(t))..., 0])
+arrow!(γ(t), γ'(t))
+arrow!(γ(t), [ForwardDiff.gradient(f, rad(t))..., 0])
 ```
 
-We have the level curve for $f(x,y) = c$ represented, and a point $(x,y, f(x,y))$ drawn. At the point $(x,y)$ which sits on the level curve, we have inidated the gradient and the tangent curve to the level curve, or contour line. Worth reiterating, the gradient is not on the surface, but rather is a $2$-dimensional vector, but it does indicate a direction that can be taken on the surface. We will see that this direction indicates the path of steepest ascent.
+We have the level curve for $f(x,y) = c$ represented, and a point $(x,y, f(x,y))$ drawn. At the point $(x,y)$ which sits on the level curve, we have indicated the gradient and the tangent curve to the level curve, or contour line. Worth reiterating, the gradient is not on the surface, but rather is a $2$-dimensional vector, but it does indicate a direction that can be taken on the surface. We will see that this direction indicates the path of steepest ascent.
 
 The figure suggests a relationship between the gradient and the tangents to the contour lines.
 Let's parameterize the contour line by $\vec\gamma(t)$, assuming such a parameterization exists, let $C = (x,y) = \vec\gamma(t)$, for some $t$, be a point on the level curve, and $\vec{T} = \vec\gamma'(t)/\|\vec\gamma'(t)\|$ be the tangent to to the level curve at $C$. Then the directional derivative at $C$ in the direction of $T$ must be $0$, as along the level curve, the function $f\circ \vec\gamma = c$, a constant. But by the chain rule, this says:
@@ -1097,10 +1080,10 @@ $$~
 0 = (c)' = (f\circ\vec\gamma)'(t) = \nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t)
 ~$$
 
-That is the gradient is *orthogonal* to $\vec{\gamma}'(t)$. As well, the orthogonal to the tangent vector $\vec{T}$ and hence to the level curve at any point. (As the dot product is $0$.)
+That is the gradient is *orthogonal* to $\vec{\gamma}'(t)$. As well, is orthogonal to the tangent vector $\vec{T}$ and hence to the level curve at any point. (As the dot product is $0$.)
 
 
-Now, consider a unit vector $\vec{v}$ in the direction of steepest ascent at $C$. Since $\nabla{f}(C)$ and $\vec{T}$ are orthgonal, we can express the unit vector uniquely as $a\nabla{f}(C) + b \vec{T}$ with $a^2 + b^2 = 1$. The directional derivative is then
+Now, consider a unit vector $\vec{v}$ in the direction of steepest ascent at $C$. Since $\nabla{f}(C)$ and $\vec{T}$ are orthogonal, we can express the unit vector uniquely as $a\nabla{f}(C) + b \vec{T}$ with $a^2 + b^2 = 1$. The directional derivative is then
 
 $$~
 \nabla{f} \cdot \vec{v} = \nabla{f}  \cdot (a\nabla{f}(C) + b \vec{T}) = a \| \nabla{f} \|^2  + b \nabla{f} \cdot \vec{T} = a \| \nabla{f} \|^2.
@@ -1118,9 +1101,9 @@ contour will not gain any elevation. The two directions are orthogonal.
 
 The chain rule we discussed was for a composition of $f:R^n \rightarrow R$ with $\vec\gamma:R \rightarrow R^n$ resulting in a function $f\circ\vec\gamma:R \rightarrow R$. There are other possible compositions.
 
-For example, suppose we have an economic model for beverage consumption based on temperature given by $c(T)$. But temperature depends on geographic location, so may be modeled through a function $T(x,y)$. The composition $c \circ T$ would be a function from $R^2 \rightarrow R$, so should have partial deriatives with respect to $x$ and $y$ which should be expressible in terms of the derivative of $c$ and the partial derivatives of $T$.
+For example, suppose we have an economic model for beverage consumption based on temperature given by $c(T)$. But temperature depends on geographic location, so may be modeled through a function $T(x,y)$. The composition $c \circ T$ would be a function from $R^2 \rightarrow R$, so should have partial derivatives with respect to $x$ and $y$ which should be expressible in terms of the derivative of $c$ and the partial derivatives of $T$.
 
-Consider a different situation, say we have $f(x,y)$ a scalar function, but want to consider the position in polar coordinates involving $r$ and $\theta$. We can think directly of $F(r,\theta) = f(r\cdot\cos(\theta), r\cdot\sin(\theta))$, but more generally, we have a function $G(r, \theta)$ that is vector valued: $G(r,\theta) = \langle r\cdot\cos(\theta), r\cdot\sin(\theta) \rangle$ ($G:R^2 \rightarrow R^2$. The composition $F=f\circ G$ is a scalar function of $r$ and $\theta$ and the partial derivatives with respect to these should be expressible in terms of the partial derivatives of $f$ and the partial derivatives of $G$.
+Consider a different situation, say we have $f(x,y)$ a scalar function, but want to consider the position in polar coordinates involving $r$ and $\theta$. We can think directly of $F(r,\theta) = f(r\cdot\cos(\theta), r\cdot\sin(\theta))$, but more generally, we have a function $G(r, \theta)$ that is vector valued: $G(r,\theta) = \langle r\cdot\cos(\theta), r\cdot\sin(\theta) \rangle$ ($G:R^2 \rightarrow R^2$). The composition $F=f\circ G$ is a scalar function of $r$ and $\theta$ and the partial derivatives with respect to these should be expressible in terms of the partial derivatives of $f$ and the partial derivatives of $G$.
 
 Finding the derivative of a composition in terms of the individual pieces involves some form of the chain rule, which will differ depending on the exact circumstances.
 
@@ -1192,6 +1175,9 @@ J = \left[
 
 With this notation, and matrix multiplication we have $(\nabla(f\circ G))^t = \nabla(f)^t J$.
 
+
+(Later, we will see that the chain rule in general has a familiar form using matrices, not vectors, which will avoid the need for a transpose.)
+
 ##### Example
 
 Let $f(x,y) = x^2 + y^2$ be a scalar function. We have if $G(r, \theta) = \langle r\cos(\theta)(, r\sin(\theta) \rangle$ then after simplification, we have $(f \circ G)(r, \theta) = r^2$. Clearly then $\partial(f\circ G)/\partial r = 2r$ and $\partial(f\circ G)/\partial \theta = 0$.
@@ -1234,10 +1220,10 @@ Consider the case $f: R^2 \rightarrow R$, then there are $4$ possible partial de
 The notation for the partial in $y$ *of* the partial in $x$ is:
 
 $$~
-\frac{\partial^2 f}{\partial{y}\partial{x}} = \frac{\partial{\frac{\partial{f}}{\partial{x}}}}{\partial{y}} = = \frac{\partial f_x}{\partial{y}} = f_{xy}.
+\frac{\partial^2 f}{\partial{y}\partial{x}} = \frac{\partial{\frac{\partial{f}}{\partial{x}}}}{\partial{y}} = \frac{\partial f_x}{\partial{y}} = f_{xy}.
 ~$$
 
-The placement of $x$ and $y$ inidicating the order is different in the two notations.
+The placement of $x$ and $y$ indicating the order is different in the two notations.
 
 
 We can compute these for an example easily enough:
@@ -1251,11 +1237,11 @@ diff(ex, x, x), diff(ex, x, y), diff(ex, y, x), diff(ex, y, y)
 
 In `SymPy` the variable to differentiate by is taken from left to right, so `diff(ex, x, y, x)` would first take the partial in $x$, then $y$, and finally $x$.
 
-We see that `diff(ex, x, y)` and `diff(ex, y, x)` are identical. This is not a coincidence, as [Schwarz's Theorem](https://tinyurl.com/y7sfw9sx) this will always be the case under typical assumptions:
+We see that `diff(ex, x, y)` and `diff(ex, y, x)` are identical. This is not a coincidence, as by [Schwarz's Theorem](https://tinyurl.com/y7sfw9sx) (also known as Clairaut's theorem) this will always be the case under typical assumptions:
 
-> Theorem on mixed partials. If the mixed partials $\partial^2 f/\partial x \partial y$ and $\partial^2 f/\partial y \partial x$ exist and are continous, then they are equal.
+> Theorem on mixed partials. If the mixed partials $\partial^2 f/\partial x \partial y$ and $\partial^2 f/\partial y \partial x$ exist and are continuous, then they are equal.
 
-For higher order mixed partials, something similar to Schwarz's theorem still  holds. Say $f:R^n \rightarrow R$ is $C^k$ if $f$ is continous and all partial derivatives of order $j \leq k$ are continous. If $f$ is $C^k$, and $k=k_1+k_2+\cdots+k_n$ ($k_i \geq 0$) then
+For higher order mixed partials, something similar to Schwarz's theorem still  holds. Say $f:R^n \rightarrow R$ is $C^k$ if $f$ is continuous and all partial derivatives of order $j \leq k$ are continous. If $f$ is $C^k$, and $k=k_1+k_2+\cdots+k_n$ ($k_i \geq 0$) then
 
 $$~
 \frac{\partial^k f}{\partial x_1^{k_1} \partial x_2^{k_2}  \cdots \partial x_n^{k_n}},
@@ -1276,7 +1262,7 @@ H = \left[
 \right].
 ~$$
 
-It may be computed directly in `SymPy` with its `hessian` function:
+For symbolic expressions, the Hessian may be computed directly in `SymPy` with its `hessian` function:
 
 ```
 hessian(ex, (x, y))
@@ -1418,7 +1404,7 @@ Are these
 ```
 choices = [
 "running essentially parallel to the contour lines",
-"running essenitally perpendicular to the contour lines"
+"running essentially perpendicular to the contour lines"
 ]
 ans = 1
 radioq(choices, ans)
@@ -1586,7 +1572,7 @@ If the surface of the mountain is given by a function $z=f(x,y)$ then the climbe
 
 Consider the composition $(f\circ\vec\gamma)(t)$.
 
-For a climber with GPS coordinates $(x,y)$. What desribes her elevation?
+For a climber with GPS coordinates $(x,y)$. What describes her elevation?
 
 ```
 choices = [
@@ -1649,9 +1635,9 @@ radioq(choices, ans)
 
 Building sustainable hiking trails involves proper water management. Two rules of thumb are 1) the trail should not be steeper than 10 degrees 2) the outward slope (in the steepest downhill direction) should be around 5%. (A trail tread is not flat, but rather sloped downward, similar to the crown on a road, so that water will run to the downhill side of the tread, not along the tread, which would cause erosion. In the best possible world, the outslope will exceed the downward slope.)
 
-Suppose a trail is described parametrically by a composistion $(f \circ \vec\gamma)(t))$, where $\vec\gamma(t) = \langle x(t),y(t)\rangle$. The vector $\vec{T}(t) = \langle x(t), y(t), \nabla{f}(\vec\gamma(t)) \rangle$ describes the tangent to the trail at a point ($\vec\gamma(t)$). Let $\hat{T}(t)$ be the unit normal, and $\hat{P}(t)$ be a unit normal in the direction of the *projection* of $\vec{T}$ onto the $x-y$ plane. (Make the third component of $\vec{T}$ $0$, and then from a unit vector from that.)
+Suppose a trail height is described parametrically by a composition $(f \circ \vec\gamma)(t))$, where $\vec\gamma(t) = \langle x(t),y(t)\rangle$. The vector $\vec{T}(t) = \langle x(t), y(t), \nabla{f}(\vec\gamma(t)) \rangle$ describes the tangent to the trail at a point ($\vec\gamma(t)$). Let $\hat{T}(t)$ be the unit normal, and $\hat{P}(t)$ be a unit normal in the direction of the *projection* of $\vec{T}$ onto the $x$-$y$ plane. (Make the third component of $\vec{T}$ $0$, and then form a unit vector from that.)
 
-What expression below captures point 1 that the steepness sohuld be no more than 10 degrees ($\pi/18$ radians):
+What expression below captures point 1 that the steepness should be no more than 10 degrees ($\pi/18$ radians):
 
 ```
 choices = [
@@ -1758,10 +1744,10 @@ radioq(choices, ans)
 
 Let $z = f(x,y)$ be some unknown function,
 
-From the figure, which drawn vector is the gradient as $(1/2, -3/4)$?
+From the figure, which drawn vector is the gradient at $(1/2, -3/4)$?
 
 ```
-gr()
+plotly()
 f(x,y) = 2 + x^2 - y^2
 f(v) = f(v...)
 pt = [1/2, -3/4]
@@ -1856,7 +1842,7 @@ radioq(choices, ans, keep_order=true)
 
 ###### Question
 
-Let $f(x,y) = x^4y^4$. Which partial derivative is identically $0$?
+Let $f(x,y) = x^3y^3$. Which partial derivative is identically $0$?
 
 ```
 choices = [
@@ -1935,4 +1921,86 @@ L"This is not continuous at $(0,0)$, as the limit along the two paths $x=0$ and 
 ]
 ans = 3
 radioq(choices, ans)
+```
+
+###### Question
+
+[Knill](http://www.math.harvard.edu/~knill/teaching/summer2018/handouts/week3.pdf). Clairaut's theorem is the name given to the fact that if the partial derivatives are continuous, the mixed partials are equal, $f_{xy} = f_{yx}$.
+
+Consider the following code which computes the mixed partials for the discrete derivative:
+
+```
+@vars x y Δ real=true
+
+G = SymPy.SymFunction("G")
+Dx(f,h) = (subs(f, x=>x+h) - f)/h
+Dy(f,h) = (subs(f, y=>y+h) - f)/h
+
+Dy(Dx(G(x,y), Δ), Δ) - Dx(Dy(G(x,y), Δ), Δ)
+```
+
+What does this simplify to?
+
+```
+numericq(0)
+```
+
+
+
+
+Is continuity required for this to be true?
+
+```
+yesnoq(false)
+```
+
+###### Question
+
+(Examples and descriptions from Krill)
+
+
+What equation does the function $f(x,y) = x^3 - 3xy^2$ satisfy?
+
+```
+# 4 questions, don't edit this order!
+choices = [
+L"The wave equation: $f_{tt} = f_{xx}$; governs motion of light or sound",
+L"The heat equation: $f_t = f_{xx}$; describes diffusion of heat",
+L"The Laplace equation: $f_{xx} + f_{yy} = 0$; determines shape of a membrane",
+L"The advection equation: $f_t = f_x$; is used to model transport in a wire",
+L"The eiconal equation: $f_x^2 + f_y^2 = 1$; is used to model evolution of a wave front in optics",
+L"The Burgers equation: $f_t + ff_x = f_{xx}$; describes waves at the beach which break",
+L"The KdV equation: $f_t + 6ff_x+ f_{xxx} = 0$; models water waves in a narrow channel",
+L"The Schrodinger equation: $f_t = (i\hbar/(2m))f_xx$; used to describe a quantum particle of mass $m$"
+]
+ans = 3
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+
+What equation does the function $f(t, x) = sin(x-t) + sin(x+t)$ satisfy?
+
+```
+ans = 1
+radioq(choices, ans, keep_order=true)
+```
+
+
+
+
+What equation does the function $f(t, x) = e^{-(x+t)^2}$ satisfy?
+
+```
+ans = 4
+radioq(choices, ans, keep_order=true)
+```
+
+
+What equation does the function $f(x,y) = \cos(x) + \sin(y)$ satisfy?
+
+```
+ans = 5
+radioq(choices, ans, keep_order=true)
 ```

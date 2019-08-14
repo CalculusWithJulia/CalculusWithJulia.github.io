@@ -53,7 +53,7 @@ Now suppose that after $6$ hours of travel the GPS in the car gives us a readout
 as a function of time. The graph looks like this:
 
 ```nocode
-function position(t) 
+function position(t)
   if t <= 3
      60*t
   elseif 3 < t <= 3.5
@@ -418,7 +418,7 @@ f'(x) = \frac{d}{d\xi}(f(\xi)) \big|_{\xi=x}.
 We could proceed in a similar manner to find other derivatives, but
 let's not. If we have a function $f(x) = x^5 \sin(x)$, it would be
 nice to leverage our previous work on the derivatives of $f(x) =x^5$
-and $g(x) = \sin(x)$, rather than derive an answer from scratch. 
+and $g(x) = \sin(x)$, rather than derive an answer from scratch.
 
 
 As with limits and continuity, it proves very useful to consider rules
@@ -557,6 +557,39 @@ $$~
 ~$$
 
 Which is the same as the derivative of $x$ found by first evaluating the composition.
+
+##### Proof of the Chain Rule
+
+A function is *differentiable* at $a$ if the following limit exists $\lim_{h \rightarrow 0}(f(a+h)-f(a))/h$. Reexpressing this as: $f(a+h) - f(a) - f'(a)h = \epsilon_f(h) h$ where as $h\rightarrow 0$, $\epsilon_f(h) \rightarrow 0$. Then, we have:
+
+$$~
+g(a+h) = g(a) + g'(a)h + \epsilon_g(h) h = g(a) + h',
+~$$
+
+Where $h' = (g'(a) + \epsilon_g(h))h \rightarrow 0$ as $h \rightarrow 0$ will be used to simplify the following:
+
+
+
+$$~
+\begin{align}
+f(g(a+h)) - f(g(a)) &=
+f(g(a) + g'(a)h + \epsilon_g(h)h) - f(g(a)) \\
+&= f(g(a)) + f'(g(a)) (g'(a)h + \epsilon_g(h)h) + \epsilon_f(h')(h') - f(g(a))\\
+&= f'(g(a)) g'(a)h  + f'(g(a))(\epsilon_g(h)h) + \epsilon_f(h')(h').
+\end{align}
+~$$
+
+Rearranging:
+
+$$~
+f(g(a+h)) - f(g(a)) - f'(g(a)) g'(a) h = f'(g(a))\epsilon_g(h))h + \epsilon_f(h')(h') =
+(f'(g(a)) \epsilon_g(h)  + \epsilon_f(h')( (g'(a) + \epsilon_g(h))))h =
+\epsilon(h)h,
+~$$
+
+where $\epsilon(h)$ combines the above terms which go to zero as $h\rightarrow 0$ into one. This is
+the alternative definition of the derivative, showing $(f\circ g)'(a) = f'(g(a)) g'(a)$ when $g$ is differentiable at $a$ and $f$ is differentiable at $g(a)$.
+
 
 ##### More examples
 
@@ -787,7 +820,7 @@ arguments is necessary when trying to apply the differentiation
 rules. Such rules are applied from the outside in. Identifying
 the proper "outside" function is usually most of the battle when finding derivatives.
 
-The `SymPy` program has a function that can identify the outside 
+The `SymPy` program has a function that can identify the outside
 function  of a symbolic expression. Basic math expressions can be parsed as a
 function being called with one or more arguments. The function
 `SymPy.funcname` will return the function, and `args` will return the
@@ -827,7 +860,7 @@ and now the arguments are the expressions being added:
 args(ex)
 ```
 
-When addition is the "outside" function, the next step would be to apply the sum rule. 
+When addition is the "outside" function, the next step would be to apply the sum rule.
 
 What about multiplication?
 

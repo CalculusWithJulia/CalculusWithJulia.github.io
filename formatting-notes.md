@@ -12,7 +12,7 @@ We use homegrown package `WeavePynb` to turn *.mmd and *.jl files into *.md and 
 
 # Examples
 
-Examples are headed with #####
+Examples are headed with ##### (h5)
 
 Each example gets and h5 so that an icon appears
 

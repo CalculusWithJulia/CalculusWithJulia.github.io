@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -103,7 +109,7 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Calculus with Julia</h1><p>This is a set of notes for learning <a href="http://en.wikipedia.org/wiki/Calculus">calculus</a>. Since the mid 90s there has been a push to teach calculus using many different points of view. The <a href="http://www.math.harvard.edu/~knill/pedagogy/harvardcalculus/">Harvard</a> style rule of four says that as much as possible the conversation should include a graphical, numerical, algebraic, and verbal component. These notes use the programming language <a href="http://julialang.org">Julia</a> to illustrate the graphical, numerical, and, at times, the algebraic aspects of calculus.</p><p>There are many examples of integrating a computer algebra system (such as <code>Mathematica</code>, <code>Maple</code>, or <code>Sage</code>) into the calculus conversation. Computer algebra systems can be magical. The popular <a href="http://www.wolframalpha.com/">WolframAlpha</a> website calls the full power of <code>Mathematica</code> while allowing an informal syntax that is flexible enough to be used as a backend for Apple's Siri feature. ("Siri what is the graph of x squared minus 4?") For learning purposes, computer algebra systems model very well the algebraic/symbolic treatment of the material while providing means to illustrate the numeric aspects.   Theses notes are a bit different in that <code>Julia</code> is primarily used for the numeric style of computing and the algebraic/symbolic treatment is added on. Doing the symbolic treatment by hand can be very beneficial while learning, and computer algebra systems make those exercises seem kind of pointless, as the finished product can be produced much easier.</p><p>Our real goal is to get at the concepts using technology as much as possible without getting bogged down in the mechanics of the computer language. We feel <code>Julia</code> has a very natural syntax that makes the initial start up not so much more difficult than using a calculator. The notes restrict themselves to a reduced set of computational concepts. This set is sufficient for working the problems in mathematics, but do not cover thoroughly many aspects of programming. (Those who are interested can go off on their own and <code>Julia</code> provides a rich opportunity to do so.) Within this restricted set, are operators that make many of the computations of calculus reduce to a function call of the form <code>action&#40;function, arguments...&#41;</code>. With a small collection of actions that can be composed, many of the problems associated with introductory calculus can be attacked.</p><p>These notes are presented in pages covering a fairly focused concept, in a spirit similar to a section of a book. Just like a book, there are try-it-yourself questions at the end of each page. All have self-graded answers.</p><h2>Getting started with Julia</h2><p>Before beginning, we need to get started with Julia. This is akin to going out and buying a calculator, though it won't take as long.</p><ul>
+<h1>Calculus with Julia</h1><p>This is a set of notes for learning <a href="http://en.wikipedia.org/wiki/Calculus">calculus</a>. Since the mid 90s there has been a push to teach calculus using many different points of view. The <a href="http://www.math.harvard.edu/~knill/pedagogy/harvardcalculus/">Harvard</a> style rule of four says that as much as possible the conversation should include a graphical, numerical, algebraic, and verbal component. These notes use the programming language <a href="http://julialang.org">Julia</a> to illustrate the graphical, numerical, and, at times, the algebraic aspects of calculus.</p><p>There are many examples of integrating a computer algebra system (such as <code>Mathematica</code>, <code>Maple</code>, or <code>Sage</code>) into the calculus conversation. Computer algebra systems can be magical. The popular <a href="http://www.wolframalpha.com/">WolframAlpha</a> website calls the full power of <code>Mathematica</code> while allowing an informal syntax that is flexible enough to be used as a backend for Apple's Siri feature. ("Siri what is the graph of x squared minus 4?") For learning purposes, computer algebra systems model very well the algebraic/symbolic treatment of the material while providing means to illustrate the numeric aspects. Theses notes are a bit different in that <code>Julia</code> is primarily used for the numeric style of computing and the algebraic/symbolic treatment is added on. Doing the symbolic treatment by hand can be very beneficial while learning, and computer algebra systems make those exercises seem kind of pointless, as the finished product can be produced much easier.</p><p>Our real goal is to get at the concepts using technology as much as possible without getting bogged down in the mechanics of the computer language. We feel <code>Julia</code> has a very natural syntax that makes the initial start up not so much more difficult than using a calculator. The notes restrict themselves to a reduced set of computational concepts. This set is sufficient for working the problems in mathematics, but do not cover thoroughly many aspects of programming. (Those who are interested can go off on their own and <code>Julia</code> provides a rich opportunity to do so.) Within this restricted set, are operators that make many of the computations of calculus reduce to a function call of the form <code>action&#40;function, arguments...&#41;</code>. With a small collection of actions that can be composed, many of the problems associated with introductory calculus can be attacked.</p><p>These notes are presented in pages covering a fairly focused concept, in a spirit similar to a section of a book. Just like a book, there are try-it-yourself questions at the end of each page. All have a limited number of self-graded answers. These notes borrow ideas from many sources including <a href="https://ocw.mit.edu/resources/res-18-001-calculus-online-textbook-spring-2005/">Strang</a>, <a href="http://www.math.harvard.edu/~knill/teaching">Knill</a>, <a href="https://www.amazon.com/Div-Grad-Curl-All-That/dp/0393925161/">Schey</a>, Thomas Calculus, Rogawski and Adams, and several Wikipedia pages.</p><h2>Getting started with Julia</h2><p>Before beginning, we need to get started with Julia. This is akin to going out and buying a calculator, though it won't take as long.</p><ul>
 <li><p><a href="getting-started-with-julia.html">Getting Started</a></p>
 </li>
 </ul><h2>Precalculus</h2><p>Many of the necessary computational skills needed for employing <code>Julia</code> successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus <em>review</em>, covers some of the basic materials mathematically (though not systematically). More importantly it illustrates the key computational mechanics we will use throughout. A quick rundown of the <code>julia</code> concepts alone is <a href="precalc/julia_overview.html">here</a>.</p><h3>Number systems</h3><p>Taking for granted a familiarity with basic calculators, we show in these two sections how <code>Julia</code> implements the functionality of a calculator in a manner not so different.</p><ul>
@@ -157,7 +163,7 @@ $( document ).ready(function() {
 </li>
 <li><p><a href="limits/intermediate_value_theorem.html">The Intermediate Value Theorem</a>, the extreme value theorem and the bisection  method.</p>
 </li>
-</ul><h2>Derivatives</h2><p>The derivative of a function is a derived function that for each $x$ yields the slope of the <em>tangent line</em> of the graph of $f$ at $(x,f(x))$. </p><ul>
+</ul><h2>Derivatives</h2><p>The derivative of a function is a derived function that for each $x$ yields the slope of the <em>tangent line</em> of the graph of $f$ at $(x,f(x))$.</p><ul>
 <li><p><a href="derivatives/derivatives.html">Derivatives</a></p>
 </li>
 <li><p><a href="derivatives/numeric_derivatives.html">Numeric Derivatives</a></p>
@@ -193,9 +199,9 @@ $( document ).ready(function() {
 </ul><p>Integration is not algorithmic, but rather problems can involve an array of techniques. Many of these are implemented in <code>SymPy</code>. Theses sections introduce the main techniques that find widespread usage.</p><ul>
 <li><p><a href="integrals/substitution.html">Substitution</a></p>
 </li>
-<li><p><a href="integrals/integration_by_parts.html">Integration by Parts</a> </p>
+<li><p><a href="integrals/integration_by_parts.html">Integration by Parts</a></p>
 </li>
-<li><p><a href="integrals/partial_fractions.html">Partial Fractions</a> </p>
+<li><p><a href="integrals/partial_fractions.html">Partial Fractions</a></p>
 </li>
 <li><p><a href="integrals/improper_integrals.html">Improper Integrals</a></p>
 </li>
@@ -217,23 +223,60 @@ $( document ).ready(function() {
 </li>
 <li><p><a href="ODEs/euler.html">Euler method</a></p>
 </li>
-</ul><h2>Two-dimensional curves</h2><p>In addition to curves generated by graphs of functions, there are other ways to describe curves in two dimensions. One involves parameterizing both the $x$ and $y$ coordinates by a third variable, such as time. The other, polar curves, describes position in terms of a angle from the positive $x$ axis and a radial distance. </p><ul>
-<li><p><a href="curves/parameterized_curves.html">Parametric curves in two dimensions</a></p>
+</ul><h2>Multivariable calculus</h2><p>Univariate functions take a single number as an input and return a number as the output. Notationally, we write $f: R \rightarrow R$. More generally, a function might have several input variables and might return several output variables, notationally $F: R^n \rightarrow R^m$, for positive, integer values of $n$ and $m$. Special cases are when $n=1$ (a space curve) or when $m=1$ (a scalar-valued function). Many of the concepts of calculus for univariate functions carry over, with suitable modifications.</p><p>Polar coordinates are an often useful alternative to describing location in the $x$-$y$ plane.</p><ul>
+<li><p><a href="differentiable_vector_calculus/polar_coordinates.html">Polar Coordinates</a></p>
 </li>
-<li><p><a href="curves/polar_coordinates.html">Polar Coordinates</a> </p>
+</ul><p>The calculus of functions involving more than $1$ variable is greatly simplified by the introduction of vectors and matrices. These objects, and their associated properties, allow many of the concepts of calculus of a single variable to be carried over.</p><ul>
+<li><p><a href="differentiable_vector_calculus/vectors.html">Vectors</a></p>
+</li>
+</ul><p>In general we will consider multivariable functions from $R^n$ into $R^m$ (functions of $n$ variables that return $m$ different values), but it is helpful to specialize to two cases first. These are vector valued functions ($f: R \rightarrow R^n$) and scalar functions ($f:R^n \rightarrow R$).</p><ul>
+<li><p><a href="differentiable_vector_calculus/vector_valued_functions.html">Vector-valued functions</a></p>
+</li>
+<li><p><a href="differentiable_vector_calculus/scalar_functions.html">Scalar functions and their derivatives</a></p>
+</li>
+</ul><p>We discuss applications of the derivative for scalar functions. These include linearization, optimization, and constrained optimization.</p><ul>
+<li><p><a href="differentiable_vector_calculus/scalar_functions_applications.html">Applications for scalar functions</a></p>
+</li>
+</ul><p>The derivative of a mulitvariable function is discussed here. We will see that with the proper notation, many formulas from single variable calculus will hold with slight modifications.</p><ul>
+<li><p><a href="differentiable_vector_calculus/vector_fields.html">Vector fields</a></p>
+</li>
+</ul><hr /><p>Integral vector calculus begins with a generalization of integration to compute area to integration to compute volumes (and its generalization to higher dimensions). The integration concept is then extended to  integration over curves and surfaces. With this, generalizations of the fundamental theorem of calculus are discussed.</p><p>We begin with the generalization of the Riemann integral to compute area to the computation of volume and its higher dimensional interpretations.</p><ul>
+<li><p><a href="integral_vector_calculus/double_triple_integrals.html">Double and triple integrals</a></p>
+</li>
+</ul><p>Line and surface integrals are computed by 1- and 2-dimensional integrals, but offer new interpretations, espcially when vector fields are considered.</p><ul>
+<li><p><a href="integral_vector_calculus/line_integrals.html">Line and surface integrals</a></p>
+</li>
+</ul><p>There are three main operations in differential vector calculus, the gradient, the divergence, and the curl. This is an introduction to the two latter ones.</p><ul>
+<li><p><a href="integral_vector_calculus/div_grad_curl.html">Divergence and curl</a></p>
+</li>
+</ul><p>The fundamental theorem of calculus states that a definite integral over an interval can be computed using a related function and the boundary points of the interval. The fundamental theorem of line integrals is a higher dimensional analog. In this section, related theorems are considered: Green's theorem in $2$ dimensions and Stokes' theorem and the divergence theorem in $3$ dimensions.</p><ul>
+<li><p><a href="integral_vector_calculus/stokes_theorem.html">Green's theorem, Stokes' theorem, and the divergence theorem</a></p>
+</li>
+</ul><hr /><p>Here is a quick review of the math topics discussed on vector calculus.</p><ul>
+<li><p><a href="integral_vector_calculus/review.html">Review of vector calculus</a></p>
 </li>
 </ul><h2>Bibliography</h2><ul>
 <li><p><a href="bibliography.html">Bibliography</a></p>
 </li>
+</ul><h2>A quick review</h2><ul>
+<li><p><a href="quick-notes.html">Quick notes</a></p>
+</li>
+</ul><h2>Miscellaneous</h2><ul>
+<li><p>Some different <a href="julia_interfaces.html">interfaces</a> interfaces to <code>Julia</code>.</p>
+</li>
+<li><p>The <a href="calculus_with_julia.html">CalculusWithJulia</a> package.</p>
+</li>
+<li><p><a href="unicode.html">Unicode symbol</a> usage in <code>Julia</code>.</p>
+</li>
 </ul><hr /><div class="alert alert-success" role="alert">
-    
+
 <div class="markdown"><p>This is a work in progress. To report an issue, make a comment, or suggest something new, please file an <a href="https://github.com/CalculusWithJulia/CalculusWithJulia.github.io/issues/">issue</a>. In your message add the tag <code>@jverzani</code> to ensure it is not overlooked. Otherwise, an email to <code>verzani</code> at <code>math.csi.cuny.edu</code> will also work.</p>
-</div> 
+</div>
 
 </div>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>

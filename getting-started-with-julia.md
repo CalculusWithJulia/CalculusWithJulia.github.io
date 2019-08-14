@@ -4,13 +4,13 @@ Julia is a freely available open-source programming language aimed at technical 
 
 As it is open source, indeed with a liberal MIT license, it can be
 installed for free on many types of computers (though not phones or
-tablets). 
+tablets).
 
 
 We recommend taking advantage of
 [JuliaBox](http://www.juliabox.org), which  provides a web-based interface to `Julia`
 built around `Jupyter`, a wildly succesful platform for interacting
-with different open-source software programs. For JuliaBox, a Google account is needed. 
+with different open-source software programs. For JuliaBox, a Google account is needed.
 
 
 ### Installing Julia locally
@@ -64,52 +64,34 @@ coloring. For example:
 2 + 2
 ```
 
-### IJulia, a better learning enviroment for `Julia`
+Other interfaces to `Julia` are described briefly in  [Julia interfaces](./julia_interfaces.html). The notebook interface provided through `IJulia` most closely matches the style of the notes.
 
-A more forgiving interface for learning is provided through the
-`IJulia` interface. This is the interface for `JuliaBox`. The `IJulia`
-interface can be installed relatively easily by following these steps:
-
-* Run these commands to install two packages:
-
-```verbatim
-Pkg.update()
-Pkg.add("PyCall")
-Pkg.add("IJulia")
-```
-
-* Once this is done, you can start the notebook with these commands:
-
-```verbatim
-using IJulia
-notebook()
-```
 
 
 ## Add-on packages
 
-`Julia` has 100s of external, add-on packages that enhance the
-offerings of base `Julia`. The above showed how to add two packages to
-a system. In these notes, we will rely on a few packages. These will
-need to be installed. The following commands will download and install the
-main packages we reference:
+`Julia` has well over a 1000 external, add-on packages that enhance the
+offerings of base `Julia`. We refer to one, `CalculusWithJulia`, that is designed to accompany these notes. This package installs several other packages that provide the needed functionality. The package (and its dependencies) can be installed through:
+
 
 ```verbatim
-Pkg.update()
-Pkg.add("Plots")
-Pkg.add("SymPy")
-Pkg.add("Roots")
-Pkg.add("ForwardDiff")
-Pkg.add("ImplicitEquations")
+using Pkg
+Pkg.add("CalculusWithJulia")
 ```
 
-The `SymPy` package requires some add-ons for the `Python`
-environment, which should be installed automatically if not found on
-your system.
+(Or the one liner `] add CalculusWithJulia`. Some additional details on packages is provided [here](./calculus_with_julia.html).)
+
+Installation only needs to be done once, but to use a package it must be loaded into each new session. This can be done with this command:
+
+```verbatim
+using CalculusWithJulia
+```
+
+
 
 ## The basics of working with IJulia
 
-The **very** basics of IJulia are covered here.
+The **very** basics of the Jupyter notebook interface provided by `IJulia` are covered here.
 
 An `IJulia` notebook is made up of cells. Within a cell a collection of commands may be typed (one or more).
 
@@ -141,7 +123,7 @@ backends, so this choice is easily changed. The `GR` and
 
 
 ```
-using Plots
+using CalculusWithJulia   # this loads Plots among other packages
 ```
 
 With that in hand, to make a graph of a function over a range, we follow this pattern:

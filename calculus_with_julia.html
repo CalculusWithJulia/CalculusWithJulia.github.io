@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<!-- not TeX-AMS-MML_HTMLorMML-->
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) {
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         <a class="navbar-brand" href="toc.html">Calculus with Julia</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>The <code>CalculusWithJulia</code> package</h1><p>To run the commands in  these notes, some external packages must be installed and loaded.</p><p>All that is needed is to install the <code>CalculusWithJulia</code> package  with:</p><pre class="sourceCode julia">] add CalculusWithJulia</pre>
+<p>This only needs to be done once.</p><p>However, for each new <code>Julia</code> session, the package must be <em>loaded</em> with the following command:</p><pre class="sourceCode julia">using CalculusWithJulia</pre>
+<p>That is all. The rest of this page just provides some details for the interested reader.</p><h2>The package concept</h2><p>The <code>Julia</code> language provides the building blocks for the wider <code>Julia</code> ecosystem that enhance and extend the language's applicability.</p><p><code>Julia</code> is extended through "packages." Some of these, such as packages for certain math constants and some linear algebra operations, are part of all <code>Julia</code> installations and must simple by loaded to be used. Others, such as packages for finding integrals or (automatic) derivatives are provided by uses and must first be <em>installed</em> before being used.</p><h3>Package installation</h3><p>Package installation is straightforward, as <code>Julia</code> has a package, <code>Pkg</code>, that facilitates this. The command line and <code>IJulia</code> provide access to the function in <code>Pkg</code> through the escape command <code>&#93;</code>. For example, to find the status of all currently installed packages, the following command can be executed:</p><pre class="sourceCode julia">] status</pre>
+<p>External packages are <em>typically</em> installed from GitHub and if they are regisered, installation is as easy as call <code>add</code>:</p><pre class="sourceCode julia">] add QuadGK</pre>
+<p>That command will consult <code>Julia</code>'s general regisrty for the location of the <code>QuadGK</code> package, use this location to download the necessary files, if necessary will build or install dependencies, and then make the package available for use.</p><p>For these notes, when the <code>CalculusWithJulia</code> package is installed it will also install all the other packages that are needed.</p><div class="alert alert-info" role="alert">
+
+<div class="markdown"><p>Installing the <code>CalculusWithJulia</code> package is the only package necessary to install for these notes.</p>
+</div>
+
+</div>
+<p>See <a href="https://docs.julialang.org/en/v1/stdlib/Pkg/index.html">Pkg</a> for more details, such as how to update the set of available packages.</p><h3>Using a package</h3><p>The features of an installed package are not available until the package is brought into the current session. A package need only be <em>installed</em> once, but must be loaded each session.</p><p>To load a package, the <code>using</code> keyword is provided:</p><pre class="sourceCode julia">using QuadGK</pre>
+<p>The above command will make available all <em>exported</em> function names from the <code>QuadGK</code> package so they can be directly used, as in:</p><pre class="sourceCode julia">quadgk(sin, 0, pi)</pre>
+<pre class="output">
+(2.0, 1.7905676941154525e-12)</pre>
+
+<p>(A command to find an integral of $f(x) = \sin(x)$ over $[0, \pi]$.)</p><h3>Package details</h3><p>When a package if <em>first</em> loaded after installation, or some other change, it will go through a <em>pre-compilation</em> process. Depending on the package size, this can take a moment to several seconds. This won't happen the second time a package is loaded.</p><p>However, subsequent times a package is loaded some further compilation is done, so it can still take some time for a package to load. Mostly this is not noticeable, though with the plotting package used in these notes, it is.</p><p>When a package is loaded, all of its dependent packages are also loaded, but their functions are not immediately available to the user.</p><p>In <em>typical</em> <code>Julia</code> usage, each needed package is loaded on demand. This is faster and also keeps the namespace (the collection of variable and function names) smaller to avoid collisions. However, for these notes, the package <code>CalculusWithJulia</code> will load all the packages needed for the entire set of notes, not just the current section. This is to make it <em>easier</em> for the <em>beginning</em> user.</p><p>One issue with loading several packages is the possibility that more than one will export a function with the same name, causing a collision.</p><p>The <code>Julia</code> language is designed around have several "generic" functions each with many different methods depending on their usage. This design allows many different implementations for operations such as addition or multiplication yet the user only needs to call one function name. Packages can easily extend these generic functions by providing their own methods for their own new types of data. For example, <code>SymPy</code>, which adds symbolic math features to <code>Julia</code> (using a Python package) extends both <code>&#43;</code> and <code>*</code> for use with symbolic objects.</p><p>This design works great when the "generic" usage matches the package authors needs, but there are two common issues that arise:</p><ul>
+<li><p>The extension of a generic is for a type defined outside the author's package. This is known as "type piracy" and is frowned on, as it can lead to subtle errors. The <code>CalculusWithJulia</code> package practices this for one case: using <code>&#39;</code> to indicate derivatives for <code>Function</code> objects.</p>
+</li>
+<li><p>The generic function concept is not part of base <code>Julia</code>. An example might be the <code>solve</code> function. This name has a well-defined mathematical usage (e.g., "solve for $x$."), but the generic concept is not part of base <code>Julia</code>. It is part of <code>SymPy</code> and it is part of <code>DifferentialEquations</code>. That is, both package export this function name. For the user, if <em>both</em> packages are loaded, then they user <strong>must</strong> <em>qualify</em> which package's <code>solve</code> function they mean, as in <code>SymPy.solve</code> or <code>DifferentialEquations.solve</code>. (<code>DifferentialEquations</code> is not part of <code>CalculusWithJulia</code> and is just briefly used in these notes, though is an incredible set of packages and a testament to the strengths and power of <code>Julia</code>.)</p>
+</li>
+</ul>
+  </div>
+</div>
+
+</body>
+</html>

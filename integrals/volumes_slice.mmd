@@ -1,9 +1,8 @@
 # Volumes by slicing
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
-using QuadGK
 ```
 
 {{{michelin_man}}}
@@ -104,7 +103,7 @@ V = \int_0^h \pi r(x)^2 dx
 This is
 
 ```
-using QuadGK
+using CalculusWithJulia  # loads `QuadGK`, `Plots`, `Roots`, `SymPy`
 d0, d1, h = 2.5, 3.75, 4.75
 rad(x) = d0/2 + (d1/2 - d0/2)/h * x
 vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)
@@ -146,7 +145,6 @@ Vol(h) = quadgk(x -> pi * rad(x)^2, 0, h)[1]
 Then to solve we have:
 
 ```
-using Roots
 v = 5
 h5 = find_zero(h -> Vol(h) - v*231/128, 4)
 ```
@@ -174,7 +172,6 @@ by noting the radius, as a function of $y$, will be $R = r(1 -
 y/h)$. This gives the well-known volume of a cone:
 
 ```
-using SymPy
 @vars r h x y
 R = r*(1 - y/h)
 integrate(pi*R^2, (y, 0, h))
@@ -358,7 +355,7 @@ $$~
 V = \int_0^h C(u) du = C(0) \int_0^h (1 - \frac{u}{h})^2 du = C(0) \int_0^1 v^2 \frac{1}{h} dv = C(0) \frac{h}{3}.
 ~$$
 
-This gives a general formula for the volume of such cones. 
+This gives a general formula for the volume of such cones.
 
 
 
@@ -389,7 +386,7 @@ thetas = range(-theta, stop=theta, length=100)
 ts = range(-pi, stop=pi, length=100)
 y = h1/4
 
-p = plot!(legend=false);
+p = plot!(legend=false, aspect_ratio=:equal);
 plot!(p, R*cos.(ts), R*sin.(ts));
 plot!(p, R*cos.(thetas), R*sin.(thetas), color=:orange);
 
@@ -526,7 +523,6 @@ s_vol(h) = quadgk(x -> pi*s1(x)^2, 0, h)[1]
 * For the straight-sided glass find $h$ so that the volume is $450$.
 
 ```
-using Roots
 h450 = find_zero(h -> r_vol(h) - 450, 10)
 numericq(h450)
 ```
@@ -534,7 +530,6 @@ numericq(h450)
 * For the straight-sided glass find $h$ so that the volume is $225$ (half full).
 
 ```
-using Roots
 h225 = find_zero(h -> r_vol(h) - 225, 10)
 numericq(h225)
 ```
@@ -561,7 +556,6 @@ numericq(r_vol(h450/2)/450*100, 2, units="percent")
 * For the curved-sided glass find $h$ so that the volume is $450$.
 
 ```
-using Roots
 h450 = find_zero(h -> s_vol(h) - 450, 10)
 numericq(h450)
 ```
@@ -569,7 +563,6 @@ numericq(h450)
 * For the curved-sided glass find $h$ so that the volume is $225$ (half full).
 
 ```
-using Roots
 h225 = find_zero(h -> s_vol(h) - 225, 10)
 numericq(h225)
 ```
@@ -708,7 +701,6 @@ Rotate the region bounded by the line $y=x$ and the function $f(x) = x^2$ about 
 You can integrate in the length along the line $y=x$ ($u$ from $0$ to $\sqrt{2}$). The radius then can be found by intersecting the line perpendicular line to $y=x$ at $u$ to the curve $f(x)$. This will do so:
 
 ```
-using Roots
 theta = pi/4  ## we write y=x as y = x * tan(pi/4) for more generality, as this allows other slants.
 
 f(x) = x^2

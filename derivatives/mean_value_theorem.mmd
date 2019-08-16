@@ -1,7 +1,7 @@
 # The Mean Value Theorem and other facts about differentiable functions.
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -13,7 +13,7 @@ it was continuous at each point $c$ in $I$. Similarly, we define a
 function to be *differentiable* on the interval $I$ it it is differentiable
 at each point $c$ in $I$.
 
-This section looks at properties of differentiable functions. As there is a more stringent defintions, perhaps more properties are a consequence of the definition.
+This section looks at properties of differentiable functions. As there is a more stringent definitions, perhaps more properties are a consequence of the definition.
 
 ## Differentiable is more restrictive than continuous.
 
@@ -33,7 +33,7 @@ function which is continuous but has a point with no tangent line. The
 usual suspect is $f(x) = \lvert x\rvert$ at $0$.
 
 ```
-using Plots
+using CalculusWithJulia  # Loads `Plot`, `SymPy`, `ForwardDiff`, `Roots`
 f(x) = abs(x)
 plot(f, -1,1)
 ```
@@ -121,7 +121,7 @@ What does this have to do with derivatives?
 
 [Fermat](http://science.larouchepac.com/fermat/fermat-maxmin.pdf),
 perhaps with insight from Kepler, was interested in maxima of
-polynomial functions. As a warm up, he considered a line segment $AC$ and a point $E$ 
+polynomial functions. As a warm up, he considered a line segment $AC$ and a point $E$
 with the task of choosing $E$ so that $(E-A) \times (C-A)$ being a maximum. We might recognize this as
 finding the maximum of $f(x) = (x-A)\cdot(C-x)$ for some $A <
 C$. Geometrically, we know this to be at the midpoint, as the equation
@@ -177,15 +177,8 @@ critical points and the endpoints.
 
 ### Numeric derivatives
 
-The `FowardDiff` package provides a means to numerically compute derivatives without approximations. We use it to define and operation `D` to find a derivative of a function and then overload the "prime" notation:
+The `ForwardDiff` package provides a means to numerically compute derivatives without approximations at a point. In `CalculusWithJulia` this is extended to find derivatives of functions and the `'` notation is overloaded for function objects. (Through this definition `Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`.) Hence these two give nearly identical answers:
 
-```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
-```
-
-Now, `f'(x)` works as desired:
 
 ```
 f(x) = 3x^3 - 2x
@@ -204,9 +197,8 @@ will be a zero of the derivative. We can check for these with:
 
 
 ```
-using Roots
 f(x) = x^2 * exp(-x)
-cps = find_zeros(f', -1, 6)
+cps = find_zeros(f', -1, 6)     # find_zeros in `Roots`
 ```
 
 We get $0$ and $2$ are critical points. The endpoints are $0$ and
@@ -219,11 +211,11 @@ f(0), f(2), f(5)
 
 We see that $f(2)$ is then the maximum.
 
-A few things. First, `find_zeros` can miss some roots, in particular endpoints and roots
-that just touch $0$. We should graph to verify it didn't. Second, it
-can be easier sometimes to check the values using the "dot"
-notation. If `f`, `a`,`b` are the function and the interval, then this
-would typically follow this pattern:
+A few things. First, `find_zeros` can miss some roots, in particular
+endpoints and roots that just touch $0$. We should graph to verify it
+didn't. Second, it can be easier sometimes to check the values using
+the "dot" notation. If `f`, `a`,`b` are the function and the interval,
+then this would typically follow this pattern:
 
 ```
 a, b = 0, 5
@@ -361,7 +353,7 @@ scatter!([a,b], [f(a), f(b)])
 for cp in cps
   plot!(x -> f(cp) + f'(cp)*(x-cp), color=:red)
 end
-Outputonly(p)  
+Outputonly(p)
 ```
 
 Like Rolle's theorem this is a guarantee that something exists, not a
@@ -388,7 +380,7 @@ $b$. Since $f'(x)$ always exists, $f(x)$ is always differentiable, and
 hence always continuous. So on $[a,b]$ the conditions of the mean
 value theorem apply. So there is a $c$ with $(f(b) - f(a)) / (b-a) =
 f'(c) = 0$. But this would imply $f(b) - f(a)=0$. That is $f(x)$ is a
-constant, as for any $a$ and $b$, as $f(a)=f(b)$. 
+constant, as for any $a$ and $b$, as $f(a)=f(b)$.
 
 ### The Cauchy mean value theorem
 
@@ -611,4 +603,3 @@ L"The squeeze theorem applies, as $0 < g(x) < x$",
 ans = 3
 radioq(choices, ans)
 ```
-

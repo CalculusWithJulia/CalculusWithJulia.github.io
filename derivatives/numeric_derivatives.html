@@ -1,0 +1,453 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+  rel="stylesheet">
+
+<style>
+.julia {font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+body { padding-top: 60px; }
+h5:before {content:"\2746\ ";}
+h6:before {content:"\2742\ ";}
+pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!-- .julia:before {content: "julia> "} -->
+
+<style></style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<!-- not TeX-AMS-MML_HTMLorMML-->
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+<script>
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ["\$","\$"], ["\\(","\\)"]]
+  },
+  displayAlign: "left",
+  displayIndent: "5%"
+});
+</script>
+
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $("h1").each(function(index) {
+       var title = $( this ).text()
+       $("#page_title").html("<strong>" + title + "</strong>");
+       document.title = title
+  });
+  $( "h2" ).each(function( index ) {
+    var nm =  $( this ).text();
+    var id = $.trim(nm).replace(/ /g,'');
+    this.id = id
+    $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
+  });
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+
+</head>
+
+
+<body data-spy="scroll" >
+
+<nav class="navbar navbar-default  navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" id="page_title"></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+         <li class="dropdown">
+           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+           Jump to... <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="page_dropdown"></ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<header>
+</header>
+
+<div class="container-fluid">
+  <div class="span10 offset1">
+<h1>Numeric derivatives</h1><p><code>SymPy</code> returns symbolic derivatives. Up to choices of simplification, these answers match those that would be derived by hand. This is useful when comparing with known answers and for seeing the structure of the answer. However, there are times we just want to work with the answer numerically. For that we have other options.</p><h3>Approximate derivatives</h3><p>An approximate derivative can be used. By approximating the limit of the secant line with a value for a small, but positive, $h$, we get an approximation. That is</p>$$~
+f'(x) \approx \frac{f(x+h) - f(x)}{h}.
+~$$
+<p>This is the forward-difference approximation. The central difference approximation looks both ways:</p>$$~
+f'(x) \approx \frac{f(x+h) - f(x-h)}{2h}.
+~$$
+<p>Though in general they are different, they are both approximations. The central difference is a bit more accurate for the same size $h$. However, both are susceptible to round-off errors. The numerator is a subtraction of like-size numbers–-a perfect opportunity to lose precision. As such there is a balancing act: if $h$ is too small the round-off errors are problematic, if $h$ is too big, the approximation to the limit is not good. For the forward difference $h$ values around $10^{-8}$ are good, for the central difference, values around $10^{-6}$ are good for most instances.</p><h5>Example</h5><p>Let's verify that the forward difference isn't too far off.</p><pre class="sourceCode julia">f(x) = exp(-x^2/2)
+c = 1
+h = 1e-8
+approx = (f(c+h) - f(c)) / h</pre>
+<pre class="output">
+-0.6065306479285937</pre>
+
+<p>We can compare to the actual with:</p><pre class="sourceCode julia">using CalculusWithJulia
+@vars x
+df = diff(f(x), x)
+actual = N(df(c))
+abs(actual - approx)</pre>
+<pre class="output">
+1.178403974334123392219821170344191813548718695568289215873505651941374433299215e-08</pre>
+
+<p>The error is about 1 part in 100 million.</p><p>The central difference is better here:</p><pre class="sourceCode julia">h = 1e-6
+approx = (f(c+h) - f(c-h)) / (2h)
+abs(actual - approx)</pre>
+<pre class="output">
+1.567568231457459370771602167922282298718695568289215873505651941374433299214873e-11</pre>
+
+<h3>Automatic derivatives</h3><p>There are some other ways to compute derivatives numerically that give much more accuracy at the expense of some increased computing time. Automatic differentiation is the general name for a few different approaches. These approaches promise less complexity–-in some cases–-than symbolic derivatives and more accuracy than approximate derivatives. In fact the accuracy is on the order of machine precision.</p><p>The <code>ForwardDiff</code> package provides one of several ways for <code>Julia</code> to compute automatic derivatives. This package is loaded with <code>CalculusWithJulia</code>, but its functions are not exported, so their usage requires qualification. To illustrate, to find the derivative of $f(x)$ at a <em>point</em> we have this syntax:</p><pre class="sourceCode julia">f(x) = exp(-x^2/2)
+c = 1
+ForwardDiff.derivative(f, c)   # derivative is qualified by a module name</pre>
+<pre class="output">
+-0.6065306597126334</pre>
+
+<p>The <code>CalculusWithJulia</code> package defines an operator <code>D</code> which goes from finding a derivative at a point with <code>ForwardDiff.derivative</code> to definin a function which evaluates the derivative at each point. It is defined along the lines of <code>D&#40;f&#41; &#61; x -&gt; ForwardDiff.derivative&#40;f,x&#41;</code> in parallel to how the derivative operation for a function is defined mathematically from the definition for its value at a point.</p><p>Here we see the error in estimating $f'(1)$ for the $f(x) = e^{-x^2/2}$.</p><pre class="sourceCode julia">approx = D(f)(c)         # D(f) is a function, D(f)(c) is the function called on c
+abs(actual - approx)</pre>
+<pre class="output">
+6.593178415491414032952187053331255443171078412649434805862556670078512733295529e-19</pre>
+
+<p>In this case, it is exact.</p><p>The <code>D</code> operator is only defined for most functions, not all. (The <code>diff</code> operator of <code>SymPy</code> is somewhat similar in that respect.)</p><h5>Example</h5><p>For $f(x) = \sqrt{1 + \sin(\cos(x))}$ compare the difference between the forward derivative with $h=1e-8$ and that computed by <code>D</code> at $x=\pi/4$.</p><p>The forward derivative is found from:</p><pre class="sourceCode julia">f(x) = sqrt(1 + sin(cos(x)))
+c, h = pi/4, 1e-8
+fwd = (f(c+h) - f(c))/h</pre>
+<pre class="output">
+-0.20927346522370271</pre>
+
+<p>That given by <code>D</code> is:</p><pre class="sourceCode julia">ds_value = D(f)(c)
+ds_value, fwd, ds_value - fwd</pre>
+<pre class="output">
+(-0.20927346371432803, -0.20927346522370271, 1.5093746807970376e-9)</pre>
+
+<p>Finally, <code>SymPy</code> gives an exact value we use to compare:</p><pre class="sourceCode julia">@vars x
+actual = diff(f(x), x) |> subs(x, PI/4) |> N
+actual - ds_value, actual - fwd</pre>
+<pre class="output">
+(-5.2941373495493281085179064170722727004081123938542546154188381086149403149753e-17, 1.509374627855664131196135271205690010185476120918876061457453845811618913850597e-09)</pre>
+
+<h4>Convenient notation</h4><p><code>Julia</code> allows the possibility of extending functions to different types. Out of the box, the <code>&#39;</code> notation is not employed for functions, but is used for matrices. It is used in postfix position, as with <code>A&#39;</code>. We can define it to do the same thing as <code>D</code> for functions and then, we can evaluate derivatives with the familiar <code>f&#39;&#40;x&#41;</code>. This is done in <code>CalculusWithJulia</code> along the lines of <code>Base.adjoint&#40;f::Function&#41; &#61; D&#40;f&#41;</code>.</p><p>Then, we have, for example:</p><pre class="sourceCode julia">f(x) = sin(x)
+f'(pi), f''(pi)</pre>
+<pre class="output">
+(-1.0, -1.2246467991473532e-16)</pre>
+
+<h5>Example</h5><p>Suppose our task is to find a zero of the second derivative of $f(x) = e^{-x^2/2}$ in $[0, 10]$, a known bracket. The <code>D</code> function takes a second argument to indicate the order of the derivative (e.g., <code>D&#40;f,2&#41;</code>), but we use the more familiar notation:</p><pre class="sourceCode julia">f(x) = exp(-x^2/2)
+fzero(f'', 0, 10)</pre>
+<pre class="output">
+1.0</pre>
+
+<p>We pass in the function object, <code>f&#39;&#39;</code>, and not the evaluated function.</p><h2>Recap on derivatives in Julia</h2><p>A quick summary for finding derivatives in <code>Julia</code>, as there are $3$ different manners:</p><ul>
+<li><p>Symbolic derivatives are found using <code>diff</code> from <code>SymPy</code></p>
+</li>
+<li><p>Automatic derivatives are found using the notation <code>f&#39;</code> using <code>ForwardDiff.derivative</code></p>
+</li>
+<li><p>approximate derivatives at a point, <code>c</code>, for a given <code>h</code> are found with <code>&#40;f&#40;c&#43;h&#41;-f&#40;c&#41;&#41;/h</code>.</p>
+</li>
+</ul><p>For example</p><pre class="sourceCode julia">f(x) = exp(-x)*sin(x)
+c = pi
+h = 0.1
+@vars x
+
+fp = diff(f(x),x)
+fp, fp(c)</pre>
+<pre class="output">
+(-exp(-x)*sin(x) + exp(-x)*cos(x), -0.0432139182637723)</pre>
+
+<p>As compared to</p><pre class="sourceCode julia">f'(c), (f(c+h)-f(c))/h</pre>
+<pre class="output">
+(-0.043213918263772265, -0.03903643351818505)</pre>
+
+<h2>Questions</h2><h5>Question</h5><p>Find the derivative using a forward difference approximation of $f(x) = x^x$ at the point $x=2$ using <code>h&#61;0.1</code>:</p><form name='WeaveQuestion' data-id='xZVXeir8' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="xZVXeir8" type="number" class="form-control">
+
+</div>
+
+<div id='xZVXeir8_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#xZVXeir8').on('change', function() {
+  correct = Math.abs(this.value - 7.496380917422423) <= 0.001;
+
+  if(correct) {
+     $('#xZVXeir8_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#xZVXeir8_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>Using <code>D</code> or <code>f&#39;</code> find the value using automatic differentiation</p><form name='WeaveQuestion' data-id='3SjCpvJS' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="3SjCpvJS" type="number" class="form-control">
+
+</div>
+
+<div id='3SjCpvJS_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#3SjCpvJS').on('change', function() {
+  correct = Math.abs(this.value - 6.772588722239782) <= 0.001;
+
+  if(correct) {
+     $('#3SjCpvJS_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#3SjCpvJS_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h5>Question</h5><p>Mathematically, as the value of <code>h</code> in the forward difference gets smaller the forward difference approximation gets better. On the computer, this is thwarted by floating point representation issues (in particular the error in subtracting two like-sized numbers in forming $f(x+h)-f(x)$.)</p><p>For <code>1e-16</code> what is the error (in absolute value) in finding the forward difference approximation for the derivative of $\sin(x)$ at $x=0$?</p><form name='WeaveQuestion' data-id='tvKXApBu' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="tvKXApBu" type="number" class="form-control">
+
+</div>
+
+<div id='tvKXApBu_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#tvKXApBu').on('change', function() {
+  correct = Math.abs(this.value - 37.637359812630166) <= 0.001;
+
+  if(correct) {
+     $('#tvKXApBu_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#tvKXApBu_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<p>Repeat for $x=pi/4$:</p><form name='WeaveQuestion' data-id='jW3tx8s5' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="jW3tx8s5" type="number" class="form-control">
+
+</div>
+
+<div id='jW3tx8s5_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#jW3tx8s5').on('change', function() {
+  correct = Math.abs(this.value - 1.0) <= 0.001;
+
+  if(correct) {
+     $('#jW3tx8s5_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#jW3tx8s5_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Let $f(x) = x^x$. Using <code>D</code>, find $f'(3)$.</p><form name='WeaveQuestion' data-id='YUIR8BPI' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="YUIR8BPI" type="number" class="form-control">
+
+</div>
+
+<div id='YUIR8BPI_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#YUIR8BPI').on('change', function() {
+  correct = Math.abs(this.value - 56.66253179403897) <= 0.001;
+
+  if(correct) {
+     $('#YUIR8BPI_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#YUIR8BPI_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Let $f(x) = \lvert 1 - \sqrt{1 + x}\rvert$. Using <code>D</code>, find $f'(3)$.</p><form name='WeaveQuestion' data-id='LwrdaPs6' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="LwrdaPs6" type="number" class="form-control">
+
+</div>
+
+<div id='LwrdaPs6_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#LwrdaPs6').on('change', function() {
+  correct = Math.abs(this.value - 0.25) <= 0.001;
+
+  if(correct) {
+     $('#LwrdaPs6_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#LwrdaPs6_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Let $f(x) = e^{\sin(x)}$. Using <code>D</code>, find $f'(3)$.</p><form name='WeaveQuestion' data-id='f8R2uXsM' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="f8R2uXsM" type="number" class="form-control">
+
+</div>
+
+<div id='f8R2uXsM_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#f8R2uXsM').on('change', function() {
+  correct = Math.abs(this.value - -1.1400385675133151) <= 0.001;
+
+  if(correct) {
+     $('#f8R2uXsM_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#f8R2uXsM_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>For <code>Julia</code>'s <code>airyai</code> function find a numeric derivative using the forward difference. For $c=3$ and $h=10^{-8}$ find the forward difference approximation to $f'(3)$ for the <code>airyai</code> function.</p><form name='WeaveQuestion' data-id='iihz4eAC' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="iihz4eAC" type="number" class="form-control">
+
+</div>
+
+<div id='iihz4eAC_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#iihz4eAC').on('change', function() {
+  correct = Math.abs(this.value - -0.011912976768252426) <= 0.001;
+
+  if(correct) {
+     $('#iihz4eAC_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#iihz4eAC_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Find the rate of change with respect to time of the function $f(t)= 64 - 16t^2$ at $t=1$.</p><form name='WeaveQuestion' data-id='o7ViIe4o' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="o7ViIe4o" type="number" class="form-control">
+
+</div>
+
+<div id='o7ViIe4o_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#o7ViIe4o').on('change', function() {
+  correct = Math.abs(this.value - -32) <= 0;
+
+  if(correct) {
+     $('#o7ViIe4o_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#o7ViIe4o_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+<h6>Question</h6><p>Find the rate of change with respect to height, $h$, of $f(h) = 32h^3 - 62 h + 12$ at $h=2$.</p><form name='WeaveQuestion' data-id='ezmnK80c' data-controltype='numeric'>
+<div class='form-group '>
+<div class='controls'>
+
+
+<div class="input-group">
+<input id="ezmnK80c" type="number" class="form-control">
+
+</div>
+
+<div id='ezmnK80c_message'></div>
+</div>
+</div>
+</form>
+<script text='text/javascript'>
+$('#ezmnK80c').on('change', function() {
+  correct = Math.abs(this.value - 322) <= 0;
+
+  if(correct) {
+     $('#ezmnK80c_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+  } else {
+     $('#ezmnK80c_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+  }
+});
+</script>
+
+  </div>
+</div>
+
+</body>
+</html>

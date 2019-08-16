@@ -1,7 +1,7 @@
 # Derivatives
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -32,7 +32,7 @@ $x$ is position at time $t$, $v$ is the velocity and $t$ the time
 traveled in hours. A simple graph of the first three hours of travel would show:
 
 ```
-using Plots
+using CalculusWithJulia   # Load `Plots` and `SymPy`
 position(t) = 60 * t
 plot(position, 0, 3)
 ```
@@ -304,10 +304,9 @@ at a point.
   at $(x+h)^n - x^n$ for positive, integer-value $n$. Let's look at a case, $n=5$
 
 ```
-using SymPy
 @vars x h real=true
 n = 5
-ex = SymPy.expand((x+h)^n - x^n)
+ex = expand((x+h)^n - x^n)
 ```
 
 All terms have an `h` in them, so we cancel it out:
@@ -337,7 +336,7 @@ general, the power rule applies for any $n$ where $x^n$ is defined.
 We need to consider the difference $\sin(x+h) - \sin(x)$:
 
 ```
-ex = expand_trig(sin(x+h) - sin(x))
+ex = sympy.expand_trig(sin(x+h) - sin(x))  # expand_trig is not exposed in `SymPy`
 ```
 
 That used the formula $\sin(x+h) = \sin(x)\cos(h) + \sin(h)\cos(x)$.
@@ -351,7 +350,7 @@ $$~
 and take a limit. If the answer isn't clear, we can let `SymPy` do this work:
 
 ```
-limit((sin(x+h) - sin(x))/ h, h, 0)
+limit((sin(x+h) - sin(x))/ h, h=>0)
 ```
 
 
@@ -370,7 +369,7 @@ e$, and since $\log(e)$ is $1$ we get this expression has a limit of $1/x$.
 We verify through:
 
 ```
-limit((log(x+h) - log(x))/h, h, 0)
+limit((log(x+h) - log(x))/h, h=>0)
 ```
 
 
@@ -401,8 +400,8 @@ f'(x) = \frac{d}{d\xi}(f(\xi)) \big|_{\xi=x}.
   The notation -- $\big|$ -- on the right-hand side separates the tasks of finding the
   derivative and evaluating the derivative at a specific value.
 
-- Euler used `D` for the operator `D(f)`. This is appropriated by an
-  operator in the `Roots` package. This was initially used by
+- Euler used `D` for the operator `D(f)`. This notation is appropriated by an
+  operator in the `CalculusWithJulia` package. This was initially used by
   [Argobast](http://jeff560.tripod.com/calculus.html).
 
 - Newton used a "dot" $\dot{x}(t)$, which is still widely used in physics to indicate  a derivative in time.
@@ -457,7 +456,7 @@ derive a formula for the derivative of a product of functions:
 ```
 u,v = SymFunction("u,v") # make symbolic functions
 f(x) = u(x) * v(x)
-limit((f(x+h) - f(x))/h, h, 0)
+limit((f(x+h) - f(x))/h, h=>0)
 ```
 
 The output uses some new notation to represent that the derivative of
@@ -537,7 +536,7 @@ proof (one of the two detailed
 We can verify this using `SymPy`:
 
 ```
-limit(( u(v(x+h)) - u(v(x)) ) / (v(x+h) - v(x)), h, 0)
+limit(( u(v(x+h)) - u(v(x)) ) / (v(x+h) - v(x)), h=>0)
 ```
 
 Combined, we would end up with:
@@ -648,10 +647,14 @@ and finally,
 diff(sin(x)^5)
 ```
 
+```
+note("""
 The `diff` function can be called as `diff(ex)` when there is just one
-free variable, or `diff(ex, var)` when there are parameters in the
-expression, or `diff(f)`, where `f` is the name of a univariate function.
-
+free variable, as in the above examples; as  `diff(ex, var)` when there are parameters in the
+expression; or, as `diff(f)`, where `f` is the name of a univariate function.
+"""
+)
+```
 
 
 
@@ -810,7 +813,12 @@ This can be verified:
 diff(diff(e^(-x^2))) |> simplify
 ```
 
-Having to iterate the use of `diff` is cumbersome. An alternate notation is either specifying the variable twice: `diff(ex, x, x)` or using a number after the variable: `diff(ex, x, 2)`.
+Having to iterate the use of `diff` is cumbersome. An alternate notation is either specifying the variable twice: `diff(ex, x, x)` or using a number after the variable: `diff(ex, x, 2)`:
+
+
+```
+diff(e^(-x^2), x, x) |> simplify
+```
 
 
 ##### Example: Details on symbolic derivatives
@@ -821,16 +829,15 @@ rules. Such rules are applied from the outside in. Identifying
 the proper "outside" function is usually most of the battle when finding derivatives.
 
 The `SymPy` program has a function that can identify the outside
-function  of a symbolic expression. Basic math expressions can be parsed as a
-function being called with one or more arguments. The function
-`SymPy.funcname` will return the function, and `args` will return the
-arguments.
+function of a symbolic expression. Basic math expressions can be
+parsed as a function being called with one or more arguments. The
+function `SymPy.Introspection.funcname` will return the function, and
+`SymPy.Introspection.args` will return the arguments.
 
 To illustrate, we define some variables and look at the operations:
 
 ```
-using SymPy
-funcname = SymPy.funcname # funcname is not exported
+args, funcname = SymPy.Introspection.args, SymPy.Introspection.funcname # args, funcname are not exported
 @vars x y z
 ```
 
@@ -876,7 +883,7 @@ args(ex)
 ```
 
 Like addition, multiplication is not just a binary operation, as it
-is typicaly viewed mathematically. The output of `args` can be 2 or more expressions.
+is typically viewed mathematically. The output of `args` can be 2 or more expressions.
 
 
 The power rule is an easy to use derivative rule. SymPy recognizes when the "outer" function is a power:
@@ -947,6 +954,7 @@ functions need different rules of differentiation.
 ```
 function diffex(ex)
     n = length(free_symbols(ex))
+
     n == 0 && return Sym(0)
     n > 1 && error("This is a simple example, use diff")
 
@@ -981,10 +989,10 @@ following avoids this by reexpressing $a^b = \exp(b \ln(a))$ and then
 applying the *chain* rule:
 
 ```
-_diff(::Type{Val{:Pow}}, a, b) = powsimp(a^b * diffex(b * log(a)))
+_diff(::Type{Val{:Pow}}, a, b) = sympy.powsimp(a^b * diffex(b * log(a)))
 ```
 
-The `powsimp` function is used to encourage SymPy to simplify $a^b/b$ into $a^{b-1}$, which may not otherwise occur.
+The `powsimp` function is used to encourage SymPy to simplify $a^b/b$ into $a^{b-1}$, which may not otherwise occur. (It is not exposed, so must be qualified by the underlying `sympy` Python object.)
 
 Now to catch some special cases. First, when we encounter the symbol, we want to return `1`, as $d/dx[x] = 1$:
 
@@ -1002,7 +1010,7 @@ _diff(::Any) = Sym(0)
 ```
 
 Now for some specific functions. Here is where the chain rule comes
-in. For example, the derivative when the `log` function is encoutered
+in. For example, the derivative when the `log` function is encountered
 has an extra product of `diffex(ex)`:
 
 ```

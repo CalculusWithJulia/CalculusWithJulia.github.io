@@ -1,7 +1,7 @@
 # Area under a curve
 
 ```nocode,noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -30,7 +30,7 @@ For some functions, this area can be computed by geometry, for
 example, here we see the area under $f(x)$ is just $1$, as it is a triangle with base $2$ and height $1$:
 
 ```
-using Plots
+using CalculusWithJulia   # loads `Plots`, `QuadGK`, `Roots`, ...
 f(x) = 1 - abs(x)
 plot([f, zero], -1, 1)
 ```
@@ -226,7 +226,7 @@ choice is to break the interval into $n+1$ equal-sized pieces. With
 $\Delta = (b-a)/n$, these pieces become the arithmetic sequence $a =
 a + 0 \cdot \Delta < a + 1 \cdot \Delta < a + 2 \cdot \Delta < \cdots
 a + n \cdots < \Delta = b$ with $x_i = a + i (b-a)/n$. (The
-`range(a,stop=b,length=n+1)` command will compute these.) An alternate choice
+`range(a, b, length=n+1)` command will compute these.) An alternate choice
 made below for one problem is to use a geometric progression $a = a(1+\alpha)^0 <
 a(1+\alpha)^1 < a (1+\alpha)^2 < \cdots < a (1+\alpha)^n = b$. The
 general statement allows for any partition such that the largest gap
@@ -252,7 +252,7 @@ are integrable:
 > $$~
 > \lvert \sum_{i=1}^n f(c_i)(x_{i} - x_{i-1}) - V \rvert < \epsilon.
 > ~$$
-> 
+>
 > When the integral exists, it is written $V = \int_a^b f(x) dx$.
 
 
@@ -261,7 +261,7 @@ are integrable:
 note(L"""
 
 The expression $V = \int_a^b f(x) dx$ is known as the *definite
-integral* of $f$ over $[a,b]$.  
+integral* of $f$ over $[a,b]$.
 Much earlier than Riemann, Cauchy had defined the definite integral in terms of a sum of rectangular
 products beginning with $S=(x_1 - x_0) f(x_0) + (x_2 - x_1) f(x_1) +
 \cdots + (x_n - x_{n-1}) f(x_{n-1})$ (the left Riemann sum). He showed
@@ -516,7 +516,7 @@ find the $c_i$, multiply the pieces and add up. Here is one way to do all this:
 
 ```
 n = 5
-xs = a:(b-a)/n:b       # also range(a, stop=b, length=n)
+xs = a:(b-a)/n:b       # also range(a, b, length=n)
 deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
 cs = xs[1:end-1]       # finds left-hand end points. xs[2:end] would be right-hand ones.
 ```
@@ -536,8 +536,8 @@ a, b = 0, 1
 f(x) = x^2
 n = 50_000
 xs = a:(b-a)/n:b
-deltas = diff(xs)      
-cs = xs[1:end-1] 
+deltas = diff(xs)
+cs = xs[1:end-1]
 sum(f(cs[i]) * deltas[i] for i in 1:length(deltas))
 ```
 
@@ -551,8 +551,8 @@ Before continuing, we define a function to compute the Riemann sum for
 us with an extra argument to specifying one of three methods for
 computing $c_i$:
 
-```
-function riemann(f, a, b, n=50_000; method="left")
+```noeval
+function riemann(f, a, b, n; method="left")
   xs = a:(b-a)/n:b
   deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
   if method == "left"
@@ -566,10 +566,12 @@ function riemann(f, a, b, n=50_000; method="left")
 end
 ```
 
+(This function is defined in `CalculusWithJulia`.)
+
 With this, we can easily find an approximate answer. We wrote the
 function to use the familiar template `action(function,
 arguments...)`, so we pass in a function and arguments to describe the
-problem (`a`, `b`, and optionally `n` and the `method`):
+problem (`a`, `b`, and  `n` and, optionally, the `method`):
 
 ```
 f(x) = exp(x)
@@ -663,7 +665,7 @@ sum will work:
 
 ```
 f(x) = x * log(x)
-riemann(f, 0, 2, method="right")
+riemann(f, 0, 2, 50_000, method="right")
 ```
 
 ##### Example
@@ -677,7 +679,7 @@ The partition is $-1 < -1/2 < 0 < 1/2 < 1$. The midpoints are $-3/4,
 -1/4, 1/4, 3/4$. We thus have that $\pi/2$ is approximately:
 
 ```
-xs = range(-1, stop=1, length=5)
+xs = range(-1, 1, length=5)
 deltas = diff(xs)
 cs = [-3/4, -1/4, 1/4, 3/4]
 f(x) = sqrt(1 - x^2)
@@ -715,7 +717,7 @@ This suggests that the following inequality holds for integrals:
 
 > $$~ \lvert \int_a^b f(x) dx \rvert \leq \int_a^b \lvert f(x) \rvert dx.~$$
 
-This can be used to give bounds on the size of an integral. For example, suppose you know that $f(x)$ is continous on $[a,b]$ and takes its maximum value of $M$ and minimum value of $m$. Letting $K$ be the larger of $\lvert M\rvert$ and $\lvert m \rvert$, gives this bound when $a < b$:
+This can be used to give bounds on the size of an integral. For example, suppose you know that $f(x)$ is continuous on $[a,b]$ and takes its maximum value of $M$ and minimum value of $m$. Letting $K$ be the larger of $\lvert M\rvert$ and $\lvert m \rvert$, gives this bound when $a < b$:
 
 $$~
 \lvert\int_a^b f(x) dx \rvert \leq \int_a^b \lvert f(x) \rvert dx \leq \int_a^b K dx = K(b-a).
@@ -820,7 +822,9 @@ for the "nice" functions we encounter.) Some examples are given in the questions
 
 In `Julia` a modification of the Gauss quadrature rule is implemented
 in the `quadgk` function (from the `QuadGK` package) to give numeric approximations to
-integrals. The function also has the familiar interface
+integrals.
+`QuadGK` is loaded when `CalculusWithJulia` is loaded.
+The `quadgk` function also has the familiar interface
 `action(function, arguments...)`. Unlike our `riemann` function, there
 is no `n` specified, as the number of steps is *adaptively*
 determined. (There is more partitioning occurring where the function
@@ -832,7 +836,7 @@ trickier problems require a specification of an error threshold.
 To use the function, we have:
 
 ```
-using QuadGK
+using QuadGK       # loaded with CalculusWithJulia
 f(x) = x * log(x)
 quadgk(f, 0, 2)
 ```
@@ -948,16 +952,16 @@ F(x) = quadgk(f, -pi, x)[1]
 (The trailing `[1]` is so only the answer -- and not the error -- is returned.)
 
 The question asks us to solve $F(x) = 0.25$, $F(x) = 0.5$ and $F(x)
-= 0.75$. The `Roots` package can be used for such work, in particular
-`fzero`. We will use a bracketing method, as clearly $F(x)$ is
+= 0.75$. The `Roots` package (loaded with `CalculusWithJulia`) can be used for such work, in particular
+`find_zero`. We will use a bracketing method, as clearly $F(x)$ is
 increasing, as $f(u)$ is positive, so we can just bracket our answer
 with $-\pi$ and $\pi$. (We solve $F(x) - p = 0$, so $F(\pi) - p > 0$ and $F(-\pi)-p < 0$.). The only trick below is the use of an anonymous
 function to write the function $h(x) = F(x) - p$ for $p$ taking one of
 three values:
 
 ```
-using Roots
-[fzero(x -> F(x) - p, [-pi, pi]) for p in [0.25, 0.5, 0.75]]
+using Roots     # loaded with `CalculusWithJulia`
+[find_zero(x -> F(x) - p, (-pi, pi)) for p in [0.25, 0.5, 0.75]]
 ```
 
 The middle one is clearly $0$. This distribution is symmetric about

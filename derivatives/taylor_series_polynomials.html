@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -127,34 +133,34 @@ sl(x) = f[c] + f[c, c+h] \cdot (x-c)
 function divided_differences(f, x, xs...)
     xs = sort(vcat(x, xs...))
     (divided_differences(f, xs[2:end]...) - divided_differences(f, xs[1:end-1]...)) / (xs[end] - xs[1])
-end	</pre>
+end</pre>
 <pre class="output">
 divided_differences (generic function with 2 methods)</pre>
 
-<p>With <code>SymPy</code> we have, using $u$ in place of $f$:</p><pre class="sourceCode julia">using SymPy
+<p>With <code>SymPy</code> we have, using $u$ in place of $f$:</p><pre class="sourceCode julia">using CalculusWithJulia   # loads `SymPy`, `ForwardDiff`
 @vars x c real=true
 @vars h positive=true
 u = SymFunction("u")
 
 ex = divided_differences(u, c, c+h)</pre>
 <div class="well well-sm">
-$$\frac{- u{\left (c \right )} + u{\left (c + h \right )}}{h}$$</div>
+\begin{equation*}\frac{- u{\left (c \right )} + u{\left (c + h \right )}}{h}\end{equation*}</div>
 
 <p>We can take a limit and see the familiar (yet differently represented) value of $u'(c)$:</p><pre class="sourceCode julia">limit(ex, h => 0)</pre>
 <div class="well well-sm">
-$$\left. \frac{d}{d \xi_{1}} u{\left (\xi_{1} \right )} \right|_{\substack{ \xi_{1}=c }}$$</div>
+\begin{equation*}\left. \frac{d}{d \xi_{1}} u{\left (\xi_{1} \right )} \right|_{\substack{ \xi_{1}=c }}\end{equation*}</div>
 
 <p>Now, let's look at:</p><pre class="sourceCode julia">ex = divided_differences(u, c, c+h, c+2h)
 simplify(ex)</pre>
 <div class="well well-sm">
-$$\frac{u{\left (c \right )} - 2 u{\left (c + h \right )} + u{\left (c + 2 h \right )}}{2 h^{2}}$$</div>
+\begin{equation*}\frac{u{\left (c \right )} - 2 u{\left (c + h \right )} + u{\left (c + 2 h \right )}}{2 h^{2}}\end{equation*}</div>
 
 <p>Not so bad after simplification. The limit shows this to be an approximation to the second derivative divided by $2$:</p><pre class="sourceCode julia">limit(ex, h => 0)</pre>
 <div class="well well-sm">
-$$\frac{\left. \frac{d^{2}}{d \xi_{1}^{2}} u{\left (\xi_{1} \right )} \right|_{\substack{ \xi_{1}=c }}}{2}$$</div>
+\begin{equation*}\frac{\left. \frac{d^{2}}{d \xi_{1}^{2}} u{\left (\xi_{1} \right )} \right|_{\substack{ \xi_{1}=c }}}{2}\end{equation*}</div>
 
 <p>(The expression is, up to a divisor of $2$, the second order forward <a href="http://tinyurl.com/n4235xy">difference equation</a>, a well-known approximation to $f''$.)</p><p>This relationship between higher-order divided differences and higher-order derivatives generalizes. This is expressed in this <a href="http://tinyurl.com/zjogv83">theorem</a>:</p><blockquote>
-<p>Suppose $x_0,x_1, x_2, \dots, x_n$ are distinct points with $m$ and $M$ being the smallest and largest of them. If $f$ has $n$ continuous derivatives then there exists a value $\xi$ where $m <\xi<M$ satisfying:</p>
+<p>Suppose $m=x_0 < x_1 < x_2 < \dots < x_n=M$ are distinct points. If $f$ has $n$ continuous derivatives then there exists a value $\xi$ where $m < \xi < M$ satisfying:</p>
 </blockquote>$$~
 f[x_0, x_1, \dots, x_n] = \frac{1}{n!} \cdot f^{(n)}(\xi).
 ~$$
@@ -167,11 +173,11 @@ f[c] + f[c, c+h](x-c).
 <p>As mentioned, we can verify directly that it interpolates the points $(c,f(c))$ and $(c+h, f(c+h))$. He we let <code>SymPy</code> do the algebra:</p><pre class="sourceCode julia">p = divided_differences(u, c) + divided_differences(u, c, c+h) * (x-c)
 p(x => c) - u(c)</pre>
 <div class="well well-sm">
-$$0$$</div>
+\begin{equation*}0\end{equation*}</div>
 
 <p>and</p><pre class="sourceCode julia">p(x => c+h) - u(c+h)</pre>
 <div class="well well-sm">
-$$0$$</div>
+\begin{equation*}0\end{equation*}</div>
 
 <p>Now for something new. Take the $n=2$ case with $x_0 = c$, $x_1 = c + h$, and $x_2 = c+2h$. Then the interpolating polynomial is:</p>$$~
 f[c] + f[c, c+h](x-c) + f[c, c+h, c+2h](x-c)(x-(c+h)).
@@ -179,19 +185,19 @@ f[c] + f[c, c+h](x-c) + f[c, c+h, c+2h](x-c)(x-(c+h)).
 <p>We add the next term to our previous polynomial and simplify</p><pre class="sourceCode julia">p = p + divided_differences(u, c, c+h, c+2h)*(x-c)*(x-(c+h))
 simplify(p)</pre>
 <div class="well well-sm">
-$$\frac{h^{2} u{\left (c \right )} + h \left(c - x\right) \left(u{\left (c \right )} - u{\left (c + h \right )}\right) + \frac{\left(c - x\right) \left(c + h - x\right) \left(u{\left (c \right )} - 2 u{\left (c + h \right )} + u{\left (c + 2 h \right )}\right)}{2}}{h^{2}}$$</div>
+\begin{equation*}\frac{h^{2} u{\left (c \right )} + h \left(c - x\right) \left(u{\left (c \right )} - u{\left (c + h \right )}\right) + \frac{\left(c - x\right) \left(c + h - x\right) \left(u{\left (c \right )} - 2 u{\left (c + h \right )} + u{\left (c + 2 h \right )}\right)}{2}}{h^{2}}\end{equation*}</div>
 
-<p>We can check that this interpolates the three points. Notice that at $x_0=c$ and $x_1=c+h$, the last term, $f[x_0, x_1, x_2]\cdot(x-x_0)(x-x_1)$, vanishes, so we already have the polynomial interpolating there. Only   value $x_2=c+2h$ remains to be checked:</p><pre class="sourceCode julia">p(x => c+2h) - u(c+2h)</pre>
+<p>We can check that this interpolates the three points. Notice that at $x_0=c$ and $x_1=c+h$, the last term, $f[x_0, x_1, x_2]\cdot(x-x_0)(x-x_1)$, vanishes, so we already have the polynomial interpolating there. Only value $x_2=c+2h$ remains to be checked:</p><pre class="sourceCode julia">p(x => c+2h) - u(c+2h)</pre>
 <div class="well well-sm">
-$$h \left(- \frac{- u{\left (c \right )} + u{\left (c + h \right )}}{h} + \frac{- u{\left (c + h \right )} + u{\left (c + 2 h \right )}}{h}\right) - u{\left (c \right )} + 2 u{\left (c + h \right )} - u{\left (c + 2 h \right )}$$</div>
+\begin{equation*}h \left(- \frac{- u{\left (c \right )} + u{\left (c + h \right )}}{h} + \frac{- u{\left (c + h \right )} + u{\left (c + 2 h \right )}}{h}\right) - u{\left (c \right )} + 2 u{\left (c + h \right )} - u{\left (c + 2 h \right )}\end{equation*}</div>
 
 <p>Hmm, doesn't seem correct–-that was supposed to be $0$. The issue isn't the math, it is that SymPy needs to be encouraged to simplify:</p><pre class="sourceCode julia">simplify(p(x => c+2h) - u(c+2h))</pre>
 <div class="well well-sm">
-$$0$$</div>
+\begin{equation*}0\end{equation*}</div>
 
 <p>By contrast, at the point $x=c+3h$ we have no guarantee of interpolation, and indeed don't, as this expression is non-zero:</p><pre class="sourceCode julia">simplify(p(x => c+3h) - u(c+3h))</pre>
 <div class="well well-sm">
-$$u{\left (c \right )} - 3 u{\left (c + h \right )} + 3 u{\left (c + 2 h \right )} - u{\left (c + 3 h \right )}$$</div>
+\begin{equation*}u{\left (c \right )} - 3 u{\left (c + h \right )} + 3 u{\left (c + 2 h \right )} - u{\left (c + 3 h \right )}\end{equation*}</div>
 
 <p>Interpolating polynomials are of interest in their own right,  but for now we want to use them as motivation for the best polynomial approximation of a certain degree for a function. Motivated by how the secant line leads to the tangent line, we note that coefficients of the quadratic interpolating polynomial above have limits as $h$ goes to $0$, leaving this polynomial:</p>$$~
 f(c) + f'(c) \cdot (x-c) + \frac{1}{2!} \cdot f''(c) (x-c)^2.
@@ -209,10 +215,10 @@ p = plot(f, a, b, linewidth=5, legend=false, color=:blue)
 plot!(p, x->f(c) + fp*(x-c);  color=:green, alpha=0.25, linewidth=5)                     # tangent line is flat
 plot!(p, x->f(c) + fp*(x-c) + (1/2)*fpp*(x-c)^2; color=:green, alpha=0.25, linewidth=5)  # a parabola
 p</pre>
-    <div id="76d73740-05d9-45c2-80f0-a3d57bfc0bd5" style="width:600px;height:400px;"></div>
+    <div id="3826bc16-fd92-4225-9b48-50d8c9afb798" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('76d73740-05d9-45c2-80f0-a3d57bfc0bd5');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.5554562141504698,-1.5401161015060427,-1.398274609821354,-1.2564331181366653,-1.171192293875998,-1.0859514696153307,-1.013881437546565,-0.9418114054777994,-0.8635231501006033,-0.7852348947234071,-0.7130600479845179,-0.6408852012456286,-0.5635061376192187,-0.48612707399280874,-0.3964758403847387,-0.3068246067766686,-0.22715317027091803,-0.1474817337651674,-0.07761706358097209,-0.007752393396776786,0.06841885075851835,0.14459009491381347,0.22121404568442682,0.29783799645504017,0.38255557233399284,0.4672731482129456,0.5478797839911534,0.6284864197693613,0.7122986183256123,0.7961108168818632,0.8666628356928043,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":5},"y":[0.015339511014701398,0.030675412420937312,0.17166717434870793,0.30921094955085954,0.3890536019564325,0.46607110287179804,0.5285697983261571,0.5883242430613825,0.6497634313718201,0.707222220148052,0.7563636858789748,0.8015668055511775,0.8453874952692148,0.88414893600324,0.922427643912399,0.953297448140898,0.9743114618127554,0.9891442673157648,0.9969893076459937,0.999969950348809,0.9976603433323025,0.9895650509231215,0.9756317894726576,0.9559731716178939,0.9277136899890839,0.8927999257171659,0.8536308148768001,0.808918300265202,0.7568615568015716,0.6994913624148118,0.6473736431477509,0.5920349014277695,0.4451210492718674,0.29491698699413654,0.03991632077017146],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6160970553196121,-1.3206830907342884,-1.143151611473324,-0.99305100516728,-0.8299996749341085,-0.6796807706048265,-0.5185230184529199,-0.3318059581938597,-0.1658738698970732,-0.020366381513918376,0.13827583915120326,0.29786091408581084,0.474302621397332,0.6421824537672565,0.8167385273254362,0.9636775600364709,1.1430734641353968,1.3117109051964875,1.5818811631186822],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.7037602195974804,-1.6954840373221998,-1.6872078550469192,-1.6789316727716386,-1.6024064172803327,-1.5258811617890269,-1.449355906297721,-1.3728306508064152,-1.2808536731624158,-1.1888766955184165,-1.1111113314937762,-1.033345967469136,-0.9488709852400082,-0.8643960030108804,-0.7865175413401964,-0.7086390796695122,-0.6251451380399033,-0.5416511964102944,-0.4449152769627004,-0.3481793575151065,-0.26221188831342646,-0.1762444191117464,-0.1008586956233563,-0.025472972134966194,0.056717702128844014,0.13890837639265421,0.22158753239743262,0.304266688402211,0.3956790679780353,0.4870914475538596,0.5740680201202893,0.6610445926867191,0.7514800475261652,0.8419155023656113,0.9180428921837696,0.9941702820019278,1.087113196291946,1.1800561105819642,1.2674251913274528,1.3547942720729411,1.4247802933589337,1.4947663146449264,1.564752335930919,1.6347383572169119,1.6455088953306416,1.6562794334443716,1.6670499715581013],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[-0.4513994429414272,-0.4373330604071932,-0.42333517306601287,-0.40940578091788615,-0.2838531630705958,-0.16415665995131512,-0.05031627156004426,0.05766800210321721,0.1797069339731736,0.2932861014266053,0.382715804513064,0.4660980557576375,0.5498219266848281,0.6264097749894071,0.6906950785820862,0.7489153273825733,0.8045967781925351,0.8533069907136484,0.9010251981626018,0.9393855675001839,0.9656224628135536,0.9844689523659815,0.9949137617585776,0.9996755638453056,0.9983915511326119,0.9903522314839783,0.9754494827430084,0.9537108911643759,0.9217190375820167,0.8813709608599428,0.8352229541375855,0.7815100232398249,0.7176388690850363,0.6455891434382302,0.5785986240554298,0.5058127251921036,0.4090924492239544,0.30373378793908345,0.19681669219428488,0.08226624017917483,-0.014999442171984567,-0.11716316769858759,-0.2242249364006339,-0.33618474827812395,-0.3538497623061343,-0.37163078082540424,-0.3895278038359331],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.8048845253321477,1.7681742772927687],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.30000000000000004,0.0,0.30000000000000004,0.6000000000000001,0.9000000000000001],"visible":true,"ticks":"inside","range":[-0.49494142622967,1.0435419832882429],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.3","0.0","0.3","0.6","0.9"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    PLOT = document.getElementById('3826bc16-fd92-4225-9b48-50d8c9afb798');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.5554562141504698,-1.5401161015060427,-1.398274609821354,-1.2564331181366653,-1.171192293875998,-1.0859514696153307,-1.013881437546565,-0.9418114054777994,-0.8635231501006033,-0.7852348947234071,-0.7130600479845179,-0.6408852012456286,-0.5635061376192187,-0.48612707399280874,-0.3964758403847387,-0.3068246067766686,-0.22715317027091803,-0.1474817337651674,-0.07761706358097209,-0.007752393396776786,0.06841885075851835,0.14459009491381347,0.22121404568442682,0.29783799645504017,0.38255557233399284,0.4672731482129456,0.5478797839911534,0.6284864197693613,0.7122986183256123,0.7961108168818632,0.8666628356928043,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":5},"y":[0.015339511014701398,0.030675412420937312,0.17166717434870793,0.30921094955085954,0.3890536019564325,0.46607110287179804,0.5285697983261571,0.5883242430613825,0.6497634313718201,0.707222220148052,0.7563636858789748,0.8015668055511775,0.8453874952692148,0.88414893600324,0.922427643912399,0.953297448140898,0.9743114618127554,0.9891442673157648,0.9969893076459937,0.999969950348809,0.9976603433323025,0.9895650509231215,0.9756317894726576,0.9559731716178939,0.9277136899890839,0.8927999257171659,0.8536308148768001,0.808918300265202,0.7568615568015716,0.6994913624148118,0.6473736431477509,0.5920349014277695,0.4451210492718674,0.29491698699413654,0.03991632077017146],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6160970553196121,-1.3206830907342884,-1.143151611473324,-0.99305100516728,-0.8299996749341085,-0.6796807706048265,-0.5185230184529199,-0.3318059581938597,-0.1658738698970732,-0.020366381513918376,0.13827583915120326,0.29786091408581084,0.474302621397332,0.6421824537672565,0.8167385273254362,0.9636775600364709,1.1430734641353968,1.3117109051964875,1.5818811631186822],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6954840373221998,-1.6789316727716386,-1.5258811617890269,-1.3728306508064152,-1.2808536731624158,-1.1888766955184165,-1.1111113314937762,-1.033345967469136,-0.9488709852400082,-0.8643960030108804,-0.7865175413401964,-0.7086390796695122,-0.6251451380399033,-0.5416511964102944,-0.4449152769627004,-0.3481793575151065,-0.26221188831342646,-0.1762444191117464,-0.1008586956233563,-0.025472972134966194,0.056717702128844014,0.13890837639265421,0.22158753239743262,0.304266688402211,0.3956790679780353,0.4870914475538596,0.5740680201202893,0.6610445926867191,0.7514800475261652,0.8419155023656113,0.9180428921837696,0.9941702820019278,1.087113196291946,1.1800561105819642,1.2674251913274528,1.3547942720729411,1.4947663146449264,1.6347383572169119,1.6562794334443716],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[-0.4373330604071932,-0.40940578091788615,-0.16415665995131512,0.05766800210321721,0.1797069339731736,0.2932861014266053,0.382715804513064,0.4660980557576375,0.5498219266848281,0.6264097749894071,0.6906950785820862,0.7489153273825733,0.8045967781925351,0.8533069907136484,0.9010251981626018,0.9393855675001839,0.9656224628135536,0.9844689523659815,0.9949137617585776,0.9996755638453056,0.9983915511326119,0.9903522314839783,0.9754494827430084,0.9537108911643759,0.9217190375820167,0.8813709608599428,0.8352229541375855,0.7815100232398249,0.7176388690850363,0.6455891434382302,0.5785986240554298,0.5058127251921036,0.4090924492239544,0.30373378793908345,0.19681669219428488,0.08226624017917483,-0.11716316769858759,-0.33618474827812395,-0.37163078082540424],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.7960369414451969,1.7568323375673687],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.30000000000000004,0.0,0.30000000000000004,0.6000000000000001,0.9000000000000001],"visible":true,"ticks":"inside","range":[-0.48045305221940904,1.0431199918122158],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.3","0.0","0.3","0.6","0.9"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
     </script>
 <p>This graph illustrates that the extra quadratic term can track the curvature of the function, whereas the tangent line itself can't. So, we have a polynomial which is a "better" approximation, is it the best approximation?</p><p>The mean value theorem, as in the case of the tangent line, will guarantee the existence of $\xi$ between $c$ and $x$, for which</p>$$~
 f(x) - \left(f(c) + f'(c) \cdot(x-c) + (1/2)\cdot f''(c) \cdot (x-c)^2 \right) =
@@ -226,10 +232,10 @@ fdd = divided_differences(f, x0, x1, x2)
 plot(f, a, b,                  color=:blue, linewidth=5, legend=false)
 plot!(x -> f0 + fd*(x-x0),     color=:green, alpha=0.25, linewidth=5);
 plot!(x -> f0 + fd*(x-x0) + fdd * (x-x0)*(x-x1),   color=:green, alpha=0.25, linewidth=5);</pre>
-    <div id="5e6d4561-2396-4077-a769-98973870b255" style="width:600px;height:400px;"></div>
+    <div id="86edb02e-41fd-43e1-9e90-90254db84f75" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('5e6d4561-2396-4077-a769-98973870b255');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.5554562141504698,-1.5401161015060427,-1.398274609821354,-1.2564331181366653,-1.171192293875998,-1.0859514696153307,-1.013881437546565,-0.9418114054777994,-0.8635231501006033,-0.7852348947234071,-0.7130600479845179,-0.6408852012456286,-0.5635061376192187,-0.48612707399280874,-0.3964758403847387,-0.3068246067766686,-0.22715317027091803,-0.1474817337651674,-0.07761706358097209,-0.007752393396776786,0.06841885075851835,0.14459009491381347,0.22121404568442682,0.29783799645504017,0.38255557233399284,0.4672731482129456,0.5478797839911534,0.6284864197693613,0.7122986183256123,0.7961108168818632,0.8666628356928043,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":5},"y":[0.015339511014701398,0.030675412420937312,0.17166717434870793,0.30921094955085954,0.3890536019564325,0.46607110287179804,0.5285697983261571,0.5883242430613825,0.6497634313718201,0.707222220148052,0.7563636858789748,0.8015668055511775,0.8453874952692148,0.88414893600324,0.922427643912399,0.953297448140898,0.9743114618127554,0.9891442673157648,0.9969893076459937,0.999969950348809,0.9976603433323025,0.9895650509231215,0.9756317894726576,0.9559731716178939,0.9277136899890839,0.8927999257171659,0.8536308148768001,0.808918300265202,0.7568615568015716,0.6994913624148118,0.6473736431477509,0.5920349014277695,0.4451210492718674,0.29491698699413654,0.03991632077017146],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6160970553196121,-1.3206830907342884,-1.143151611473324,-0.99305100516728,-0.8299996749341085,-0.6796807706048265,-0.5185230184529199,-0.3318059581938597,-0.1658738698970732,-0.020366381513918376,0.13827583915120326,0.29786091408581084,0.474302621397332,0.6421824537672565,0.8167385273254362,0.9636775600364709,1.1430734641353968,1.3117109051964875,1.5818811631186822],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[0.7990378250782202,0.8357726440854805,0.8578487391268816,0.876513796526157,0.896789280501386,0.9154814833282126,0.9355215002760482,0.9587398251910954,0.9793735323336656,0.9974674340808607,1.0171946439005572,1.0370390979439263,1.058979679502144,1.0798555892301593,1.101561691640649,1.1198336063733145,1.1421415432271746,1.1631116618331876,1.1967074180116337],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.7037602195974804,-1.6954840373221998,-1.6872078550469192,-1.6789316727716386,-1.6024064172803327,-1.5258811617890269,-1.449355906297721,-1.3728306508064152,-1.2808536731624158,-1.1888766955184165,-1.1111113314937762,-1.033345967469136,-0.9488709852400082,-0.8643960030108804,-0.7865175413401964,-0.7086390796695122,-0.6251451380399033,-0.5416511964102944,-0.4449152769627004,-0.3481793575151065,-0.26221188831342646,-0.1762444191117464,-0.1008586956233563,-0.025472972134966194,0.056717702128844014,0.13890837639265421,0.22158753239743262,0.304266688402211,0.3956790679780353,0.4870914475538596,0.5740680201202893,0.6610445926867191,0.7514800475261652,0.8419155023656113,0.9180428921837696,0.9941702820019278,1.087113196291946,1.1800561105819642,1.2674251913274528,1.3547942720729411,1.4247802933589337,1.4947663146449264,1.564752335930919,1.6347383572169119,1.6455088953306416,1.6562794334443716,1.6670499715581013],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[-0.4438558019701836,-0.4298625293851911,-0.41593739598984647,-0.40208040178414994,-0.2771803430077934,-0.1581059618339471,-0.04485725826261111,0.06256576770621458,0.18397040286962463,0.2969592431975716,0.3859241358725821,0.4688730083048501,0.5521617248532313,0.628351508219051,0.6923026892844073,0.7502203386479556,0.8056123854101818,0.8540694268579017,0.9015396191746067,0.939700610694308,0.965801139882276,0.984549674904376,0.994940197455087,0.9996772501005133,0.9983999110371407,0.9904023757100993,0.9755770839273314,0.9539514785640977,0.9221259024724757,0.8819875346669594,0.8360793819668323,0.7826456237449164,0.7191064395779256,0.6474311920012327,0.5807888554905966,0.5083812609538046,0.4121636881113123,0.3073526279143495,0.200991233212368,0.08703615656914354,-0.009723987909551868,-0.11135671801004698,-0.2178620337323416,-0.32923993507643634,-0.346813135286943,-0.36450173705597577,-0.3823057403835348],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.8048845253321477,1.7681742772927687],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.25,0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.4930726985696381,1.2459243146110883],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.25","0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    PLOT = document.getElementById('86edb02e-41fd-43e1-9e90-90254db84f75');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.5554562141504698,-1.5401161015060427,-1.398274609821354,-1.2564331181366653,-1.171192293875998,-1.0859514696153307,-1.013881437546565,-0.9418114054777994,-0.8635231501006033,-0.7852348947234071,-0.7130600479845179,-0.6408852012456286,-0.5635061376192187,-0.48612707399280874,-0.3964758403847387,-0.3068246067766686,-0.22715317027091803,-0.1474817337651674,-0.07761706358097209,-0.007752393396776786,0.06841885075851835,0.14459009491381347,0.22121404568442682,0.29783799645504017,0.38255557233399284,0.4672731482129456,0.5478797839911534,0.6284864197693613,0.7122986183256123,0.7961108168818632,0.8666628356928043,0.9372148545037453,1.109486890967787,1.271427686336553,1.5308693985542767],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":5},"y":[0.015339511014701398,0.030675412420937312,0.17166717434870793,0.30921094955085954,0.3890536019564325,0.46607110287179804,0.5285697983261571,0.5883242430613825,0.6497634313718201,0.707222220148052,0.7563636858789748,0.8015668055511775,0.8453874952692148,0.88414893600324,0.922427643912399,0.953297448140898,0.9743114618127554,0.9891442673157648,0.9969893076459937,0.999969950348809,0.9976603433323025,0.9895650509231215,0.9756317894726576,0.9559731716178939,0.9277136899890839,0.8927999257171659,0.8536308148768001,0.808918300265202,0.7568615568015716,0.6994913624148118,0.6473736431477509,0.5920349014277695,0.4451210492718674,0.29491698699413654,0.03991632077017146],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6160970553196121,-1.3206830907342884,-1.143151611473324,-0.99305100516728,-0.8299996749341085,-0.6796807706048265,-0.5185230184529199,-0.3318059581938597,-0.1658738698970732,-0.020366381513918376,0.13827583915120326,0.29786091408581084,0.474302621397332,0.6421824537672565,0.8167385273254362,0.9636775600364709,1.1430734641353968,1.3117109051964875,1.5818811631186822],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[0.7990378250782202,0.8357726440854805,0.8578487391268816,0.876513796526157,0.896789280501386,0.9154814833282126,0.9355215002760482,0.9587398251910954,0.9793735323336656,0.9974674340808607,1.0171946439005572,1.0370390979439263,1.058979679502144,1.0798555892301593,1.101561691640649,1.1198336063733145,1.1421415432271746,1.1631116618331876,1.1967074180116337],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.6954840373221998,-1.6789316727716386,-1.5258811617890269,-1.3728306508064152,-1.2808536731624158,-1.1888766955184165,-1.1111113314937762,-1.033345967469136,-0.9488709852400082,-0.8643960030108804,-0.7865175413401964,-0.7086390796695122,-0.6251451380399033,-0.5416511964102944,-0.4449152769627004,-0.3481793575151065,-0.26221188831342646,-0.1762444191117464,-0.1008586956233563,-0.025472972134966194,0.056717702128844014,0.13890837639265421,0.22158753239743262,0.304266688402211,0.3956790679780353,0.4870914475538596,0.5740680201202893,0.6610445926867191,0.7514800475261652,0.8419155023656113,0.9180428921837696,0.9941702820019278,1.087113196291946,1.1800561105819642,1.2674251913274528,1.3547942720729411,1.4947663146449264,1.6347383572169119,1.6562794334443716],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 0.250)","shape":"linear","dash":"solid","width":5},"y":[-0.4298625293851911,-0.40208040178414994,-0.1581059618339471,0.06256576770621458,0.18397040286962463,0.2969592431975716,0.3859241358725821,0.4688730083048501,0.5521617248532313,0.628351508219051,0.6923026892844073,0.7502203386479556,0.8056123854101818,0.8540694268579017,0.9015396191746067,0.939700610694308,0.965801139882276,0.984549674904376,0.994940197455087,0.9996772501005133,0.9983999110371407,0.9904023757100993,0.9755770839273314,0.9539514785640977,0.9221259024724757,0.8819875346669594,0.8360793819668323,0.7826456237449164,0.7191064395779256,0.6474311920012327,0.5807888554905966,0.5083812609538046,0.4121636881113123,0.3073526279143495,0.200991233212368,0.08703615656914354,-0.11135671801004698,-0.32923993507643634,-0.36450173705597577],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5],"visible":true,"ticks":"inside","range":[-1.7960369414451969,1.7568323375673687],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.25,0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.4786596278070958,1.2455045164335385],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.25","0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
     </script>
 <p>Though similar, the graphs aren't identical, as the interpolating polynomials aren't the best approximations.  For example, in the tangent-line graph the parabola only intersects the cosine graph at $x=0$, whereas for the secant-line graph–-by definition–-the parabola intersects the graph at least $2$ times and the interpolating polynomial $3$ times (at $x_0$, $x_1$, and $x_2$).</p><h5>Example</h5><p>Consider the function $f(t) = \log(1 + t)$. We have mentioned that for $t$ small, the value $t$ is a good approximation. A better one becomes:</p>$$~
 f(0) + f'(0) \cdot t + \frac{1}{2} \cdot f''(0) \cdot t^2 = 0 + 1t - \frac{t^2}{2}
@@ -239,12 +245,12 @@ a, b = -1/2, 1
 plot(f, a, b, legend=false, linewidth=5)
 plot!(t -> t)
 plot!(t -> t - t^2/2)</pre>
-    <div id="c0493f0d-b75d-42e2-a786-95ecefc8b03e" style="width:600px;height:400px;"></div>
+    <div id="9f3e363c-978c-4fb5-93e5-0860b7595e7b" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('c0493f0d-b75d-42e2-a786-95ecefc8b03e');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.49633781786757947,-0.49267563573515893,-0.4890134536027384,-0.4853512714703178,-0.45148910966459854,-0.41762694785887927,-0.38376478605316,-0.34990262424744073,-0.3092031286445025,-0.2685036330415642,-0.23409272748395782,-0.19968182192635142,-0.12492204495042285,-0.05600014319805776,0.017891419609734772,0.10350204150779843,0.17958265916653215,0.24629850481033003,0.3190366849829792,0.3922071681292182,0.47310649393660636,0.5500801611172652,0.6301149152670258,0.6974871305002677,0.7797409689795461,0.8570620031930627,0.9809362960240898],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[-0.6858495091912945,-0.6786047082321135,-0.6714120171147235,-0.664270691566041,-0.6005481447047912,-0.5406440535322536,-0.4841265475084796,-0.43063311846258834,-0.369909461736231,-0.312663025098289,-0.26669417072579443,-0.2227459077928144,-0.13344230510770222,-0.0576292645295057,0.01773325193845244,0.098488796742665,0.16516069724609037,0.2201779621466181,0.2769016860724286,0.33089037851752356,0.38737343217647374,0.4383066464437336,0.4886505124974707,0.5291489989788336,0.5764678306692893,0.6189956707162749,0.6835696097152973],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.5253636421471126,-0.3839633307322852,-0.2989876374245136,-0.2271417702021506,-0.14909702067944067,-0.0771466647999133,-8.279100440307906e-6,0.08936410552651125,0.16878773396538124,0.23843509880627015,0.3143694218064578,0.39075504333449684,0.47520911575938724,0.5555650346500125,0.6391165458154477,0.7094491213709028,0.7953172242608257,0.8760357736215842,1.0053531491858958],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.5253636421471126,-0.3839633307322852,-0.2989876374245136,-0.2271417702021506,-0.14909702067944067,-0.0771466647999133,-8.279100440307906e-6,0.08936410552651125,0.16878773396538124,0.23843509880627015,0.3143694218064578,0.39075504333449684,0.47520911575938724,0.5555650346500125,0.6391165458154477,0.7094491213709028,0.7953172242608257,0.8760357736215842,1.0053531491858958],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.5554395205431114,-0.40892383401814947,-0.3208740134884246,-0.24642901082372778,-0.1655608716974834,-0.09100760033673268,-0.01107861414780656,0.08152695481431146,0.16382385593559343,0.2359908219925528,0.3146721866505239,0.3938211762590643,0.4813305054631592,0.5645934240861911,0.6511675404803794,0.7240445058100022,0.8130190202196917,0.8966576880313555,1.0306533198006975],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.7096960510336922,-0.492533185032201,-0.37235407975450946,-0.27679263951150823,-0.1792660728160987,-0.0951487919962579,-0.01113998199352455,0.07820363263366407,0.1504047280487904,0.20814498796019243,0.2651628941248128,0.3162736168240278,0.365490977718449,0.4052105568255063,0.4391579575927461,0.46192428261317703,0.482519056600198,0.49466018327848765,0.4995301869925981],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-0.6030223057534256,1.0782361050110119],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-0.7611475270402798,1.0568046251924834],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    PLOT = document.getElementById('9f3e363c-978c-4fb5-93e5-0860b7595e7b');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.4853512714703178,-0.34990262424744073,-0.2685036330415642,-0.19968182192635142,-0.12492204495042285,-0.05600014319805776,0.017891419609734772,0.10350204150779843,0.17958265916653215,0.24629850481033003,0.3190366849829792,0.3922071681292182,0.47310649393660636,0.5500801611172652,0.6301149152670258,0.6974871305002677,0.7797409689795461,0.8570620031930627,0.9809362960240898],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[-0.664270691566041,-0.43063311846258834,-0.312663025098289,-0.2227459077928144,-0.13344230510770222,-0.0576292645295057,0.01773325193845244,0.098488796742665,0.16516069724609037,0.2201779621466181,0.2769016860724286,0.33089037851752356,0.38737343217647374,0.4383066464437336,0.4886505124974707,0.5291489989788336,0.5764678306692893,0.6189956707162749,0.6835696097152973],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.5141612295391274,-0.37381251786962666,-0.28946879217598054,-0.21815724552842986,-0.1406929179149857,-0.06927765969657382,0.007287044757470353,0.09599476340191766,0.17482771515412737,0.24395710976994026,0.31932670618692904,0.3951442448066508,0.47897022893268815,0.5587285376554478,0.6416586729060487,0.7114681822970643,0.7966976806872715,0.8768159229829211,1.0051715600768643],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.5141612295391274,-0.37381251786962666,-0.28946879217598054,-0.21815724552842986,-0.1406929179149857,-0.06927765969657382,0.007287044757470353,0.09599476340191766,0.17482771515412737,0.24395710976994026,0.31932670618692904,0.3951442448066508,0.47897022893268815,0.5587285376554478,0.6416586729060487,0.7114681822970643,0.7966976806872715,0.8768159229829211,1.0051715600768643],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.5440134324301342,-0.39858738889884304,-0.3111923983897783,-0.23730104617365347,-0.15703432661755926,-0.08303551090398341,-0.0037009597674236804,0.0882158978915721,0.1699007536828659,0.24153101114019668,0.3196272193567965,0.3981875747785916,0.48504609361753276,0.5676897825999575,0.6536200438438914,0.7259550202810289,0.8142678276848597,0.8972844713942413,1.03028357231557],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.6919887397623423,-0.47802334219344184,-0.35961275279756955,-0.2654569394312087,-0.1693642164856744,-0.08648295893952618,-0.003707808319023725,0.08432487557116396,0.15546762063186295,0.21236239646899377,0.26854643967991765,0.3189109024245634,0.36741123715071855,0.406553937965764,0.44001046298664614,0.46244967454541436,0.4827517800835495,0.4947247600916198,0.4995414526239038],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.30000000000000004,0.0,0.30000000000000004,0.6000000000000001,0.9000000000000001],"visible":true,"ticks":"inside","range":[-0.5912423425725053,1.0775124824579412],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.3","0.0","0.3","0.6","0.9"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-0.7429035487575185,1.0560863690720406],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
     </script>
-<p>Though we can see that the tangent line is a good approximation, the quadratic polynomial tracks the logarithm better farther from $c=0$.</p><h5>Example</h5><p>A wire is bent in the form of a half circle with radius $R$ centered at $(0,R)$, so the bottom of the wire is at the origin. A bead is released on the wire at angle $\theta$. As time evolves, the bead will slide back and forth. How? (Ignoring friction.) </p><p>Let $U$ be the potential energy, $U=mgh = mgR \cdot (1 - \cos(\theta))$. The velocity of the object will depend on $\theta$ – it will be $0$ at the high point, and largest in magnitude at the bottom – and is given by $v(\theta) = R \cdot d\theta/ dt$. (The bead moves along the wire so its distance traveled is $R\cdot \Delta \theta$, this, then, is just the time derivative of distance.)</p><p>By ignoring friction, the total energy is conserved giving:</p>$$~
+<p>Though we can see that the tangent line is a good approximation, the quadratic polynomial tracks the logarithm better farther from $c=0$.</p><h5>Example</h5><p>A wire is bent in the form of a half circle with radius $R$ centered at $(0,R)$, so the bottom of the wire is at the origin. A bead is released on the wire at angle $\theta$. As time evolves, the bead will slide back and forth. How? (Ignoring friction.)</p><p>Let $U$ be the potential energy, $U=mgh = mgR \cdot (1 - \cos(\theta))$. The velocity of the object will depend on $\theta$ – it will be $0$ at the high point, and largest in magnitude at the bottom – and is given by $v(\theta) = R \cdot d\theta/ dt$. (The bead moves along the wire so its distance traveled is $R\cdot \Delta \theta$, this, then, is just the time derivative of distance.)</p><p>By ignoring friction, the total energy is conserved giving:</p>$$~
 K = \frac{1}{2}m v^2 + mgR \cdot (1 - \cos(\theta) =
 \frac{1}{2} m R^2 (\frac{d\theta}{dt})^2 +  mgR \cdot (1 - \cos(\theta)).
 ~$$
@@ -268,29 +274,27 @@ f(c) + f'(c)\cdot(x-c) + \frac{f''(c)}{2!}(x-c)^2 + \cdots + \frac{f^{(n)}(c)}{n
 c, n = 0, 10
 l = series(log(1 + x), x, c, n+1)</pre>
 <div class="well well-sm">
-$$x - \frac{x^{2}}{2} + \frac{x^{3}}{3} - \frac{x^{4}}{4} + \frac{x^{5}}{5} - \frac{x^{6}}{6} + \frac{x^{7}}{7} - \frac{x^{8}}{8} + \frac{x^{9}}{9} - \frac{x^{10}}{10} + O\left(x^{11}\right)$$</div>
+\begin{equation*}x - \frac{x^{2}}{2} + \frac{x^{3}}{3} - \frac{x^{4}}{4} + \frac{x^{5}}{5} - \frac{x^{6}}{6} + \frac{x^{7}}{7} - \frac{x^{8}}{8} + \frac{x^{9}}{9} - \frac{x^{10}}{10} + O\left(x^{11}\right)\end{equation*}</div>
 
 <p>A pattern can be observed.</p><p>Using <code>series</code>, we can see Taylor polynomials for several familiar functions:</p><pre class="sourceCode julia">series(1/(1-x), x, 0, 10)   # sum x^i for i in 0:n</pre>
 <div class="well well-sm">
-$$1 + x + x^{2} + x^{3} + x^{4} + x^{5} + x^{6} + x^{7} + x^{8} + x^{9} + O\left(x^{10}\right)$$</div>
+\begin{equation*}1 + x + x^{2} + x^{3} + x^{4} + x^{5} + x^{6} + x^{7} + x^{8} + x^{9} + O\left(x^{10}\right)\end{equation*}</div>
 
 <pre class="sourceCode julia">series(exp(x), x, 0, 10)    # sum x^i/i! for i in 0:n</pre>
 <div class="well well-sm">
-$$1 + x + \frac{x^{2}}{2} + \frac{x^{3}}{6} + \frac{x^{4}}{24} + \frac{x^{5}}{120} + \frac{x^{6}}{720} + \frac{x^{7}}{5040} + \frac{x^{8}}{40320} + \frac{x^{9}}{362880} + O\left(x^{10}\right)$$</div>
+\begin{equation*}1 + x + \frac{x^{2}}{2} + \frac{x^{3}}{6} + \frac{x^{4}}{24} + \frac{x^{5}}{120} + \frac{x^{6}}{720} + \frac{x^{7}}{5040} + \frac{x^{8}}{40320} + \frac{x^{9}}{362880} + O\left(x^{10}\right)\end{equation*}</div>
 
 <pre class="sourceCode julia">series(sin(x), x, 0, 10)    # sum (-1)^i * x^(2i+1) / (2i+1)! for i in 0:n</pre>
 <div class="well well-sm">
-$$x - \frac{x^{3}}{6} + \frac{x^{5}}{120} - \frac{x^{7}}{5040} + \frac{x^{9}}{362880} + O\left(x^{10}\right)$$</div>
+\begin{equation*}x - \frac{x^{3}}{6} + \frac{x^{5}}{120} - \frac{x^{7}}{5040} + \frac{x^{9}}{362880} + O\left(x^{10}\right)\end{equation*}</div>
 
 <pre class="sourceCode julia">series(cos(x), x, 0, 10)    # sum (-1)^i * x^(2i) / (2i)! for i in 0:n</pre>
 <div class="well well-sm">
-$$1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} - \frac{x^{6}}{720} + \frac{x^{8}}{40320} + O\left(x^{10}\right)$$</div>
+\begin{equation*}1 - \frac{x^{2}}{2} + \frac{x^{4}}{24} - \frac{x^{6}}{720} + \frac{x^{8}}{40320} + O\left(x^{10}\right)\end{equation*}</div>
 
-<p>Each of these last three have a pattern that can be expressed quite succinctly if the denominator is recognized as $n!$.</p><p>The output of <code>series</code> includes a big "Oh" term, which identifies the scale of the error, but also gets in the way of using the output. <code>SymPy</code> provides the <code>removeO</code> function to strip this.</p><p>However, we will define our own function to compute Taylor polynomials from a function. This returns a function, not a symbolic object:</p><pre class="sourceCode julia">using ForwardDiff
-D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f,float(x))
-function taylor_poly(f, c=0, n=2)
+<p>Each of these last three have a pattern that can be expressed quite succinctly if the denominator is recognized as $n!$.</p><p>The output of <code>series</code> includes a big "Oh" term, which identifies the scale of the error, but also gets in the way of using the output. <code>SymPy</code> provides the <code>removeO</code> method to strip this. (It is called as <code>object.removeO&#40;&#41;</code>, as it is a method of an object in SymPy.)</p><p>However, we will define our own function to compute Taylor polynomials from a function. The following returns a function, not a symbolic object, using <code>D</code>, from <code>CalculusWithJulia</code>, which is based on <code>ForwardDiff.derivative</code>, to find higher-order derivatives:</p><pre class="sourceCode julia">function taylor_poly(f, c=0, n=2)
      x -> f(c) + sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 1:n)
-end	 </pre>
+end</pre>
 <pre class="output">
 taylor_poly (generic function with 3 methods)</pre>
 
@@ -302,14 +306,13 @@ Tn(a) - f(a)</pre>
 1.5352900840925887e-7</pre>
 
 <h3>Plotting</h3><p>Let's now visualize a function and the two approximations–-the Taylor polynomial and the interpolating polynomial. We use this function to generate the interpolating polynomial as a function:</p><pre class="sourceCode julia">function newton_form(f, xs)
-  n = length(xs)
   x -> begin
      tot = divided_differences(f, xs[1])
-     for i in 2:n
+     for i in 2:length(xs)
         tot += divided_differences(f, xs[1:i]...) * prod([x-xs[j] for j in 1:(i-1)])
      end
      tot
-  end	
+  end
 end</pre>
 <pre class="output">
 newton_form (generic function with 1 method)</pre>
@@ -322,19 +325,19 @@ tp = taylor_poly(f, c, n)
 plot(sin, -pi, pi; linewidth=5)
 plot!(int_poly, color=:green)
 plot!(tp, color=:red)</pre>
-    <div id="1fa1fadc-8ab8-4b1c-8736-64cfe58240a4" style="width:600px;height:400px;"></div>
+    <div id="e424148d-29e0-4071-a10c-889554ca373c" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('1fa1fadc-8ab8-4b1c-8736-64cfe58240a4');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-2.938390711327397,-2.796549219642708,-2.6547077279580193,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.099832907161896,-2.02776287509313,-1.9556928430243645,-1.8836228109555988,-1.8053345555784026,-1.7270463002012066,-1.6487580448240104,-1.5704697894468143,-1.498294942707925,-1.4261200959690359,-1.3539452492301467,-1.2817704024912573,-1.2043913388648475,-1.1270122752384375,-1.0496332116120275,-0.9722541479856175,-0.8826029143775475,-0.7929516807694774,-0.7033004471614073,-0.6136492135533372,-0.45430634054183605,-0.2949634675303348,-0.15523412716194418,-0.015504786793553571,0.1368377015170367,0.28918018982762694,0.44242809136885364,0.5956759929100803,0.680393568789033,0.7651111446679857,0.8498287205469384,0.9345462964258912,1.015152932204099,1.095759567982307,1.1763662037605147,1.2569728395387225,1.3407850380949735,1.4245972366512245,1.5084094352074755,1.5922216337637265,1.6627736525746677,1.7333256713856087,1.8038776901965496,1.8744297090074906,1.9605657272395114,2.046701745471532,2.132837763703553,2.218973781935574,2.299944179619957,2.38091457730434,2.461884974988723,2.542855372673106,2.672576228781968,2.8022970848908297,2.9320179409996916,3.0617387971085535,3.0817022612288634,3.1016657253491733,3.121629189469483],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[-0.01533951101470146,-0.030675412420937152,-0.04600409545963499,-0.06132195307030757,-0.2018064236071377,-0.33823755155018465,-0.4678750767425857,-0.5881151905779409,-0.6548372382934072,-0.7168041201646171,-0.7735658575053912,-0.8247102693051216,-0.8632937107664947,-0.8973950679428847,-0.9268372919861522,-0.9514675235298343,-0.9726217578315877,-0.9878177879548484,-0.9969625242175817,-0.9999999466866806,-0.9973729257124501,-0.989552636203005,-0.9765797979958294,-0.9585219599793448,-0.9336213299034533,-0.9031334125880432,-0.8672406639667143,-0.8261578853619512,-0.7723947159607715,-0.712427701638236,-0.6467384951679414,-0.5758547097527326,-0.438839120871129,-0.29070489558439677,-0.15461141539348508,-0.01550416557999605,0.13641106359642394,0.2851665510234455,0.42813502702217887,0.5610684489029838,0.6290990036649873,0.692617172088342,0.7511673525685628,0.8043295777666697,0.8495612319132725,0.8892759098040913,0.9232157077981652,0.9511602238189568,0.9736638213734831,0.9893319351014062,0.9980545689901091,0.999770486890561,0.9957730669594766,0.9868211552281166,0.97295929213922,0.9542564477114475,0.9249967065444724,0.8888782743946314,0.8461689632045493,0.7971854551477641,0.7457424027956452,0.6894127808039026,0.6285656960110431,0.5635998564911866,0.4520091420044188,0.3328229035580866,0.20804393677210836,0.07976901700741985,0.059854595714964015,0.03991632077017152,0.019962138107235797],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.2975198370651997,-3.2813506812725874,-3.265181525479975,-3.2490123696873634,-3.1742587733459624,-3.099505177004561,-3.02475158066316,-2.949997984321759,-2.875244387980358,-2.800490791638957,-2.725737195297556,-2.650983598956155,-2.5611360079176286,-2.4712884168791023,-2.381440825840576,-2.291593234802049,-2.215628240052041,-2.1396632453020334,-2.0636982505520254,-1.9877332558020173,-1.8226947026613307,-1.6576561495206439,-1.5055052014436132,-1.3533542533665823,-1.1902323566944073,-1.0271104600222325,-0.8381177457170501,-0.6491250314118676,-0.31321618929506717,-0.01865440535194355,0.30249700786444145,0.6255571120953181,0.8041492403945685,0.9827413686938189,1.1526672723721973,1.3225931760505758,1.4992766890324312,1.6759602020142863,1.8246900855659363,1.9734199691175862,2.155002299108469,2.336584629099352,2.507277374986611,2.6779701208738693,2.951433136510488,3.2248961521471067,3.266980896764518],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[5.687479929445548,5.561166990437544,5.436469642432409,5.3133766653563255,4.76482503080574,4.24923103590992,3.765512970626866,3.312603940651896,2.889451867417667,2.4950194880941687,2.1282843555887174,1.7882388385459664,1.4134486584017332,1.0740854634523336,0.768484675012135,0.4950126330549137,0.2876744319048026,0.10120573523960874,-0.06532910350928856,-0.2128499312063874,-0.4721312247826019,-0.6549235880715021,-0.7631588183135629,-0.820271659417539,-0.8318418247700603,-0.7992503806512221,-0.7155482811244263,-0.592454256094282,-0.30658212252272554,-0.01863794880027017,0.2979119932894569,0.5855391201305695,0.7202508329484032,0.8320308872382239,0.9135681751237621,0.967931781675094,0.9929356305956025,0.983456579058391,0.9473236309192437,0.8844974218639674,0.7706651216201215,0.615348054709508,0.43132018330990934,0.2106793038721908,-0.21736327997355032,-0.732807633910495,-0.819453843664133],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.4774663116578015,-3.4604777642355122,-3.443489216813223,-3.4265006693909332,-3.347958843662911,-3.2694170179348885,-3.190875192206866,-3.1123333664788437,-3.0337915407508214,-2.955249715022799,-2.8767078892947766,-2.7981660635667542,-2.7037653366077183,-2.609364609648683,-2.5149638826896474,-2.4205631557306115,-2.3407485425067014,-2.260933929282791,-2.18111931605888,-2.1013047028349696,-2.014603661590204,-1.9279026203454381,-1.8412015791006724,-1.7545005378559067,-1.5946391554865196,-1.4347777731171327,-1.2633894759930948,-1.092001178869057,-0.8934310289724354,-0.6948608790758138,-0.34192944795712427,-0.03244038745846561,0.30498576410689526,0.6444173319246621,0.8320598334735505,1.019702335022439,1.198239440480632,1.376776545938825,1.4695951283536357,1.5624137107684462,1.6552322931832568,1.7480508755980675,1.8261843512178426,1.9043178268376177,1.9824513024573929,2.060584778077168,2.1559768957506655,2.2513690134241635,2.3467611310976615,2.442153248771159,2.5318246529353603,2.621496057099562,2.7111674612637637,2.800838865427965,2.8726691370415844,2.9444994086552034,3.0163296802688224,3.0881599518824414,3.1599902234960604,3.23182049510968,3.3036507667232993,3.3754810383369183,3.397589758447541,3.419698478558164,3.441807198668787],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[3.5312348660449606,3.44600509849775,3.361774062011005,3.278536853507425,2.906490528341227,2.555097153254397,2.2238722179881045,1.9123312122835148,1.619989625881797,1.3463629485241175,1.0909666699516452,0.8533162799055467,0.590478464200443,0.35173524585823257,0.13624537306018247,-0.056832406012438774,-0.2032145271923662,-0.33468520826495407,-0.4517528980461105,-0.5549260453517446,-0.6518492190649379,-0.7336284749177737,-0.8009155507543007,-0.854362184418568,-0.9188114045512322,-0.9425085660951464,-0.9272956656748204,-0.8749720279888425,-0.7745720913607979,-0.6389440759593973,-0.33526662513058625,-0.03243469752946085,0.30025765538963467,0.59981573721123,0.736050728234352,0.8429891351598982,0.9115051845021804,0.941826754925478,0.9406119514530394,0.9267361608819423,0.8993997242776975,0.8578029827058161,0.8111456519342091,0.7533397578652214,0.6839083081305792,0.602374310362009,0.48572852399885824,0.34946408929414097,0.19271297078102068,0.014607132992660254,-0.17306543686906073,-0.3810963093270643,-0.6102065286203708,-0.8611171389879977,-1.0783176302697526,-1.3103399105293905,-1.5575545943686269,-1.8203322963891768,-2.099043631192753,-2.3940592133810727,-2.705749657555847,-3.0344855783187894,-3.1391555854616717,-3.24548631920608,-3.3534885861950228],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.685044516967599,3.6493854039785845],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,0.0,2.0,4.0],"visible":true,"ticks":"inside","range":[-3.62471764166424,5.9587089849147645],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","0","2","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('e424148d-29e0-4071-a10c-889554ca373c');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1109124283009395,-3.0802322030120854,-2.796549219642708,-2.5128662362733305,-2.342384587751996,-2.1719029392306615,-2.099832907161896,-2.02776287509313,-1.9556928430243645,-1.8836228109555988,-1.7270463002012066,-1.5704697894468143,-1.4261200959690359,-1.2817704024912573,-1.1270122752384375,-0.9722541479856175,-0.7929516807694774,-0.6136492135533372,-0.45430634054183605,-0.2949634675303348,-0.15523412716194418,-0.015504786793553571,0.1368377015170367,0.28918018982762694,0.44242809136885364,0.5956759929100803,0.7651111446679857,0.9345462964258912,1.095759567982307,1.2569728395387225,1.3407850380949735,1.4245972366512245,1.5084094352074755,1.5922216337637265,1.7333256713856087,1.8744297090074906,2.046701745471532,2.218973781935574,2.38091457730434,2.542855372673106,2.8022970848908297,3.0617387971085535,3.1016657253491733],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[-0.030675412420937152,-0.06132195307030757,-0.33823755155018465,-0.5881151905779409,-0.7168041201646171,-0.8247102693051216,-0.8632937107664947,-0.8973950679428847,-0.9268372919861522,-0.9514675235298343,-0.9878177879548484,-0.9999999466866806,-0.989552636203005,-0.9585219599793448,-0.9031334125880432,-0.8261578853619512,-0.712427701638236,-0.5758547097527326,-0.438839120871129,-0.29070489558439677,-0.15461141539348508,-0.01550416557999605,0.13641106359642394,0.2851665510234455,0.42813502702217887,0.5610684489029838,0.692617172088342,0.8043295777666697,0.8892759098040913,0.9511602238189568,0.9736638213734831,0.9893319351014062,0.9980545689901091,0.999770486890561,0.9868211552281166,0.9542564477114475,0.8888782743946314,0.7971854551477641,0.6894127808039026,0.5635998564911866,0.3328229035580866,0.07976901700741985,0.03991632077017152],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.281211980728311,-3.2651341885461793,-3.2490563963640477,-3.232978604181916,-3.158647402091999,-3.084316200002082,-3.0099849979121647,-2.9356537958222475,-2.8613225937323303,-2.786991391642413,-2.712660189552496,-2.6383289874625793,-2.5489890791018337,-2.459649170741088,-2.3703092623803426,-2.280969354019597,-2.2054335985124727,-2.1298978430053483,-2.054362087498224,-1.9788263319910997,-1.8147203271093821,-1.6506143222276644,-1.4993231011600483,-1.348031880092432,-1.1858317016360713,-1.0236315231797104,-0.8357067098184541,-0.6477818964571977,-0.3137711030079794,-0.02087373670272031,0.29846301451159835,0.6196976717059508,0.797280667441072,0.974863663176193,1.1438294026831495,1.3127951421901058,1.488480307214564,1.664165472239022,1.812054959463127,1.959944446687232,2.1405007480171134,2.3210570493469946,2.4907852980306204,2.6605135467142462,2.9324313630366965,3.2043491793591468,3.246196124658912],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[5.560090470976219,5.436106938428549,5.313709664618134,5.192887650481568,4.654463075924476,4.148400159746586,3.6736384258362267,3.2291318817820613,2.8138490188730825,2.426772812098612,2.0669007201483023,1.733244685412141,1.3655346414361165,1.0326280321018861,0.7328923603305806,0.46472535478151245,0.26145827194453664,0.07870044146667199,-0.08446597137121015,-0.22894335567290047,-0.48265108286437264,-0.6611539617331987,-0.7664325630879462,-0.8214217986987906,-0.8315097237166449,-0.798126760812803,-0.7142044908755896,-0.5914623400369777,-0.307103198072363,-0.02085470997822583,0.2940583395897964,0.580779322203535,0.7154676251703133,0.8276384725388989,0.909973753913133,0.9655815945672633,0.9923750369751426,0.9852045015411897,0.9514198129295011,0.8913083496028429,0.7812738775889755,0.6302605013018665,0.450705392165649,0.23490935155402837,-0.18472487437262353,-0.6911923492592131,-0.7764258001299391],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.4601416700401675,-3.4432491161904073,-3.426356562340647,-3.4094640084908874,-3.253267956222367,-3.0970719039538466,-2.940875851685326,-2.7846797994168053,-2.6908124825725324,-2.5969451657282594,-2.5030778488839864,-2.409210532039714,-2.2504832885187405,-2.091756044997767,-1.9193337687841026,-1.7469114925704379,-1.5879534049219994,-1.428995317273561,-1.25857544755663,-1.088155577839699,-0.8907074460657853,-0.6932593142918716,-0.3423221177648089,-0.0345818212915594,0.3009377080683542,0.6384513221014815,0.8250335520665608,1.0116157820316403,1.189144065831572,1.3666723496315039,1.5512605740071073,1.735848798382711,1.8912327651889898,2.0466167319952686,2.2363229434313303,2.426029154867392,2.604358588923647,2.782688022979902,2.9255368141230385,3.068385605266175,3.2112343964093117,3.354083187552448,3.3760669826194682,3.398050777686488,3.4200345727535084],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[3.4443290398752007,3.3605907511553683,3.277835022410005,3.196057033207387,2.4853624643094276,1.8540385463339328,1.2982745319010727,0.8142596736310108,0.5563128412938085,0.32207495463145497,0.11071894184681819,-0.0785822688572324,-0.35082220167309885,-0.5663626982242775,-0.740913340101059,-0.8584032612970629,-0.920590574960684,-0.942654000250917,-0.926308979277708,-0.8734112371713711,-0.7729322059455158,-0.6377282637742748,-0.3356363139251818,-0.034574928544587984,0.2963953791733945,0.5950770577984558,0.7314361959145348,0.8390734999404564,0.9088898408798431,0.9412287707467792,0.9290992443025933,0.8641139070604081,0.763818048484993,0.6178599310130231,0.372295474669156,0.04624922936683751,-0.33973148525847563,-0.8085344153892864,-1.2476271850162055,-1.7464178068608174,-2.3078212215186307,-2.9347523695851474,-3.0372383006705217,-3.1413558418687124,-3.2471156176674865],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.6665469573239777,3.6264398600373187],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-2.0,0.0,2.0,4.0],"visible":true,"ticks":"inside","range":[-3.5113318003267975,5.82430665363553],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-2","0","2","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>To get a better sense, we plot the residual differences here:</p><pre class="sourceCode julia">d1(x) = f(x) - int_poly(x)
 d2(x) = f(x) - tp(x)
 plot(d1, -pi, pi, color=:blue)
 plot!(d2, color=:green)</pre>
-    <div id="6cba61a6-340f-4e1a-b7e2-415eaf2fac4e" style="width:600px;height:400px;"></div>
+    <div id="b13245ac-8b52-4683-b7ac-7ef620232265" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('6cba61a6-340f-4e1a-b7e2-415eaf2fac4e');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-3.0093114571697415,-2.938390711327397,-2.8674699654850526,-2.796549219642708,-2.7256284738003638,-2.6547077279580193,-2.583786982115675,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.7270463002012066,-1.5704697894468143,-1.4261200959690359,-1.2817704024912573,-0.9722541479856175,-0.6136492135533372,-0.2949634675303348,-0.015504786793553571,0.28918018982762694,0.5956759929100803,0.9345462964258912,1.2569728395387225,1.5922216337637265,1.8744297090074906,2.046701745471532,2.218973781935574,2.38091457730434,2.542855372673106,2.8022970848908297,3.0617387971085535,3.1016657253491733],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.445335537831813,-4.356497406023326,-4.269001235906489,-4.182834130432813,-3.8013720833249645,-3.4467807955061485,-3.1178126655713014,-2.813237196170592,-2.531842735509488,-2.2724381844466355,-2.0338546606069015,-1.8149471111429845,-1.5762954815473407,-1.362559355215364,-1.1719058717207056,-1.0025650170285294,-0.7599668237691312,-0.5656785309538801,-0.4009934672398927,-0.2764271567998121,-0.19061945145229464,-0.12726895968643692,-0.04654478661696726,-0.010089678838573923,-0.0013264318835677913,-1.2459733139463455e-5,-5.782639740603557e-6,8.843380825518388e-6,-2.3302932439905888e-5,0.0008318584228018677,0.007390188536865239,0.0249355747878941,0.04536291102290402,0.07648355824981234,0.11831793909242871,0.17526345099639656,0.3055456119103694,0.4948872536593489,0.5300453321155777],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.296972597429656,-3.2808551059251103,-3.264737614420564,-3.2486201229160176,-3.1741053820464096,-3.0995906411768015,-3.0250759003071934,-2.9505611594375853,-2.8760464185679773,-2.801531677698369,-2.727016936828761,-2.6525021959591535,-2.5629416892857586,-2.473381182612364,-2.3838206759389693,-2.2942601692655744,-2.1428156321196608,-1.9913710949737473,-1.8268598791573338,-1.6623486633409201,-1.5106838736330563,-1.3590190839251928,-1.0338177168852971,-0.6570400413771285,-0.3222045076881507,-0.028583918514501767,0.2915413397598456,0.6135691903281535,0.9696121585030544,1.3083780587227793,1.4844970259714954,1.6606159932202116,1.8088706495153262,1.957125305810441,2.0476263714981435,2.138127437185846,2.2286285028735486,2.319129568561251,2.404203239599247,2.4892769106372423,2.5743505816752377,2.6594242527132335,2.727571561822356,2.795718870931479,2.863866180040602,2.9320134891497247,3.0001607982588476,3.0683081073679705,3.1364554164770935,3.204602725586216,3.2255778625241645,3.2465529994621125,3.267528136400061],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-2.521302836440819,-2.466191800555373,-2.4119691030866477,-2.358626406359855,-2.1232104628081605,-1.9055989798009316,-1.704964770823392,-1.520481942690492,-1.3513281829516641,-1.196687027422942,-1.0557500952619046,-0.9277192791810727,-0.7898064060885397,-0.6680673447756694,-0.5612010752035292,-0.4679463866854465,-0.33784033299281857,-0.23763320099607121,-0.1567001348214615,-0.0990865836120518,-0.06211508680467148,-0.03697597214025217,-0.00959424255153063,-0.0010099917648368484,-2.88671257779316e-5,-1.590080567215324e-10,1.7516233938752457e-5,0.0007182019658603656,0.006984025763330459,0.030679253607786228,0.0570202897564811,0.09858462882344687,0.14936465075921224,0.21858224704646567,0.2717002641541373,0.33431737940393835,0.4075441052196429,0.4925474508000197,0.5842810839325233,0.6885519339083082,0.8064482628199147,0.939090091680691,1.056750454622712,1.1852102594495453,1.3250797253520297,1.4769763775690516,1.6415236498572023,1.8193494595315567,2.011084761692622,2.2173620893510937,2.283877167247371,2.351848263721954,2.421293793409355],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4939076194445478,3.4644631584149526],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-4.651334417769048,2.6272926733465902],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-4","-3","-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('b13245ac-8b52-4683-b7ac-7ef620232265');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-3.0093114571697415,-2.938390711327397,-2.8674699654850526,-2.796549219642708,-2.7256284738003638,-2.6547077279580193,-2.583786982115675,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.7270463002012066,-1.5704697894468143,-1.4261200959690359,-1.2817704024912573,-0.9722541479856175,-0.6136492135533372,-0.2949634675303348,-0.015504786793553571,0.28918018982762694,0.5956759929100803,0.9345462964258912,1.2569728395387225,1.5922216337637265,1.8744297090074906,2.046701745471532,2.218973781935574,2.38091457730434,2.542855372673106,2.8022970848908297,3.0617387971085535,3.1016657253491733],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 0, 255, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.445335537831813,-4.356497406023326,-4.269001235906489,-4.182834130432813,-3.8013720833249645,-3.4467807955061485,-3.1178126655713014,-2.813237196170592,-2.531842735509488,-2.2724381844466355,-2.0338546606069015,-1.8149471111429845,-1.5762954815473407,-1.362559355215364,-1.1719058717207056,-1.0025650170285294,-0.7599668237691312,-0.5656785309538801,-0.4009934672398927,-0.2764271567998121,-0.19061945145229464,-0.12726895968643692,-0.04654478661696726,-0.010089678838573923,-0.0013264318835677913,-1.2459733139463455e-5,-5.782639740603557e-6,8.843380825518388e-6,-2.3302932439905888e-5,0.0008318584228018677,0.007390188536865239,0.0249355747878941,0.04536291102290402,0.07648355824981234,0.11831793909242871,0.17526345099639656,0.3055456119103694,0.4948872536593489,0.5300453321155777],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.296972597429656,-3.2808551059251103,-3.264737614420564,-3.2486201229160176,-3.0995906411768015,-2.9505611594375853,-2.801531677698369,-2.6525021959591535,-2.5629416892857586,-2.473381182612364,-2.3838206759389693,-2.2942601692655744,-2.1428156321196608,-1.9913710949737473,-1.6623486633409201,-1.3590190839251928,-1.0338177168852971,-0.6570400413771285,-0.3222045076881507,-0.028583918514501767,0.2915413397598456,0.6135691903281535,0.9696121585030544,1.3083780587227793,1.4844970259714954,1.6606159932202116,1.8088706495153262,1.957125305810441,2.138127437185846,2.319129568561251,2.404203239599247,2.4892769106372423,2.5743505816752377,2.6594242527132335,2.795718870931479,2.9320134891497247,3.0683081073679705,3.204602725586216,3.2255778625241645,3.2465529994621125,3.267528136400061],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(0, 128, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-2.521302836440819,-2.466191800555373,-2.4119691030866477,-2.358626406359855,-1.9055989798009316,-1.520481942690492,-1.196687027422942,-0.9277192791810727,-0.7898064060885397,-0.6680673447756694,-0.5612010752035292,-0.4679463866854465,-0.33784033299281857,-0.23763320099607121,-0.0990865836120518,-0.03697597214025217,-0.00959424255153063,-0.0010099917648368484,-2.88671257779316e-5,-1.590080567215324e-10,1.7516233938752457e-5,0.0007182019658603656,0.006984025763330459,0.030679253607786228,0.0570202897564811,0.09858462882344687,0.14936465075921224,0.21858224704646567,0.33431737940393835,0.4925474508000197,0.5842810839325233,0.6885519339083082,0.8064482628199147,0.939090091680691,1.1852102594495453,1.4769763775690516,1.8193494595315567,2.2173620893510937,2.283877167247371,2.351848263721954,2.421293793409355],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.4939076194445478,3.4644631584149526],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-4.0,-3.0,-2.0,-1.0,0.0,1.0,2.0],"visible":true,"ticks":"inside","range":[-4.651334417769048,2.6272926733465902],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-4","-3","-2","-1","0","1","2"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>The graph should be $0$ at each of the the points in <code>xs</code>, which we can verify in the graph above. Plotting over a wider region shows a common phenomenon that these polynomials approximate the function near the values, but quickly deviate away:</p><p>In this graph we make a plot of the Taylor polynomial for different sizes of $n$:</p><pre class="sourceCode julia">f(x) = 1 - cos(x)
 a, b = -pi, pi
@@ -342,10 +345,10 @@ plot(f, a, b, linewidth=5)
 plot!(taylor_poly(f, 0, 2))
 plot!(taylor_poly(f, 0, 4))
 plot!(taylor_poly(f, 0, 6))</pre>
-    <div id="37c497e3-0ccd-4e6b-8e47-02fd72d449ea" style="width:600px;height:400px;"></div>
+    <div id="a4cc4d95-8dd4-4a41-86c7-f712a9b385bc" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('37c497e3-0ccd-4e6b-8e47-02fd72d449ea');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-2.938390711327397,-2.796549219642708,-2.6547077279580193,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.5704697894468143,-1.2817704024912573,-1.1270122752384375,-0.9722541479856175,-0.7929516807694774,-0.6136492135533372,-0.5339777770475866,-0.45430634054183605,-0.37463490403608546,-0.2949634675303348,-0.15523412716194418,-0.015504786793553571,0.1368377015170367,0.28918018982762694,0.44242809136885364,0.5956759929100803,0.7651111446679857,0.9345462964258912,1.095759567982307,1.2569728395387225,1.5922216337637265,1.8744297090074906,2.046701745471532,2.218973781935574,2.38091457730434,2.542855372673106,2.672576228781968,2.8022970848908297,2.9320179409996916,3.0617387971085535,3.0817022612288634,3.1016657253491733,3.121629189469483],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[1.999882342779304,1.9995293988036598,1.9989412511258813,1.998118038145611,1.9794254271719192,1.9410607625022607,1.8837946099423324,1.8087771773557115,1.755769932813064,1.6972745896094517,1.6337159175071656,1.5655554541357317,1.4412279365948912,1.3077491700525026,0.9996734626577206,0.7149813124769616,0.5706399656848867,0.43656131792867725,0.2982544834924412,0.18244795073610376,0.13921064906783376,0.10143435076058316,0.06935871548462968,0.04318723687271764,0.01202464087912436,0.00012019679880115319,0.009347678684144767,0.041522019983039615,0.09628522274075979,0.1722305902936495,0.2786946188136761,0.405816585278846,0.5426288637855405,0.6913023669921131,1.0214236678141406,1.2989893509828225,1.458143441848972,1.6037345029902235,1.7243687028469896,1.8260479415646005,1.8920133045781489,1.942989350346633,1.9781194816444272,1.9968133746723455,1.9982071064522624,1.9992030260843752,1.9998007366681563],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.2813506812725874,-3.2490123696873634,-2.949997984321759,-2.650983598956155,-2.4712884168791023,-2.291593234802049,-2.1396632453020334,-1.9877332558020173,-1.8226947026613307,-1.6576561495206439,-1.5055052014436132,-1.3533542533665823,-1.1902323566944073,-1.0271104600222325,-0.8381177457170501,-0.6491250314118676,-0.4811706103534674,-0.31321618929506717,-0.16593529732350537,-0.01865440535194355,0.14192130125624894,0.30249700786444145,0.46402705997987975,0.6255571120953181,0.8041492403945685,0.9827413686938189,1.1526672723721973,1.3225931760505758,1.4992766890324312,1.6759602020142863,1.8246900855659363,1.9734199691175862,2.155002299108469,2.336584629099352,2.507277374986611,2.6779701208738693,2.951433136510488,3.2248961521471067,3.266980896764518],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[5.383631146744037,5.278040689190748,4.351244053751221,3.513857020967264,3.05363321970041,2.6256997768952597,2.2890794016482148,1.975541748110644,1.6611079895548384,1.3739119550218037,1.1332729557868872,0.9157838675527098,0.7083265314611614,0.527477948543541,0.35122067784291494,0.21068165320272905,0.11576257813396418,0.049052190618261673,0.013767261448920064,0.00017399341951731008,0.010070827875133484,0.045752219883469974,0.10766055619678547,0.19566085024651717,0.32332800041358073,0.48289029887110024,0.6643209203989807,0.8746263546677747,1.1239152951380247,1.4044212993678837,1.6647469541813118,1.9471931872560275,2.322017454581394,2.729813864471678,3.143219917559875,3.585761984146603,4.355478779646068,5.199977596066607,5.336582089912147],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.4608539260294418,-3.443907223445183,-3.4269605208609244,-3.4100138182766657,-3.37083963439997,-3.331665450523275,-3.292491266646579,-3.2533170827698834,-3.214142898893188,-3.1749687150164925,-3.135794531139797,-3.0966203472631015,-3.0574461633864063,-3.0182719795097106,-2.979097795633015,-2.9399236117563197,-2.9007494278796244,-2.8615752440029287,-2.822401060126233,-2.783226876249538,-2.7361427729490515,-2.689058669648565,-2.641974566348079,-2.594890463047593,-2.500722256446621,-2.4065540498456484,-2.326936029625238,-2.2473180094048284,-2.1676999891844186,-2.0880819689640084,-2.0015944828242094,-1.9151069966844105,-1.8286195105446117,-1.7421320244048126,-1.5826643998704173,-1.423196775336022,-1.2522306282260662,-1.0812644811161107,-0.9822239572631251,-0.8831834334101394,-0.7841429095571537,-0.6851023857041679,-0.5970868560780465,-0.509071326451925,-0.4210557968258035,-0.3330402671996821,-0.2558585792810463,-0.17867689136241058,-0.10149520344377483,-0.024313515525139072,0.05983524205531454,0.14398399963576816,0.22813275721622178,0.3122815147966754,0.3969303915448009,0.4815792682929264,0.566228145041052,0.6508770217891775,0.7444671795251806,0.8380573372611837,0.9316474949971868,1.02523765273319,1.2033349998015272,1.3814323468698646,1.566612265008422,1.7517921831469796,1.9076742300682459,2.0635562769895124,2.1587134323902357,2.253870587790959,2.349027743191683,2.444184898592406,2.533635431290084,2.623085963987762,2.6678112303366013,2.7125364966854404,2.7572617630342795,2.8019870293831186,2.873640374388083,2.9452937193930477,3.0169470643980123,3.0886004094029773,3.12442708190546,3.1602537544079423,3.1960804269104246,3.231907099412907,3.267733771915389,3.3035604444178714,3.3393871169203537,3.375213789422836,3.397268053093535,3.4193223167642337,3.441376580434932],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.011223976146680137,0.06894063910364956,0.12524137353432163,0.1801428994750074,0.30178966472464985,0.4162522634593744,0.5237321641216504,0.6244284801055775,0.7185379697568992,0.8062550363729963,0.8877717282028827,0.9632777384472173,1.0329604052582932,1.0970047117400434,1.155593285948037,1.2089064008894823,1.257121974523224,1.3004155697597493,1.3389603944611794,1.3729273014412744,1.407932721416521,1.4368562110304257,1.4599809152096777,1.4775850641786727,1.497320043872039,1.498188697859906,1.4857226445263583,1.462430518966699,1.4294666363617057,1.3879451286016709,1.3343950493435406,1.2733363589434754,1.2060359806288068,1.1337048859513894,0.9909901217594789,0.8418026165986453,0.6815874508110362,0.5276134521154439,0.4435998933179036,0.36465564500978626,0.2916868204467061,0.22550331590566425,0.17296046872430917,0.12677844952513884,0.08733436580009014,0.05494531316187147,0.032553244438626144,0.01592024770442967,0.005146216648802283,0.00029555895797810685,0.0017895940028090805,0.010347788133034642,0.025909417636858282,0.04836361805167945,0.07774256871415948,0.11371820277674557,0.15602409206785833,0.20434246499537467,0.26431683969018605,0.3306166495677047,0.40259324378177797,0.4795212493446838,0.6366430695066304,0.8024351619208497,0.9761594605845961,1.141996874985927,1.2677800984326253,1.3735982282067654,1.425188211209151,1.4647281678432362,1.4903170752246477,1.4999719195407024,1.4926741826219836,1.4676907878567957,1.4479927795661856,1.4231763269594047,1.393000750505931,1.3572213692773212,1.2875957713995305,1.201903549575687,1.0990743611067924,0.9780115032652019,0.9102925209069275,0.8375919132946352,0.7597651788293165,0.6766661684101694,0.5881470854346036,0.49405848579823886,0.3942492778949056,0.2885667226166415,0.22052296109261604,0.1501587491253984,0.07743752598247422],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.6500582687242398,-3.632195696225107,-3.6143331237259746,-3.5964705512268416,-3.4313052758907854,-3.266140000554729,-3.100974725218673,-2.935809449882617,-2.7372945577778087,-2.5387796656730006,-2.3709378508593595,-2.203096036045718,-1.8384495253139113,-1.5022776959745527,-1.322071831000816,-1.1418659660270793,-0.9330797990568347,-0.7242936320865899,-0.53874912616524,-0.35320462024389,-0.19049880898681626,-0.027792997729742534,0.14960001138449172,0.326993020498726,0.5054403249658561,0.6838876294329862,0.8811839435038411,1.0784802575746961,1.266202722053798,1.4539251865329,1.84430080051293,2.172913915731079,2.373513599204078,2.574113282677077,2.762682901746512,2.9512525208159466,3.1023040972028992,3.2533556735898523,3.4044072499768054,3.5554588263637585,3.578704993680035,3.601951160996311,3.625197328312587],"showlegend":true,"mode":"lines","name":"y4","legendgroup":"y4","line":{"color":"rgba(195, 113, 210, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.550092651107654,2.5334992245037475,2.517434135079948,2.5018728489807587,2.3777957030562638,2.2782748152150623,2.1901472934078576,2.103478760201319,1.991397432827808,1.863626666032606,1.7407368961025356,1.6040497923438926,1.2675870616629143,0.9321625089958856,0.754059140315161,0.5841723534311022,0.40465179096002685,0.2510342147397666,0.14164904602409553,0.061730972008919305,0.01809009160230842,0.00038620050037125225,0.011169227617242396,0.05298754745312998,0.1250387482468124,0.22487884593715832,0.36377075206296555,0.5273766422181807,0.7002554766174592,0.8838785249136334,1.2733049661981537,1.5780907582658128,1.7427287963680422,1.8877171880122736,2.0064911659103455,2.111730910410767,2.1908394562762554,2.271192910895963,2.3603040512491695,2.4679221173008146,2.4868720520380787,2.506595250833226,2.5271435113834038],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.8683159366353443,3.8434549962236915],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[-0.1613851316995559,5.545136475242394],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('a4cc4d95-8dd4-4a41-86c7-f712a9b385bc');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.1262525409453663,-3.1109124283009395,-3.0955723156565123,-3.0802322030120854,-2.938390711327397,-2.796549219642708,-2.6547077279580193,-2.5128662362733305,-2.427625412012663,-2.342384587751996,-2.257143763491329,-2.1719029392306615,-2.02776287509313,-1.8836228109555988,-1.5704697894468143,-1.2817704024912573,-1.1270122752384375,-0.9722541479856175,-0.7929516807694774,-0.6136492135533372,-0.5339777770475866,-0.45430634054183605,-0.37463490403608546,-0.2949634675303348,-0.15523412716194418,-0.015504786793553571,0.1368377015170367,0.28918018982762694,0.44242809136885364,0.5956759929100803,0.7651111446679857,0.9345462964258912,1.095759567982307,1.2569728395387225,1.5922216337637265,1.8744297090074906,2.046701745471532,2.218973781935574,2.38091457730434,2.542855372673106,2.672576228781968,2.8022970848908297,2.9320179409996916,3.0617387971085535,3.0817022612288634,3.1016657253491733,3.121629189469483],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":5},"y":[1.999882342779304,1.9995293988036598,1.9989412511258813,1.998118038145611,1.9794254271719192,1.9410607625022607,1.8837946099423324,1.8087771773557115,1.755769932813064,1.6972745896094517,1.6337159175071656,1.5655554541357317,1.4412279365948912,1.3077491700525026,0.9996734626577206,0.7149813124769616,0.5706399656848867,0.43656131792867725,0.2982544834924412,0.18244795073610376,0.13921064906783376,0.10143435076058316,0.06935871548462968,0.04318723687271764,0.01202464087912436,0.00012019679880115319,0.009347678684144767,0.041522019983039615,0.09628522274075979,0.1722305902936495,0.2786946188136761,0.405816585278846,0.5426288637855405,0.6913023669921131,1.0214236678141406,1.2989893509828225,1.458143441848972,1.6037345029902235,1.7243687028469896,1.8260479415646005,1.8920133045781489,1.942989350346633,1.9781194816444272,1.9968133746723455,1.9982071064522624,1.9992030260843752,1.9998007366681563],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.2813506812725874,-3.2490123696873634,-2.949997984321759,-2.650983598956155,-2.4712884168791023,-2.291593234802049,-2.1396632453020334,-1.9877332558020173,-1.8226947026613307,-1.6576561495206439,-1.5055052014436132,-1.3533542533665823,-1.1902323566944073,-1.0271104600222325,-0.8381177457170501,-0.6491250314118676,-0.4811706103534674,-0.31321618929506717,-0.16593529732350537,-0.01865440535194355,0.14192130125624894,0.30249700786444145,0.46402705997987975,0.6255571120953181,0.8041492403945685,0.9827413686938189,1.1526672723721973,1.3225931760505758,1.4992766890324312,1.6759602020142863,1.8246900855659363,1.9734199691175862,2.155002299108469,2.336584629099352,2.507277374986611,2.6779701208738693,2.951433136510488,3.2248961521471067,3.266980896764518],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[5.383631146744037,5.278040689190748,4.351244053751221,3.513857020967264,3.05363321970041,2.6256997768952597,2.2890794016482148,1.975541748110644,1.6611079895548384,1.3739119550218037,1.1332729557868872,0.9157838675527098,0.7083265314611614,0.527477948543541,0.35122067784291494,0.21068165320272905,0.11576257813396418,0.049052190618261673,0.013767261448920064,0.00017399341951731008,0.010070827875133484,0.045752219883469974,0.10766055619678547,0.19566085024651717,0.32332800041358073,0.48289029887110024,0.6643209203989807,0.8746263546677747,1.1239152951380247,1.4044212993678837,1.6647469541813118,1.9471931872560275,2.322017454581394,2.729813864471678,3.143219917559875,3.585761984146603,4.355478779646068,5.199977596066607,5.336582089912147],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.4608539260294418,-3.443907223445183,-3.4269605208609244,-3.4100138182766657,-3.37083963439997,-3.331665450523275,-3.292491266646579,-3.2533170827698834,-3.214142898893188,-3.1749687150164925,-3.135794531139797,-3.0966203472631015,-3.0574461633864063,-3.0182719795097106,-2.979097795633015,-2.9399236117563197,-2.9007494278796244,-2.8615752440029287,-2.822401060126233,-2.783226876249538,-2.7361427729490515,-2.689058669648565,-2.641974566348079,-2.594890463047593,-2.500722256446621,-2.4065540498456484,-2.326936029625238,-2.2473180094048284,-2.1676999891844186,-2.0880819689640084,-2.0015944828242094,-1.9151069966844105,-1.8286195105446117,-1.7421320244048126,-1.5826643998704173,-1.423196775336022,-1.2522306282260662,-1.0812644811161107,-0.9822239572631251,-0.8831834334101394,-0.7841429095571537,-0.6851023857041679,-0.5970868560780465,-0.509071326451925,-0.4210557968258035,-0.3330402671996821,-0.2558585792810463,-0.17867689136241058,-0.10149520344377483,-0.024313515525139072,0.05983524205531454,0.14398399963576816,0.22813275721622178,0.3122815147966754,0.3969303915448009,0.4815792682929264,0.566228145041052,0.6508770217891775,0.7444671795251806,0.8380573372611837,0.9316474949971868,1.02523765273319,1.2033349998015272,1.3814323468698646,1.566612265008422,1.7517921831469796,1.9076742300682459,2.0635562769895124,2.1587134323902357,2.253870587790959,2.349027743191683,2.444184898592406,2.533635431290084,2.623085963987762,2.6678112303366013,2.7125364966854404,2.7572617630342795,2.8019870293831186,2.873640374388083,2.9452937193930477,3.0169470643980123,3.0886004094029773,3.12442708190546,3.1602537544079423,3.1960804269104246,3.231907099412907,3.267733771915389,3.3035604444178714,3.3393871169203537,3.375213789422836,3.397268053093535,3.4193223167642337,3.441376580434932],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.011223976146680137,0.06894063910364956,0.12524137353432163,0.1801428994750074,0.30178966472464985,0.4162522634593744,0.5237321641216504,0.6244284801055775,0.7185379697568992,0.8062550363729963,0.8877717282028827,0.9632777384472173,1.0329604052582932,1.0970047117400434,1.155593285948037,1.2089064008894823,1.257121974523224,1.3004155697597493,1.3389603944611794,1.3729273014412744,1.407932721416521,1.4368562110304257,1.4599809152096777,1.4775850641786727,1.497320043872039,1.498188697859906,1.4857226445263583,1.462430518966699,1.4294666363617057,1.3879451286016709,1.3343950493435406,1.2733363589434754,1.2060359806288068,1.1337048859513894,0.9909901217594789,0.8418026165986453,0.6815874508110362,0.5276134521154439,0.4435998933179036,0.36465564500978626,0.2916868204467061,0.22550331590566425,0.17296046872430917,0.12677844952513884,0.08733436580009014,0.05494531316187147,0.032553244438626144,0.01592024770442967,0.005146216648802283,0.00029555895797810685,0.0017895940028090805,0.010347788133034642,0.025909417636858282,0.04836361805167945,0.07774256871415948,0.11371820277674557,0.15602409206785833,0.20434246499537467,0.26431683969018605,0.3306166495677047,0.40259324378177797,0.4795212493446838,0.6366430695066304,0.8024351619208497,0.9761594605845961,1.141996874985927,1.2677800984326253,1.3735982282067654,1.425188211209151,1.4647281678432362,1.4903170752246477,1.4999719195407024,1.4926741826219836,1.4676907878567957,1.4479927795661856,1.4231763269594047,1.393000750505931,1.3572213692773212,1.2875957713995305,1.201903549575687,1.0990743611067924,0.9780115032652019,0.9102925209069275,0.8375919132946352,0.7597651788293165,0.6766661684101694,0.5881470854346036,0.49405848579823886,0.3942492778949056,0.2885667226166415,0.22052296109261604,0.1501587491253984,0.07743752598247422],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-3.6500582687242398,-3.632195696225107,-3.6143331237259746,-3.5964705512268416,-3.4313052758907854,-3.266140000554729,-3.100974725218673,-2.935809449882617,-2.7372945577778087,-2.5387796656730006,-2.3709378508593595,-2.203096036045718,-1.8384495253139113,-1.5022776959745527,-1.322071831000816,-1.1418659660270793,-0.9330797990568347,-0.7242936320865899,-0.53874912616524,-0.35320462024389,-0.19049880898681626,-0.027792997729742534,0.14960001138449172,0.326993020498726,0.5054403249658561,0.6838876294329862,0.8811839435038411,1.0784802575746961,1.266202722053798,1.4539251865329,1.84430080051293,2.172913915731079,2.373513599204078,2.574113282677077,2.762682901746512,2.9512525208159466,3.1023040972028992,3.2533556735898523,3.4044072499768054,3.5554588263637585,3.578704993680035,3.601951160996311,3.625197328312587],"showlegend":true,"mode":"lines","name":"y4","zmin":-0.1,"legendgroup":"y4","zmax":0.1,"line":{"color":"rgba(195, 113, 210, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.550092651107654,2.5334992245037475,2.517434135079948,2.5018728489807587,2.3777957030562638,2.2782748152150623,2.1901472934078576,2.103478760201319,1.991397432827808,1.863626666032606,1.7407368961025356,1.6040497923438926,1.2675870616629143,0.9321625089958856,0.754059140315161,0.5841723534311022,0.40465179096002685,0.2510342147397666,0.14164904602409553,0.061730972008919305,0.01809009160230842,0.00038620050037125225,0.011169227617242396,0.05298754745312998,0.1250387482468124,0.22487884593715832,0.36377075206296555,0.5273766422181807,0.7002554766174592,0.8838785249136334,1.2733049661981537,1.5780907582658128,1.7427287963680422,1.8877171880122736,2.0064911659103455,2.111730910410767,2.1908394562762554,2.271192910895963,2.3603040512491695,2.4679221173008146,2.4868720520380787,2.506595250833226,2.5271435113834038],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-3.8683159366353443,3.8434549962236915],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-3","-2","-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[-0.1613851316995559,5.545136475242394],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Though all are good approximations near $c=0$, as more terms are included, the Taylor polynomial becomes a better approximation over a wider range of values.</p><h5>Example: Period of an orbiting satellite</h5><p>Kepler's third <a href="http://tinyurl.com/y7oa4x2g">law</a> of planetary motion states:</p><blockquote>
 <p>The square of the orbital period of a planet is directly proportional to the cube of the semi-major axis of its orbit.</p>
@@ -389,10 +392,10 @@ Preal, P1, P5</pre>
 <pre class="output">
 (41930.52564789311, 28553.22950490504, 31404.73066617854)</pre>
 
-<p>We see the Taylor polynomial underestimates badly in this case. A reminder that these approximations are locally good, but may not be good on all scales. Here $h \approx 3R$. We can see from this graph of $(1+x)^{3/2}$ and its 5th degree Taylor polynomial $T_5$ that it is a bad approximation when $x > 2$.</p>    <div id="fbc0f387-8448-494b-9be8-fd6c719c18ab" style="width:600px;height:400px;"></div>
+<p>We see the Taylor polynomial underestimates badly in this case. A reminder that these approximations are locally good, but may not be good on all scales. Here $h \approx 3R$. We can see from this graph of $(1+x)^{3/2}$ and its 5th degree Taylor polynomial $T_5$ that it is a bad approximation when $x > 2$.</p>    <div id="962b9a1b-bd72-416b-a5fe-b4cba6c2c05d" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('fbc0f387-8448-494b-9be8-fd6c719c18ab');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.9609367239208474,-0.5997403313265086,-0.3826763547775045,-0.19915152513693707,0.0002078801322057279,0.18399961813851265,0.3810437856259594,0.6093387773541291,0.8122204244440858,0.99012934616088,1.1840978266212778,1.3792191150112483,1.5949506504976172,1.800213762979374,2.013639774045402,2.1932990146673808,2.4126425839454564,2.618832008514834,2.9491634560642397],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":4},"y":[0.007720634524078875,0.25322859612249315,0.4850308561808127,0.7166804030604783,1.000311836403053,1.2883306633221403,1.6229725406357114,2.041602617014423,2.4395882398382556,2.807514162222148,3.227811243457906,3.6698782838906157,4.180167213355336,4.685832699651086,5.231629844297125,5.706362808343747,6.304290376261937,6.884186613595583,7.847975965931578],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.0377632787710063,-0.6635000476523378,-0.43858344580261466,-0.24841932140914613,-0.041847781106628436,0.1485929074758032,0.35276545268658765,0.5893193690717805,0.7995405737443396,0.983885626053174,1.1848712164984774,1.387051319484402,1.610587277153835,1.8232761004145273,2.0444231277494627,2.230581819458838,2.344221150645781,2.4578604818327237,2.5646848048935897,2.6715091279544563,2.842649977413047,3.0137908268716376,3.040128644167715],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.04164788255397073,0.19414212948031104,0.4205882374598852,0.6515715794039981,0.9378896958525562,1.2309748262488502,1.5733697064213583,2.00341767687129,2.4128393636131995,2.7904714648040168,3.2186377161701034,3.6618458819557063,4.158218458146178,4.6256030499563865,5.090852168580264,5.451150131030571,5.650129979034411,5.82837324708645,5.972985690234794,6.091140874160848,6.21377116998744,6.235781387677795,6.22875448574133],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-1.1601000364591678,3.1624654018558767],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2.0,4.0,6.0,8.0],"visible":true,"ticks":"inside","range":[-0.27833659800853716,8.084664681386144],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2","4","6","8"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('962b9a1b-bd72-416b-a5fe-b4cba6c2c05d');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.9609367239208474,-0.5997403313265086,-0.3826763547775045,-0.19915152513693707,0.0002078801322057279,0.18399961813851265,0.3810437856259594,0.6093387773541291,0.8122204244440858,0.99012934616088,1.1840978266212778,1.3792191150112483,1.5949506504976172,1.800213762979374,2.013639774045402,2.1932990146673808,2.4126425839454564,2.618832008514834,2.9491634560642397],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":4},"y":[0.007720634524078875,0.25322859612249315,0.4850308561808127,0.7166804030604783,1.000311836403053,1.2883306633221403,1.6229725406357114,2.041602617014423,2.4395882398382556,2.807514162222148,3.227811243457906,3.6698782838906157,4.180167213355336,4.685832699651086,5.231629844297125,5.706362808343747,6.304290376261937,6.884186613595583,7.847975965931579],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-1.0377632787710063,-0.6635000476523378,-0.43858344580261466,-0.24841932140914613,-0.041847781106628436,0.1485929074758032,0.35276545268658765,0.5893193690717805,0.7995405737443396,0.983885626053174,1.1848712164984774,1.387051319484402,1.610587277153835,1.8232761004145273,2.0444231277494627,2.230581819458838,2.344221150645781,2.4578604818327237,2.5646848048935897,2.6715091279544563,2.842649977413047,3.0137908268716376,3.040128644167715],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.04164788255397073,0.19414212948031104,0.4205882374598852,0.6515715794039981,0.9378896958525562,1.2309748262488502,1.5733697064213583,2.00341767687129,2.4128393636131995,2.7904714648040168,3.2186377161701034,3.6618458819557063,4.158218458146178,4.6256030499563865,5.090852168580264,5.451150131030571,5.650129979034411,5.82837324708645,5.972985690234794,6.091140874160848,6.21377116998744,6.235781387677795,6.22875448574133],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-1.1601000364591678,3.1624654018558767],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1","0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,2.0,4.0,6.0,8.0],"visible":true,"ticks":"inside","range":[-0.2783365980085372,8.084664681386146],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","2","4","6","8"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <hr /><p>Finally, we show how to use the <code>Unitful</code> package to work with the units. This package allows us to define different units, carry these units through computations, and convert between similar units with <code>uconvert</code>. In this example, we define several units, then show how they can then be used as constants.</p><pre class="sourceCode julia">using Unitful
 m, mi, kg, s, hr = u"m", u"mi", u"kg", u"s", u"hr"
@@ -414,30 +417,30 @@ Preal = P0 * (1 + hR)^(3/2)    # in seconds</pre>
 <h5>Example Computing $\log(x)$</h5><p>Where exactly does the value assigned to $\log(5)$ come from? The value needs to be computed. At some level, many questions resolve down to the basic operations of addition, subtraction, multiplication, and division. Preferably not the latter, as division is slow. Polynomials then should be fast to compute, and so computing logarithms using a polynomial becomes desirable.</p><p>But how? One can see details of a possible way <a href="https://github.com/musm/Amal.jl/blob/master/src/log.jl">here</a>.</p><p>First, there is usually a reduction stage. In this phase, the problem is transformed in a manner to one involving only a fixed interval of values. For this function values of $k$ and $m$ are found so that $x = 2^k \cdot (1+m)$ <em>and</em> $\sqrt{2}/2 < 1+m < \sqrt{2}$. If these are found, then $\log(x)$ can be computed with $k \cdot \log(2) + \log(1+m)$. The first value–-a multiplication–-can easily be computed using  pre-computed value of $\log(2)$, the second then <em>reduces</em> the problem to an interval.</p><p>Now, for this problem a further trick is utilized, writing $s= f/(2+f)$ so that $\log(1+m)=\log(1+s)-\log(1-s)$.  $\log(1+s) - \log(1-s)$ for some small range of $s$ values then makes it possible to compute $\log(x)$ for any real $x$.</p><p>To compute $\log(1\pm s)$, we can find a Taylor series. Let's go out to degree $19$ and use <code>SymPy</code> to do the work:</p><pre class="sourceCode julia">@vars s
 a = series(log(1 + s), s, 0, 19)
 b = series(log(1 - s), s, 0, 19)
-a - b</pre>
+a_b = (a - b).removeO()  # remove"Oh" not remove"zero"</pre>
 <div class="well well-sm">
-$$2 s + \frac{2 s^{3}}{3} + \frac{2 s^{5}}{5} + \frac{2 s^{7}}{7} + \frac{2 s^{9}}{9} + \frac{2 s^{11}}{11} + \frac{2 s^{13}}{13} + \frac{2 s^{15}}{15} + \frac{2 s^{17}}{17} + O\left(s^{19}\right)$$</div>
+\begin{equation*}\frac{2 s^{17}}{17} + \frac{2 s^{15}}{15} + \frac{2 s^{13}}{13} + \frac{2 s^{11}}{11} + \frac{2 s^{9}}{9} + \frac{2 s^{7}}{7} + \frac{2 s^{5}}{5} + \frac{2 s^{3}}{3} + 2 s\end{equation*}</div>
 
-<p>This is re-expressed as $2s + s \cdot p$ with $p$ given by:</p><pre class="sourceCode julia">p = cancel((removeO(a-b)-2s)/s)</pre>
+<p>This is re-expressed as $2s + s \cdot p$ with $p$ given by:</p><pre class="sourceCode julia">p = cancel(a_b - 2s/s)</pre>
 <div class="well well-sm">
-$$\frac{2 s^{16}}{17} + \frac{2 s^{14}}{15} + \frac{2 s^{12}}{13} + \frac{2 s^{10}}{11} + \frac{2 s^{8}}{9} + \frac{2 s^{6}}{7} + \frac{2 s^{4}}{5} + \frac{2 s^{2}}{3}$$</div>
+\begin{equation*}\frac{2 s^{17}}{17} + \frac{2 s^{15}}{15} + \frac{2 s^{13}}{13} + \frac{2 s^{11}}{11} + \frac{2 s^{9}}{9} + \frac{2 s^{7}}{7} + \frac{2 s^{5}}{5} + \frac{2 s^{3}}{3} + 2 s - 2\end{equation*}</div>
 
 <p>Now, $2s = m - s\cdot m$, so the above can be reworked to be $\log(1+m) = m - s\cdot(m-p)$.</p><p>(For larger values of $m$, a similar, but different approximation, can be used to minimize floating point errors.)</p><p>How big can the error be between this <em>approximations</em> and $\log(1+m)$? We plot to see how big $s$ can be:</p><pre class="sourceCode julia">@vars u
 plot(u/(2+u), sqrt(2)/2 - 1, sqrt(2)-1)</pre>
-    <div id="3520a933-6bba-4afa-9b20-56d218068b82" style="width:600px;height:400px;"></div>
+    <div id="8d2903d2-0ab2-4689-be27-eaf43a5385a8" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('3520a933-6bba-4afa-9b20-56d218068b82');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.2859877419607197,-0.22213663732482583,-0.18376478488254616,-0.1513218719938084,-0.11607977515402637,-0.08358967908644614,-0.04875686233053828,-0.008399628140059378,0.027465118968841705,0.05891527021372467,0.09320437718122408,0.12769727372482512,0.16583358163937453,0.20211931633020133,0.23984806125679728,0.2716076280934539,0.3103824594050011,0.3468319444854909,0.40522684613582916],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.16685279852541504,-0.12494584341429588,-0.10117895708274893,-0.08185409331207362,-0.061616077805798204,-0.043617840174539915,-0.024987589393279205,-0.004217526898840167,0.013546530942446162,0.0286147133231029,0.04452712701983553,0.060016655236519424,0.07656801660349678,0.09178399863774418,0.1070822907167268,0.11956625991849326,0.13434245838454587,0.14778729482546257,0.16847759985169605],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.2,0.0,0.2,0.4],"visible":true,"ticks":"inside","range":[-0.30672417960361614,0.4259632837787256],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.2","0.0","0.2","0.4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.15000000000000002,-0.1,-0.05,0.0,0.05,0.1,0.15000000000000002],"visible":true,"ticks":"inside","range":[-0.17691271047672838,0.1785375118030094],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.15","-0.10","-0.05","0.00","0.05","0.10","0.15"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('8d2903d2-0ab2-4689-be27-eaf43a5385a8');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.2859877419607197,-0.22213663732482583,-0.18376478488254616,-0.1513218719938084,-0.11607977515402637,-0.08358967908644614,-0.04875686233053828,-0.008399628140059378,0.027465118968841705,0.05891527021372467,0.09320437718122408,0.12769727372482512,0.16583358163937453,0.20211931633020133,0.23984806125679728,0.2716076280934539,0.3103824594050011,0.3468319444854909,0.40522684613582916],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.16685279852541504,-0.12494584341429588,-0.10117895708274893,-0.08185409331207362,-0.061616077805798204,-0.043617840174539915,-0.024987589393279205,-0.004217526898840167,0.013546530942446162,0.0286147133231029,0.04452712701983553,0.060016655236519424,0.07656801660349678,0.09178399863774418,0.1070822907167268,0.11956625991849326,0.13434245838454587,0.14778729482546257,0.16847759985169605],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.2,0.0,0.2,0.4],"visible":true,"ticks":"inside","range":[-0.30672417960361614,0.4259632837787256],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.2","0.0","0.2","0.4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.15000000000000002,-0.1,-0.05,0.0,0.05,0.1,0.15000000000000002],"visible":true,"ticks":"inside","range":[-0.17691271047672838,0.1785375118030094],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.15","-0.10","-0.05","0.00","0.05","0.10","0.15"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>This shows, $s$ is as big as</p><pre class="sourceCode julia">M = (u/(2+u))(u => sqrt(2) - 1)</pre>
 <div class="well well-sm">
-$$0.17157287525381$$</div>
+\begin{equation*}0.17157287525381\end{equation*}</div>
 
 <p>The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of $M$. Large is relative, it is really small:</p><pre class="sourceCode julia">(2/19)*M^19</pre>
 <div class="well well-sm">
-$$2.99778410043418 \cdot 10^{-16}$$</div>
+\begin{equation*}2.99778410043418 \cdot 10^{-16}\end{equation*}</div>
 
-<p>Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done. </p><p>To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$. </p><pre class="sourceCode julia">k, m = 2, 0.25
+<p>Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done.</p><p>To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$.</p><pre class="sourceCode julia">k, m = 2, 0.25
 s = m / (2+m)
 p = 2 * sum(s^(2i)/(2i+1) for i in 1:8)  # where the polynomial approximates the logarithm...
 
@@ -449,235 +452,206 @@ log(1 + m), m - s*(m-p), log(1 + m) - ( m - s*(m-p))</pre>
 <pre class="output">
 (1.6094379124341003, 1.6094379124341003)</pre>
 
-<p>The actual  code is different, as the Taylor polynomial isn't used. The Taylor polynomial is a great approximation near a point, but there might be better approximations for all values in an interval. In this case there is, and that is used in the production setting. This makes things a bit more efficient, but the basic idea remains–-for a prescribed accuracy, a polynomial approximation can be found over a given interval, which can be cleverly utilized to solve for all applicable values.</p><h2>Questions</h2><h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $\sin(x)$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="xBssd55M" data-controltype="radio">
+<p>The actual  code is different, as the Taylor polynomial isn't used. The Taylor polynomial is a great approximation near a point, but there might be better approximations for all values in an interval. In this case there is, and that is used in the production setting. This makes things a bit more efficient, but the basic idea remains–-for a prescribed accuracy, a polynomial approximation can be found over a given interval, which can be cleverly utilized to solve for all applicable values.</p><h2>Questions</h2><h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $\sin(x)$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="J4Gmr9f1" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_xBssd55M" value="1"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
+      <input type="radio" name="radio_J4Gmr9f1" value="1"><div class="markdown">$\sum_{k=0}^{10} x^k$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_xBssd55M" value="2"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
+      <input type="radio" name="radio_J4Gmr9f1" value="2"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_xBssd55M" value="3"><div class="markdown">$\sum_{k=0}^{10} x^k$
+      <input type="radio" name="radio_J4Gmr9f1" value="3"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_xBssd55M" value="4"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
+      <input type="radio" name="radio_J4Gmr9f1" value="4"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
 </div>
     </label>
     </div>
-    
 
-
-<div id="xBssd55M_message"></div>
+<div id="J4Gmr9f1_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_xBssd55M']").on("change", function() {
+$("input:radio[name='radio_J4Gmr9f1']").on("change", function() {
   correct = this.value == 4;
 
   if(correct) {
-     $("#xBssd55M_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#J4Gmr9f1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#xBssd55M_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#J4Gmr9f1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $e^x$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="OoTgZv7m" data-controltype="radio">
+<h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $e^x$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="LDoPNy9W" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_OoTgZv7m" value="1"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
+      <input type="radio" name="radio_LDoPNy9W" value="1"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_OoTgZv7m" value="2"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
+      <input type="radio" name="radio_LDoPNy9W" value="2"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_OoTgZv7m" value="3"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
+      <input type="radio" name="radio_LDoPNy9W" value="3"><div class="markdown">$\sum_{k=0}^{10} x^k$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_OoTgZv7m" value="4"><div class="markdown">$\sum_{k=0}^{10} x^k$
+      <input type="radio" name="radio_LDoPNy9W" value="4"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
 </div>
     </label>
     </div>
-    
 
-
-<div id="OoTgZv7m_message"></div>
+<div id="LDoPNy9W_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_OoTgZv7m']").on("change", function() {
+$("input:radio[name='radio_LDoPNy9W']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#LDoPNy9W_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#LDoPNy9W_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $1/(1-x)$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="UwGefUom" data-controltype="radio">
+<div class="form-group ">
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_UwGefUom" value="1"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_UwGefUom" value="2"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_UwGefUom" value="3"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_UwGefUom" value="4"><div class="markdown">$\sum_{k=0}^{10} x^k$
+</div>
+    </label>
+    </div>
+
+<div id="UwGefUom_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_UwGefUom']").on("change", function() {
+  correct = this.value == 4;
+
+  if(correct) {
+     $("#UwGefUom_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#UwGefUom_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>Let $T_5(x)$ be the Taylor polynomial of degree 5 for the function $\sqrt{1+x}$ about $x=0$. What is the coefficient of the $x^5$ term?</p><form name="WeaveQuestion" data-id="x8M2zG1N" data-controltype="radio">
+<div class="form-group ">
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_x8M2zG1N" value="1"><div class="markdown">$2/15$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_x8M2zG1N" value="2"><div class="markdown">$-5/128$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_x8M2zG1N" value="3"><div class="markdown">$7/256$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_x8M2zG1N" value="4"><div class="markdown">$1/5!$
+</div>
+    </label>
+    </div>
+
+<div id="x8M2zG1N_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_x8M2zG1N']").on("change", function() {
+  correct = this.value == 3;
+
+  if(correct) {
+     $("#x8M2zG1N_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+  } else {
+     $("#x8M2zG1N_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+  }
+});
+
+</script>
+<h6>Question</h6><p>The 5th order Taylor polynomial for $\sin(x)$ about $c=0$ is: $x - x^3/3! + x^5/5!$. Use this to find the first 3 terms of the Taylor polynomial of $\sin(x^2)$ about $c=0$.</p><p>They are:</p><form name="WeaveQuestion" data-id="IDoQtS7n" data-controltype="radio">
+<div class="form-group ">
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_IDoQtS7n" value="1"><div class="markdown">$x^2 - x^6/3! + x^{10}/5!$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_IDoQtS7n" value="2"><div class="markdown">$x^2 \cdot (x - x^3/3! + x^5/5!)$
+</div>
+    </label>
+    </div>
+    <div  class="radio">
+    <label>
+      <input type="radio" name="radio_IDoQtS7n" value="3"><div class="markdown">$x^2$
+</div>
+    </label>
+    </div>
+
+<div id="IDoQtS7n_message"></div>
+</div>
+</form>
+<script text="text/javascript">
+$("input:radio[name='radio_IDoQtS7n']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#OoTgZv7m_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#IDoQtS7n_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#OoTgZv7m_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Compute the Taylor polynomial  of degree 10 for $1/(1-x)$ about $c=0$ using <code>SymPy</code>. Based on the form, which formula seems appropriate:</p><form name="WeaveQuestion" data-id="D3fFOkk7" data-controltype="radio">
-<div class="form-group ">
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_D3fFOkk7" value="1"><div class="markdown">$\sum_{k=0}^{4} (-1)^k/(2k+1)! \cdot x^{2k+1}$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_D3fFOkk7" value="2"><div class="markdown">$\sum_{k=1}^{10} (-1)^{n+1} x^n/n$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_D3fFOkk7" value="3"><div class="markdown">$\sum_{k=0}^{10} x^n/n!$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_D3fFOkk7" value="4"><div class="markdown">$\sum_{k=0}^{10} x^k$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="D3fFOkk7_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_D3fFOkk7']").on("change", function() {
-  correct = this.value == 4;
-
-  if(correct) {
-     $("#D3fFOkk7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#D3fFOkk7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>Let $T_5(x)$ be the Taylor polynomial of degree 5 for the function $\sqrt{1+x}$ about $x=0$. What is the coefficient of the $x^5$ term?</p><form name="WeaveQuestion" data-id="aDaVfMkm" data-controltype="radio">
-<div class="form-group ">
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_aDaVfMkm" value="1"><div class="markdown">$1/5!$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_aDaVfMkm" value="2"><div class="markdown">$-5/128$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_aDaVfMkm" value="3"><div class="markdown">$2/15$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_aDaVfMkm" value="4"><div class="markdown">$7/256$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="aDaVfMkm_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_aDaVfMkm']").on("change", function() {
-  correct = this.value == 4;
-
-  if(correct) {
-     $("#aDaVfMkm_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#aDaVfMkm_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
-  }
-});
-
-</script>
-<h6>Question</h6><p>The 5th order Taylor polynomial for $\sin(x)$ about $c=0$ is: $x - x^3/3! + x^5/5!$. Use this to find the first 3 terms of the Taylor polynomial of $\sin(x^2)$ about $c=0$.</p><p>They are:</p><form name="WeaveQuestion" data-id="06VxJFc8" data-controltype="radio">
-<div class="form-group ">
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_06VxJFc8" value="1"><div class="markdown">$x^2 - x^6/3! + x^{10}/5!$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_06VxJFc8" value="2"><div class="markdown">$x^2$
-</div>
-    </label>
-    </div>
-    
-    <div  class="radio"> 
-    <label>
-      <input type="radio" name="radio_06VxJFc8" value="3"><div class="markdown">$x^2 \cdot (x - x^3/3! + x^5/5!)$
-</div>
-    </label>
-    </div>
-    
-
-
-<div id="06VxJFc8_message"></div>
-</div>
-</form>
-<script text="text/javascript">
-$("input:radio[name='radio_06VxJFc8']").on("change", function() {
-  correct = this.value == 1;
-
-  if(correct) {
-     $("#06VxJFc8_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
-  } else {
-     $("#06VxJFc8_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#IDoQtS7n_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -685,43 +659,38 @@ $("input:radio[name='radio_06VxJFc8']").on("change", function() {
 <h6>Question</h6><p>A more direct derivation of the form of the Taylor polynomial (here taken about $c=0$) is to <em>assume</em> a polynomial form that matches $f$:</p>$$~
 f(x) = a + bx + cx^2 + dx^3 + ex^4 + \cdots
 ~$$
-<p>If this is true, then formally evaluating at $x=0$ gives $f(0) = a$, so $a$ is determined. Similarly, formally differentiating and evaluating at $0$ gives $f'(0) = b$. What is the result of formally differentiating $4$ times and evaluating at $0$:</p><form name="WeaveQuestion" data-id="2UAqjrRh" data-controltype="radio">
+<p>If this is true, then formally evaluating at $x=0$ gives $f(0) = a$, so $a$ is determined. Similarly, formally differentiating and evaluating at $0$ gives $f'(0) = b$. What is the result of formally differentiating $4$ times and evaluating at $0$:</p><form name="WeaveQuestion" data-id="mmYH3IB2" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_2UAqjrRh" value="1"><div class="markdown">$f''''(0) = 0$
+      <input type="radio" name="radio_mmYH3IB2" value="1"><div class="markdown">$f''''(0) = 0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_2UAqjrRh" value="2"><div class="markdown">$f''''(0) = e$
+      <input type="radio" name="radio_mmYH3IB2" value="2"><div class="markdown">$f''''(0) = 4\cdot 3\cdot2 e$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_2UAqjrRh" value="3"><div class="markdown">$f''''(0) = 4\cdot 3\cdot2 e$
+      <input type="radio" name="radio_mmYH3IB2" value="3"><div class="markdown">$f''''(0) = e$
 </div>
     </label>
     </div>
-    
 
-
-<div id="2UAqjrRh_message"></div>
+<div id="mmYH3IB2_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_2UAqjrRh']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_mmYH3IB2']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#2UAqjrRh_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#mmYH3IB2_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#2UAqjrRh_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#mmYH3IB2_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -729,36 +698,32 @@ $("input:radio[name='radio_2UAqjrRh']").on("change", function() {
 <h6>Question</h6><p>How big an error is there in approximating $e^x$ by its 5th degree Taylor polynomial about $c=0$, $1 + x + x^2/2! + x^3/3! + x^4/4! + x^5/5!$?, over $[-1,1]$.</p><p>The error is known to be $(  f^{(6)}(\xi)/6!) \cdot x^6$ for some $\xi$ in $[-1,1]$.</p><ul>
 <li><p>The 6th derivative of $e^x$ is still $e^x$:</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="1o4guBEy" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="skPJcjHQ" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_1o4guBEy" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_skPJcjHQ" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_1o4guBEy" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_skPJcjHQ" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="1o4guBEy_message"></div>
+<div id="skPJcjHQ_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_1o4guBEy']").on("change", function() {
+$("input:radio[name='radio_skPJcjHQ']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#1o4guBEy_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#skPJcjHQ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#1o4guBEy_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#skPJcjHQ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -766,43 +731,38 @@ $("input:radio[name='radio_1o4guBEy']").on("change", function() {
 <ul>
 <li><p>Which is true about the function $e^x$:</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="vQK2P4fU" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="OHlt7FUY" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQK2P4fU" value="1"><div class="markdown"><p>It is decreasing</p>
+      <input type="radio" name="radio_OHlt7FUY" value="1"><div class="markdown"><p>It is increasing</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQK2P4fU" value="2"><div class="markdown"><p>It both increases and decreases</p>
+      <input type="radio" name="radio_OHlt7FUY" value="2"><div class="markdown"><p>It is decreasing</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQK2P4fU" value="3"><div class="markdown"><p>It is increasing</p>
+      <input type="radio" name="radio_OHlt7FUY" value="3"><div class="markdown"><p>It both increases and decreases</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="vQK2P4fU_message"></div>
+<div id="OHlt7FUY_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_vQK2P4fU']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_OHlt7FUY']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#vQK2P4fU_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#OHlt7FUY_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#vQK2P4fU_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#OHlt7FUY_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -810,36 +770,32 @@ $("input:radio[name='radio_vQK2P4fU']").on("change", function() {
 <ul>
 <li><p>The maximum value of $e^x$ over $[-1,1]$ occurs at</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="I3HgeSbw" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="A1J0tn8h" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_I3HgeSbw" value="1"><div class="markdown"><p>An end point</p>
+      <input type="radio" name="radio_A1J0tn8h" value="1"><div class="markdown"><p>A critical point</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_I3HgeSbw" value="2"><div class="markdown"><p>A critical point</p>
+      <input type="radio" name="radio_A1J0tn8h" value="2"><div class="markdown"><p>An end point</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="I3HgeSbw_message"></div>
+<div id="A1J0tn8h_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_I3HgeSbw']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_A1J0tn8h']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#I3HgeSbw_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#A1J0tn8h_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#I3HgeSbw_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#A1J0tn8h_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -847,43 +803,38 @@ $("input:radio[name='radio_I3HgeSbw']").on("change", function() {
 <ul>
 <li><p>Which theorem tells you that for a <em>continuous</em> function over  <em>closed</em> interval, a maximum value will exist?</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="YISwYh9H" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="lkQIgOHI" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_YISwYh9H" value="1"><div class="markdown"><p>The extreme value theorem</p>
+      <input type="radio" name="radio_lkQIgOHI" value="1"><div class="markdown"><p>The extreme value theorem</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_YISwYh9H" value="2"><div class="markdown"><p>The intermediate value theorem</p>
+      <input type="radio" name="radio_lkQIgOHI" value="2"><div class="markdown"><p>The mean value theorem</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_YISwYh9H" value="3"><div class="markdown"><p>The mean value theorem</p>
+      <input type="radio" name="radio_lkQIgOHI" value="3"><div class="markdown"><p>The intermediate value theorem</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="YISwYh9H_message"></div>
+<div id="lkQIgOHI_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_YISwYh9H']").on("change", function() {
+$("input:radio[name='radio_lkQIgOHI']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#YISwYh9H_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#lkQIgOHI_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#YISwYh9H_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#lkQIgOHI_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -891,36 +842,32 @@ $("input:radio[name='radio_YISwYh9H']").on("change", function() {
 <ul>
 <li><p>What is the <em>largest</em> possible value of the error:</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="HeZ5gz4T" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="k8CpSydE" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_HeZ5gz4T" value="1"><div class="markdown">$1/6!\cdot e^1 \cdot 1^6$
+      <input type="radio" name="radio_k8CpSydE" value="1"><div class="markdown">$1^6 \cdot 1 \cdot 1^6$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_HeZ5gz4T" value="2"><div class="markdown">$1^6 \cdot 1 \cdot 1^6$
+      <input type="radio" name="radio_k8CpSydE" value="2"><div class="markdown">$1/6!\cdot e^1 \cdot 1^6$
 </div>
     </label>
     </div>
-    
 
-
-<div id="HeZ5gz4T_message"></div>
+<div id="k8CpSydE_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_HeZ5gz4T']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_k8CpSydE']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#HeZ5gz4T_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#k8CpSydE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#HeZ5gz4T_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#k8CpSydE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -928,70 +875,64 @@ $("input:radio[name='radio_HeZ5gz4T']").on("change", function() {
 <h6>Question</h6><p>The error in using $T_k(x)$ to approximate $e^x$ over the interval $[-1/2, 1/2]$ is $(1/(k+1)!) e^\xi x^{k+1}$, for some $\xi$ in the interval. This is <em>less</em> than $1/((k+1)!) e^{1/2} (1/2)^{k+1}$.</p><ul>
 <li><p>Why?</p>
 </li>
-</ul><form name="WeaveQuestion" data-id="H0xTqYek" data-controltype="radio">
+</ul><form name="WeaveQuestion" data-id="rEJAkknb" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_H0xTqYek" value="1"><div class="markdown"><p>The function $e^x$ is increasing, so takes on its largest value at the endpoint and the function $|x^n| \leq |x|^n \leq (1/2)^n$</p>
+      <input type="radio" name="radio_rEJAkknb" value="1"><div class="markdown"><p>The function $e^x$ is increasing, so takes on its largest value at the endpoint and the function $|x^n| \leq |x|^n \leq (1/2)^n$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_H0xTqYek" value="2"><div class="markdown"><p>The function is monotonic in $k$, so achieves its maximum at $k+1$</p>
+      <input type="radio" name="radio_rEJAkknb" value="2"><div class="markdown"><p>The function has a critical point at $x=1/2$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_H0xTqYek" value="3"><div class="markdown"><p>The function has a critical point at $x=1/2$</p>
+      <input type="radio" name="radio_rEJAkknb" value="3"><div class="markdown"><p>The function is monotonic in $k$, so achieves its maximum at $k+1$</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="H0xTqYek_message"></div>
+<div id="rEJAkknb_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_H0xTqYek']").on("change", function() {
+$("input:radio[name='radio_rEJAkknb']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#H0xTqYek_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#rEJAkknb_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#H0xTqYek_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#rEJAkknb_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>Assuming the above is right, find the smallest value $k$ guaranteeing a error no more than $10^{-16}$.</p><form name='WeaveQuestion' data-id='PfzDBGDe' data-controltype='numeric'>
+<p>Assuming the above is right, find the smallest value $k$ guaranteeing a error no more than $10^{-16}$.</p><form name='WeaveQuestion' data-id='036geqHO' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="PfzDBGDe" type="number" class="form-control">
+<input id="036geqHO" type="number" class="form-control">
 
 </div>
-  
-<div id='PfzDBGDe_message'></div>
+
+<div id='036geqHO_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#PfzDBGDe').on('change', function() {
+$('#036geqHO').on('change', function() {
   correct = Math.abs(this.value - 14) <= 0;
 
   if(correct) {
-     $('#PfzDBGDe_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#036geqHO_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#PfzDBGDe_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#036geqHO_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
@@ -1000,43 +941,39 @@ $('#PfzDBGDe').on('change', function() {
 </li>
 </ul><p>Here is one way to get all the values bigger than 1:</p><pre class="sourceCode julia">@vars x
 ex = (1 - x + x^2)*exp(x)
-Tn = removeO(series(ex, x, 0, 100))
-ps = coeffs(Poly(Tn))
+Tn = series(ex, x, 0, 100).removeO()
+ps = sympy.Poly(Tn, x).coeffs()
 qs = numer.(ps)
 qs = qs[qs .> 1]</pre>
 <div class="well well-sm">
-\begin{bmatrix}2\\3\\2\\5\\7\\11\\13\\17\\19\\23\\29\\31\\37\\41\\43\\47\\53\\59\\61\\67\\71\\73\\79\\83\\89\\97\end{bmatrix}</div>
+\[ \left[ \begin{array}{r}97\\89\\83\\79\\73\\71\\67\\61\\59\\53\\47\\43\\41\\37\\31\\29\\23\\19\\17\\13\\11\\7\\5\\2\\3\\2\end{array} \right] \]</div>
 
-<p>Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use <code>sympy_meth.&#40;:isprime, qs&#41;</code>).</p><p>Are they all prime or $1$?</p><form name="WeaveQuestion" data-id="omQQcAfL" data-controltype="radio">
+<p>Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use <code>sympy.isprime.&#40;qs&#41;</code>).</p><p>Are they all prime or $1$?</p><form name="WeaveQuestion" data-id="XR8LiTcE" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_omQQcAfL" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_XR8LiTcE" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_omQQcAfL" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_XR8LiTcE" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="omQQcAfL_message"></div>
+<div id="XR8LiTcE_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_omQQcAfL']").on("change", function() {
+$("input:radio[name='radio_XR8LiTcE']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#omQQcAfL_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#XR8LiTcE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#omQQcAfL_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#XR8LiTcE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -1049,14 +986,14 @@ a_n [(x-x_1)\cdot\cdots\cdot(x-x_{n-1})] [(x- x_n)-(x-x_0)] =
 <p>where $p_{n-2}$ is a polynomial of at most degree $n-2$. (The expansion of $(x-x_1)\cdot\cdots\cdot(x-x_{n-1}))$ leaves $x^{n-1}$ plus some lower degree polynomial.) Similarly, we have $a_{n-1}(x-x_0)\cdot\cdots\cdot(x-x_{n-2}) = a_{n-1}x^{n-1} + q_{n-2}$ and $b_{n-1}(x-x_n)\cdot\cdots\cdot(x-x_2) = b_{n-1}x^{n-1}+r_{n-2}$. Combining, we get that the $x^{n-1}$ term of $u(x)$ is</p>$$~
 (b_{n-1}-a_{n-1}) - a_n(x_n-x_0) = 0.
 ~$$
-<p>On rearranging, this yields $a_n = (b_{n-1}-a_{n-1}) / (x_n - x_0)$. By <em>induction</em>–-that $a_i=f[x_0, x_1, \dots, x_i]$ and $b_i = f[x_n, x_{n-1}, \dots, x_{n-i}]$ (which has trivial base case)–-this is $(f[x_1, \dots, x_n] - f[x_0,\dots x_{n-1}])/(x_n-x_0)$.</p><p>Now, assuming the Newton form is correct, a <a href="http://tinyurl.com/zjogv83">proof</a> of the mean value theorem for divided differences comes down to Rolle's theorem. Starting from the Newton form of the polynomial and expanding in terms of $1, x, \dots, x^n$ we see that $g(x) = p_{n-1}(x) + f[x_0, x_1, \dots,x_n]\cdot x^n$, where now $p_{n-1}(x)$ is a polynomial of degree  at most $n-1$. That is, the coefficient of $x^n$ is $f[x_0, x_1, \dots, x_n]$. Consider  the function $h(x)=f(x) - g(x)$. It has zeros $x_0, x_1, \dots, x_n$.</p><p>By Rolle's theorem, between any two such zeros $x_i, x_{i+1}$, $0 \leq i < n$ there must be a zero of the derivative of $h(x)$, say $\xi^1_i$. So $h'(x)$ has zeros $\xi^1_0 < \xi^1_1 < \dots < \xi^1_{n-1}$.</p><p>We visualize this with $f(x) = \sin(x)$ and $x_i = i$ for $i=0, 1, 2, 3$, The $x_i$ values are indicated with circles, the $\xi^1_i$ values indicated with squares:</p>    <div id="2cbb890e-3397-4873-94ea-6ef8fd160890" style="width:600px;height:400px;"></div>
+<p>On rearranging, this yields $a_n = (b_{n-1}-a_{n-1}) / (x_n - x_0)$. By <em>induction</em>–-that $a_i=f[x_0, x_1, \dots, x_i]$ and $b_i = f[x_n, x_{n-1}, \dots, x_{n-i}]$ (which has trivial base case)–-this is $(f[x_1, \dots, x_n] - f[x_0,\dots x_{n-1}])/(x_n-x_0)$.</p><p>Now, assuming the Newton form is correct, a <a href="http://tinyurl.com/zjogv83">proof</a> of the mean value theorem for divided differences comes down to Rolle's theorem. Starting from the Newton form of the polynomial and expanding in terms of $1, x, \dots, x^n$ we see that $g(x) = p_{n-1}(x) + f[x_0, x_1, \dots,x_n]\cdot x^n$, where now $p_{n-1}(x)$ is a polynomial of degree  at most $n-1$. That is, the coefficient of $x^n$ is $f[x_0, x_1, \dots, x_n]$. Consider  the function $h(x)=f(x) - g(x)$. It has zeros $x_0, x_1, \dots, x_n$.</p><p>By Rolle's theorem, between any two such zeros $x_i, x_{i+1}$, $0 \leq i < n$ there must be a zero of the derivative of $h(x)$, say $\xi^1_i$. So $h'(x)$ has zeros $\xi^1_0 < \xi^1_1 < \dots < \xi^1_{n-1}$.</p><p>We visualize this with $f(x) = \sin(x)$ and $x_i = i$ for $i=0, 1, 2, 3$, The $x_i$ values are indicated with circles, the $\xi^1_i$ values indicated with squares:</p>    <div id="ea724051-7aa4-480c-9e8e-48279dfc4583" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('2cbb890e-3397-4873-94ea-6ef8fd160890');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.24145490835768538,-0.23290981671537075,-0.22436472507305616,-0.21581963343074154,-0.19606670571073864,-0.17631377799073572,-0.15656085027073283,-0.13680792255072993,-0.11705499483072702,-0.09730206711072412,-0.07754913939072122,-0.057796211670718314,-0.03804328395071541,-0.01829035623071251,0.001462571489290394,0.021215499209293297,0.0409684269292962,0.060721354649299106,0.08047428236930201,0.10022721008930491,0.12396858252435225,0.1477099549593996,0.1714513273944469,0.19519269982949425,0.2189340722645416,0.2426754446995889,0.2664168171346363,0.2901581895696836,0.3303042460535577,0.37045030253743183,0.410596359021306,0.45074241550518007,0.49435228540780507,0.53796215531043,0.581572025213055,0.62518189511568,0.7055907804934394,0.7859996658711986,0.8722064891469565,0.9584133124227144,1.0582923713037886,1.158171430184863,1.2025517904857908,1.2469321507867188,1.2913125110876469,1.335692871388575,1.3746104480141237,1.4135280246396724,1.4524456012652212,1.49136317789077,1.533793782991482,1.5762243880921942,1.6186549931929062,1.6610855982936181,1.703768380128924,1.7464511619642302,1.7891339437995364,1.8318167256348423,1.9261992724101287,2.020581819185415,2.1103844308961834,2.2001870426069523,2.2935609224483393,2.3869348022897268,2.4262352611757843,2.465535720061842,2.5048361789479,2.5441366378339576,2.592118043613537,2.640099449393116,2.688080855172695,2.7360622609522744,2.75861422926455,2.781166197576826,2.8037181658891015,2.826270134201377,2.848822102513653,2.8713740708259285,2.8939260391382042,2.9164780074504795,2.9526080095261955,2.988738011601912,3.0068030126397702,3.0248680136776285,3.0429330147154863,3.0609980157533445,3.0790630167912028,3.0971280178290606,3.115193018866919,3.133258019904777,3.1513230209426353,3.1693880219804935,3.1874530230183513,3.2055180240562096,3.2166385180421573,3.2277590120281046,3.2388795060140523],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":3},"y":[0.07303069348129893,0.06959167016502762,0.06622037666453945,0.06291624418154676,0.05553230173317181,0.048497125965120014,0.04180362390505288,0.03544467587939068,0.029413138478681877,0.023701847532233367,0.01830362109084145,0.013211262416458806,0.008417562977632229,0.003915305449540989,-0.00030273328253325213,-0.00424377911747794,-0.007915057731534662,-0.011323791571571117,-0.014477196849612989,-0.01738248053980858,-0.020556220177012988,-0.023394377680472922,-0.02590937624709158,-0.028113592320518216,-0.030019348145120722,-0.031638904350507174,-0.0329844525707742,-0.034068108102643824,-0.0353383232654898,-0.03595161439633321,-0.03596470683185271,-0.035433385740148815,-0.03430311813277992,-0.03266368308554013,-0.03058202463787385,-0.02812323415249285,-0.022811397178251425,-0.016806765569583604,-0.009996191596840398,-0.0031826474965146456,0.004256497974952422,0.01076274891365292,0.013251265035041593,0.015451169218649863,0.017338270473122308,0.018892054310108874,0.01996694319916026,0.020763621699835477,0.02127540465449862,0.021497871969462734,0.02140829801045263,0.02097263435572838,0.02019443897724149,0.019080510109385163,0.017631377783269397,0.0158661766398972,0.013801704938900428,0.011458027903247903,0.0054052368848126475,-0.0015865436077376893,-0.008763158880087718,-0.01605635966789487,-0.023285194597464587,-0.029599658352618685,-0.031837057527928425,-0.033755078402988525,-0.035303350918398646,-0.03643001270081292,-0.03715628969464124,-0.0370749751759325,-0.03608364827991306,-0.03407734112773464,-0.03275327252328902,-0.031170004654562766,-0.029316136485752486,-0.02718017576451298,-0.02475054450281644,-0.02201558450141633,-0.018963562915100096,-0.015582677855908972,-0.009451049331926115,-0.0023957796492806993,0.0014936502602512225,0.005632540726913229,0.01002710799914136,0.014683580727731169,0.019608198053176706,0.02480720768959331,0.03028686400583764,0.036053426104457845,0.0421131558990986,0.04847231619099014,0.0551371687451457,0.06211397236689749,0.06656660181893582,0.0711412701211478,0.07583943376510456],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null],"x":[0,1,2,3],"showlegend":true,"mode":"markers","name":"y2","legendgroup":"y2","marker":{"symbol":"circle","color":"rgba(227, 111, 71, 1.000)","line":{"color":"rgba(0, 0, 0, 1.000)","width":1},"size":8},"y":[0.0,0.0,0.0,-2.7755575615628914e-17],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null],"x":[0.3912796217761076,1.5016216492134973,2.6117780880840065],"showlegend":true,"mode":"markers","name":"y3","legendgroup":"y3","marker":{"symbol":"square","color":"rgba(62, 164, 78, 1.000)","line":{"color":"rgba(0, 0, 0, 1.000)","width":1},"size":6},"y":[-0.03602977709692545,0.021508008912584642,-0.037226391074927534],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-0.3458649407888375,3.3432895384452044],"domain":[0.09545056867891513,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.025,0.0,0.025,0.05,0.07500000000000001],"visible":true,"ticks":"inside","range":[-0.040618365820128496,0.07923140851030552],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.025","0.000","0.025","0.050","0.075"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('ea724051-7aa4-480c-9e8e-48279dfc4583');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.24145490835768538,-0.23290981671537075,-0.22436472507305616,-0.21581963343074154,-0.17631377799073572,-0.13680792255072993,-0.09730206711072412,-0.057796211670718314,-0.01829035623071251,0.021215499209293297,0.060721354649299106,0.10022721008930491,0.1477099549593996,0.19519269982949425,0.2426754446995889,0.2901581895696836,0.3303042460535577,0.37045030253743183,0.410596359021306,0.45074241550518007,0.49435228540780507,0.53796215531043,0.581572025213055,0.62518189511568,0.7055907804934394,0.7859996658711986,0.8722064891469565,0.9584133124227144,1.0582923713037886,1.158171430184863,1.2469321507867188,1.335692871388575,1.4135280246396724,1.49136317789077,1.533793782991482,1.5762243880921942,1.6186549931929062,1.6610855982936181,1.7464511619642302,1.8318167256348423,1.9261992724101287,2.020581819185415,2.1103844308961834,2.2001870426069523,2.2935609224483393,2.3869348022897268,2.465535720061842,2.5441366378339576,2.592118043613537,2.640099449393116,2.688080855172695,2.7360622609522744,2.781166197576826,2.826270134201377,2.8713740708259285,2.9164780074504795,2.9526080095261955,2.988738011601912,3.0248680136776285,3.0609980157533445,3.0971280178290606,3.133258019904777,3.1693880219804935,3.2055180240562096,3.2166385180421573,3.2277590120281046,3.2388795060140523],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":3},"y":[0.07303069348129893,0.06959167016502762,0.06622037666453945,0.06291624418154676,0.048497125965120014,0.03544467587939068,0.023701847532233367,0.013211262416458806,0.003915305449540989,-0.00424377911747794,-0.011323791571571117,-0.01738248053980858,-0.023394377680472922,-0.028113592320518216,-0.031638904350507174,-0.034068108102643824,-0.0353383232654898,-0.03595161439633321,-0.03596470683185271,-0.035433385740148815,-0.03430311813277992,-0.03266368308554013,-0.03058202463787385,-0.02812323415249285,-0.022811397178251425,-0.016806765569583604,-0.009996191596840398,-0.0031826474965146456,0.004256497974952422,0.01076274891365292,0.015451169218649863,0.018892054310108874,0.020763621699835477,0.021497871969462734,0.02140829801045263,0.02097263435572838,0.02019443897724149,0.019080510109385163,0.0158661766398972,0.011458027903247903,0.0054052368848126475,-0.0015865436077376893,-0.008763158880087718,-0.01605635966789487,-0.023285194597464587,-0.029599658352618685,-0.033755078402988525,-0.03643001270081292,-0.03715628969464124,-0.0370749751759325,-0.03608364827991306,-0.03407734112773464,-0.031170004654562766,-0.02718017576451298,-0.02201558450141633,-0.015582677855908972,-0.009451049331926115,-0.0023957796492806993,0.005632540726913229,0.014683580727731169,0.02480720768959331,0.036053426104457845,0.04847231619099014,0.06211397236689749,0.06656660181893582,0.0711412701211478,0.07583943376510456],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null],"x":[0,1,2,3],"showlegend":true,"mode":"markers","name":"y2","zmin":-0.1,"legendgroup":"y2","marker":{"symbol":"circle","color":"rgba(227, 111, 71, 1.000)","line":{"color":"rgba(0, 0, 0, 1.000)","width":1},"size":8},"zmax":0.1,"y":[0.0,0.0,0.0,-2.7755575615628914e-17],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null],"x":[0.39127962177610753,1.5016216492134973,2.6117780880840065],"showlegend":true,"mode":"markers","name":"y3","zmin":-0.1,"legendgroup":"y3","marker":{"symbol":"square","color":"rgba(62, 164, 78, 1.000)","line":{"color":"rgba(0, 0, 0, 1.000)","width":1},"size":6},"zmax":0.1,"y":[-0.0360297770969254,0.021508008912584642,-0.037226391074927534],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-0.3458649407888375,3.3432895384452044],"domain":[0.09545056867891513,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.025,0.0,0.025,0.05,0.07500000000000001],"visible":true,"ticks":"inside","range":[-0.040618365820128496,0.07923140851030552],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.025","0.000","0.025","0.050","0.075"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>Again by Rolle's theorem, between any pair of adjacent zeros $\xi^1_i, \xi^1_{i+1}$ there must be a zero $\xi^2_i$ of $h''(x)$. So there are $n-1$ zeros of $h''(x)$. Continuing, we see that there will be $n+1-3$ zeros of $h^{(3)}(x)$, $n+1-4$ zeros of $h^{4}(x)$, $\dots$, $n+1-(n-1)$ zeros of $h^{n-1}(x)$, and finally $n+1-n$ ($1$) zero of $h^{(n)}(x)$. Call this last zero $\xi$. It satisfies $x_0 \leq \xi \leq x_n$. Further, $0 = h^{(n)}(\xi) = f^{(n)}(\xi)  - g^{(n)}(\xi)$. But $g$ is a degree $n$ polynomial, so the $n$th derivative is the coefficient of $x^n$ times $n!$. In this case we have $0 = f^{(n)}(\xi) - f[x_0, \dots, x_n] n!$. Rearranging yields the result.</p>
   </div>
-</div>  
+</div>
 
 </body>
 </html>

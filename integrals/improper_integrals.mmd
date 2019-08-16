@@ -1,7 +1,7 @@
 # Improper Integrals
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -113,20 +113,19 @@ As $M$ goes to $\infty$, this will converge to $1$.
 
 
 
-* The sinc function $f(x) = \sin(\pi x)/(\pi x)$ does not have a nice antiderivative.  Seeing if the limit exists is a bit of a problem. However, this function is important enough that there is a built-in function, `Si`, that computes $\int_0^x \sin(u)/u\cdot du$. This function can be used through `sympy"Si"(...)`:
+* The sinc function $f(x) = \sin(\pi x)/(\pi x)$ does not have a nice antiderivative.  Seeing if the limit exists is a bit of a problem. However, this function is important enough that there is a built-in function, `Si`, that computes $\int_0^x \sin(u)/u\cdot du$. This function can be used through `sympy.Si(...)`:
 
 ```
-using SymPy
+using CalculusWithJulia    # loads `SymPy`, `QuadGK`
 @vars M
-limit(sympy"Si"(M), M => oo)
+limit(sympy.Si(M), M => oo)
 ```
 
 ### Numeric integrals
 
-The `quadgk` function is able to accept `Inf` and `-Inf` as endpoints of the interval. For example, this will integrate $e^{-x^2/2}$ over the real line:
+The `quadgk` function (available through `QuadGK` which is loaded with `CalculusWithJulia`) is able to accept `Inf` and `-Inf` as endpoints of the interval. For example, this will integrate $e^{-x^2/2}$ over the real line:
 
 ```
-using QuadGK
 f(x) = exp(-x^2/2)
 quadgk(f, -Inf, Inf)
 ```
@@ -169,7 +168,7 @@ $$~
 
 As the limit does not exist, the function is not integrable around $0$.
 
-* `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. In this case it returns `NaN` for an itnegral with no answer:
+* `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. In this case it returns `NaN` for an integral with no answer:
 
 ```
 @vars x

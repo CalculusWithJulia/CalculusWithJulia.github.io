@@ -16,4 +16,19 @@ fnames = [
 
 
 
-[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md");markdownToHTML("$nm.md")) for nm in fnames]
+function process_file(nm, twice=false)
+    include("$nm.jl")
+    mmd_to_md("$nm.mmd")
+    markdownToHTML("$nm.md")
+    twice && markdownToHTML("$nm.md")
+end
+
+process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
+
+
+
+
+"""
+## TODO limits
+
+"""

@@ -7,7 +7,7 @@ using SymPy
 pyplot()
 fig_size = (600, 400)
 
-taylor(f, x, c, n) = removeO(series(f, x, c, n+1))
+taylor(f, x, c, n) = series(f, x, c, n+1).removeO()
 function make_taylor_plot(u, a, b, k)
     k = 2k
     plot(u, a, b, title="plot of T_$k", linewidth=5, legend=false, size=fig_size, ylim=(-2,2.5))

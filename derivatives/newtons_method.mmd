@@ -127,12 +127,10 @@ x_{i+1} = x_i - \frac{f(x_i)}{f'(x_i)}.
 ~$$
 
 
-We will use automatic derivatives, as possible:
+We will use automatic derivatives, as possible, so load the `CalculusWithJulia` package which provides the `f'` notation for derivatives through the definition `Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`:
 
 ```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+using CalculusWithJulia
 ```
 
 
@@ -234,9 +232,8 @@ This  graphic demonstrates the method and the rapid convergence:
 For the function $f(x) = \cos(x) - x$, we see that SymPy can not solve symbolically for a zero:
 
 ```
-using SymPy
-x = symbols("x", real=true)
-solve(cos(x) - x)
+@vars x real=true
+solve(cos(x) - x, x)
 ```
 
 We can find a numeric solution, even though there is no closed-form answer. Here we try Newton's method:
@@ -392,15 +389,15 @@ alpha, f(alpha)
 ### Functions in the Roots package
 
 Typing in the `nm` function might be okay once, but would be tedious
-if it was needed each time. The `Roots` package provides the `newton`
-function.
+if it was needed each time. The `Roots` package provides a `Newton`
+method. `Roots` is loaded with
 
 ```
 using Roots
-find_zero((sin, cos), 3, Roots.Newton())
+find_zero((sin, cos), 3, Roots.Newton())  # alternatively Roots.newton(sin,cos, 3)
 ```
 
-Or, if a derivative is not specified, one can be computed using `D`:
+Or, if a derivative is not specified, one can be computed using automatic differentiation:
 
 ```
 find_zero((f, f'), 2, Roots.Newton())
@@ -408,15 +405,16 @@ find_zero((f, f'), 2, Roots.Newton())
 
 The argument `verbose=true` will force a print out of a message summarizing each step.
 
-More generally, the function `fzero` provides a derivative-free
-algorithm for finding roots of functions. It is similar to Newton's
-method in that only a good initial guess is needed. However, the
-algorithm, while slower in terms of function evaluations and steps, it
-is engineered to be a bit more robust to the choice of initial
-estimate than Newton's method. (If it finds a bracket, it will use
-bisection which is guaranteed to converge, but can be slower to do
-so.) Here we see how to call the function (identically to the `newton` or `nm`
-functions we previously used):
+
+More generally, the function `find_zero` provides a derivative-free
+algorithm for finding roots of functions, when started with an initial
+guess. It is similar to Newton's method in that only a good initial
+guess is needed. However, the algorithm, while slower in terms of
+function evaluations and steps,  is engineered to be a bit more
+robust to the choice of initial estimate than Newton's method. (If it
+finds a bracket, it will use a bisection algorithm which is guaranteed to
+converge, but can be slower to do so.) Here we see how to call the
+function:
 
 ```
 f(x) = cos(x) - x

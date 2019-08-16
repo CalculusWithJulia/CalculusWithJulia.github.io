@@ -1,7 +1,7 @@
 # Implicit Differentiation
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -27,10 +27,11 @@ even more problematic is we may have no rule to find these values.
 
 
 To plot such an equation in `Julia`, we can use the
-`ImplicitEquations` package.
+`ImplicitEquations` package, which is loaded when `CalculusWithJulia` is:
 
 ```
-using ImplicitEquations
+using CalculusWithJulia  # load `Plots`, `ImplicitEquations`, `Roots`, `SymPy`
+gr()   # better graphics than plotly() here
 ```
 
 To plot the circle of radius $2$, we would first define a function of *two* variables:
@@ -82,7 +83,7 @@ $$~
 y^4 - x^4 + ay^2 + bx^2 = 0
 ~$$
 
-Here we draw the curve for a particular choice of $a$ and $b$. For illustration purposes, a narrower 
+Here we draw the curve for a particular choice of $a$ and $b$. For illustration purposes, a narrower
 viewing window than the default of $[-5,5] \times [-5,5]$ is specified below using `xlims` and `ylims`:
 
 ```
@@ -137,13 +138,11 @@ X = IntervalBox(-3..3, -3..3)
 r = pave(S, X)
 ```
 
-We can plot either the boundary, the interior, or both. This command would create both (not shown):
+We can plot either the boundary, the interior, or both.
 
-```verbatim
-plot(r.inner)       # plot interior
-plot!(r.boundary)   # plot boundary
 ```
-
+plot(r.inner)       # plot interior; use r.boundary for boundary
+```
 
 ## Tangent lines, implicit differentiation
 
@@ -212,7 +211,7 @@ For $a = 2, b=1$ we have the graph:
 
 ```
 a, b = 2, 1
-f(x,y) = x^2*y + a * b * y - a^2 * x 
+f(x,y) = x^2*y + a * b * y - a^2 * x
 plot(Eq(f, 0))
 ```
 
@@ -246,7 +245,7 @@ A graph for $a=3$ shows why it has the name it does:
 
 ```
 a = 3
-f(x,y) = x^4 - a^2*(x^2 - y^2) 
+f(x,y) = x^4 - a^2*(x^2 - y^2)
 plot(Eq(f, 0))
 ```
 
@@ -292,13 +291,13 @@ $$~
 ~$$
 
 ```
-note(L""" 
+note(L"""
 
 In this example we mix notations using $g'(x)$ to
 represent a derivative of $g$ with respect to $x$ and $dy/dx$ to
 represent the derivative of $y$ with respect to $x$. This is done to
-empasize the value that we are solving for. It is just a convention
-though, we could just as well have used the "prime" notation for each.  
+emphasize the value that we are solving for. It is just a convention
+though, we could just as well have used the "prime" notation for each.
 
 """)
 ```
@@ -327,7 +326,7 @@ tl(x) = b + m * (x-a)
 Now we want to plot *both* $F ⩵ 1$ and the tangent line. This can be done with two layers:
 
 ```
-f(x,y) = x^2 + y^2 
+f(x,y) = x^2 + y^2
 plot(Eq(f, 1), xlims=(-2, 2), ylims=(-2, 2))
 plot!(tl)
 ```
@@ -359,8 +358,7 @@ plot(Eq(F,0))
 We can solve for the lower curve, $y$, as a function of $x$, as follows:
 
 ```
-using Roots
-y1(x) = minimum(find_zeros(y->F(x,y), -10, 10))
+y1(x) = minimum(find_zeros(y->F(x,y), -10, 10))  # find_zeros from `Roots`
 ```
 
 This gives the lower part of the curve, which we can plot with:
@@ -389,11 +387,9 @@ xy = cx^3 + dx^2 + ex + h.
 
 
 
-To approch this task in `SymPy`, we begin by defining our symbolic expression. For now, we keep the parameters as symbolic values:
+To approach this task in `SymPy`, we begin by defining our symbolic expression. For now, we keep the parameters as symbolic values:
 
 ```
-using SymPy
-
 @vars a b c d x y
 ex = x*y - (a*c^3 + b*x^2 + c*x + d)
 ```
@@ -401,7 +397,7 @@ ex = x*y - (a*c^3 + b*x^2 + c*x + d)
 To express that `y` is a locally a function of `x`, we use a "symbolic function" object:
 
 ```
-u = SymFunction("u")        
+u = SymFunction("u")
 ```
 
 Defining a symbolic function is done with the command `SymFunction`. (This
@@ -440,7 +436,7 @@ If `x` and `y` are the variable names, this function will combine the steps abov
 ```
 function dy_dx(eqn)
   u = SymFunction("u")
-  eqn1 = eqn(y => u(x)) 
+  eqn1 = eqn(y => u(x))
   eqn2 = solve(diff(eqn1, x), diff(u(x), x))[1]
   eqn2(u(x) => y)
 end
@@ -462,7 +458,7 @@ values for the parameters been substituted initially, but not doing so
 shows their dependence in the derivative.
 
 ```
-note("The use of `lambdify` is needed to turn the symbolic expression, `H`, into a function, as `ImplicitEquations` expects functions in its predictes.")
+note("The use of `lambdify` is needed to turn the symbolic expression, `H`, into a function, as `ImplicitEquations` expects functions in its predicates.")
 ```
 
 
@@ -537,8 +533,8 @@ u = SymFunction("u")
 
 eqn    = F(x,y) - 3
 eqn1   = eqn(y => u(x))
-dydx   = solve(diff(eqn1,x), diff(u(x), x))[1]          # 1 soln
-d2ydx2 = solve(diff(eqn1, x, 2), diff(u(x),x, 2))[1]  # 1 soln
+dydx   = solve(diff(eqn1,x), diff(u(x), x))[1]        # 1 solution
+d2ydx2 = solve(diff(eqn1, x, 2), diff(u(x),x, 2))[1]  # 1 solution
 eqn2   = d2ydx2(diff(u(x), x) => dydx, u(x) => y)
 simplify(eqn2)
 ```
@@ -590,7 +586,8 @@ $$~
 \theta'(t) = \frac{x^2}{x^2(t) + y^2(t)} \cdot \frac{y'(t) x(t) - y(t) x'(t)}{x(t))^2} = \frac{y'(t) x(t) - y(t) x'(t)}{x^2(t) + y^2(t)}.
 ~$$
 
-This could have been made easier, had we leveraged the result of the previous example
+This could have been made easier, had we leveraged the result of the previous example.
+
 ## Example from physics
 
 Many problems are best done with implicit derivatives. A video showing
@@ -634,7 +631,7 @@ the ring that hold the rope taught. Then we have this picture:
 
 ```
 using WeavePynb
-WeavePynb.HTMLoutput(gif_to_data("extrema/extrema-ring-string.png", """ 
+WeavePynb.HTMLoutput(gif_to_data("extrema/extrema-ring-string.png", """
 Ring on string figure.
 """))
 ```
@@ -663,7 +660,7 @@ F(x, y, a, b) = sqrt(x^2 + y^2) + sqrt((a-x)^2 + (b-y)^2)
 To illustrate, we need specific values of $a$, $b$, and $L$:
 ```
 a, b, L = 3, 3, 10      # L > sqrt{a^2 + b^2}
-F(x, y) = F(x, y, a, b) 
+F(x, y) = F(x, y, a, b)
 ```
 
 Our values $(x,y)$ must satisfy $f(x,y) = L$. Let's graph:
@@ -829,7 +826,7 @@ $$~
 
 An ellipse is when $n=1$. Take $n=3$, $a=1$, and $b=2$.
 
-Find a *positive* value of $y$ when $x=1/2$. 
+Find a *positive* value of $y$ when $x=1/2$.
 
 ```
 a,b,n=1,2,3
@@ -902,7 +899,7 @@ radioq(choices, ans)
 
 {{{lhopital_35}}}
 
-The figure above shows a problem appearing in L'Hospital's first calculus book. Given a function defined implicitly by $x^3 + y^3 = axy$  (with $AP=x$, $AM=y$ and $AB=a$) find the point $E$ that maximizes the height. In the [AMS feature column](http://www.ams.org/samplings/feature-column/fc-2016-05) this problem is illustrated and solved in the historical manner, with the comment that the concept of implicit differentiation wouldn't have occured to L'Hospital.
+The figure above shows a problem appearing in L'Hospital's first calculus book. Given a function defined implicitly by $x^3 + y^3 = axy$  (with $AP=x$, $AM=y$ and $AB=a$) find the point $E$ that maximizes the height. In the [AMS feature column](http://www.ams.org/samplings/feature-column/fc-2016-05) this problem is illustrated and solved in the historical manner, with the comment that the concept of implicit differentiation wouldn't have occurred to L'Hospital.
 
 Using Implicit differentiation, find when $dy/dx = 0$.
 
@@ -923,7 +920,7 @@ L"x=(1/3) a^2 2^{1/2}"
 ]
 ans = 2
 radioq(choices, ans)
-```		
+```
 
 ###### Question
 
@@ -967,4 +964,3 @@ choices = ["concave up", "concave down", "both concave up and down"]
 ans = 3
 radioq(choices, ans, keep_order=true)
 ```
-

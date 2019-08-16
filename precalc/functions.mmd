@@ -1,7 +1,7 @@
 # Functions
 
 ```nocode,noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -110,7 +110,7 @@ f(x) = 5/9 \cdot (x - 32)
 ~$$
 
 In fact, the graph of a function $f(x)$ is simply defined as the graph of the
-equation $y=f(x)$. There is a distinction in `Julia` as a command such as 
+equation $y=f(x)$. There is a distinction in `Julia` as a command such as
 
 ```
 x = -40
@@ -292,10 +292,10 @@ function f(x)
 
   (g/(k*a) + tand(theta))* x + (g/k^2) * log(1 - k/a*x)
 end
-f(100)  
+f(100)
 ```
 
-By using a multi-line function our work is much easier to look over for errors. 
+By using a multi-line function our work is much easier to look over for errors.
 
 ## Parameters, function context (scope), keyword arguments
 
@@ -457,7 +457,7 @@ methods(log, (Number,)) |> collect
 `x::BigFloat`. `Julia` uses these to help resolve which method should
 be called for a given set of arguments. This allows for different
 operations depending on the variable type. For example, in this case,
-the `log` function for `Float64` values uses a fast algorithm, wheras
+the `log` function for `Float64` values uses a fast algorithm, whereas
 for `BigFloat` values an algorithm that can handle multiple precision
 is used.)
 
@@ -497,11 +497,11 @@ the concept of *generic* functions with multiple dispatch rules to
 decide which rule to call.
 
 
-For example, jumping ahead a bit, the `plot` function of `Plots` expects functions of a single numeric
+For example, jumping ahead a bit, the `plot` function of `Plots` (loaded with the accompanying `CalculusWithJulia` package) expects functions of a single numeric
 variable. Behind the scenes, then the function `A(w)` will be used in this graph:
 
 ```
-using Plots
+using CalculusWithJulia   # loads the `Plots` package
 plot(Area, 0, 10)
 ```
 
@@ -578,7 +578,7 @@ repurposing an already defined variable name for a generic function is
 not allowed. This comes up when we use functions that return functions
 as we have different styles that can be used: When we defined `l =
 shift_right(f, c=3)` the value of `l` is assigned an anonymous
-function. This binding can be reusued to define other variables.
+function. This binding can be reused to define other variables.
 However, we could have defined the function `l` through `l(x) =
 shift_right(f, c=3)(x)`, being explicit about what happens to the
 variable `x`. This would have made `l` a generic function. Meaning, we
@@ -623,7 +623,7 @@ The last line employs double parentheses. The first pair, `secant(f,a,b)`, retur
 
 ##### Example: the secant method for finding a solution to $f(x) = 0$.
 
-This last example, shows how using functions to collect a set of compuations for simpler reuse can be very helpful.
+This last example, shows how using functions to collect a set of computations for simpler reuse can be very helpful.
 
 An old method for finding a zero of an equation is the [secant
 method](https://en.wikipedia.org/wiki/Secant_method). We illustrate
@@ -642,11 +642,11 @@ function secant_intersection(f, a, b)
 end
 ```
 
-We utlize this as follows. Suppose we wish to solve $f(x) = 0$ and we
+We utilize this as follows. Suppose we wish to solve $f(x) = 0$ and we
 have two "rough" guesses for the answer. In our example, we wish to
 solve $f(x) = x^2 - 2$ and our "rough" guesses are $1$ and $2$. Call
 these values $a$ and $b$. We *improve* our rough guesses by finding a
-value $c$ which is the intersection point of the secant line. 
+value $c$ which is the intersection point of the secant line.
 
 ```
 f(x) = x^2 - 2
@@ -696,7 +696,7 @@ c = secant_intersection(f, a, b)
 f(c)                 # pretty close now
 ```
 
-Now our guess $c$ is basically the same as `sqrt(2)`. Repeating the above leads to only a slight improvement in the guess, as we are about as close as floating point values will allow. 
+Now our guess $c$ is basically the same as `sqrt(2)`. Repeating the above leads to only a slight improvement in the guess, as we are about as close as floating point values will allow.
 
 Here we see a visualization with all these points. As can be seen, it
 quickly converges at the scale of the visualization, as we can't see
@@ -727,13 +727,13 @@ p
 
 
 
-In most cases, this method can fairly quickly find a zero provided two good starting points are used. 
+In most cases, this method can fairly quickly find a zero provided two good starting points are used.
 
 
 
 ## Questions
 
-##### Question 
+##### Question
 
 State the domain and range of $f(x) = |x + 2|$.
 
@@ -755,7 +755,7 @@ State the domain and range of $f(x) = 1/(x-2)$.
 
 ```
 choices = [
-"Domain is all real numbers, range is aall real numbers",
+"Domain is all real numbers, range is all real numbers",
 L"Domain is all real numbers except $2$, range is all real numbers except $0$",
 L"Domain is all non-negative numbers except $0$, range is all real numbers except $2$",
 L"Domain is all non-negative numbers except $-2$, range is all non-negative numbers except $0$"

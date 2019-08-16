@@ -1,7 +1,7 @@
 # ODEs
 
 ```noout, nocode
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -56,7 +56,7 @@ A natural question might be, is this the *only* possible answer? There are a few
 
 First, suppose there were another, say $u(t)$. Then define $w(t)$ to be the difference: $w(t) = v(t) - u(t)$. We would have that $w'(t) = v'(t) - u'(t) = a - a = 0$. But from the mean value theorem, a function whose derivative is *continuously* $0$, will necessarily be a constant. So at most, $v$ and $u$ will differ by a constant, but if both are equal at $t_0$, they will be equal for all $t$.
 
-Second, since the derivative of any solution is a continous function, it is true by the fundamental theorem of calculus that it *must* satisfy the form for the antiderivative. The initial condition makes the answer unique, as the indeterminate $C$ can take only one value.
+Second, since the derivative of any solution is a continuous function, it is true by the fundamental theorem of calculus that it *must* satisfy the form for the antiderivative. The initial condition makes the answer unique, as the indeterminate $C$ can take only one value.
 
 Summarizing, we have
 
@@ -311,7 +311,7 @@ the differential equation using a symbolic function and then call
 Symbolic functions are defined by `SymFunction`:
 
 ```
-using SymPy
+using CalculusWithJulia   # loads `SymPy`, `Plots`
 u = SymFunction("u")
 ```
 
@@ -373,7 +373,7 @@ And we plug in with:
 eq(C1 => c1[1])
 ```
 
-That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are the function (`u(x)`) or the independent variable (`x`) and tuples of conditions of the form `(SymFunction, x0, y0)` to the `ics` argument:
+That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are the function (`u(x)`) and tuples of conditions of the form `(SymFunction, x0, y0)` to the `ics` argument:
 
 ```
 x0, y0 = 0, 1//2
@@ -445,7 +445,7 @@ If we pull the bob back an angle $a$ and release it then the initial conditions 
 
 ```
 eqn = u''(x) + g/l * u(x)
-dsolve(eqn, x, ics=((u, 0, a), (u', 0, 0)))
+dsolve(eqn, u(x), ics=((u, 0, a), (u', 0, 0)))
 ```
 
 
@@ -553,8 +553,8 @@ Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(
 @vars x0 y0 v0 alpha g real=true
 @vars x y t
 u = SymFunction("u")
-a1 = dsolve(u''(t) + 0, t, ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
-a2 = dsolve(u''(t) - g, t, ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
+a1 = dsolve(u''(t) + 0, u(t), ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
+a2 = dsolve(u''(t) - g, u(t), ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
 ts = solve(x - rhs(a1), t)[1]
 y = simplify(rhs(a2)(t => ts))
 ```
@@ -577,8 +577,8 @@ We now attempt to solve these:
 ```
 gamma = symbols("gamma")
 u = SymFunction("u")
-a1 = dsolve(u''(t) + gamma * u'(t),     t, ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
-a2 = dsolve(u''(t) + gamma * u'(t) + g, t, ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
+a1 = dsolve(u''(t) + gamma * u'(t),     u(t), ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
+a2 = dsolve(u''(t) + gamma * u'(t) + g, u(t), ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
 ts = solve(x - rhs(a1), t)[1]
 y = simplify(rhs(a2)(t => ts))
 ```
@@ -699,7 +699,7 @@ What is $y(3/2)$?
 ```
 u = SymFunction("u")
 x = symbols("x")
-out = dsolve(u'(x) - u(x)^2, x, ics=(u, 1, 1))
+out = dsolve(u'(x) - u(x)^2, u(x), ics=(u, 1, 1))
 val = N(rhs(out(3/2)))
 numericq(val)
 ```
@@ -717,7 +717,7 @@ Use your answer to find $y(1)$.
 
 ```
 eqn = u'(x) - (1 + x^2 + u(x)^2 + x^2 * u(x)^2)
-out = dsolve(eqn, x, ics=(u, 0, 1))
+out = dsolve(eqn, u(x), ics=(u, 0, 1))
 val = N(rhs(out)(1))
 numericq(val)
 ```
@@ -737,7 +737,7 @@ when $k=1$, $M=100$, and $y(0) = 20$. Find the value of $y(5)$.
 ```
 k, M = 1, 100
 eqn = u'(x) - k * u(x) * (1 - u(x)/M)
-out = dsolve(eqn, x, ics=(u, 0, 20))
+out = dsolve(eqn, u(x), ics=(u, 0, 20))
 val = N(rhs(out)(5))
 numericq(val)
 ```
@@ -755,7 +755,7 @@ Find the value of the solution at $t=2\pi$.
 
 ```
 eqn = u'(x) - (sin(x) - u(x)/x)
-out = dsolve(eqn, x, ics=(u, PI, 1))
+out = dsolve(eqn, u(x), ics=(u, PI, 1))
 val = N(rhs(out(2PI)))
 numericq(val)
 ```
@@ -773,7 +773,7 @@ Find $u(5)$ using `SymPy`.
 
 ```
 eqn = u'(x) - exp(-x)*u(x)
-out = dsolve(eqn, x, ics=(u, 0, 1))
+out = dsolve(eqn, u(x), ics=(u, 0, 1))
 val = N(rhs(out)(5))
 numericq(val)
 ```
@@ -792,7 +792,7 @@ can be solved with `SymPy`. What is the value of $c(5)$?
 u = SymFunction("u")
 x = symbols("x")
 eqn = diff(x^2*u'(x), x)
-out = dsolve(eqn, x, ics=((u, 1, 2), (u, 10, 1))) |> rhs
+out = dsolve(eqn, u(x), ics=((u, 1, 2), (u, 10, 1))) |> rhs
 out(5)  # 10/9
 choices = [L"10/9", L"3/2", L"9/10", L"8/9"]
 ans = 1

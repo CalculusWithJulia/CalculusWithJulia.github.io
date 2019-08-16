@@ -83,7 +83,7 @@ Pkg.add("CalculusWithJulia")
 
 Installation only needs to be done once, but to use a package it must be loaded into each new session. This can be done with this command:
 
-```verbatim
+```
 using CalculusWithJulia
 ```
 

@@ -29,7 +29,7 @@ function vfieldplot(fx, fy; xlim=(-5,5), ylim=(-5,5), n=7)
     m = maximum((fxs.^2 .+ fys.^2).^(1/2))
     lambda =  max(xlim[2]-xlim[1], ylim[2]-ylim[1]) / n / m
 
-    
+
     quiver(us, vs, quiver=(lambda*fxs, lambda*fys), legend=false)
 end
 
@@ -53,7 +53,7 @@ function make_euler_graph(n)
     scatter!(p, xs, ys)
     ## add function
     u = SymFunction("u")
-    out = dsolve(u'(x) - F(u(x), x), x, (u, x0, y0))
+    out = dsolve(u'(x) - F(u(x), x), u(x), ics=(u, x0, y0))
     plot!(p, rhs(out), x0, xs[end], linewidth=5)
 
     p
@@ -74,25 +74,23 @@ gif(anim, imgfile, fps = 1)
 caption = """
 Illustration of a function stitching together slope field lines to
 approximate the answer to an initial-value problem. The function drawn is the
-actual solution. 
+actual solution.
 """
 
 euler_graph = gif_to_data(imgfile, caption)
 
 
 
-using Roots
-using QuadGK
-Base.ctranspose(f::Function) = D(f)
+using CalculusWithJulia
 
 
 function make_brach_graph_old(n)
-    
+
     A, B = 1, 1
     f(x) = B/A * x
     g(x) = sqrt(1 - (x-1)^2)
     h(x) = 1 - (2x^2 - 3x + 1)
-    
+
     i = x -> begin
         U = 1.20600557195676; c = 1.1458340750635
         if x <= 0 || x >= 1
@@ -100,12 +98,12 @@ function make_brach_graph_old(n)
         end
         x1 =  u -> c*u - c/2*sin(2u)
         y1 =  u -> c/2 * (1 - cos(2u))
-        
+
         # solve (x1(u) = x, then return y1(u)
         Roots.fzero(u -> x1(u) - x, 0, U) |> y1
     end
-    
-    
+
+
     J(x, f) = QuadGK.quadgk(u -> sqrt(1 + (f'(u))^2)/sqrt(2*10*f(u)), 0.01, x)[1]
     function ji(t,f)
         out = NaN
@@ -116,15 +114,15 @@ function make_brach_graph_old(n)
         end
         out
     end
-    
+
     ts = (1:10)/20
-    
+
 
     fs = [f, g, h, i]
     M = [f => J(B,f) for f in fs]
     cols = [:blue, :green, :red, :brown]
     Cols = Dict(f=>cols[i] for (i,f) in enumerate(fs))
-    
+
     p = plot(x -> A-fs[1](x), 0, 1, legend=false, color=cols[1], xlim=(0,1), ylim=(-0.25, 1))
     for (i,fn) in zip(2:4, fs[2:end])
         plot!(p,x -> A-fn(x), 0.0001, .99, color=cols[i])
@@ -132,7 +130,7 @@ function make_brach_graph_old(n)
 
     n == 0 && scatter!(p, [0], [1], color=:black)
     n < 1 && return p
-    
+
     ts = range(.05, stop=.55, length=9)
     t = ts[n]
     for (i,fn) in enumerate(fs)
@@ -143,7 +141,7 @@ function make_brach_graph_old(n)
             scatter!(p, [B], [A-A], color=cols[i])
         end
     end
-    
+
     p
 end
 
@@ -195,7 +193,7 @@ fs = [x -> 1 - x,
 
 MS = [brach(f, 1/100, 0, 1, 0, 1/100, 100) for f in fs]
 
-    
+
 function make_brach_graph(n)
 
     p = plot(xlim=(0,1), ylim=(-1/3, 1), legend=false)
@@ -206,7 +204,7 @@ function make_brach_graph(n)
         scatter!(p, [x], [f(x)])
     end
     p
-    
+
 end
 
 

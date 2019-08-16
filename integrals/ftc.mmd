@@ -1,7 +1,7 @@
 # Fundamental Theorem or Calculus
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -37,7 +37,7 @@ A \approx S_n = \sum_{i=1}^n f'(a + ih) \cdot h.
 But the Mean Value Theorem says that for small $h$ we have $f'(x) \approx (f(x) - f(x-h))/h$. Using this approximation with $x=a+ih$ gives:
 
 $$~
-A \approx 
+A \approx
 \sum_{i=1}^n (f(a + ih) - f(a + (i-1)h)).
 ~$$
 
@@ -250,8 +250,7 @@ antiderivative.
 - `integrate(ex, var)` to find an indefinite integral. For a
   univariate function `f` this is shortened to `integrate(f)`,
 
-- `integrate(ex, var, a, b)` (or more generally `integrate(ex, (var,
-  a, b))`) to find the definite integral. This integrates the
+- `integrate(ex, (var, a, b))` to find the definite integral. This integrates the
   expression in the variable `var` from `a` to `b`. For a univariate
   function `f` this can also be shortened to `integrate(f, a, b)`,
   which matches our usual template of `action(function, args...)`.
@@ -259,7 +258,7 @@ antiderivative.
 To illustrate, we have, this call finds an antiderivative:
 
 ```
-using SymPy
+using CalculusWithJulia  # loads `Plots`, `SymPy`, `QuadGK`
 integrate(sin)
 ```
 
@@ -272,7 +271,7 @@ integrate(sin, 0, pi)
 In the last two example, function objects were integrated. We can also integrate expressions, though in this usage we must specify the variable:
 
 ```
-x, n = symbols("x,n", real=true)
+@vars x n real=true
 integrate(x^n, x)          # indefinite integral
 ```
 
@@ -380,7 +379,7 @@ $$~
 F(x) = \int_a^x f(u) du.
 ~$$
 
-The value of $a$ does not matter, as long as the integral is defined. 
+The value of $a$ does not matter, as long as the integral is defined.
 
 {{{ftc_graph}}}
 
@@ -406,7 +405,7 @@ F(x) = \int_{a_0}^x f(u)du, \quad G(x) = \int_{a_0}^x f(u)du,
 That $F(x) = G(x) + \int_{a_0}^{a_1} f(u) du$. The additional part may
 look complicated, but the point is that as far as $x$ is involved, it
 is a constant. Hence both $F$ and $G$ are antiderivatives if either
-one is. 
+one is.
 
 ##### Example
 
@@ -483,10 +482,9 @@ F'(x) = (-2x)e^{-x^2} \int_0^x e^{t^2} dt + e^{-x^2} e^{x^2} = -2x F(x) + 1
 We need to figure out when this is $0$. For that, we use some numeric math.
 
 ```
-using Roots, QuadGK
 F(x) = exp(-x^2) * quadgk(t -> exp(t^2), 0, x)[1]
 Fp(x) = -2x*F(x) + 1
-cps = fzeros(Fp, -4,4)
+cps = find_zeros(Fp, -4,4)
 ```
 
 We could take a second derivative to characterize. For that we use
@@ -749,7 +747,7 @@ Using `SymPy`, integrate the function $\int_0^{2\pi} e^x \cdot \sin(x) dx$.
 ```
 using SymPy
 @vars x
-val = N(integrate(exp(x) * sin(x), x, 0, 2pi))
+val = N(integrate(exp(x) * sin(x), (x, 0, 2pi)))
 numericq(val)
 ```
 
@@ -913,9 +911,9 @@ plot!(p, A, 0, x + 1/4, color=:red)
 scatter!(p, [T, x, x, x], [0, 0, Q, P], color=:orange)
 annotate!(p, collect(zip([T, x, x+.1, x+.1], [0-.15, 0-.15, Q-.1, P], ["T", "x", "Q", "P"])))
 plot!(p,  [T-1/4, x+1/4], map(secpt, [T-1/4, x + 1/4]), color=:orange)
-plot!(p, [T, x, x], [0, 0, P], color=:yellow)
+plot!(p, [T, x, x], [0, 0, P], color=:green)
 
-Outputonly(p)	
+Outputonly(p)
 ```
 
 The fact that $\lvert Tx \rvert \cdot \lvert Qx \rvert = \lvert Px

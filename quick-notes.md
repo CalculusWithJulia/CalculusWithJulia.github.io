@@ -17,11 +17,15 @@ using Pkg
 Pkg.add("SomePackageName")
 ```
 
-The `CalculusWithJulia` package must be installed this way in order to be used. Packages need only be installed once, but loaded into each session for which they will be used.
+These notes have an accompanying package, `CalculusWithJulia`, that when installed, as above, also installs most of the necessary packages to perform the examples.
+
+Packages need only be installed once, but they must be loaded into *each* session for which they will be used.
 
 ```
 using CalculusWithJulia
 ```
+
+Packages can also be loaded through `import PackageName`. Importing does not add the exported objects of a function into the namespace, so is used when there are possible name collisions.
 
 ## Types
 

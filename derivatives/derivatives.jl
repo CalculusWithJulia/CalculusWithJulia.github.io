@@ -12,16 +12,16 @@ function secant_line_tangent_line_graph(n)
     c = pi/3
     h = 2.0^(-n) * pi/4
     m = (f(c+h) - f(c))/h
-    
+
     xs = range(0, stop=pi, length=50)
     plt = plot(f, 0, pi, legend=false, size=fig_size)
-    plot!(plt, xs, f(c) .+ cos(c)*(xs - c), color=:orange)
-    plot!(plt, xs, f(c) .+ m*(xs - c), color=:black)
+    plot!(plt, xs, f(c) .+ cos(c)*(xs .- c), color=:orange)
+    plot!(plt, xs, f(c) .+ m*(xs .- c), color=:black)
     scatter!(plt, [c,c+h], [f(c), f(c+h)], color=:orange, markersize=5)
 
     plot!(plt, [c, c+h, c+h], [f(c), f(c), f(c+h)], color=:gray30)
     annotate!(plt, [(c+h/2, f(c), text("h", :top)), (c + h + .05, (f(c) + f(c + h))/2, text("f(c+h) - f(c)", :left))])
-    
+
     plt
 end
 caption = L"""
@@ -53,7 +53,7 @@ function line_approx_fn_graph(n)
     m = cos(c)
 
     Delta = max(f(c) - f(c-h), f(min(c+h, pi/2)) - f(c))
-    
+
     p = plot(f, c-h, c+h, legend=false, xlims=(c-h,c+h), ylims=(f(c)-Delta,f(c)+Delta ))
     plot!(p, x -> f(c) + m*(x-c))
     scatter!(p, [c], [f(c)])

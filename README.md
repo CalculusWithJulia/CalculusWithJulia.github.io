@@ -165,7 +165,7 @@ Integration is not algorithmic, but rather problems can involve an array of tech
 
 
 
-Various applications of the integral are presented. The first two sections continue with the idea that an integral is related to area. From there, it is seen that volumes and arc-lengths may be expressed in terms of related integrals.
+Various applications of the integral are presented. The first two sections continue with the idea that an integral is related to area. From there, it is seen that volumes, arc-lengths, and surface areas may be expressed in terms of related integrals.
 
 - [Mean Value Theorem for Integrals](integrals/mean_value_theorem.html)
 
@@ -178,6 +178,8 @@ Various applications of the integral are presented. The first two sections conti
 - [Arc length](integrals/arc_length.html)
 
 - [Surface Area](integrals/surface_area.html)
+
+#### Ordinary differential equations
 
 Ordinary differential equations are an application of integration and the fundamental theorem of calculus.
 

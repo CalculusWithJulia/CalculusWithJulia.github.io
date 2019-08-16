@@ -1,7 +1,7 @@
 # Implications of continuity
 
 ```nocode,noout
-using Plots, Roots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -127,17 +127,18 @@ sin(c)
 ### The `find_zero` function.
 
 The `Roots` package has a function `find_zero` that implements the
-bisection method when called as `find_zero(f, (a, b))`  where $[a,b]$ is a bracket. Its use is similar to
-`bisection` above. We will use it in the following:
+bisection method when called as `find_zero(f, (a, b))` where $[a,b]$
+is a bracket. Its use is similar to `bisection` above. This package is loaded when `CalculusWithJulia` is. We illlustrate the usage of `find_zero`
+in the following:
 
 ```
-using Roots
+using CalculusWithJulia  # Loads `Roots` and `Plots`
 find_zero(sin, (3, 4))   # use a tuple, (a, b), to specify the bracketing interval
 ```
 
 ```
 alert("""
-Notice, the call `find_zero(sin, (3,4))` again fits the template `action(function, args...)` that we see repeatedly.
+Notice, the call `find_zero(sin, (3,4))` again fits the template `action(function, args...)` that we see repeatedly. The `find_zero` function can also be called through `fzero`.
 """)
 ```
 
@@ -167,7 +168,6 @@ We see, as before, that $f(c)$ is not quite $0$. (But you can check that `f(prev
 The function $f(x) = e^x - x^4$ has a zero between $5$ and $10$, as this graph shows:
 
 ```
-using Plots
 f(x) = exp(x) - x^4
 plot(f, 5, 10)
 ```
@@ -269,7 +269,7 @@ without wind resistance for the height of the arrow at a distance $x$
 units away may be:
 
 $$~
-j(x) = \tan(\theta) x - (1/2) \cdot g(\frac{x}{v_0 \cos\theta})^2.
+j(x) = \tan(\theta) x - (1//2) \cdot g(\frac{x}{v_0 \cos\theta})^2.
 ~$$
 
 In `julia` we have, taking $v_0=200$:
@@ -311,11 +311,11 @@ plot(j, 0, 500)
 ```
 
 Well, we haven't even seen the peak yet. Better to do a little spade
-work first. This is a quadratic function, so we can use `poly_roots` from `PolynomialZeros` to find the roots:
+work first. This is a quadratic function, so we can use `roots` from `SymPy` to find the roots:
 
 ```
-using PolynomialZeros
-poly_roots(j)
+@vars x
+roots(j(x))
 ```
 
 
@@ -581,8 +581,7 @@ function oscillates when $x < 0$ and *no* positive roots. Find the
 solve.
 
 ```
-import SpecialFunctions: airyai
-plot(airyai, -10, 10)
+plot(airyai, -10, 10)   # `airyai` loaded in `SpecialFunctions` by `CalculusWithJulia`
 ```
 
 The second largest root is:

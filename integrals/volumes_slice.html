@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -132,9 +138,9 @@ $$ V = \int_a^b CA(x) dx. $$
 V = \int_a^b \pi r(x)^2 dx.
 ~$$
 <div class="alert alert-info" role="alert">
-    
+
 <div class="markdown"><p>The formula is for a rotation around the $x$-axis, but can easily be generalized to rotating around any line (say the $y$-axis or $y=x$, ...) just by adjusting what $r(x)$ is taken to be.</p>
-</div> 
+</div>
 
 </div>
 <p>For a numeric example, we consider the original Red <a href="http://en.wikipedia.org/wiki/Red_Solo_Cup">Solo</a> Cup. The dimensions of the cup were basically: a top diameter of $d_1 = 3~ \frac{3}{4}$ inches, a bottom diameter of $d_0 = 2~ \frac{1}{2}$ inches and a height of $h = 4~ \frac{3}{4}$ inches.</p><p>The central axis is straight down. If we rotate the cup so this is the $x$-axis, then we can get</p>$$~
@@ -143,7 +149,7 @@ r(x) = \frac{d_0}{2} + \frac{d_1/2 - d_0/2}{h}x = \frac{5}{4} + \frac{5}{38}x
 <p>The volume in cubic inches will be:</p>$$~
 V = \int_0^h \pi r(x)^2 dx
 ~$$
-<p>This is</p><pre class="sourceCode julia">using QuadGK
+<p>This is</p><pre class="sourceCode julia">using CalculusWithJulia  # loads `QuadGK`, `Plots`, `Roots`, `SymPy`
 d0, d1, h = 2.5, 3.75, 4.75
 rad(x) = d0/2 + (d1/2 - d0/2)/h * x
 vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)</pre>
@@ -167,8 +173,7 @@ vol, _ = quadgk(x -> pi * rad(x)^2, 0, h)</pre>
 <pre class="output">
 Vol (generic function with 1 method)</pre>
 
-<p>Then to solve we have:</p><pre class="sourceCode julia">using Roots
-v = 5
+<p>Then to solve we have:</p><pre class="sourceCode julia">v = 5
 h5 = find_zero(h -> Vol(h) - v*231/128, 4)</pre>
 <pre class="output">
 1.5659355800223222</pre>
@@ -176,18 +181,17 @@ h5 = find_zero(h -> Vol(h) - v*231/128, 4)</pre>
 <p>and</p><pre class="sourceCode julia">v = 12
 h12 = find_zero(h -> Vol(h) - v*231/128, 4)</pre>
 <pre class="output">
-3.2071881256903856</pre>
+3.207188125690385</pre>
 
 <p>As a percentage of the total height, these are:</p><pre class="sourceCode julia">h5/h, h12/h</pre>
 <pre class="output">
-(0.32967064842575206, 0.6751975001453443)</pre>
+(0.32967064842575206, 0.6751975001453442)</pre>
 
-<h5>Example</h5><p>By rotating the line segment $x/r + y/h=1$ that sits in the first quadrant around the $y$ axis, we will generate a right-circular cone. The volume of which can be expressed through the above formula by noting the radius, as a function of $y$, will be $R = r(1 - y/h)$. This gives the well-known volume of a cone:</p><pre class="sourceCode julia">using SymPy
-@vars r h x y
+<h5>Example</h5><p>By rotating the line segment $x/r + y/h=1$ that sits in the first quadrant around the $y$ axis, we will generate a right-circular cone. The volume of which can be expressed through the above formula by noting the radius, as a function of $y$, will be $R = r(1 - y/h)$. This gives the well-known volume of a cone:</p><pre class="sourceCode julia">@vars r h x y
 R = r*(1 - y/h)
 integrate(pi*R^2, (y, 0, h))</pre>
 <div class="well well-sm">
-$$\frac{\pi h r^{2}}{3}$$</div>
+\begin{equation*}\frac{\pi h r^{2}}{3}\end{equation*}</div>
 
 <p>The frustum of a cone is simply viewed as a cone with its top cut off. If the original height would have been $h_0$ and the actual height $h_1$, then the volume remaining is just $\pi h_1 r^2/3 - \pi h_0 r^2/3 = \pi r^2 (h_1-h_0)/3$.</p><p>It is not unusual to parameterize a cone by the angle $\theta$ it makes and the height. Since $r/h=\tan\theta$, this gives the formula $V = \pi/3\cdot h^3\tan(\theta)^2$.</p><h5>Example</h5><p><a href="http://tinyurl.com/8a6ygv">Gabriel's</a> horn is a geometric figure of mathematics–-but not the real world–-which has infinite height, but not volume! The figure is found by rotating the curve $y=1/x$ around the $x$ axis from $1$ to $\infty$. If the volume formula holds, what is the volume of this "horn?"</p><pre class="sourceCode julia">rad(x) = 1/x
 vol, _ = quadgk(x -> pi*rad(x)^2, 1, Inf)</pre>
@@ -195,9 +199,9 @@ vol, _ = quadgk(x -> pi*rad(x)^2, 1, Inf)</pre>
 (3.141592653589793, 0.0)</pre>
 
 <p>That is a value very reminiscent of $\pi$, which it is as $\int_1^\infty 1/x^2 dx = -1/x\big|_1^\infty=1$.</p><div class="alert alert-info" role="alert">
-    
+
 <div class="markdown"><p>The interest in this figure is that it has <strong>infinite</strong> surface area, leading to the <a href="http://tinyurl.com/osawwqm">paradox</a> that it seems possible to fill it with paint, but not paint the outside.</p>
-</div> 
+</div>
 
 </div>
 <h5>Example</h5><p>A movie studio hand is asked to find a prop vase to be used as a <a href="http://en.wikipedia.org/wiki/Chinese_ceramics">Ming vase</a> in an upcoming scene. The dimensions specified are for the outside diameter in centimeters and are given by</p>$$~
@@ -256,10 +260,10 @@ C(u)  = C(0) \cdot (1 - \frac{u}{h})^2
 <p>So the integral becomes:</p>$$~
 V = \int_0^h C(u) du = C(0) \int_0^h (1 - \frac{u}{h})^2 du = C(0) \int_0^1 v^2 \frac{1}{h} dv = C(0) \frac{h}{3}.
 ~$$
-<p>This gives a general formula for the volume of such cones. </p><h3>Cavalieri's method</h3><p><a href="http://tinyurl.com/oda9xd9">Cavalieri's</a> Principle is "Suppose two regions in three-space (solids) are included between two parallel planes. If every plane parallel to these two planes intersects both regions in cross-sections of equal area, then the two regions have equal volumes." (Wikipedia).</p><p>With the formula for the volume of solids based on cross sections, this is a trivial observation, as the functions giving the cross-sectional area are identical. Still, it can be surprising. Consider a sphere with an interior cylinder bored out of it.  (The <a href="http://tinyurl.com/o237v83">Napkin</a> ring problem.) The bore has height $h$–-for larger radius spheres this means very wide bores.</p>    <div id="95fe48d7-9d55-4bec-b658-152943d2f01e" style="width:600px;height:400px;"></div>
+<p>This gives a general formula for the volume of such cones.</p><h3>Cavalieri's method</h3><p><a href="http://tinyurl.com/oda9xd9">Cavalieri's</a> Principle is "Suppose two regions in three-space (solids) are included between two parallel planes. If every plane parallel to these two planes intersects both regions in cross-sections of equal area, then the two regions have equal volumes." (Wikipedia).</p><p>With the formula for the volume of solids based on cross sections, this is a trivial observation, as the functions giving the cross-sectional area are identical. Still, it can be surprising. Consider a sphere with an interior cylinder bored out of it.  (The <a href="http://tinyurl.com/o237v83">Napkin</a> ring problem.) The bore has height $h$–-for larger radius spheres this means very wide bores.</p>    <div id="626bb77c-6238-48a9-be7f-fce0d189b713" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('95fe48d7-9d55-4bec-b658-152943d2f01e');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9459994330723842,0.9872908640160599,0.9936454320080299],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999990686219148,-0.9989980512204036,-0.9963241416961329,-0.9919745187479542,-0.9843652535929992,-0.9740656890928739,-0.958843127067851,-0.9348727930343728,-0.9070063940631701,-0.8768416285769074,-0.83720679025948,-0.7895623965848136,-0.7269719073185796,-0.6569214361075097,-0.5723445183165567,-0.4912097421804885,-0.43696650916437085,-0.3789987945589238,-0.321000781403617,-0.2594996042061153,-0.15341098605687042,-0.03764489434625484,-0.018942818973667674],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8531606459863641,0.9047080021287085,0.9872908640160599],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9902341809802119,-0.8999350828316272,-0.8456690886943761,-0.7997878812842343,-0.7499480299669485,-0.7040000954653718,-0.6547390535935103,-0.5976653056614677,-0.5469448938889785,-0.50246766345978,-0.4539755433446805,-0.4051952212471879,-0.35126233737559576,-0.29994655925515656,-0.2465900564886495,-0.2016752463331548,-0.1468393540136359,-0.0952919978712915,-0.012709135983940079],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-5.0,-4.989933382359421,-4.959774064153977,-4.9096434863135325,-4.839743506981781,-4.750355588704727,-4.641839665080363,-4.514632691433105,-4.369246885348924,-4.206267664155906,-4.026351287655293,-3.8302222155948895,-3.618670190525351,-3.3925470577856602,-3.1527633354226126,-2.90028454785599,-2.6361273380525123,-2.3613553738634128,-2.0770750650094314,-1.7844311079593589,-1.484601876641374,-1.1787946775471358,-0.8682408883346515,-0.5541909995050549,-0.23790957911871138,0.07932981917403965,0.3962497842839422,0.7115741913664255,1.0240333403259534,1.3323690684501748,1.635339816587109,1.9317256284656439,2.220333063028871,2.5000000000000004,2.7696003193305514,3.0280484356883335,3.2743036697264256,3.507374438531606,3.726322248378774,3.9302654737139378,4.118382907149164,4.289917066174885,4.444177243274617,4.580542287160348,4.698463103929543,4.7974648680724865,4.877148934427035,4.937194443381971,4.977359612865423,4.997482711915925,4.997482711915925,4.977359612865423,4.937194443381971,4.877148934427035,4.7974648680724865,4.698463103929543,4.580542287160348,4.444177243274617,4.289917066174885,4.118382907149164,3.9302654737139378,3.726322248378774,3.507374438531606,3.2743036697264256,3.0280484356883335,2.7696003193305514,2.5000000000000004,2.220333063028871,1.9317256284656439,1.635339816587109,1.3323690684501748,1.0240333403259534,0.7115741913664255,0.3962497842839422,0.07932981917403965,-0.23790957911871138,-0.5541909995050549,-0.8682408883346515,-1.1787946775471358,-1.484601876641374,-1.7844311079593589,-2.0770750650094314,-2.3613553738634128,-2.6361273380525123,-2.90028454785599,-3.1527633354226126,-3.3925470577856602,-3.618670190525351,-3.8302222155948895,-4.026351287655293,-4.206267664155906,-4.369246885348924,-4.514632691433105,-4.641839665080363,-4.750355588704727,-4.839743506981781,-4.9096434863135325,-4.959774064153977,-4.989933382359421,-5.0],"showlegend":true,"mode":"lines","name":"y3","legendgroup":"y3","line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-6.123233995736766e-16,-0.3171195982828242,-0.6329622678687469,-0.9462562218020525,-1.2557399359053965,-1.5601672284924368,-1.858312278301638,-2.148974560445859,-2.4309836805023437,-2.7032040872779888,-2.9645396452732022,-3.2139380484326976,-3.4503950574105597,-3.6729585432876672,-3.8807323214587837,-4.072879760251679,-4.248627149747572,-4.40726681723791,-4.548159976772592,-4.670739301325534,-4.774511207220369,-4.859057841617708,-4.92403876506104,-4.96919232230627,-4.99433669591504,-4.999370638369375,-4.984273879759712,-4.949107209404663,-4.894012231073893,-4.81921079279971,-4.725004093573342,-4.611771470522907,-4.47996887145668,-4.330127018922193,-4.162849273173857,-3.9788092026541606,-3.7787478717712912,-3.5634708568943143,-3.333845002581458,-3.0907949311030256,-2.8352993193138536,-2.5683869578670313,-2.291132608637052,-2.0046526770330684,-1.7101007166283435,-1.4086627842071484,-1.1015526639327031,-0.7900069798667495,-0.4752802165209133,-0.15863966749033825,0.15863966749033825,0.4752802165209133,0.7900069798667495,1.1015526639327031,1.4086627842071484,1.7101007166283435,2.0046526770330684,2.291132608637052,2.5683869578670313,2.8352993193138536,3.0907949311030256,3.333845002581458,3.5634708568943143,3.7787478717712912,3.9788092026541606,4.162849273173857,4.330127018922193,4.47996887145668,4.611771470522907,4.725004093573342,4.81921079279971,4.894012231073893,4.949107209404663,4.984273879759712,4.999370638369375,4.99433669591504,4.96919232230627,4.92403876506104,4.859057841617708,4.774511207220369,4.670739301325534,4.548159976772592,4.40726681723791,4.248627149747572,4.072879760251679,3.8807323214587837,3.6729585432876672,3.4503950574105597,3.2139380484326976,2.9645396452732022,2.7032040872779888,2.4309836805023437,2.148974560445859,1.858312278301638,1.5601672284924368,1.2557399359053965,0.9462562218020525,0.6329622678687469,0.3171195982828242,6.123233995736766e-16],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[3.0,3.0744021783877606,3.14772547558674,3.219944160699853,3.2910328904647916,3.360966718147582,3.429721102296984,3.497271915356681,3.563595452132209,3.628668438109679,3.6924680376233594,3.754971861869258,3.8161579767618865,3.876004910631456,3.934491661758799,3.991597705745375,4.047303002715771,4.101588004350175,4.154433660744344,4.205821427094678,4.255733270206027,4.304151674819975,4.3510596497613605,4.396440733900887,4.440279001931727,4.482559069958089,4.523266100893802,4.562385809668993,4.59990446824307,4.6358089104222096,4.6700865364796975,4.70272531757747,4.73371379998732,4.763041109110282,4.790696953292796,4.816671627438288,4.840956016412922,4.863541598244319,4.88442044711212,4.903585236129349,4.921029239913585,4.936746336947068,4.950731011724881,4.962978356690473,4.973484073957841,4.982244476819754,4.989256491041514,4.994517655939777,4.99802612524606,4.9997806677546475,4.9997806677546475,4.99802612524606,4.994517655939777,4.989256491041514,4.982244476819754,4.973484073957841,4.962978356690473,4.950731011724881,4.936746336947068,4.921029239913585,4.903585236129349,4.88442044711212,4.863541598244319,4.840956016412922,4.816671627438288,4.790696953292796,4.763041109110282,4.73371379998732,4.70272531757747,4.6700865364796975,4.6358089104222096,4.59990446824307,4.562385809668993,4.523266100893802,4.482559069958089,4.440279001931727,4.396440733900887,4.3510596497613605,4.304151674819975,4.255733270206027,4.205821427094678,4.154433660744344,4.101588004350175,4.047303002715771,3.991597705745375,3.934491661758799,3.876004910631456,3.8161579767618865,3.754971861869258,3.6924680376233594,3.628668438109679,3.563595452132209,3.497271915356681,3.429721102296984,3.360966718147582,3.2910328904647916,3.219944160699853,3.14772547558674,3.0744021783877606,3.0],"showlegend":true,"mode":"lines","name":"y4","legendgroup":"y4","line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.0,-3.9431017290357335,-3.8848197294523503,-3.8251744537961816,-3.7641868330197106,-3.7018782691363947,-3.638270627710198,-3.5733862301824315,-3.5072478460386334,-3.4398786848182112,-3.3713023879696546,-3.3015430205541954,-3.2306250628007933,-3.1585734015154436,-3.0854133213478034,-3.0111704959182,-2.9358709788081465,-2.859541194417516,-2.78220792869159,-2.703898319721229,-2.624639848219469,-2.54446032787788,-2.4633878956060795,-2.381451001657819,-2.2986783996471076,-2.215099136457885,-2.130742542050771,-2.045638219170488,-1.9598160329575438,-1.8733061004678462,-1.786138780103903,-1.6983446609613373,-1.6099545520944412,-1.5209994717045416,-1.4315106362549739,-1.3415194495164782,-1.2510574915468653,-1.160156507608821,-1.068848397029734,-0.9771652020074594,-0.8851390963659467,-0.7928023742646756,-0.7001874388658637,-0.6073267909634229,-0.5142530175776541,-0.42099878051968287,-0.3275968049296498,-0.23407986779267667,-0.14048078643663894,-0.046832407015781556,0.046832407015781556,0.14048078643663894,0.23407986779267667,0.3275968049296498,0.42099878051968287,0.5142530175776541,0.6073267909634229,0.7001874388658637,0.7928023742646756,0.8851390963659467,0.9771652020074594,1.068848397029734,1.160156507608821,1.2510574915468653,1.3415194495164782,1.4315106362549739,1.5209994717045416,1.6099545520944412,1.6983446609613373,1.786138780103903,1.8733061004678462,1.9598160329575438,2.045638219170488,2.130742542050771,2.215099136457885,2.2986783996471076,2.381451001657819,2.4633878956060795,2.54446032787788,2.624639848219469,2.703898319721229,2.78220792869159,2.859541194417516,2.9358709788081465,3.0111704959182,3.0854133213478034,3.1585734015154436,3.2306250628007933,3.3015430205541954,3.3713023879696546,3.4398786848182112,3.5072478460386334,3.5733862301824315,3.638270627710198,3.7018782691363947,3.7641868330197106,3.8251744537961816,3.8848197294523503,3.9431017290357335,4.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[3.0,3.0],"showlegend":true,"mode":"lines","name":"y5","legendgroup":"y5","line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[4.0,-4.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[3.0,4.58257569495584],"showlegend":true,"mode":"lines","name":"y6","legendgroup":"y6","line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.0,2.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[0.0,3.0],"showlegend":true,"mode":"lines","name":"y7","legendgroup":"y7","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0,0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[0.0,3.0],"showlegend":true,"mode":"lines","name":"y8","legendgroup":"y8","line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,4.0],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-4.0,-2.0,0.0,2.0,4.0],"visible":true,"ticks":"inside","range":[-5.2999934200326395,5.299774087787287],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-4","-2","0","2","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":-0.6666666666666666,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"sqrt(R^2- (h/2)^2","xref":"x","x":0.5},{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":2.0,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"h/2","xref":"x","x":2.4},{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":2.3333333333333335,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"R","xref":"x","x":1.5}],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-4.0,-2.0,0.0,2.0,4.0],"visible":true,"ticks":"inside","range":[-5.299332876671538,5.299332876671538],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-4","-2","0","2","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
+    PLOT = document.getElementById('626bb77c-6238-48a9-be7f-fce0d189b713');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9459994330723842,0.9872908640160599,0.9936454320080299],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999990686219148,-0.9989980512204036,-0.9963241416961329,-0.9919745187479542,-0.9843652535929992,-0.9740656890928739,-0.958843127067851,-0.9348727930343728,-0.9070063940631701,-0.8768416285769074,-0.83720679025948,-0.7895623965848136,-0.7269719073185796,-0.6569214361075097,-0.5723445183165567,-0.4912097421804885,-0.43696650916437085,-0.3789987945589238,-0.321000781403617,-0.2594996042061153,-0.15341098605687042,-0.03764489434625484,-0.018942818973667674],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8531606459863641,0.9047080021287085,0.9872908640160599],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9902341809802119,-0.8999350828316272,-0.8456690886943761,-0.7997878812842343,-0.7499480299669485,-0.7040000954653718,-0.6547390535935103,-0.5976653056614677,-0.5469448938889785,-0.50246766345978,-0.4539755433446805,-0.4051952212471879,-0.35126233737559576,-0.29994655925515656,-0.2465900564886495,-0.2016752463331548,-0.1468393540136359,-0.0952919978712915,-0.012709135983940079],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-5.0,-4.989933382359421,-4.959774064153977,-4.9096434863135325,-4.839743506981781,-4.750355588704727,-4.641839665080363,-4.514632691433105,-4.369246885348924,-4.206267664155906,-4.026351287655293,-3.8302222155948895,-3.618670190525351,-3.3925470577856602,-3.1527633354226126,-2.90028454785599,-2.6361273380525123,-2.3613553738634128,-2.0770750650094314,-1.7844311079593589,-1.484601876641374,-1.1787946775471358,-0.8682408883346515,-0.5541909995050549,-0.23790957911871138,0.07932981917403965,0.3962497842839422,0.7115741913664255,1.0240333403259534,1.3323690684501748,1.635339816587109,1.9317256284656439,2.220333063028871,2.5000000000000004,2.7696003193305514,3.0280484356883335,3.2743036697264256,3.507374438531606,3.726322248378774,3.9302654737139378,4.118382907149164,4.289917066174885,4.444177243274617,4.580542287160348,4.698463103929543,4.7974648680724865,4.877148934427035,4.937194443381971,4.977359612865423,4.997482711915925,4.997482711915925,4.977359612865423,4.937194443381971,4.877148934427035,4.7974648680724865,4.698463103929543,4.580542287160348,4.444177243274617,4.289917066174885,4.118382907149164,3.9302654737139378,3.726322248378774,3.507374438531606,3.2743036697264256,3.0280484356883335,2.7696003193305514,2.5000000000000004,2.220333063028871,1.9317256284656439,1.635339816587109,1.3323690684501748,1.0240333403259534,0.7115741913664255,0.3962497842839422,0.07932981917403965,-0.23790957911871138,-0.5541909995050549,-0.8682408883346515,-1.1787946775471358,-1.484601876641374,-1.7844311079593589,-2.0770750650094314,-2.3613553738634128,-2.6361273380525123,-2.90028454785599,-3.1527633354226126,-3.3925470577856602,-3.618670190525351,-3.8302222155948895,-4.026351287655293,-4.206267664155906,-4.369246885348924,-4.514632691433105,-4.641839665080363,-4.750355588704727,-4.839743506981781,-4.9096434863135325,-4.959774064153977,-4.989933382359421,-5.0],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-6.123233995736766e-16,-0.3171195982828242,-0.6329622678687469,-0.9462562218020525,-1.2557399359053965,-1.5601672284924368,-1.858312278301638,-2.148974560445859,-2.4309836805023437,-2.7032040872779888,-2.9645396452732022,-3.2139380484326976,-3.4503950574105597,-3.6729585432876672,-3.8807323214587837,-4.072879760251679,-4.248627149747572,-4.40726681723791,-4.548159976772592,-4.670739301325534,-4.774511207220369,-4.859057841617708,-4.92403876506104,-4.96919232230627,-4.99433669591504,-4.999370638369375,-4.984273879759712,-4.949107209404663,-4.894012231073893,-4.81921079279971,-4.725004093573342,-4.611771470522907,-4.47996887145668,-4.330127018922193,-4.162849273173857,-3.9788092026541606,-3.7787478717712912,-3.5634708568943143,-3.333845002581458,-3.0907949311030256,-2.8352993193138536,-2.5683869578670313,-2.291132608637052,-2.0046526770330684,-1.7101007166283435,-1.4086627842071484,-1.1015526639327031,-0.7900069798667495,-0.4752802165209133,-0.15863966749033825,0.15863966749033825,0.4752802165209133,0.7900069798667495,1.1015526639327031,1.4086627842071484,1.7101007166283435,2.0046526770330684,2.291132608637052,2.5683869578670313,2.8352993193138536,3.0907949311030256,3.333845002581458,3.5634708568943143,3.7787478717712912,3.9788092026541606,4.162849273173857,4.330127018922193,4.47996887145668,4.611771470522907,4.725004093573342,4.81921079279971,4.894012231073893,4.949107209404663,4.984273879759712,4.999370638369375,4.99433669591504,4.96919232230627,4.92403876506104,4.859057841617708,4.774511207220369,4.670739301325534,4.548159976772592,4.40726681723791,4.248627149747572,4.072879760251679,3.8807323214587837,3.6729585432876672,3.4503950574105597,3.2139380484326976,2.9645396452732022,2.7032040872779888,2.4309836805023437,2.148974560445859,1.858312278301638,1.5601672284924368,1.2557399359053965,0.9462562218020525,0.6329622678687469,0.3171195982828242,6.123233995736766e-16],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[3.0,3.0744021783877606,3.14772547558674,3.219944160699853,3.2910328904647916,3.360966718147582,3.429721102296984,3.497271915356681,3.563595452132209,3.628668438109679,3.6924680376233594,3.754971861869258,3.8161579767618865,3.876004910631456,3.934491661758799,3.991597705745375,4.047303002715771,4.101588004350175,4.154433660744344,4.205821427094678,4.255733270206027,4.304151674819975,4.3510596497613605,4.396440733900887,4.440279001931727,4.482559069958089,4.523266100893802,4.562385809668993,4.59990446824307,4.6358089104222096,4.6700865364796975,4.70272531757747,4.73371379998732,4.763041109110282,4.790696953292796,4.816671627438288,4.840956016412922,4.863541598244319,4.88442044711212,4.903585236129349,4.921029239913585,4.936746336947068,4.950731011724881,4.962978356690473,4.973484073957841,4.982244476819754,4.989256491041514,4.994517655939777,4.99802612524606,4.9997806677546475,4.9997806677546475,4.99802612524606,4.994517655939777,4.989256491041514,4.982244476819754,4.973484073957841,4.962978356690473,4.950731011724881,4.936746336947068,4.921029239913585,4.903585236129349,4.88442044711212,4.863541598244319,4.840956016412922,4.816671627438288,4.790696953292796,4.763041109110282,4.73371379998732,4.70272531757747,4.6700865364796975,4.6358089104222096,4.59990446824307,4.562385809668993,4.523266100893802,4.482559069958089,4.440279001931727,4.396440733900887,4.3510596497613605,4.304151674819975,4.255733270206027,4.205821427094678,4.154433660744344,4.101588004350175,4.047303002715771,3.991597705745375,3.934491661758799,3.876004910631456,3.8161579767618865,3.754971861869258,3.6924680376233594,3.628668438109679,3.563595452132209,3.497271915356681,3.429721102296984,3.360966718147582,3.2910328904647916,3.219944160699853,3.14772547558674,3.0744021783877606,3.0],"showlegend":true,"mode":"lines","name":"y4","zmin":-0.1,"legendgroup":"y4","zmax":0.1,"line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-4.0,-3.9431017290357335,-3.8848197294523503,-3.8251744537961816,-3.7641868330197106,-3.7018782691363947,-3.638270627710198,-3.5733862301824315,-3.5072478460386334,-3.4398786848182112,-3.3713023879696546,-3.3015430205541954,-3.2306250628007933,-3.1585734015154436,-3.0854133213478034,-3.0111704959182,-2.9358709788081465,-2.859541194417516,-2.78220792869159,-2.703898319721229,-2.624639848219469,-2.54446032787788,-2.4633878956060795,-2.381451001657819,-2.2986783996471076,-2.215099136457885,-2.130742542050771,-2.045638219170488,-1.9598160329575438,-1.8733061004678462,-1.786138780103903,-1.6983446609613373,-1.6099545520944412,-1.5209994717045416,-1.4315106362549739,-1.3415194495164782,-1.2510574915468653,-1.160156507608821,-1.068848397029734,-0.9771652020074594,-0.8851390963659467,-0.7928023742646756,-0.7001874388658637,-0.6073267909634229,-0.5142530175776541,-0.42099878051968287,-0.3275968049296498,-0.23407986779267667,-0.14048078643663894,-0.046832407015781556,0.046832407015781556,0.14048078643663894,0.23407986779267667,0.3275968049296498,0.42099878051968287,0.5142530175776541,0.6073267909634229,0.7001874388658637,0.7928023742646756,0.8851390963659467,0.9771652020074594,1.068848397029734,1.160156507608821,1.2510574915468653,1.3415194495164782,1.4315106362549739,1.5209994717045416,1.6099545520944412,1.6983446609613373,1.786138780103903,1.8733061004678462,1.9598160329575438,2.045638219170488,2.130742542050771,2.215099136457885,2.2986783996471076,2.381451001657819,2.4633878956060795,2.54446032787788,2.624639848219469,2.703898319721229,2.78220792869159,2.859541194417516,2.9358709788081465,3.0111704959182,3.0854133213478034,3.1585734015154436,3.2306250628007933,3.3015430205541954,3.3713023879696546,3.4398786848182112,3.5072478460386334,3.5733862301824315,3.638270627710198,3.7018782691363947,3.7641868330197106,3.8251744537961816,3.8848197294523503,3.9431017290357335,4.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[3.0,3.0],"showlegend":true,"mode":"lines","name":"y5","zmin":-0.1,"legendgroup":"y5","zmax":0.1,"line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[4.0,-4.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[3.0,4.58257569495584],"showlegend":true,"mode":"lines","name":"y6","zmin":-0.1,"legendgroup":"y6","zmax":0.1,"line":{"color":"rgba(255, 165, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[2.0,2.0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[0.0,3.0],"showlegend":true,"mode":"lines","name":"y7","zmin":-0.1,"legendgroup":"y7","zmax":0.1,"line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0,0],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null],"x":[0.0,3.0],"showlegend":true,"mode":"lines","name":"y8","zmin":-0.1,"legendgroup":"y8","zmax":0.1,"line":{"color":"rgba(255, 0, 0, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,4.0],"type":"scatter","hoverinfo":"text"}], {"showlegend":false,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-6.0,-4.0,-2.0,0.0,2.0,4.0,6.0],"visible":true,"ticks":"inside","range":[-7.98841287364812,7.988193541402768],"domain":[0.03619130941965603,0.9934383202099736],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-6","-4","-2","0","2","4","6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":-0.6666666666666666,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"sqrt(R^2- (h/2)^2","xref":"x","x":0.5},{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":2.0,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"h/2","xref":"x","x":2.4},{"yanchor":"middle","xanchor":"center","rotation":-0.0,"y":2.3333333333333335,"font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":20},"yref":"y","showarrow":false,"text":"R","xref":"x","x":1.5}],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-4.0,-2.0,0.0,2.0,4.0],"visible":true,"ticks":"inside","range":[-5.299332876671538,5.299332876671538],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-4","-2","0","2","4"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"width":600});
     </script>
 <p>The small orange line is rotated, so using the washer method we get the cross sections given by $\pi(r_o^2 - r_i^2)$, the outer and inner radii, as a function of $y$.</p><p>The outer radii has points $(x,y)$ satisfying $x^2 + y^2 = R^2$, so is $\sqrt{R^2 - y^2}$. The inner radii has a constant value, and as indicated in the figure, is $\sqrt{R^2 - (h/2)^2}$, by the Pythagorean theorem.</p><p>Thus the cross sectional area is</p>$$~
 \pi( (\sqrt{R^2 - y^2})^2 - (\sqrt{R^2 - (h/2)^2})^2 )
@@ -280,29 +284,28 @@ V = \int_0^h C(u) du = C(0) \int_0^h (1 - \frac{u}{h})^2 du = C(0) \int_0^1 v^2 
 </li>
 <li><p>the radius as a function of height is $r(h) = 5  + (3/15)\cdot h$</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='dzgJtFXZ' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='DNLwqwOV' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="dzgJtFXZ" type="number" class="form-control">
+<input id="DNLwqwOV" type="number" class="form-control">
 
 </div>
-  
-<div id='dzgJtFXZ_message'></div>
+
+<div id='DNLwqwOV_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#dzgJtFXZ').on('change', function() {
+$('#DNLwqwOV').on('change', function() {
   correct = Math.abs(this.value - 15157.98160668533) <= 10.0;
 
   if(correct) {
-     $('#dzgJtFXZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#DNLwqwOV_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#dzgJtFXZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#DNLwqwOV_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
@@ -331,492 +334,464 @@ s_vol (generic function with 1 method)</pre>
 <ul>
 <li><p>For the straight-sided glass find $h$ so that the volume is $450$.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='Vdnl8U23' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='zJ5Db7qi' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="Vdnl8U23" type="number" class="form-control">
+<input id="zJ5Db7qi" type="number" class="form-control">
 
 </div>
-  
-<div id='Vdnl8U23_message'></div>
+
+<div id='zJ5Db7qi_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#Vdnl8U23').on('change', function() {
-  correct = Math.abs(this.value - 9.168923214523723) <= 0.001;
+$('#zJ5Db7qi').on('change', function() {
+  correct = Math.abs(this.value - 9.168923214523724) <= 0.001;
 
   if(correct) {
-     $('#Vdnl8U23_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#zJ5Db7qi_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#Vdnl8U23_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#zJ5Db7qi_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>For the straight-sided glass find $h$ so that the volume is $225$ (half full).</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='SdlaVW2i' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='rE1KqePh' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="SdlaVW2i" type="number" class="form-control">
+<input id="rE1KqePh" type="number" class="form-control">
 
 </div>
-  
-<div id='SdlaVW2i_message'></div>
+
+<div id='rE1KqePh_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#SdlaVW2i').on('change', function() {
+$('#rE1KqePh').on('change', function() {
   correct = Math.abs(this.value - 5.603662378152273) <= 0.001;
 
   if(correct) {
-     $('#SdlaVW2i_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#rE1KqePh_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#SdlaVW2i_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#rE1KqePh_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>For the straight-sided glass, what is the percentage of the total height when the glass is half full. (For a cylinder it would just be 50.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='L5SBJqNA' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='jvr4IUgo' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="L5SBJqNA" type="number" class="form-control">
+<input id="jvr4IUgo" type="number" class="form-control">
 <span class="input-group-addon">percent</span>
 </div>
-  
-<div id='L5SBJqNA_message'></div>
+
+<div id='jvr4IUgo_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#L5SBJqNA').on('change', function() {
+$('#jvr4IUgo').on('change', function() {
   correct = Math.abs(this.value - 1.2452583062560607) <= 2;
 
   if(correct) {
-     $('#L5SBJqNA_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#jvr4IUgo_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#L5SBJqNA_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#jvr4IUgo_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>People often confuse the half-way by height amount for the half way by volume, as it is for the cylinder. Take the height for the straight-sided glass filled with $450$ mm, divide it by $2$, then compute the percentage of volume at the half way height to the original.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='PYTVUdSl' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='PY2AhI74' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="PYTVUdSl" type="number" class="form-control">
+<input id="PY2AhI74" type="number" class="form-control">
 <span class="input-group-addon">percent</span>
 </div>
-  
-<div id='PYTVUdSl_message'></div>
+
+<div id='PY2AhI74_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#PYTVUdSl').on('change', function() {
-  correct = Math.abs(this.value - 38.50561691218434) <= 2;
+$('#PY2AhI74').on('change', function() {
+  correct = Math.abs(this.value - 38.505616912184344) <= 2;
 
   if(correct) {
-     $('#PYTVUdSl_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#PY2AhI74_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#PYTVUdSl_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#PY2AhI74_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <hr /><ul>
 <li><p>For the curved-sided glass find $h$ so that the volume is $450$.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='sTKrhXet' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='boNfWosH' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="sTKrhXet" type="number" class="form-control">
+<input id="boNfWosH" type="number" class="form-control">
 
 </div>
-  
-<div id='sTKrhXet_message'></div>
+
+<div id='boNfWosH_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#sTKrhXet').on('change', function() {
+$('#boNfWosH').on('change', function() {
   correct = Math.abs(this.value - 10.37133536401327) <= 0.001;
 
   if(correct) {
-     $('#sTKrhXet_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#boNfWosH_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#sTKrhXet_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#boNfWosH_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>For the curved-sided glass find $h$ so that the volume is $225$ (half full).</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='gzLzV3DJ' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='JLaqXkP6' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="gzLzV3DJ" type="number" class="form-control">
+<input id="JLaqXkP6" type="number" class="form-control">
 
 </div>
-  
-<div id='gzLzV3DJ_message'></div>
+
+<div id='JLaqXkP6_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#gzLzV3DJ').on('change', function() {
+$('#JLaqXkP6').on('change', function() {
   correct = Math.abs(this.value - 6.372119100356652) <= 0.001;
 
   if(correct) {
-     $('#gzLzV3DJ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#JLaqXkP6_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#gzLzV3DJ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#JLaqXkP6_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>For the curved-sided glass, what is the percentage of the total height when the glass is half full. (For a cylinder it would just be 50.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='SLoqbAE3' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='aoyCcpMP' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="SLoqbAE3" type="number" class="form-control">
+<input id="aoyCcpMP" type="number" class="form-control">
 <span class="input-group-addon">percent</span>
 </div>
-  
-<div id='SLoqbAE3_message'></div>
+
+<div id='aoyCcpMP_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#SLoqbAE3').on('change', function() {
+$('#aoyCcpMP').on('change', function() {
   correct = Math.abs(this.value - 1.4160264667459228) <= 2;
 
   if(correct) {
-     $('#SLoqbAE3_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#aoyCcpMP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#SLoqbAE3_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#aoyCcpMP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <ul>
 <li><p>People often confuse the half-way by height amount for the half way by volume, as it is for the cylinder. Take the height for the curved-sided glass filled with $450$ mm, divide it by $2$, then compute the percentage of volume at the half way height to the original.</p>
 </li>
-</ul><form name='WeaveQuestion' data-id='LKlFxqq3' data-controltype='numeric'>
+</ul><form name='WeaveQuestion' data-id='W9Nffnwj' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="LKlFxqq3" type="number" class="form-control">
+<input id="W9Nffnwj" type="number" class="form-control">
 <span class="input-group-addon">percent</span>
 </div>
-  
-<div id='LKlFxqq3_message'></div>
+
+<div id='W9Nffnwj_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#LKlFxqq3').on('change', function() {
+$('#W9Nffnwj').on('change', function() {
   correct = Math.abs(this.value - 37.31833223550184) <= 2;
 
   if(correct) {
-     $('#LKlFxqq3_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#W9Nffnwj_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#LKlFxqq3_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#W9Nffnwj_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>A right <a href="http://en.wikipedia.org/wiki/Pyramid_&#37;28geometry&#37;29">pyramid</a> has its apex (top point) above the centroid of its base, and for our purposes, each of its cross sections. Suppose a pyramid has square base of dimension $w$ and height of dimension $h$.</p><p>Will this integral give the volume:</p>$$~
 V = \int_0^h w^2 (1 - \frac{y}{h})^2 dy?
 ~$$
-<form name="WeaveQuestion" data-id="tzYYQ5N7" data-controltype="radio">
+<form name="WeaveQuestion" data-id="PHPA0MJh" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tzYYQ5N7" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_PHPA0MJh" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tzYYQ5N7" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_PHPA0MJh" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="tzYYQ5N7_message"></div>
+<div id="PHPA0MJh_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_tzYYQ5N7']").on("change", function() {
+$("input:radio[name='radio_PHPA0MJh']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#tzYYQ5N7_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#PHPA0MJh_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#tzYYQ5N7_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#PHPA0MJh_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>What is the volume?</p><form name="WeaveQuestion" data-id="FHbPgY2O" data-controltype="radio">
+<p>What is the volume?</p><form name="WeaveQuestion" data-id="SdbWJDWc" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_FHbPgY2O" value="1"><div class="markdown">$l\cdot w \cdot h/ 3$
+      <input type="radio" name="radio_SdbWJDWc" value="1"><div class="markdown">$1/3 \cdot w^2\cdot h$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_FHbPgY2O" value="2"><div class="markdown">$1/3 \cdot w^2\cdot h$
+      <input type="radio" name="radio_SdbWJDWc" value="2"><div class="markdown">$1/3 \cdot b\cdot h$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_FHbPgY2O" value="3"><div class="markdown">$1/3 \cdot b\cdot h$
+      <input type="radio" name="radio_SdbWJDWc" value="3"><div class="markdown">$l\cdot w \cdot h/ 3$
 </div>
     </label>
     </div>
-    
 
-
-<div id="FHbPgY2O_message"></div>
+<div id="SdbWJDWc_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_FHbPgY2O']").on("change", function() {
-  correct = this.value == 2;
+$("input:radio[name='radio_SdbWJDWc']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#FHbPgY2O_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#SdbWJDWc_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#FHbPgY2O_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#SdbWJDWc_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>An ellipsoid is formed by rotating the region in the first and second quadrants bounded by the ellipse $(x/2)^2 + (y/3)^2=1$ and the $x$ axis around the $x$ axis. What is the volume of this ellipsoid? Find it numerically.</p><form name='WeaveQuestion' data-id='LIwZ2HLU' data-controltype='numeric'>
+<h6>Question</h6><p>An ellipsoid is formed by rotating the region in the first and second quadrants bounded by the ellipse $(x/2)^2 + (y/3)^2=1$ and the $x$ axis around the $x$ axis. What is the volume of this ellipsoid? Find it numerically.</p><form name='WeaveQuestion' data-id='BHu6hnMB' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="LIwZ2HLU" type="number" class="form-control">
+<input id="BHu6hnMB" type="number" class="form-control">
 
 </div>
-  
-<div id='LIwZ2HLU_message'></div>
+
+<div id='BHu6hnMB_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#LIwZ2HLU').on('change', function() {
+$('#BHu6hnMB').on('change', function() {
   correct = Math.abs(this.value - 75.39822368615503) <= 0.001;
 
   if(correct) {
-     $('#LIwZ2HLU_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#BHu6hnMB_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#LIwZ2HLU_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#BHu6hnMB_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>An ellipsoid is formed by rotating the region in the first and second quadrants bounded by the ellipse $(x/a)^2 + (y/b)^2=1$ and the $x$ axis around the $x$ axis. What is the volume of this ellipsoid? Find it symbolically.</p><form name="WeaveQuestion" data-id="iJoeNoZP" data-controltype="radio">
+<h6>Question</h6><p>An ellipsoid is formed by rotating the region in the first and second quadrants bounded by the ellipse $(x/a)^2 + (y/b)^2=1$ and the $x$ axis around the $x$ axis. What is the volume of this ellipsoid? Find it symbolically.</p><form name="WeaveQuestion" data-id="M9OUP6vi" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_iJoeNoZP" value="1"><div class="markdown">$4/3 \cdot \pi a^2 b$
+      <input type="radio" name="radio_M9OUP6vi" value="1"><div class="markdown">$4/3 \cdot \pi a^2 b$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_iJoeNoZP" value="2"><div class="markdown">$\pi/3 \cdot a b^2$
+      <input type="radio" name="radio_M9OUP6vi" value="2"><div class="markdown">$4/3 \cdot \pi a b^2$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_iJoeNoZP" value="3"><div class="markdown">$4/3 \cdot \pi a b^2$
+      <input type="radio" name="radio_M9OUP6vi" value="3"><div class="markdown">$\pi/3 \cdot a b^2$
 </div>
     </label>
     </div>
-    
 
-
-<div id="iJoeNoZP_message"></div>
+<div id="M9OUP6vi_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_iJoeNoZP']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_M9OUP6vi']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#iJoeNoZP_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#M9OUP6vi_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#iJoeNoZP_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#M9OUP6vi_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>A solid is generated by rotating the region enclosed by the graph $y=\sqrt{x}$, the lines $x=1$, $x=2$, and $y=1$ about the $x$ axis. Find the volume of the solid.</p><form name='WeaveQuestion' data-id='Zt82Q5Kp' data-controltype='numeric'>
+<h6>Question</h6><p>A solid is generated by rotating the region enclosed by the graph $y=\sqrt{x}$, the lines $x=1$, $x=2$, and $y=1$ about the $x$ axis. Find the volume of the solid.</p><form name='WeaveQuestion' data-id='tVQnJHkx' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="Zt82Q5Kp" type="number" class="form-control">
+<input id="tVQnJHkx" type="number" class="form-control">
 
 </div>
-  
-<div id='Zt82Q5Kp_message'></div>
+
+<div id='tVQnJHkx_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#Zt82Q5Kp').on('change', function() {
+$('#tVQnJHkx').on('change', function() {
   correct = Math.abs(this.value - 1.5707963267948963) <= 0.001;
 
   if(correct) {
-     $('#Zt82Q5Kp_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#tVQnJHkx_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#Zt82Q5Kp_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#tVQnJHkx_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>The region enclosed by the graphs of $y=x^3 - 1$ and $y=x-1$ are rotated around the $y$ axis. What is the volume of the solid?</p><pre class="sourceCode julia">plot([x->x^3 - 1, x -> x-1], 0, 1)</pre>
-    <div id="6801ca2c-a13a-4470-a928-bd2383931afa" style="width:600px;height:400px;"></div>
+    <div id="4bd9e6ea-db92-4f87-b046-45167cb23bf9" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('6801ca2c-a13a-4470-a928-bd2383931afa');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9459994330723842,0.9872908640160599,0.9936454320080299],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999990686219148,-0.9989980512204036,-0.9963241416961329,-0.9919745187479542,-0.9843652535929992,-0.9740656890928739,-0.958843127067851,-0.9348727930343728,-0.9070063940631701,-0.8768416285769074,-0.83720679025948,-0.7895623965848136,-0.7269719073185796,-0.6569214361075097,-0.5723445183165567,-0.4912097421804885,-0.43696650916437085,-0.3789987945589238,-0.321000781403617,-0.2594996042061153,-0.15341098605687042,-0.03764489434625484,-0.018942818973667674],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8531606459863641,0.9047080021287085,0.9872908640160599],"showlegend":true,"mode":"lines","name":"y2","legendgroup":"y2","line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9902341809802119,-0.8999350828316272,-0.8456690886943761,-0.7997878812842343,-0.7499480299669485,-0.7040000954653718,-0.6547390535935103,-0.5976653056614677,-0.5469448938889785,-0.50246766345978,-0.4539755433446805,-0.4051952212471879,-0.35126233737559576,-0.29994655925515656,-0.2465900564886495,-0.2016752463331548,-0.1468393540136359,-0.0952919978712915,-0.012709135983940079],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.01975056936985912,1.0231618203976771],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.75,-0.5,-0.25,0.0],"visible":true,"ticks":"inside","range":[-1.029617766601054,0.016909561995199163],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.00","-0.75","-0.50","-0.25","0.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('4bd9e6ea-db92-4f87-b046-45167cb23bf9');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9459994330723842,0.9872908640160599,0.9936454320080299],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9999990686219148,-0.9989980512204036,-0.9963241416961329,-0.9919745187479542,-0.9843652535929992,-0.9740656890928739,-0.958843127067851,-0.9348727930343728,-0.9070063940631701,-0.8768416285769074,-0.83720679025948,-0.7895623965848136,-0.7269719073185796,-0.6569214361075097,-0.5723445183165567,-0.4912097421804885,-0.43696650916437085,-0.3789987945589238,-0.321000781403617,-0.2594996042061153,-0.15341098605687042,-0.03764489434625484,-0.018942818973667674],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8531606459863641,0.9047080021287085,0.9872908640160599],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[-0.9902341809802119,-0.8999350828316272,-0.8456690886943761,-0.7997878812842343,-0.7499480299669485,-0.7040000954653718,-0.6547390535935103,-0.5976653056614677,-0.5469448938889785,-0.50246766345978,-0.4539755433446805,-0.4051952212471879,-0.35126233737559576,-0.29994655925515656,-0.2465900564886495,-0.2016752463331548,-0.1468393540136359,-0.0952919978712915,-0.012709135983940079],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.01975056936985912,1.0231618203976771],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.75,-0.5,-0.25,0.0],"visible":true,"ticks":"inside","range":[-1.029617766601054,0.016909561995199163],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.00","-0.75","-0.50","-0.25","0.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
-<form name='WeaveQuestion' data-id='PdPDme2B' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='amT5V4V0' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="PdPDme2B" type="number" class="form-control">
+<input id="amT5V4V0" type="number" class="form-control">
 
 </div>
-  
-<div id='PdPDme2B_message'></div>
+
+<div id='amT5V4V0_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#PdPDme2B').on('change', function() {
+$('#amT5V4V0').on('change', function() {
   correct = Math.abs(this.value - -3.2309774707332535) <= 0.001;
 
   if(correct) {
-     $('#PdPDme2B_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#amT5V4V0_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#PdPDme2B_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#amT5V4V0_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Rotate the region bounded by $y=e^x$, the line $x=\log(2)$ and the first quadrant about the line $x=\log(2)$.</p><p>(Be careful, the radius in the formula $V=\int_a^b \pi r(u)^2 du$ is from the line $x=\log(2)$.)</p><form name='WeaveQuestion' data-id='DLyLhR6o' data-controltype='numeric'>
+<h6>Question</h6><p>Rotate the region bounded by $y=e^x$, the line $x=\log(2)$ and the first quadrant about the line $x=\log(2)$.</p><p>(Be careful, the radius in the formula $V=\int_a^b \pi r(u)^2 du$ is from the line $x=\log(2)$.)</p><form name='WeaveQuestion' data-id='iXoLcZSt' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="DLyLhR6o" type="number" class="form-control">
+<input id="iXoLcZSt" type="number" class="form-control">
 
 </div>
-  
-<div id='DLyLhR6o_message'></div>
+
+<div id='iXoLcZSt_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#DLyLhR6o').on('change', function() {
+$('#iXoLcZSt').on('change', function() {
   correct = Math.abs(this.value - 12.56637058324514) <= 0.001;
 
   if(correct) {
-     $('#DLyLhR6o_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#iXoLcZSt_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#DLyLhR6o_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#iXoLcZSt_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Find the volume of rotating the region bounded by the line $y=x$, $x=1$ and the $x$-axis around the line $y=x$. (The Theorem of Pappus is convenient and the fact that the centroid of the triangular region lies at $(2/3, 1/3)$.)</p><form name='WeaveQuestion' data-id='3w1EI2ZP' data-controltype='numeric'>
+<h6>Question</h6><p>Find the volume of rotating the region bounded by the line $y=x$, $x=1$ and the $x$-axis around the line $y=x$. (The Theorem of Pappus is convenient and the fact that the centroid of the triangular region lies at $(2/3, 1/3)$.)</p><form name='WeaveQuestion' data-id='Sh3CHyCm' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="3w1EI2ZP" type="number" class="form-control">
+<input id="Sh3CHyCm" type="number" class="form-control">
 
 </div>
-  
-<div id='3w1EI2ZP_message'></div>
+
+<div id='Sh3CHyCm_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#3w1EI2ZP').on('change', function() {
+$('#Sh3CHyCm').on('change', function() {
   correct = Math.abs(this.value - 0.740480489693061) <= 0.001;
 
   if(correct) {
-     $('#3w1EI2ZP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#Sh3CHyCm_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#3w1EI2ZP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#Sh3CHyCm_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Rotate the region bounded by the line $y=x$ and the function $f(x) = x^2$ about the line $y=x$. What is the resulting volume?</p><p>You can integrate in the length along the line $y=x$ ($u$ from $0$ to $\sqrt{2}$). The radius then can be found by intersecting the line perpendicular line to $y=x$ at $u$ to the curve $f(x)$. This will do so:</p><pre class="sourceCode julia">using Roots
-theta = pi/4  ## we write y=x as y = x * tan(pi/4) for more generality, as this allows other slants.
+<h6>Question</h6><p>Rotate the region bounded by the line $y=x$ and the function $f(x) = x^2$ about the line $y=x$. What is the resulting volume?</p><p>You can integrate in the length along the line $y=x$ ($u$ from $0$ to $\sqrt{2}$). The radius then can be found by intersecting the line perpendicular line to $y=x$ at $u$ to the curve $f(x)$. This will do so:</p><pre class="sourceCode julia">theta = pi/4  ## we write y=x as y = x * tan(pi/4) for more generality, as this allows other slants.
 
 f(x) = x^2
 xval(u) = find_zero(x -> u*sin(theta) - 1/tan(theta) * (x - u*cos(theta)) - f(x), (u*cos(theta), 1))
@@ -824,61 +799,59 @@ rad(u) = sqrt((u*cos(theta) - xval(u))^2 + (u*sin(theta) - f(xval(u)))^2)</pre>
 <pre class="output">
 rad (generic function with 1 method)</pre>
 
-<p>(Though in this case you can also find <code>rad&#40;u&#41;</code> using the quadratic formula.)</p><p>With this, find the volume.</p><form name='WeaveQuestion' data-id='gokP1LVP' data-controltype='numeric'>
+<p>(Though in this case you can also find <code>rad&#40;u&#41;</code> using the quadratic formula.)</p><p>With this, find the volume.</p><form name='WeaveQuestion' data-id='a3lCqO2E' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="gokP1LVP" type="number" class="form-control">
+<input id="a3lCqO2E" type="number" class="form-control">
 
 </div>
-  
-<div id='gokP1LVP_message'></div>
+
+<div id='a3lCqO2E_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#gokP1LVP').on('change', function() {
-  correct = Math.abs(this.value - 0.07404804896930606) <= 0.001;
+$('#a3lCqO2E').on('change', function() {
+  correct = Math.abs(this.value - 0.07404804896930604) <= 0.001;
 
   if(correct) {
-     $('#gokP1LVP_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#a3lCqO2E_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#gokP1LVP_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#a3lCqO2E_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<hr /><p>Repeat (find the volume) only this time with the function $f(x) = x^{20}$.</p><form name='WeaveQuestion' data-id='akhnrGkv' data-controltype='numeric'>
+<hr /><p>Repeat (find the volume) only this time with the function $f(x) = x^{20}$.</p><form name='WeaveQuestion' data-id='o6okblmh' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="akhnrGkv" type="number" class="form-control">
+<input id="o6okblmh" type="number" class="form-control">
 
 </div>
-  
-<div id='akhnrGkv_message'></div>
+
+<div id='o6okblmh_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#akhnrGkv').on('change', function() {
-  correct = Math.abs(this.value - 0.5927127644771503) <= 0.001;
+$('#o6okblmh').on('change', function() {
+  correct = Math.abs(this.value - 0.5927127644771495) <= 0.001;
 
   if(correct) {
-     $('#akhnrGkv_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#o6okblmh_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#akhnrGkv_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#o6okblmh_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -142,13 +148,12 @@ h (generic function with 1 method)</pre>
 <pre class="output">
 A (generic function with 2 methods)</pre>
 
-<p>This is why the rates of change are related: as $w$ and $h$ change in time, the functional relationship with $A$ means $A$ also changes in time.</p><p>Now to answer the question, when the width is 8, we must have that $t$ is:</p><pre class="sourceCode julia">using Roots
-Base.ctranspose(f::Function) = D(f)             # so f' works in place of D(f)
-tstar = fzero(x -> w(x) - 8, [0, 4])		# or solve by hand to get 3/2</pre>
+<p>This is why the rates of change are related: as $w$ and $h$ change in time, the functional relationship with $A$ means $A$ also changes in time.</p><p>Now to answer the question, when the width is 8, we must have that $t$ is:</p><pre class="sourceCode julia">using CalculusWithJulia               # loads `Plots`, `ForwardDiff`, `Roots`
+tstar = fzero(x -> w(x) - 8, [0, 4])  # or solve by hand to get 3/2</pre>
 <pre class="output">
 1.5</pre>
 
-<p>The question is to find the rate the area is increasing at the given time $t$, which is $A'(t)$ or $dA/dt$. We get this by performing the differentiation, the substituting in the value.</p><p>Here we do so with the aid of <code>Julia</code>, though this problem could readily be done "by hand." </p><p>We (again) re-express $A$ as a function of $t$ by composition, then differentiate that:</p><pre class="sourceCode julia">A(t) = A(w(t), h(t))
+<p>The question is to find the rate the area is increasing at the given time $t$, which is $A'(t)$ or $dA/dt$. We get this by performing the differentiation, the substituting in the value.</p><p>Here we do so with the aid of <code>Julia</code>, though this problem could readily be done "by hand."</p><p>We (again) re-express $A$ as a function of $t$ by composition, then differentiate that:</p><pre class="sourceCode julia">A(t) = A(w(t), h(t))
 da_dt = A'(tstar)</pre>
 <pre class="output">
 96.0</pre>
@@ -175,7 +180,7 @@ ds = diff(xs)</pre>
 @vars t
 diff(A(t), t)</pre>
 <div class="well well-sm">
-$$48.0 t + 24.0$$</div>
+\begin{equation*}48.0 t + 24.0\end{equation*}</div>
 
 <p>This should be clear: the rate of change, $dA/dt$, is increasing linearly, hence the second derivative, $dA^2/dt^2$ would be constant, just as we saw for the average rate of change.</p><p>So, for this problem, a constant rate of change in width and height leads to a linear rate of change in area, put otherwise, linear growth in both width and height leads to quadratic growth in area.</p><h5>Example</h5><p>A ladder, with length $l$, is leaning against a wall. We parameterize this problem so that the top of the ladder is at $(0,h)$ and the bottom at $(b, 0)$. Then $l^2 = h^2 + b^2$ is a constant.</p><p>If the ladder starts to slip away at the base, but remains in contact with the wall, express the rate of change of $h$ with respect to $t$ in terms of $db/dt$.</p><p>We have from implicitly differentiating in $t$ the equation $l^2 = h^2 + b^2$,  noting that $l$ is a constant, that:</p>$$~
 0 = 2h \frac{dh}{dt} + 2b \frac{db}{dt}.
@@ -212,27 +217,26 @@ x(t) = 50t
 y(t) = v0*t - 5 * t^2
 eqn = tan(theta(t)) - y(t) / (100 - x(t))</pre>
 <div class="well well-sm">
-$$\tan{\left (\theta{\left (t \right )} \right )} - \frac{- 5 t^{2} + 5 t}{- 50 t + 100}$$</div>
+\begin{equation*}\tan{\left (\theta{\left (t \right )} \right )} - \frac{- 5 t^{2} + 5 t}{- 50 t + 100}\end{equation*}</div>
 
 <pre class="sourceCode julia">thetap = diff(theta(t),t)
 dtheta = solve(diff(eqn, t), thetap)[1]</pre>
 <div class="well well-sm">
-$$\frac{\left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{3}}$$</div>
+\begin{equation*}\frac{\left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{3}}\end{equation*}</div>
 
 <p>We could proceed directly by evaluating:</p><pre class="sourceCode julia">d2theta = diff(dtheta, t)(thetap => dtheta)</pre>
 <div class="well well-sm">
-$$\frac{\left(- 3 t^{2} + 2 t \left(2 t - 4\right) + 4 t + 2 \left(t - 2\right)^{2} + 2\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{3}} - \frac{3 \left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{4}} - \frac{\left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right)^{2} \sin{\left (\theta{\left (t \right )} \right )} \cos^{3}{\left (\theta{\left (t \right )} \right )}}{50 \left(t - 2\right)^{6}}$$</div>
+\begin{equation*}\frac{\left(- 3 t^{2} + 2 t \left(2 t - 4\right) + 4 t + 2 \left(t - 2\right)^{2} + 2\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{3}} - \frac{3 \left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right) \cos^{2}{\left (\theta{\left (t \right )} \right )}}{10 \left(t - 2\right)^{4}} - \frac{\left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right)^{2} \sin{\left (\theta{\left (t \right )} \right )} \cos^{3}{\left (\theta{\left (t \right )} \right )}}{50 \left(t - 2\right)^{6}}\end{equation*}</div>
 
 <p>That is not so tractable, however.</p><p>It helps to simplify $\cos^2(\theta(t))$ using basic right-triangle trigonometry. Recall, $\theta$ comes from a right triangle with height $y(t)$ and length $(100 - x(t))$. The cosine of this angle will be $100 - x(t)$ divided by the length of the hypotenuse. So we can substitute:</p><pre class="sourceCode julia">dtheta = dtheta(cos(theta(t))^2 => (100 -x(t))^2/(y(t)^2 + (100-x(t))^2))</pre>
 <div class="well well-sm">
-$$\frac{\left(- 50 t + 100\right)^{2} \left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right)}{10 \left(t - 2\right)^{3} \left(\left(- 50 t + 100\right)^{2} + \left(- 5 t^{2} + 5 t\right)^{2}\right)}$$</div>
+\begin{equation*}\frac{\left(- 50 t + 100\right)^{2} \left(- t^{3} + 3 t^{2} + 2 t \left(t - 2\right)^{2} - 2 t - \left(t - 2\right)^{2}\right)}{10 \left(t - 2\right)^{3} \left(\left(- 50 t + 100\right)^{2} + \left(- 5 t^{2} + 5 t\right)^{2}\right)}\end{equation*}</div>
 
-<p>Plotting reveals some interesting things. For $v_{0y} < 10$ we have graphs that look like:</p><pre class="sourceCode julia">using Plots
-plot(dtheta, 0, v0/5)</pre>
-    <div id="843a1470-cbe2-42f5-9321-0ea64de8ae1d" style="width:600px;height:400px;"></div>
+<p>Plotting reveals some interesting things. For $v_{0y} < 10$ we have graphs that look like:</p><pre class="sourceCode julia">plot(dtheta, 0, v0/5)</pre>
+    <div id="8afedb34-747d-4d3d-bf69-ca7151f78471" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('843a1470-cbe2-42f5-9321-0ea64de8ae1d');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.726731692128097,0.7534099435113505,0.7758673485890979,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9253537176005464,0.9459994330723842,0.966645148544222,0.9872908640160599,0.990468148012045,0.9936454320080299,0.996822716004015],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.04950809751224789,0.044593550147662954,0.0412865515134893,0.03825402569473333,0.034686015412084784,0.031115722863681958,0.02695325477935689,0.021641600097026228,0.0164200316928397,0.011399698769934952,0.00539306160556112,-0.0012873114720058328,-0.009531718891645233,-0.01834813832743783,-0.023358798743392716,-0.028694851098128762,-0.03345998115482942,-0.038495000666983574,-0.04503846951272888,-0.05205723158614451,-0.05913046990546089,-0.0667091355958481,-0.07317744689190565,-0.08002953992683977,-0.08729624024967521,-0.09501149648320276,-0.09624100409569455,-0.09748215908554222,-0.09873510808163555],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.01984588788973867,1.0264344229135418],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.09,-0.06,-0.03,0.0,0.03],"visible":true,"ticks":"inside","range":[-0.10318240424945205,0.05395539368006439],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.09","-0.06","-0.03","0.00","0.03"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('8afedb34-747d-4d3d-bf69-ca7151f78471');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.009765819019788131,0.10006491716837283,0.15433091130562387,0.20021211871576575,0.2500519700330514,0.29599990453462816,0.3452609464064898,0.4023346943385323,0.45305510611102146,0.49753233654022,0.5460244566553195,0.5948047787528121,0.6487376626244042,0.7000534407448434,0.7534099435113505,0.7983247536668452,0.8257426998266046,0.8531606459863641,0.8789343240575362,0.9047080021287085,0.9459994330723842,0.9872908640160599,0.9936454320080299],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.04950809751224789,0.044593550147662954,0.0412865515134893,0.03825402569473333,0.034686015412084784,0.031115722863681958,0.02695325477935689,0.021641600097026228,0.0164200316928397,0.011399698769934952,0.00539306160556112,-0.0012873114720058328,-0.009531718891645233,-0.01834813832743783,-0.028694851098128762,-0.038495000666983574,-0.04503846951272888,-0.05205723158614451,-0.05913046990546089,-0.0667091355958481,-0.08002953992683977,-0.09501149648320276,-0.09748215908554222],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.25,0.5,0.75,1.0],"visible":true,"ticks":"inside","range":[-0.01975056936985912,1.0231618203976771],"domain":[0.08063575386410031,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.00","0.25","0.50","0.75","1.00"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.09,-0.06,-0.03,0.0,0.03],"visible":true,"ticks":"inside","range":[-0.10189186678347592,0.053917805210181594],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.09","-0.06","-0.03","0.00","0.03"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>The ball will drop in front of the player, and the change in $d\theta/dt$ is monotonic.</p><p>But let's rerun the code with $v_{0y} > 10$:</p><pre class="sourceCode julia">v0 = 15
 x(t) = 50t
@@ -242,10 +246,10 @@ thetap = diff(theta(t),t)
 dtheta = solve(diff(eqn, t), thetap)[1]
 dtheta = subs(dtheta, cos(theta(t))^2, (100 - x(t))^2/(y(t)^2 + (100 - x(t))^2))
 plot(dtheta, 0, v0/5)</pre>
-    <div id="c2d9e5ce-b1c2-42ca-90e2-71d05ee4d731" style="width:600px;height:400px;"></div>
+    <div id="816ea607-a690-429e-837d-397dc537ce9b" style="width:600px;height:400px;"></div>
     <script>
-    PLOT = document.getElementById('c2d9e5ce-b1c2-42ca-90e2-71d05ee4d731');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.029297457059364394,0.3001947515051185,0.4629927339168716,0.6006363561472972,0.7501559100991543,0.8879997136038845,1.0357828392194697,1.2070040830155968,1.2830847006743307,1.3591653183330645,1.4258811639768623,1.49259700962066,1.5289660997069845,1.5653351897933092,1.6017042798796337,1.6380733699659582,1.6746586115390778,1.7112438531121974,1.729536473898757,1.7478290946853168,1.7661217154718765,1.7844143362584364,1.8046391677102833,1.8248639991621305,1.8450888306139777,1.8653136620658246,1.9057633249695187,1.9462129878732128,1.955834696270795,1.9654564046683776,1.9750781130659598,1.984699821463542,1.9943215298611243,2.0039432382587066,2.013564946656289,2.0231866550538715,2.032808363451454,2.0424300718490365,2.052051780246619,2.061673488644201,2.0809169054393655,2.1001603222345304,2.140177699309411,2.180195076384291,2.2002037649217314,2.2202124534591716,2.240221141996612,2.2602298305340516,2.293915938150673,2.3276020457672937,2.3612881533839145,2.3949742610005353,2.4361011802401746,2.477228099479814,2.518355018719453,2.559481937959092,2.636802972172609,2.714124006386126,2.837998299217153,2.96187259204818,2.98093629602409],"showlegend":true,"mode":"lines","name":"y1","legendgroup":"y1","line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.15149474620035736,0.16883618157422722,0.1835877592409021,0.20001229982245017,0.22394832823064667,0.2545017604800756,0.3016882315084115,0.38906728414396285,0.44692968171364084,0.523596964094341,0.6130711869722063,0.7327497363284579,0.8154853633286466,0.9144691039168831,1.0338307659873809,1.1788956004332591,1.35765999084654,1.5781156595849242,1.7072471125443922,1.8509357493920942,2.0107191303084027,2.188102211736774,2.406313637514533,2.6489389148105813,2.916195861670879,3.2065492441286585,3.836109606879472,4.455358150795099,4.585636448534443,4.704439884021035,4.809296646239133,4.897851738706502,4.967985831037462,5.017933532038204,5.04638974352394,5.052592709432821,5.0363741932663695,4.998170725351409,4.938994541243175,4.86036776349817,4.652813397210451,4.393914476492629,3.7741901779635643,3.155229870341887,2.871433048495969,2.61063289362026,2.3740012574877642,2.161143712174867,1.8525769529269822,1.5986648275211155,1.3900017784798215,1.218072872215596,1.0476585567144456,0.9110783840494161,0.8005137931272506,0.7100978979360354,0.5800768845269185,0.4864351640702269,0.3836476424959012,0.3161261632513535,0.30783888275902216],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-0.05925170810957737,3.0694854611930316],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[0.0044618073033834416,5.1996256483297945],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('816ea607-a690-429e-837d-397dc537ce9b');
+    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.029297457059364394,0.3001947515051185,0.4629927339168716,0.6006363561472972,0.7501559100991543,0.8879997136038845,1.0357828392194697,1.2070040830155968,1.2830847006743307,1.3591653183330645,1.4258811639768623,1.49259700962066,1.5289660997069845,1.5653351897933092,1.6017042798796337,1.6380733699659582,1.6746586115390778,1.7112438531121974,1.729536473898757,1.7478290946853168,1.7661217154718765,1.7844143362584364,1.8046391677102833,1.8248639991621305,1.8450888306139777,1.8653136620658246,1.9057633249695187,1.9462129878732128,1.955834696270795,1.9654564046683776,1.9750781130659598,1.984699821463542,1.9943215298611243,2.0039432382587066,2.013564946656289,2.0231866550538715,2.032808363451454,2.0424300718490365,2.052051780246619,2.061673488644201,2.0809169054393655,2.1001603222345304,2.140177699309411,2.180195076384291,2.2002037649217314,2.2202124534591716,2.240221141996612,2.2602298305340516,2.293915938150673,2.3276020457672937,2.3612881533839145,2.3949742610005353,2.4361011802401746,2.477228099479814,2.518355018719453,2.559481937959092,2.636802972172609,2.714124006386126,2.837998299217153,2.96187259204818,2.98093629602409],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.15149474620035736,0.16883618157422722,0.1835877592409021,0.20001229982245017,0.22394832823064667,0.2545017604800756,0.3016882315084115,0.38906728414396285,0.44692968171364084,0.523596964094341,0.6130711869722063,0.7327497363284579,0.8154853633286466,0.9144691039168831,1.0338307659873809,1.1788956004332591,1.35765999084654,1.5781156595849242,1.7072471125443922,1.8509357493920942,2.0107191303084027,2.188102211736774,2.406313637514533,2.6489389148105813,2.916195861670879,3.2065492441286585,3.836109606879472,4.455358150795099,4.585636448534443,4.704439884021035,4.809296646239133,4.897851738706502,4.967985831037462,5.017933532038204,5.04638974352394,5.052592709432821,5.0363741932663695,4.998170725351409,4.938994541243175,4.86036776349817,4.652813397210451,4.393914476492629,3.7741901779635643,3.155229870341887,2.871433048495969,2.61063289362026,2.3740012574877642,2.161143712174867,1.8525769529269822,1.5986648275211155,1.3900017784798215,1.218072872215596,1.0476585567144456,0.9110783840494161,0.8005137931272506,0.7100978979360354,0.5800768845269185,0.4864351640702269,0.3836476424959012,0.3161261632513535,0.30783888275902216],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0],"visible":true,"ticks":"inside","range":[-0.05925170810957737,3.0694854611930316],"domain":[0.02137649460484106,0.9934383202099737],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[1.0,2.0,3.0,4.0,5.0],"visible":true,"ticks":"inside","range":[0.0044618073033834416,5.1996256483297945],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["1","2","3","4","5"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
     </script>
 <p>In the second case we have a different shape. The graph is not monotonic, and before the peak there is an inflection point.  Without thinking too hard, we can see that the greatest change in the angle is when it is just above the head ($t=2$ has $x(t)=100$).</p><p>That these two graphs differ so, means that the player may be able to read if the ball is going to go over his or her head by paying attention to the how the ball is being tracked.</p><h5>Example</h5><p>Hipster pour-over coffee is made with a conical coffee filter. The cone is actually a <a href="http://en.wikipedia.org/wiki/Frustum">frustum</a> of a cone with small diameter, say $r_0$ chopped off. We will parameterize our cone by a value $h \geq 0$ on the $y$ axis and an angle $\theta$ formed by a side and the $y$ axis. Then the coffee filter is the part of the cone between some $h_0$ (related  $r_0=h_0 \tan(\theta)$) and $h$.</p><p>The volume of a cone of height $h$ is $V(h) = \pi/3 h \cdot R^2$. From the geometry, $R = h\tan(\theta)$. The volume of the filter then is:</p>$$~
 V = V(h) - V(h_0).
@@ -266,406 +270,368 @@ V = V(h) - V(h_0).
 \pi \sqrt{2g} \cdot (r_0)^2 \cdot \sqrt{h-h_0}
 \approx \pi \sqrt{2g} \cdot r_0^2 \cdot \sqrt{h}
 ~$$
-<p>This rate depends on the square of the size of the opening ($r_0^2$) and the square root of the height ($h$), but not the angle of the cone.</p><h2>Questions</h2><h6>Question</h6><p>Supply and demand. Suppose demand for product $XYZ$ is $d(x)$ and supply is $s(x)$. The excess demand is $d(x) - s(x)$. Suppose this is positive. How does this influence price? Guess the "law" of economics that applies:</p><form name="WeaveQuestion" data-id="s1P7uH95" data-controltype="radio">
+<p>This rate depends on the square of the size of the opening ($r_0^2$) and the square root of the height ($h$), but not the angle of the cone.</p><h2>Questions</h2><h6>Question</h6><p>Supply and demand. Suppose demand for product $XYZ$ is $d(x)$ and supply is $s(x)$. The excess demand is $d(x) - s(x)$. Suppose this is positive. How does this influence price? Guess the "law" of economics that applies:</p><form name="WeaveQuestion" data-id="oczEydsz" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_s1P7uH95" value="1"><div class="markdown"><p>The rate of change of price will be $0$</p>
+      <input type="radio" name="radio_oczEydsz" value="1"><div class="markdown"><p>The rate of change of price will be $0$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_s1P7uH95" value="2"><div class="markdown"><p>The rate of change of price will increase</p>
+      <input type="radio" name="radio_oczEydsz" value="2"><div class="markdown"><p>The rate of change of price will increase</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_s1P7uH95" value="3"><div class="markdown"><p>The rate of change of price will be positive and will depend on the rate of change of excess demand.</p>
+      <input type="radio" name="radio_oczEydsz" value="3"><div class="markdown"><p>The rate of change of price will be positive and will depend on the rate of change of excess demand.</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="s1P7uH95_message"></div>
+<div id="oczEydsz_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_s1P7uH95']").on("change", function() {
+$("input:radio[name='radio_oczEydsz']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#s1P7uH95_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#oczEydsz_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#s1P7uH95_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#oczEydsz_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Which makes more sense from an economic viewpoint?</p><form name="WeaveQuestion" data-id="SlP1TsOh" data-controltype="radio">
+<h6>Question</h6><p>Which makes more sense from an economic viewpoint?</p><form name="WeaveQuestion" data-id="rHZZ0a0I" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_SlP1TsOh" value="1"><div class="markdown"><p>If the rate of change of unemployment is negative, the rate of change of wages will be negative.</p>
+      <input type="radio" name="radio_rHZZ0a0I" value="1"><div class="markdown"><p>If the rate of change of unemployment is negative, the rate of change of wages will be negative.</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_SlP1TsOh" value="2"><div class="markdown"><p>If the rate of change of unemployment is negative, the rate of change of wages will be positive.</p>
+      <input type="radio" name="radio_rHZZ0a0I" value="2"><div class="markdown"><p>If the rate of change of unemployment is negative, the rate of change of wages will be positive.</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="SlP1TsOh_message"></div>
+<div id="rHZZ0a0I_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_SlP1TsOh']").on("change", function() {
+$("input:radio[name='radio_rHZZ0a0I']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#SlP1TsOh_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#rHZZ0a0I_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#SlP1TsOh_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#rHZZ0a0I_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>In chemistry there is a fundamental relationship between pressure ($P$), temperature ($T)$ and volume ($V$) given by $PV=cT$ where $c$ is a constant. Which of the following would be true with respect to time?</p><form name="WeaveQuestion" data-id="Tsx15XgO" data-controltype="radio">
+<h6>Question</h6><p>In chemistry there is a fundamental relationship between pressure ($P$), temperature ($T)$ and volume ($V$) given by $PV=cT$ where $c$ is a constant. Which of the following would be true with respect to time?</p><form name="WeaveQuestion" data-id="Uhya8fzo" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_Tsx15XgO" value="1"><div class="markdown"><p>The rate of change of pressure is always increasing by $c$</p>
+      <input type="radio" name="radio_Uhya8fzo" value="1"><div class="markdown"><p>The rate of change of pressure is always increasing by $c$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_Tsx15XgO" value="2"><div class="markdown"><p>If volume is constant, the rate of change of pressure is proportional to the temperature</p>
+      <input type="radio" name="radio_Uhya8fzo" value="2"><div class="markdown"><p>If volume is constant, the rate of change of pressure is proportional to the temperature</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_Tsx15XgO" value="3"><div class="markdown"><p>If volume is constant, the rate of change of pressure is proportional to the rate of change of temperature</p>
+      <input type="radio" name="radio_Uhya8fzo" value="3"><div class="markdown"><p>If volume is constant, the rate of change of pressure is proportional to the rate of change of temperature</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_Tsx15XgO" value="4"><div class="markdown"><p>If pressure is held constant, the rate of change of pressure is proportional to the rate of change of temperature</p>
+      <input type="radio" name="radio_Uhya8fzo" value="4"><div class="markdown"><p>If pressure is held constant, the rate of change of pressure is proportional to the rate of change of temperature</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="Tsx15XgO_message"></div>
+<div id="Uhya8fzo_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_Tsx15XgO']").on("change", function() {
+$("input:radio[name='radio_Uhya8fzo']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#Tsx15XgO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Uhya8fzo_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#Tsx15XgO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Uhya8fzo_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>A pebble is thrown into a lake causing ripples to form expanding circles. Suppose one of the circles expands at a rate of 1 foot per second and the radius of the circle is 10 feet, what is the rate of change of the area enclosed by the circle?</p><form name='WeaveQuestion' data-id='WlKRvR2k' data-controltype='numeric'>
+<h6>Question</h6><p>A pebble is thrown into a lake causing ripples to form expanding circles. Suppose one of the circles expands at a rate of 1 foot per second and the radius of the circle is 10 feet, what is the rate of change of the area enclosed by the circle?</p><form name='WeaveQuestion' data-id='zgYSNMNp' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="WlKRvR2k" type="number" class="form-control">
+<input id="zgYSNMNp" type="number" class="form-control">
 <span class="input-group-addon">feet$^2$/second</span>
 </div>
-  
-<div id='WlKRvR2k_message'></div>
+
+<div id='zgYSNMNp_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#WlKRvR2k').on('change', function() {
+$('#zgYSNMNp').on('change', function() {
   correct = Math.abs(this.value - 62.83185307179586) <= 0.001;
 
   if(correct) {
-     $('#WlKRvR2k_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#zgYSNMNp_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#WlKRvR2k_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#zgYSNMNp_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>A pizza maker tosses some dough in the air. The dough is formed in a circle with radius 10. As it rotates, its area increases at a rate of 1 inch$^2$ per second. What is the rate of change of the radius?</p><form name='WeaveQuestion' data-id='1u8rLZFA' data-controltype='numeric'>
+<h6>Question</h6><p>A pizza maker tosses some dough in the air. The dough is formed in a circle with radius 10. As it rotates, its area increases at a rate of 1 inch$^2$ per second. What is the rate of change of the radius?</p><form name='WeaveQuestion' data-id='GFW5vKHZ' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="1u8rLZFA" type="number" class="form-control">
+<input id="GFW5vKHZ" type="number" class="form-control">
 <span class="input-group-addon">inches/second</span>
 </div>
-  
-<div id='1u8rLZFA_message'></div>
+
+<div id='GFW5vKHZ_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#1u8rLZFA').on('change', function() {
+$('#GFW5vKHZ').on('change', function() {
   correct = Math.abs(this.value - 0.015915494309189534) <= 0.001;
 
   if(correct) {
-     $('#1u8rLZFA_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#GFW5vKHZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#1u8rLZFA_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#GFW5vKHZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>An FBI agent with a powerful spyglass is located in a boat anchored 400 meters offshore.  A gangster under surveillance is driving along the shore. Assume the shoreline is straight and that the gangster is 1 km from the point on the shore nearest to the boat.  If the spyglasses must rotate at a rate of $\pi/4$ radians per minute to track the gangster, how fast is the gangster moving? (In kilometers per minute.) <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a></p><form name='WeaveQuestion' data-id='m1Pus5H1' data-controltype='numeric'>
+<h6>Question</h6><p>An FBI agent with a powerful spyglass is located in a boat anchored 400 meters offshore.  A gangster under surveillance is driving along the shore. Assume the shoreline is straight and that the gangster is 1 km from the point on the shore nearest to the boat.  If the spyglasses must rotate at a rate of $\pi/4$ radians per minute to track the gangster, how fast is the gangster moving? (In kilometers per minute.) <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a></p><form name='WeaveQuestion' data-id='LqQoLPkc' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="m1Pus5H1" type="number" class="form-control">
+<input id="LqQoLPkc" type="number" class="form-control">
 <span class="input-group-addon">kilometers/minute</span>
 </div>
-  
-<div id='m1Pus5H1_message'></div>
+
+<div id='LqQoLPkc_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#m1Pus5H1').on('change', function() {
+$('#LqQoLPkc').on('change', function() {
   correct = Math.abs(this.value - 2.2776546738526) <= 0.001;
 
   if(correct) {
-     $('#m1Pus5H1_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#LqQoLPkc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#m1Pus5H1_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#LqQoLPkc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>A flood lamp is installed on the ground 200 feet from a vertical wall. A six foot tall man is walking towards the wall at the rate of 4 feet per second. How fast is the tip of his shadow moving down the wall when he is 50 feet from the wall? <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a> (As the question is written the answer should be positive.)</p><form name='WeaveQuestion' data-id='qliU4f2d' data-controltype='numeric'>
+<h6>Question</h6><p>A flood lamp is installed on the ground 200 feet from a vertical wall. A six foot tall man is walking towards the wall at the rate of 4 feet per second. How fast is the tip of his shadow moving down the wall when he is 50 feet from the wall? <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a> (As the question is written the answer should be positive.)</p><form name='WeaveQuestion' data-id='eqHVPxqG' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="qliU4f2d" type="number" class="form-control">
+<input id="eqHVPxqG" type="number" class="form-control">
 <span class="input-group-addon">feet/second</span>
 </div>
-  
-<div id='qliU4f2d_message'></div>
+
+<div id='eqHVPxqG_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#qliU4f2d').on('change', function() {
+$('#eqHVPxqG').on('change', function() {
   correct = Math.abs(this.value - 0.21333333333333335) <= 0.001;
 
   if(correct) {
-     $('#qliU4f2d_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#eqHVPxqG_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#qliU4f2d_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#eqHVPxqG_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Consider the hyperbola $y = 1/x$ and think of it as a slide. A particle slides along the hyperbola so that its x-coordinate is increasing at a rate of $f(x)$ units/sec. If its $y$-coordinate is decreasing at a constant rate of $1$ unit/sec, what is $f(x)$? <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a></p><form name="WeaveQuestion" data-id="nTaf8FOQ" data-controltype="radio">
+<h6>Question</h6><p>Consider the hyperbola $y = 1/x$ and think of it as a slide. A particle slides along the hyperbola so that its x-coordinate is increasing at a rate of $f(x)$ units/sec. If its $y$-coordinate is decreasing at a constant rate of $1$ unit/sec, what is $f(x)$? <a href="http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html">Source.</a></p><form name="WeaveQuestion" data-id="AANQAhPN" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_nTaf8FOQ" value="1"><div class="markdown">$f(x) = x$
+      <input type="radio" name="radio_AANQAhPN" value="1"><div class="markdown">$f(x) = 1/x$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_nTaf8FOQ" value="2"><div class="markdown">$f(x) = x^0$
+      <input type="radio" name="radio_AANQAhPN" value="2"><div class="markdown">$f(x) = x^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_nTaf8FOQ" value="3"><div class="markdown">$f(x) = 1/x$
+      <input type="radio" name="radio_AANQAhPN" value="3"><div class="markdown">$f(x) = x^2$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_nTaf8FOQ" value="4"><div class="markdown">$f(x) = x^2$
+      <input type="radio" name="radio_AANQAhPN" value="4"><div class="markdown">$f(x) = x$
 </div>
     </label>
     </div>
-    
 
-
-<div id="nTaf8FOQ_message"></div>
+<div id="AANQAhPN_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_nTaf8FOQ']").on("change", function() {
-  correct = this.value == 4;
+$("input:radio[name='radio_AANQAhPN']").on("change", function() {
+  correct = this.value == 3;
 
   if(correct) {
-     $("#nTaf8FOQ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#AANQAhPN_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#nTaf8FOQ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#AANQAhPN_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>A balloon is in the shape of a sphere. Fortunately, as this gives $V=4/3 \pi r^3$ for the volume. If it is being filled with a rate of change of volume per unit time is $2$ and the radius is $3$, what is rate of change of radius per unit time?</p><form name='WeaveQuestion' data-id='W9VMaXm1' data-controltype='numeric'>
+<h6>Question</h6><p>A balloon is in the shape of a sphere. Fortunately, as this gives $V=4/3 \pi r^3$ for the volume. If it is being filled with a rate of change of volume per unit time is $2$ and the radius is $3$, what is rate of change of radius per unit time?</p><form name='WeaveQuestion' data-id='Af27Ie58' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="W9VMaXm1" type="number" class="form-control">
+<input id="Af27Ie58" type="number" class="form-control">
 <span class="input-group-addon">units per unit time</span>
 </div>
-  
-<div id='W9VMaXm1_message'></div>
+
+<div id='Af27Ie58_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#W9VMaXm1').on('change', function() {
+$('#Af27Ie58').on('change', function() {
   correct = Math.abs(this.value - 0.01768388256576615) <= 0.001;
 
   if(correct) {
-     $('#W9VMaXm1_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#Af27Ie58_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#W9VMaXm1_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#Af27Ie58_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Consider the curve $f(x) = x^2 - \log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?</p><form name="WeaveQuestion" data-id="8t7DfFdo" data-controltype="radio">
+<h6>Question</h6><p>Consider the curve $f(x) = x^2 - \log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?</p><form name="WeaveQuestion" data-id="vqQDjdUE" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8t7DfFdo" value="1"><div class="markdown">$y = 1 - x^2$
+      <input type="radio" name="radio_vqQDjdUE" value="1"><div class="markdown">$y = 1 - \log(x)$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8t7DfFdo" value="2"><div class="markdown">$y = x(2x - 1/x)$
+      <input type="radio" name="radio_vqQDjdUE" value="2"><div class="markdown">$y = x(2x - 1/x)$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8t7DfFdo" value="3"><div class="markdown">$y = 1 - x^2 - \log(x)$
+      <input type="radio" name="radio_vqQDjdUE" value="3"><div class="markdown">$y = 1 - x^2$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8t7DfFdo" value="4"><div class="markdown">$y = 1 - \log(x)$
+      <input type="radio" name="radio_vqQDjdUE" value="4"><div class="markdown">$y = 1 - x^2 - \log(x)$
 </div>
     </label>
     </div>
-    
 
-
-<div id="8t7DfFdo_message"></div>
+<div id="vqQDjdUE_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_8t7DfFdo']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_vqQDjdUE']").on("change", function() {
+  correct = this.value == 4;
 
   if(correct) {
-     $("#8t7DfFdo_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#vqQDjdUE_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#8t7DfFdo_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#vqQDjdUE_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<p>If $dx/dt = -1$, what is $dy/dt$?</p><form name="WeaveQuestion" data-id="tTwHez9p" data-controltype="radio">
+<p>If $dx/dt = -1$, what is $dy/dt$?</p><form name="WeaveQuestion" data-id="QqftCCL1" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tTwHez9p" value="1"><div class="markdown">$dy/dt = 1$
+      <input type="radio" name="radio_QqftCCL1" value="1"><div class="markdown">$dy/dt = -2x - 1/x$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tTwHez9p" value="2"><div class="markdown">$dy/dt = 1 - x^2 - \log(x)$
+      <input type="radio" name="radio_QqftCCL1" value="2"><div class="markdown">$dy/dt = 1 - x^2 - \log(x)$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tTwHez9p" value="3"><div class="markdown">$dy/dt = 2x + 1/x$
+      <input type="radio" name="radio_QqftCCL1" value="3"><div class="markdown">$dy/dt = 1$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_tTwHez9p" value="4"><div class="markdown">$dy/dt = -2x - 1/x$
+      <input type="radio" name="radio_QqftCCL1" value="4"><div class="markdown">$dy/dt = 2x + 1/x$
 </div>
     </label>
     </div>
-    
 
-
-<div id="tTwHez9p_message"></div>
+<div id="QqftCCL1_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_tTwHez9p']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_QqftCCL1']").on("change", function() {
+  correct = this.value == 4;
 
   if(correct) {
-     $("#tTwHez9p_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#QqftCCL1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#tTwHez9p_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#QqftCCL1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>

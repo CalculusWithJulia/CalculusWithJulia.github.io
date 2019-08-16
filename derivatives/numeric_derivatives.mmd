@@ -2,7 +2,7 @@
 
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -47,6 +47,8 @@ approx = (f(c+h) - f(c)) / h
 We can compare to the actual with:
 
 ```
+using CalculusWithJulia
+@vars x
 df = diff(f(x), x)
 actual = N(df(c))
 abs(actual - approx)
@@ -72,17 +74,20 @@ some cases---than symbolic derivatives and more accuracy than
 approximate derivatives. In fact the accuracy is on the order of
 machine precision.
 
-The `Roots` package has an operator `D` which uses an implementation
-of automatic differentiation provided by the `ForwardDiff`
-package. The notation used is `D(f)` to find the first derivative, and
-`D(f,k)` to return the $k$th. These return anonymous functions which
-can be passed directly to another function, or assigned a name.
+The `ForwardDiff` package provides one of several ways for `Julia` to compute automatic derivatives. This package is loaded with `CalculusWithJulia`, but its functions are not exported, so their usage requires qualification. To illustrate, to find the derivative of $f(x)$ at a *point* we have this syntax:
+
+```
+f(x) = exp(-x^2/2)
+c = 1
+ForwardDiff.derivative(f, c)   # derivative is qualified by a module name
+```
+
+The `CalculusWithJulia` package defines an operator `D` which goes from finding a derivative at a point with `ForwardDiff.derivative` to definin a function which evaluates the derivative at each point. It is defined along the lines of `D(f) = x -> ForwardDiff.derivative(f,x)` in parallel to how the derivative operation for a function is defined mathematically from the definition for its value at a point.
 
 
 Here we see the error in estimating $f'(1)$ for the $f(x) = e^{-x^2/2}$.
 
 ```
-using Roots
 approx = D(f)(c)         # D(f) is a function, D(f)(c) is the function called on c
 abs(actual - approx)
 ```
@@ -91,7 +96,7 @@ In this case, it is exact.
 
 
 The `D` operator is only defined for most functions, not all. (The
-`diff` operator of `SymPy` is somewhat similar in that respect.) 
+`diff` operator of `SymPy` is somewhat similar in that respect.)
 
 ##### Example
 
@@ -126,16 +131,9 @@ actual - ds_value, actual - fwd
 types. Out of the box, the `'` notation is not employed for functions,
 but is used for matrices. It is used in postfix position, as with
 `A'`. We can define it to do the same thing as `D` for functions and
-then, we can evaluate derivatives with the familiar `f'(x)`. Ignoring
-the warning, here is how using the `derivative` function of the
-`ForwardDiff` package (the right hand side is basically the definition of `D` in
-`Roots`):
+then, we can evaluate derivatives with the familiar `f'(x)`.
+This is done in `CalculusWithJulia` along the lines of `Base.adjoint(f::Function) = D(f)`.
 
-```
-using ForwardDiff
-#Base.adjoint(f::Function) = x -> ForwardDiff.derivative(f, x)
-Base.ctranspose(f::Function) = x -> ForwardDiff.derivative(f, x) 
-```
 
 Then, we have, for example:
 
@@ -144,10 +142,6 @@ f(x) = sin(x)
 f'(pi), f''(pi)
 ```
 
-```
-note("""Starting with v"0.7.0" of Julia, the `ctranspose` function is renamed `adjoint`, so the defintion would be `Base.adjoint(f::Function) = ...`.
-""")
-```
 
 
 ##### Example
@@ -164,26 +158,65 @@ fzero(f'', 0, 10)
 We pass in the function object, `f''`, and not the evaluated function.
 
 
+## Recap on derivatives in Julia
+
+A quick summary for finding derivatives in `Julia`, as there are $3$ different manners:
+
+* Symbolic derivatives are found using `diff` from `SymPy`
+* Automatic derivatives are found using the notation `f'` using `ForwardDiff.derivative`
+* approximate derivatives at a point, `c`, for a given `h` are found with `(f(c+h)-f(c))/h`.
+
+For example
+
+```
+f(x) = exp(-x)*sin(x)
+c = pi
+h = 0.1
+@vars x
+
+fp = diff(f(x),x)
+fp, fp(c)
+```
+
+As compared to
+
+```
+f'(c), (f(c+h)-f(c))/h
+```
+
+
+
+
 ## Questions
 
 
 ##### Question
 
+Find the derivative using a forward difference approximation of $f(x) = x^x$ at the point $x=2$ using `h=0.1`:
 
-##### Question
+```
+f(x) = x^x
+c, h = 2, 0.1
+val = (f(c+h) - f(c))/h
+numericq(val)
+```
 
+Using `D` or `f'` find the value using automatic differentiation
 
-##### Question
+```
+f(x) = x^x
+c = 2
+val = f'(c)
+numericq(val)
+```
 
-
-##### Question
 
 
 ##### Question
 
 Mathematically, as the value of `h` in the forward difference gets
 smaller the forward difference approximation gets better. On the
-computer, this is thwarted by floating point reprentation issues (in
+computer, this is thwarted by floating point representation issues (in
 particular the error in subtracting two like-sized numbers in forming
 $f(x+h)-f(x)$.)
 
@@ -269,9 +302,9 @@ numericq(val)
 Find the rate of change with respect to time of the function $f(t)= 64 - 16t^2$ at $t=1$.
 
 ```
-fp(t) = -16*2*t
+fp_(t) = -16*2*t
 c = 1
-numericq(fp(c))
+numericq(fp_(c))
 ```
 
 ###### Question
@@ -279,7 +312,7 @@ numericq(fp(c))
 Find the rate of change with respect to height, $h$, of $f(h) = 32h^3 - 62 h + 12$ at $h=2$.
 
 ```
-fp(h) = 3*32h^2 - 62
+fp_(h) = 3*32h^2 - 62
 c = 2
-numericq(fp(2))
+numericq(fp_(2))
 ```

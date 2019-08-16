@@ -2,9 +2,8 @@
 
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
-include("compat.jl")
 ```
 
 A (univariate) mathematical function relates or associates values of
@@ -30,6 +29,7 @@ Let's explore when we can "solve" for an inverse function.
 Consider the graph of the function $f(x) = 2^x$:
 
 ```
+using CalculusWithJulia   # to load the `Plots` package
 f(x) = 2^x
 plot(f, 0, 4)
 plot!([2,2,0], [0,f(2),f(2)])
@@ -107,7 +107,7 @@ From this, we have the function $g(y) = (y-32) / (9/5)$ is the inverse function 
 *Usually* we use the name $f^{-1}$ for the inverse function of $f$, so this would be most often [seen](http://tinyurl.com/qypbueb) as $f^{-1}(x) = (x-32)/(9/5)$ or after simplification $f^{-1}(x) = (5/9) \cdot (x-32)$.
 
 ```
-note(L"""The use of a negative exponent on the function name is *easily* confused for the notation for a reciprocal when it is used on a mathematical *expression*. An example might be the notation $(1/x)^{-1}$. As this is an expression this would simplify to $x$ and not the inverse of the *function* $f(x)=1/x$ (which is $f^{-1}(x) = 1/x$). 
+note(L"""The use of a negative exponent on the function name is *easily* confused for the notation for a reciprocal when it is used on a mathematical *expression*. An example might be the notation $(1/x)^{-1}$. As this is an expression this would simplify to $x$ and not the inverse of the *function* $f(x)=1/x$ (which is $f^{-1}(x) = 1/x$).
 """)
 ```
 
@@ -132,7 +132,7 @@ We see that to solve for $x$ we need to divide by $cy-a$, so this expression can
 So, using $x$ as the dummy variable, we have
 
 $$~
-f^{-1}(x) = -\frac{dx - b}{cx-a},  $cx-a \neq 0$.
+f^{-1}(x) = -\frac{dx - b}{cx-a},\quad  cx-a \neq 0.
 ~$$
 
 
@@ -204,7 +204,7 @@ The graph is shown over the interval $(0,4)$, but the *domain* of $f(x)$ is all 
 
 The lines layered on the plot show how to associate an $x$ value to a $y$ value or vice versa (as $f(x)$ is one-to-one). The domain then of the inverse function is all the $y$ values for which an corresponding $x$ value exists: this is clearly all values bigger or equal to $2$. The *range* of the inverse function can be seen to be all the images for the values of $y$, which would be all $x \geq 0$. This gives the relationship:
 
-> the *range* of $f(x)$ is the *domain* of $f^{-1}(x)$ and furthermore the *domain* of $f(x)$ is the *range* for $f^{-1}(x)$; 
+> the *range* of $f(x)$ is the *domain* of $f^{-1}(x)$ and furthermore the *domain* of $f(x)$ is the *range* for $f^{-1}(x)$;
 
 Further, from this we can see if we start at $x$, apply $f$ we get $y$, if we then apply $f^{-1}$ we will get back to $x$ so we have:
 
@@ -227,7 +227,7 @@ Let's see this in action. Take the function $2^x$. We can plot it by generating 
 
 ```
 f(x) = 2^x
-xs = range(0, stop=2, length=50) 
+xs = range(0, 2, length=50)
 ys = f.(xs)
 plot(xs, ys, color=:blue)
 plot!(ys, xs, color=:red) # the inverse
@@ -245,7 +245,7 @@ of $f(x) = x^{1/3}$ and its inverse function:
 
 ```
 f(x) = cbrt(x)
-xs = range(-2, stop=2, length=150) 
+xs = range(-2, 2, length=150)
 ys = f.(xs)
 plot(xs, ys, color=:blue, aspect_ratio=:equal, legend=false)
 plot!(ys, xs, color=:red)
@@ -281,7 +281,7 @@ For concreteness, we consider $f(x) = \sqrt{x}$ at $c=2$. The tangent line will 
 f(x) = sqrt(x)
 c = 2
 tl(x) = f(c) + 1/(2 * sqrt(2)) * (x - c)
-xs = range(0, stop=3, length=150) 
+xs = range(0, 3, length=150)
 ys = f.(xs)
 zs = tl.(xs)
 plot(xs, ys,  color=:blue, legend=false)
@@ -360,7 +360,7 @@ yesnoq(false)
 
 ###### Question
 
-A function is defined by its graph. 
+A function is defined by its graph.
 
 ```nocode
 f(x) = x - sin(x)
@@ -454,7 +454,7 @@ A function, $f$, is specified by a table:
 ```verbatim
 x  |  y
 -------
-1  |  2 
+1  |  2
 2  |  3
 3  |  5
 4  |  8
@@ -546,7 +546,7 @@ From plot, are blue and red inverse functions?
 
 ```nocode
 f(x) = x^3
-xs = range(0, stop=2, length=100) 
+xs = range(0, 2, length=100)
 ys = f.(xs)
 plot(xs, ys, color=:blue, legend=false)
 plot!(ys, xs, color=:red)
@@ -562,7 +562,7 @@ From plot, are blue and red inverse functions?
 
 ```nocode
 f(x) = x^3 - x - 1
-xs = range(-2,stop=2, length=100)
+xs = range(-2,2, length=100)
 ys = f.(xs)
 plot(xs, ys, color=:blue, legend=false)
 plot!(-xs, -ys, color=:red)
@@ -638,6 +638,3 @@ What about the value of $g1(g2(g3(g4(f4(f3(f2(f1(10))))))))$?
 val = g1(g2(g3(g4(f4(f3(f2(f1(10))))))))
 numericq(val)
 ```
-
-
-

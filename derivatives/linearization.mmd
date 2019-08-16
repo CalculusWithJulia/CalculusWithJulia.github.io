@@ -1,7 +1,7 @@
 # Linearization
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -20,21 +20,24 @@ functions within `Julia`. Here we write such a function as an
 operator---it takes a function `f` and returns a function
 representing the tangent line.
 
-```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
-
+```noeval
 tangent(f, c) = x -> f(c) + f'(c) * (x - c)
 ```
 
 (Recall, the `->` indicates that an anonymous function is being generated.)
 
+This function along with the `f'` notation, as defined in the
+`CalculusWithJulia` package, through
+`Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`,
+is loaded with:
+
+```
+using CalculusWithJulia
+```
 
 To illustrate the tangent line, we can make some graphs:
 
 ```
-using Plots
 f(x) = x^2
 plot(f, -3, 3)
 plot!(tangent(f, -1))
@@ -194,7 +197,7 @@ actual = 10.1^3
 (actual - approx)/actual * 100
 ```
 
-The manufacturer may be interested instead in comparing the valume of the actual object to the $1$ liter target. They might use the approximate value for this comparison, which would yield:
+The manufacturer may be interested instead in comparing the volume of the actual object to the $1$ liter target. They might use the approximate value for this comparison, which would yield:
 
 ```
 (1000 - approx)/approx * 100
@@ -278,7 +281,7 @@ Similarly, for $f(x) = \log(1 + x)$ we have the following at $c=0$:
 $$~
 f'(x) = 1/(1+x), \quad f''(x) = -1/(1+x)^2.
 ~$$
- 
+
 So, as $f(c)=0$ and $f'(c) = 1$, we have
 
 $$~
@@ -327,7 +330,6 @@ satisfies $0 < \xi < e < x$, so is in $[0,x]$.
 `SymPy` can find the tangent line expression as a special case of its `series` function (which implements Taylor series). Here we see the answer provided for $e^{\sin(x)}$:
 
 ```
-using SymPy
 @vars x
 series(exp(sin(x)), x, 0, 2)
 ```
@@ -389,13 +391,6 @@ f(x) \cdot g(x) &=  [f(c) + f'(c)(x-c) + \mathcal{O}((x-c)^2)] \cdot [g(c) + g'(
 The big "oh" notation just sweeps up many things including any products of it *and* the term $f'(c)\cdot g'(c) \cdot (x-c)^2$. Again, we see from the product rule that this is just a tangent line approximation for $f(x) \cdot g(x)$.
 
 In conclusion, basic mathematical operations involving tangent lines can be computed just using the tangent lines when the desired accuracy is at the tangent line level. This is even true for composition, though there the outer and inner functions may have different "$c$"s.
-
-```
-note("""
-The `D` operator, defined above using the `ForwardDiff` package, for first derivatives essentially does
-nothing more than work with the tangent line expression, which for a given function `f` and value `c` is summarized by two numbers `[f(c), f'(c)]`.
-""")
-```
 
 Knowing this can simplify the task of finding tangent line approximations of compound expressions.
 
@@ -559,4 +554,3 @@ tl(x) = 4 + 4x
 ans = tl(.2) - 4
 numericq(abs(ans))
 ```
-

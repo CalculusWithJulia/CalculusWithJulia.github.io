@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -147,7 +153,7 @@ a = v0 * cosd(theta)
 <pre class="output">
 96.75771791632161</pre>
 
-<p>By defining a new variable <code>a</code> to represent a value that is repeated a few times in the expression, the last command is greatly simplified. Doing so makes it much easier to check for accuracy against the expression to compute. </p><h5>Example</h5><p>A common expression in mathematics is a polynomial expression, for example $-16x^2 + 32x - 12$. Translating this to <code>Julia</code> at $x =3$ we might have:</p><pre class="sourceCode julia">x = 3
+<p>By defining a new variable <code>a</code> to represent a value that is repeated a few times in the expression, the last command is greatly simplified. Doing so makes it much easier to check for accuracy against the expression to compute.</p><h5>Example</h5><p>A common expression in mathematics is a polynomial expression, for example $-16x^2 + 32x - 12$. Translating this to <code>Julia</code> at $x =3$ we might have:</p><pre class="sourceCode julia">x = 3
 -16*x^2 + 32*x - 12</pre>
 <pre class="output">
 -60</pre>
@@ -169,15 +175,15 @@ x = x - (x^2 - 2) / (2x)</pre>
 1.5</pre>
 
 <p>Repeating this last line will generate new values of <code>x</code> based on the previous one–-no need for subscripts. This is exactly what the mathematical notation indicates is to be done.</p><h2>Context</h2><p>The binding of a value to a variable name happens within some context. For our simple illustrations, we are assigning values, as though they were typed at the command line. This stores the binding in the <code>Main</code> module. <code>Julia</code> looks for variables in this module when it encounters an expression and the value is substituted. Other uses, such as when variables are defined within a function, involve different contexts which may not be visible within the <code>Main</code> module.</p><div class="alert alert-info" role="alert">
-    
+
 <div class="markdown"><p>The <code>varinfo</code> function will list the variables currently defined in the main workspace. There is no mechanism to delete a single variable.</p>
-</div> 
+</div>
 
 </div>
 <div class="alert alert-success" role="alert">
-    
-<div class="markdown"><p><strong>Shooting oneselves in the foot.</strong> <code>Julia</code> allows us to locally redefine variables that are built in, such as the value for <code>pi</code> or the function object assigned to <code>sin</code>. For example, this is a perfectly valid command <code>sin&#61;3</code>. However, it will overwrite the typical value of <code>sin</code> so that <code>sin&#40;3&#41;</code> will be an error. The binding to <code>sin</code> occurs in the <code>Main</code> module. This shadows that value of <code>sin</code> bound in the <code>Base</code> module. Even if redefined in <code>Main</code>, the value in base can be used by fully qualifying the name, as in <code>Base.sin&#40;pi&#41;</code>. This uses the convention <code>module_name.variable_name</code> to look up a binding in a module. </p>
-</div> 
+
+<div class="markdown"><p><strong>Shooting oneselves in the foot.</strong> <code>Julia</code> allows us to locally redefine variables that are built in, such as the value for <code>pi</code> or the function object assigned to <code>sin</code>. For example, this is a perfectly valid command <code>sin&#61;3</code>. However, it will overwrite the typical value of <code>sin</code> so that <code>sin&#40;3&#41;</code> will be an error. The binding to <code>sin</code> occurs in the <code>Main</code> module. This shadows that value of <code>sin</code> bound in the <code>Base</code> module. Even if redefined in <code>Main</code>, the value in base can be used by fully qualifying the name, as in <code>Base.sin&#40;pi&#41;</code>. This uses the convention <code>module_name.variable_name</code> to look up a binding in a module.</p>
+</div>
 
 </div>
 <h2>Variable names</h2><p><code>Julia</code> has a very wide set of possible <a href="https://docs.julialang.org/en/stable/manual/variables/#Allowed-Variable-Names-1">names</a> for variables. Variables are case sensitive and their names can include many <a href="http://en.wikipedia.org/wiki/List_of_Unicode_characters">Unicode</a> characters. Names must begin with a letter or an appropriate Unicode value (but not a number). There are some reserved words, such as <code>try</code> or <code>else</code> which can not be assigned to. However, many built-in names can be locally overwritten. Conventionally, variable names are lower case. For compound names, it is not unusual to see them squished together, joined with underscores, or written in camelCase.</p><pre class="sourceCode julia">value_1 = 1
@@ -196,17 +202,17 @@ __private = 2     # a convention</pre>
 200</pre>
 
 <div class="alert alert-success" role="alert">
-    
+
 <div class="markdown"><p>There is even support for tab-completion of <a href="https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/src/emoji_symbols.jl">emojis</a> such as <code>\:snowman:&#91;tab&#93;</code> or <code>\:koala:&#91;tab&#93;</code></p>
-</div> 
+</div>
 
 </div>
-<h5>Example</h5><p>As mentioned, as of <code>Julia</code> <code>v&quot;0.7.0&quot;</code>, the value of $e$ is bound to the unicode value <code>\euler&#91;tab&#93;</code> and not the letter <code>e</code>, so Unicode entry is required to access this constant This isn't quite true. The <code>MathConstants</code> module defines <code>e</code>, as well as a few other values accessed via unicode:</p><pre class="sourceCode julia">using Base.MathConstants
+<h5>Example</h5><p>As mentioned, as of <code>Julia</code> <code>v&quot;0.7.0&quot;</code>, the value of $e$ is bound to the unicode value <code>\euler&#91;tab&#93;</code> and not the letter <code>e</code>, so Unicode entry is required to access this constant This isn't quite true. The <code>MathConstants</code> module defines <code>e</code>, as well as a few other values accessed via unicode. This is loaded with the accompanying <code>CalculusWithJulia</code> package</p><pre class="sourceCode julia">using CalculusWithJulia   # reexports Base.MathConstants
 e</pre>
 <pre class="output">
 ℯ = 2.7182818284590...</pre>
 
-<p>(Or one can define <code>e &#61; exp&#40;1&#41;</code> and use the variable as desired.)</p><p><script> // ## This doesn't seen needed //  // ## Constant variables //  // If a variable is not to be changed it can be declared // constant. Declaring variables constant can help <code>Julia</code> speed up some // computations. For example, <code>pi</code> is defined to be a constant by base // <code>Julia</code>. The <code>const</code> keyword is used to mark a value a constant, though not within a function body. Here // we define a constant global variable <code>MAX</code>: //  // <code>// const MAX &#61; 10 //</code> //  // Trying to redefine <code>MAX</code> will raise a warning, though is permitted. </script></p><h2>Tuple assignment</h2><p>It is a common task to define more than one variable. Multiple definitions can be done in one line, using semicolons to break up the commands, as with:</p><pre class="sourceCode julia">a = 1; b = 2; c=3</pre>
+<p>Alternatively, one can define <code>e &#61; exp&#40;1&#41;</code> and use the variable as desired.</p><p><script> // ## This doesn't seen needed // // ## Constant variables // // If a variable is not to be changed it can be declared // constant. Declaring variables constant can help <code>Julia</code> speed up some // computations. For example, <code>pi</code> is defined to be a constant by base // <code>Julia</code>. The <code>const</code> keyword is used to mark a value a constant, though not within a function body. Here // we define a constant global variable <code>MAX</code>: // // <code>// const MAX &#61; 10 //</code> // // Trying to redefine <code>MAX</code> will raise a warning, though is permitted. </script></p><h2>Tuple assignment</h2><p>It is a common task to define more than one variable. Multiple definitions can be done in one line, using semicolons to break up the commands, as with:</p><pre class="sourceCode julia">a = 1; b = 2; c=3</pre>
 <pre class="output">
 3</pre>
 
@@ -224,372 +230,340 @@ m = (y1 - y0) / (x1 - x0)</pre>
 <pre class="output">
 1.3333333333333333</pre>
 
-<p>Of course, this could be computed directly with <code>&#40;6-2&#41; / &#40;4-1&#41;</code>, but by using familiar names for the values we can be certain we apply the formula properly.</p><h2>Questions</h2><h6>Question</h6><p>Let $a=10$, $b=2.3$, and $c=8$. Find the value of $(a-b)/(a-c)$.</p><form name='WeaveQuestion' data-id='bqPiuS3W' data-controltype='numeric'>
+<p>Of course, this could be computed directly with <code>&#40;6-2&#41; / &#40;4-1&#41;</code>, but by using familiar names for the values we can be certain we apply the formula properly.</p><h2>Questions</h2><h6>Question</h6><p>Let $a=10$, $b=2.3$, and $c=8$. Find the value of $(a-b)/(a-c)$.</p><form name='WeaveQuestion' data-id='cOWZZ3Yc' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="bqPiuS3W" type="number" class="form-control">
+<input id="cOWZZ3Yc" type="number" class="form-control">
 
 </div>
-  
-<div id='bqPiuS3W_message'></div>
+
+<div id='cOWZZ3Yc_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#bqPiuS3W').on('change', function() {
+$('#cOWZZ3Yc').on('change', function() {
   correct = Math.abs(this.value - 3.85) <= 0.001;
 
   if(correct) {
-     $('#bqPiuS3W_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#cOWZZ3Yc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#bqPiuS3W_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#cOWZZ3Yc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Let <code>x &#61; 4</code>. Compute $y=100 - 2x - x^2$. What is the value:</p><form name='WeaveQuestion' data-id='uHAzhUrg' data-controltype='numeric'>
+<h6>Question</h6><p>Let <code>x &#61; 4</code>. Compute $y=100 - 2x - x^2$. What is the value:</p><form name='WeaveQuestion' data-id='4LjhNXe0' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="uHAzhUrg" type="number" class="form-control">
+<input id="4LjhNXe0" type="number" class="form-control">
 
 </div>
-  
-<div id='uHAzhUrg_message'></div>
+
+<div id='4LjhNXe0_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#uHAzhUrg').on('change', function() {
+$('#4LjhNXe0').on('change', function() {
   correct = Math.abs(this.value - -124) <= 0.1;
 
   if(correct) {
-     $('#uHAzhUrg_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#4LjhNXe0_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#uHAzhUrg_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#4LjhNXe0_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>What is the answer to this computation?</p><pre class="sourceCode julia">a = 3.2; b=2.3
 a^b - b^a
-</pre><form name='WeaveQuestion' data-id='mu0i1zLX' data-controltype='numeric'>
+</pre><form name='WeaveQuestion' data-id='Or0lxMm9' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="mu0i1zLX" type="number" class="form-control">
+<input id="Or0lxMm9" type="number" class="form-control">
 
 </div>
-  
-<div id='mu0i1zLX_message'></div>
+
+<div id='Or0lxMm9_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#mu0i1zLX').on('change', function() {
+$('#Or0lxMm9').on('change', function() {
   correct = Math.abs(this.value - 0.14354012963861962) <= 0.001;
 
   if(correct) {
-     $('#mu0i1zLX_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#Or0lxMm9_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#mu0i1zLX_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#Or0lxMm9_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>For longer computations, it can be convenient to do them in parts, as this makes it easier to check for mistakes. </p><p>For example, to compute</p>$$~
+<h6>Question</h6><p>For longer computations, it can be convenient to do them in parts, as this makes it easier to check for mistakes.</p><p>For example, to compute</p>$$~
 \frac{p - q}{\sqrt{p(1-p)}}
 ~$$
 <p>for $p=0.25$ and $q=0.2$ we might do:</p><pre class="sourceCode julia">p, q = 0.25, 0.2
 top = p - q
 bottom = sqrt(p*(1-p))
 ans = top/bottom
-</pre><p>What is the result of the above?</p><form name='WeaveQuestion' data-id='8tVF7yFf' data-controltype='numeric'>
+</pre><p>What is the result of the above?</p><form name='WeaveQuestion' data-id='j8fL6Lgv' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="8tVF7yFf" type="number" class="form-control">
+<input id="j8fL6Lgv" type="number" class="form-control">
 
 </div>
-  
-<div id='8tVF7yFf_message'></div>
+
+<div id='j8fL6Lgv_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#8tVF7yFf').on('change', function() {
+$('#j8fL6Lgv').on('change', function() {
   correct = Math.abs(this.value - 0.11547005383792514) <= 0.001;
 
   if(correct) {
-     $('#8tVF7yFf_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#j8fL6Lgv_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#8tVF7yFf_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#j8fL6Lgv_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Using variables to record the top and the bottom of the expression, compute the following for $x=3$:</p>$$~
 y = \frac{x^2 - 2x - 8}{x^2 - 9x - 20}.
 ~$$
-<form name='WeaveQuestion' data-id='3pmFuRCF' data-controltype='numeric'>
+<form name='WeaveQuestion' data-id='ElnrnMrc' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="3pmFuRCF" type="number" class="form-control">
+<input id="ElnrnMrc" type="number" class="form-control">
 
 </div>
-  
-<div id='3pmFuRCF_message'></div>
+
+<div id='ElnrnMrc_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#3pmFuRCF').on('change', function() {
+$('#ElnrnMrc').on('change', function() {
   correct = Math.abs(this.value - 0.13157894736842105) <= 0.001;
 
   if(correct) {
-     $('#3pmFuRCF_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#ElnrnMrc_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#3pmFuRCF_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#ElnrnMrc_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
-<h6>Question</h6><p>Which if these is not a valid variable name (identifier) in <code>Julia</code>:</p><form name="WeaveQuestion" data-id="oAe7SIbk" data-controltype="radio">
+<h6>Question</h6><p>Which if these is not a valid variable name (identifier) in <code>Julia</code>:</p><form name="WeaveQuestion" data-id="EpELZJF1" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_oAe7SIbk" value="1"><div class="markdown"><p><code>fahrenheit451</code></p>
+      <input type="radio" name="radio_EpELZJF1" value="1"><div class="markdown"><p><code>fahrenheit451</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_oAe7SIbk" value="2"><div class="markdown"><p><code>some_really_long_name_that_is_no_fun_to_type</code></p>
+      <input type="radio" name="radio_EpELZJF1" value="2"><div class="markdown"><p><code>aMiXeDcAsEnAmE</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_oAe7SIbk" value="3"><div class="markdown"><p><code>5degreesbelowzero</code></p>
+      <input type="radio" name="radio_EpELZJF1" value="3"><div class="markdown"><p><code>5degreesbelowzero</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_oAe7SIbk" value="4"><div class="markdown"><p><code>aMiXeDcAsEnAmE</code></p>
+      <input type="radio" name="radio_EpELZJF1" value="4"><div class="markdown"><p><code>some_really_long_name_that_is_no_fun_to_type</code></p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="oAe7SIbk_message"></div>
+<div id="EpELZJF1_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_oAe7SIbk']").on("change", function() {
+$("input:radio[name='radio_EpELZJF1']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#oAe7SIbk_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#EpELZJF1_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#oAe7SIbk_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#EpELZJF1_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Which of these symbols is  one of <code>Julia</code>'s built-in math constants?</p><form name="WeaveQuestion" data-id="j7R7TtTN" data-controltype="radio">
+<h6>Question</h6><p>Which of these symbols is  one of <code>Julia</code>'s built-in math constants?</p><form name="WeaveQuestion" data-id="O5a3KHLj" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_j7R7TtTN" value="1"><div class="markdown"><p><code>E</code></p>
+      <input type="radio" name="radio_O5a3KHLj" value="1"><div class="markdown"><p><code>pi</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_j7R7TtTN" value="2"><div class="markdown"><p><code>oo</code></p>
+      <input type="radio" name="radio_O5a3KHLj" value="2"><div class="markdown"><p><code>I</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_j7R7TtTN" value="3"><div class="markdown"><p><code>pi</code></p>
+      <input type="radio" name="radio_O5a3KHLj" value="3"><div class="markdown"><p><code>oo</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_j7R7TtTN" value="4"><div class="markdown"><p><code>I</code></p>
+      <input type="radio" name="radio_O5a3KHLj" value="4"><div class="markdown"><p><code>E</code></p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="j7R7TtTN_message"></div>
+<div id="O5a3KHLj_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_j7R7TtTN']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_O5a3KHLj']").on("change", function() {
+  correct = this.value == 1;
 
   if(correct) {
-     $("#j7R7TtTN_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#O5a3KHLj_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#j7R7TtTN_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#O5a3KHLj_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>What key sequence will produce this assignment</p><pre class="sourceCode julia">δ = 1/10</pre>
-<form name="WeaveQuestion" data-id="9jJqBKVe" data-controltype="radio">
+<form name="WeaveQuestion" data-id="Tqmx2Ig0" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_9jJqBKVe" value="1"><div class="markdown"><p><code>&#36;\\delta&#36; &#61; 1/10</code></p>
+      <input type="radio" name="radio_Tqmx2Ig0" value="1"><div class="markdown"><p><code>delta&#91;tab&#93; &#61; 1/10</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_9jJqBKVe" value="2"><div class="markdown"><p><code>delta&#91;tab&#93; &#61; 1/10</code></p>
+      <input type="radio" name="radio_Tqmx2Ig0" value="2"><div class="markdown"><p><code>\delta&#91;tab&#93; &#61; 1/10</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_9jJqBKVe" value="3"><div class="markdown"><p><code>\\delta&#91;tab&#93; &#61; 1/10</code></p>
+      <input type="radio" name="radio_Tqmx2Ig0" value="3"><div class="markdown"><p><code>&#36;\\delta&#36; &#61; 1/10</code></p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="9jJqBKVe_message"></div>
+<div id="Tqmx2Ig0_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_9jJqBKVe']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_Tqmx2Ig0']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#9jJqBKVe_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Tqmx2Ig0_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#9jJqBKVe_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Tqmx2Ig0_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>Which of these three statements will <strong>not</strong> be a valid way to assign three variables at once:</p><form name="WeaveQuestion" data-id="vQ64wj5w" data-controltype="radio">
+<h6>Question</h6><p>Which of these three statements will <strong>not</strong> be a valid way to assign three variables at once:</p><form name="WeaveQuestion" data-id="1lglsrjV" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQ64wj5w" value="1"><div class="markdown"><p><code>a&#61;1, b&#61;2, c&#61;3</code></p>
+      <input type="radio" name="radio_1lglsrjV" value="1"><div class="markdown"><p><code>a&#61;1, b&#61;2, c&#61;3</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQ64wj5w" value="2"><div class="markdown"><p><code>a&#61;1; b&#61;2; c&#61;3</code></p>
+      <input type="radio" name="radio_1lglsrjV" value="2"><div class="markdown"><p><code>a&#61;1; b&#61;2; c&#61;3</code></p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_vQ64wj5w" value="3"><div class="markdown"><p><code>a,b,c &#61; 1,2,3</code></p>
+      <input type="radio" name="radio_1lglsrjV" value="3"><div class="markdown"><p><code>a,b,c &#61; 1,2,3</code></p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="vQ64wj5w_message"></div>
+<div id="1lglsrjV_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_vQ64wj5w']").on("change", function() {
+$("input:radio[name='radio_1lglsrjV']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#vQ64wj5w_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#1lglsrjV_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#vQ64wj5w_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#1lglsrjV_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 <h6>Question</h6><p>The fact that assignment <em>always</em> returns the value of the right hand side <em>and</em> the fact that the <code>&#61;</code> sign associates from right to left means that the following idiom:</p><pre class="sourceCode julia">x = y = z = 3</pre>
-<p>Will always:</p><form name="WeaveQuestion" data-id="IKsf2GvT" data-controltype="radio">
+<p>Will always:</p><form name="WeaveQuestion" data-id="DSebwTmH" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_IKsf2GvT" value="1"><div class="markdown"><p>Assign all three variables at once to a value of 3</p>
+      <input type="radio" name="radio_DSebwTmH" value="1"><div class="markdown"><p>Assign all three variables at once to a value of 3</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_IKsf2GvT" value="2"><div class="markdown"><p>Throw an error</p>
+      <input type="radio" name="radio_DSebwTmH" value="2"><div class="markdown"><p>Throw an error</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_IKsf2GvT" value="3"><div class="markdown"><p>Create 3 linked values that will stay synced when any value changes</p>
+      <input type="radio" name="radio_DSebwTmH" value="3"><div class="markdown"><p>Create 3 linked values that will stay synced when any value changes</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="IKsf2GvT_message"></div>
+<div id="DSebwTmH_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_IKsf2GvT']").on("change", function() {
+$("input:radio[name='radio_DSebwTmH']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#IKsf2GvT_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#DSebwTmH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#IKsf2GvT_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#DSebwTmH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>

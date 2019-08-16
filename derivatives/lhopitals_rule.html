@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"> 
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
@@ -20,6 +20,12 @@ body { padding-top: 60px; }
 h5:before {content:"\2746\ ";}
 h6:before {content:"\2742\ ";}
 pre {display: block;}
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -34,7 +40,7 @@ pre {display: block;}
 
 <!-- not TeX-AMS-MML_HTMLorMML-->
 <script type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">  
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
 </script>
 <script>
 MathJax.Hub.Config({
@@ -49,18 +55,18 @@ MathJax.Hub.Config({
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $("h1").each(function(index) { 
+  $("h1").each(function(index) {
        var title = $( this ).text()
        $("#page_title").html("<strong>" + title + "</strong>");
        document.title = title
   });
   $( "h2" ).each(function( index ) {
-    var nm =  $( this ).text();                                    
+    var nm =  $( this ).text();
     var id = $.trim(nm).replace(/ /g,'');
     this.id = id
     $("#page_dropdown").append("<li><a href='#" + id + "'>" + nm + "</a></li>");
   });
-  $('[data-toggle="popover"]').popover();  
+  $('[data-toggle="popover"]').popover();
 });
 </script>
 
@@ -103,7 +109,7 @@ $( document ).ready(function() {
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>L'Hospitals Rule</h1><p>Let's return to limits of the form $f(x)/g(x)$ which have an indeterminate form of $0/0$ if both are evaluated at $c$. The typical example being the limit considered by Euler:</p>$$~
+<h1>L'Hospital's Rule</h1><p>Let's return to limits of the form $f(x)/g(x)$ which have an indeterminate form of $0/0$ if both are evaluated at $c$. The typical example being the limit considered by Euler:</p>$$~
 \lim_{x\rightarrow 0} \frac{\sin(x)}{x}.
 ~$$
 <p>We know this is $1$ using a bound from geometry, but might also guess this is one, as we know from linearization near $0$ that we have</p>$$~
@@ -194,8 +200,8 @@ x^x = \exp(\log(x^x)) = \exp(x \log(x)) = \exp(\log(x)/(1/x)).
 </ul>$$~
 \lim_{x \rightarrow a} \frac{\sqrt{2a^3\cdot x-x^4} - a\cdot(a^2\cdot x)^{1/3}}{ a - (a\cdot x^3)^{1/4}}.
 ~$$
-<p>These derivatives can be done by hand, but to avoid any minor mistakes we utilize <code>SymPy</code> taking care to use rational numbers for the fractional powers, so as not to lose precision through floating point roundoff:</p><pre class="sourceCode julia">using SymPy
-a,x = symbols("a, x", positive=true, real=true)
+<p>These derivatives can be done by hand, but to avoid any minor mistakes we utilize <code>SymPy</code> taking care to use rational numbers for the fractional powers, so as not to lose precision through floating point roundoff:</p><pre class="sourceCode julia">using CalculusWithJulia    # loads `SymPy`
+@vars a x positive=true real=true
 f(x) = sqrt(2a^3*x - x^4) - a * (a^2*x)^(1//3)
 g(x) = a - (a*x^3)^(1//4)</pre>
 <pre class="output">
@@ -211,283 +217,248 @@ g (generic function with 1 method)</pre>
 
 <p>Their ratio will not be indeterminate, so the limit in question is just the ratio:</p><pre class="sourceCode julia">fp/gp</pre>
 <div class="well well-sm">
-$$\frac{16 a}{9}$$</div>
+\begin{equation*}\frac{16 a}{9}\end{equation*}</div>
 
 <p>Of course, we could have just relied on <code>limit</code>, which knows about L'Hospital's rule:</p><pre class="sourceCode julia">limit(f(x)/g(x), x, a)</pre>
 <div class="well well-sm">
-$$\frac{16 a}{9}$$</div>
+\begin{equation*}\frac{16 a}{9}\end{equation*}</div>
 
-<h2>Questions</h2><h6>Question</h6><p>This function $f(x) = \sin(5x)/x$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="bPfZCstS" data-controltype="radio">
+<h2>Questions</h2><h6>Question</h6><p>This function $f(x) = \sin(5x)/x$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="awUyJnmO" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_bPfZCstS" value="1"><div class="markdown">$0/0$
+      <input type="radio" name="radio_awUyJnmO" value="1"><div class="markdown">$0/0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_bPfZCstS" value="2"><div class="markdown">$\infty/\infty$
+      <input type="radio" name="radio_awUyJnmO" value="2"><div class="markdown">$\infty/\infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_bPfZCstS" value="3"><div class="markdown">$0^0$
+      <input type="radio" name="radio_awUyJnmO" value="3"><div class="markdown">$0^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_bPfZCstS" value="4"><div class="markdown">$\infty - \infty$
+      <input type="radio" name="radio_awUyJnmO" value="4"><div class="markdown">$\infty - \infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_bPfZCstS" value="5"><div class="markdown">$0 \cdot \infty$
+      <input type="radio" name="radio_awUyJnmO" value="5"><div class="markdown">$0 \cdot \infty$
 </div>
     </label>
     </div>
-    
 
-
-<div id="bPfZCstS_message"></div>
+<div id="awUyJnmO_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_bPfZCstS']").on("change", function() {
+$("input:radio[name='radio_awUyJnmO']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#bPfZCstS_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#awUyJnmO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#bPfZCstS_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#awUyJnmO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>This function $f(x) = \sin(x)^{\sin(x)}$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="7y5g0XAj" data-controltype="radio">
+<h6>Question</h6><p>This function $f(x) = \sin(x)^{\sin(x)}$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="6QJ45cIi" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_7y5g0XAj" value="1"><div class="markdown">$0/0$
+      <input type="radio" name="radio_6QJ45cIi" value="1"><div class="markdown">$0/0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_7y5g0XAj" value="2"><div class="markdown">$\infty/\infty$
+      <input type="radio" name="radio_6QJ45cIi" value="2"><div class="markdown">$\infty/\infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_7y5g0XAj" value="3"><div class="markdown">$0^0$
+      <input type="radio" name="radio_6QJ45cIi" value="3"><div class="markdown">$0^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_7y5g0XAj" value="4"><div class="markdown">$\infty - \infty$
+      <input type="radio" name="radio_6QJ45cIi" value="4"><div class="markdown">$\infty - \infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_7y5g0XAj" value="5"><div class="markdown">$0 \cdot \infty$
+      <input type="radio" name="radio_6QJ45cIi" value="5"><div class="markdown">$0 \cdot \infty$
 </div>
     </label>
     </div>
-    
 
-
-<div id="7y5g0XAj_message"></div>
+<div id="6QJ45cIi_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_7y5g0XAj']").on("change", function() {
+$("input:radio[name='radio_6QJ45cIi']").on("change", function() {
   correct = this.value == 3;
 
   if(correct) {
-     $("#7y5g0XAj_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#6QJ45cIi_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#7y5g0XAj_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#6QJ45cIi_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>This function $f(x) = (x-2)/(x^2 - 4)$ is <em>indeterminate</em> at $x=2$. What type?</p><form name="WeaveQuestion" data-id="8j6l4L2k" data-controltype="radio">
+<h6>Question</h6><p>This function $f(x) = (x-2)/(x^2 - 4)$ is <em>indeterminate</em> at $x=2$. What type?</p><form name="WeaveQuestion" data-id="sh1iEqGH" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8j6l4L2k" value="1"><div class="markdown">$0/0$
+      <input type="radio" name="radio_sh1iEqGH" value="1"><div class="markdown">$0/0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8j6l4L2k" value="2"><div class="markdown">$\infty/\infty$
+      <input type="radio" name="radio_sh1iEqGH" value="2"><div class="markdown">$\infty/\infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8j6l4L2k" value="3"><div class="markdown">$0^0$
+      <input type="radio" name="radio_sh1iEqGH" value="3"><div class="markdown">$0^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8j6l4L2k" value="4"><div class="markdown">$\infty - \infty$
+      <input type="radio" name="radio_sh1iEqGH" value="4"><div class="markdown">$\infty - \infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_8j6l4L2k" value="5"><div class="markdown">$0 \cdot \infty$
+      <input type="radio" name="radio_sh1iEqGH" value="5"><div class="markdown">$0 \cdot \infty$
 </div>
     </label>
     </div>
-    
 
-
-<div id="8j6l4L2k_message"></div>
+<div id="sh1iEqGH_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_8j6l4L2k']").on("change", function() {
+$("input:radio[name='radio_sh1iEqGH']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#8j6l4L2k_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#sh1iEqGH_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#8j6l4L2k_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#sh1iEqGH_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>This function $f(x) = (g(x+h) - g(x-h)) / (2h)$ ($g$ is continuous) is <em>indeterminate</em> at $h=0$. What type?</p><form name="WeaveQuestion" data-id="r21Ao8kh" data-controltype="radio">
+<h6>Question</h6><p>This function $f(x) = (g(x+h) - g(x-h)) / (2h)$ ($g$ is continuous) is <em>indeterminate</em> at $h=0$. What type?</p><form name="WeaveQuestion" data-id="Jmk0unjX" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_r21Ao8kh" value="1"><div class="markdown">$0/0$
+      <input type="radio" name="radio_Jmk0unjX" value="1"><div class="markdown">$0/0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_r21Ao8kh" value="2"><div class="markdown">$\infty/\infty$
+      <input type="radio" name="radio_Jmk0unjX" value="2"><div class="markdown">$\infty/\infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_r21Ao8kh" value="3"><div class="markdown">$0^0$
+      <input type="radio" name="radio_Jmk0unjX" value="3"><div class="markdown">$0^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_r21Ao8kh" value="4"><div class="markdown">$\infty - \infty$
+      <input type="radio" name="radio_Jmk0unjX" value="4"><div class="markdown">$\infty - \infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_r21Ao8kh" value="5"><div class="markdown">$0 \cdot \infty$
+      <input type="radio" name="radio_Jmk0unjX" value="5"><div class="markdown">$0 \cdot \infty$
 </div>
     </label>
     </div>
-    
 
-
-<div id="r21Ao8kh_message"></div>
+<div id="Jmk0unjX_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_r21Ao8kh']").on("change", function() {
+$("input:radio[name='radio_Jmk0unjX']").on("change", function() {
   correct = this.value == 1;
 
   if(correct) {
-     $("#r21Ao8kh_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#Jmk0unjX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#r21Ao8kh_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#Jmk0unjX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
-<h6>Question</h6><p>This function $f(x) = x \log(x)$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="VIm9dUIC" data-controltype="radio">
+<h6>Question</h6><p>This function $f(x) = x \log(x)$ is <em>indeterminate</em> at $x=0$. What type?</p><form name="WeaveQuestion" data-id="5SjrUdlX" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_VIm9dUIC" value="1"><div class="markdown">$0/0$
+      <input type="radio" name="radio_5SjrUdlX" value="1"><div class="markdown">$0/0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_VIm9dUIC" value="2"><div class="markdown">$\infty/\infty$
+      <input type="radio" name="radio_5SjrUdlX" value="2"><div class="markdown">$\infty/\infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_VIm9dUIC" value="3"><div class="markdown">$0^0$
+      <input type="radio" name="radio_5SjrUdlX" value="3"><div class="markdown">$0^0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_VIm9dUIC" value="4"><div class="markdown">$\infty - \infty$
+      <input type="radio" name="radio_5SjrUdlX" value="4"><div class="markdown">$\infty - \infty$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_VIm9dUIC" value="5"><div class="markdown">$0 \cdot \infty$
+      <input type="radio" name="radio_5SjrUdlX" value="5"><div class="markdown">$0 \cdot \infty$
 </div>
     </label>
     </div>
-    
 
-
-<div id="VIm9dUIC_message"></div>
+<div id="5SjrUdlX_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_VIm9dUIC']").on("change", function() {
+$("input:radio[name='radio_5SjrUdlX']").on("change", function() {
   correct = this.value == 5;
 
   if(correct) {
-     $("#VIm9dUIC_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#5SjrUdlX_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#VIm9dUIC_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#5SjrUdlX_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -495,36 +466,32 @@ $("input:radio[name='radio_VIm9dUIC']").on("change", function() {
 <h6>Question</h6><p>Does L'Hospital's rule apply to this limit:</p>$$~
 \lim_{x \rightarrow \pi} \frac{\sin(\pi x)}{\pi x}.
 ~$$
-<form name="WeaveQuestion" data-id="kVkJc0vx" data-controltype="radio">
+<form name="WeaveQuestion" data-id="jXToSGF4" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_kVkJc0vx" value="1"><div class="markdown"><p>No. It is not indeterminate</p>
+      <input type="radio" name="radio_jXToSGF4" value="1"><div class="markdown"><p>Yes. It is of the form $0/0$</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_kVkJc0vx" value="2"><div class="markdown"><p>Yes. It is of the form $0/0$</p>
+      <input type="radio" name="radio_jXToSGF4" value="2"><div class="markdown"><p>No. It is not indeterminate</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="kVkJc0vx_message"></div>
+<div id="jXToSGF4_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_kVkJc0vx']").on("change", function() {
-  correct = this.value == 1;
+$("input:radio[name='radio_jXToSGF4']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#kVkJc0vx_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#jXToSGF4_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#kVkJc0vx_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#jXToSGF4_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -532,210 +499,200 @@ $("input:radio[name='radio_kVkJc0vx']").on("change", function() {
 <h6>Question</h6><p>Use L'Hospital's rule to find the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{4x - \sin(x)}{x}.
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='dIR7kkeL' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='4EDOD3Os' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="dIR7kkeL" type="number" class="form-control">
+<input id="4EDOD3Os" type="number" class="form-control">
 
 </div>
-  
-<div id='dIR7kkeL_message'></div>
+
+<div id='4EDOD3Os_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#dIR7kkeL').on('change', function() {
+$('#4EDOD3Os').on('change', function() {
   correct = Math.abs(this.value - 3.0) <= 0.001;
 
   if(correct) {
-     $('#dIR7kkeL_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#4EDOD3Os_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#dIR7kkeL_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#4EDOD3Os_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Use L'Hospital's rule to find the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{\sqrt{1+x} - 1}{x}.
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='xibhBI5A' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='jKDrkI26' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="xibhBI5A" type="number" class="form-control">
+<input id="jKDrkI26" type="number" class="form-control">
 
 </div>
-  
-<div id='xibhBI5A_message'></div>
+
+<div id='jKDrkI26_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#xibhBI5A').on('change', function() {
+$('#jKDrkI26').on('change', function() {
   correct = Math.abs(this.value - 0.5) <= 0.001;
 
   if(correct) {
-     $('#xibhBI5A_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#jKDrkI26_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#xibhBI5A_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#jKDrkI26_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Use L'Hospital's rule <em>two</em> or more times to find the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{x - \sin(x)}{x^3}.
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='VPlGvwtZ' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='OxbgiILg' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="VPlGvwtZ" type="number" class="form-control">
+<input id="OxbgiILg" type="number" class="form-control">
 
 </div>
-  
-<div id='VPlGvwtZ_message'></div>
+
+<div id='OxbgiILg_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#VPlGvwtZ').on('change', function() {
+$('#OxbgiILg').on('change', function() {
   correct = Math.abs(this.value - 0.16666666666666666) <= 0.001;
 
   if(correct) {
-     $('#VPlGvwtZ_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#OxbgiILg_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#VPlGvwtZ_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#OxbgiILg_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>Use L'Hospital's rule <em>two</em> or more times to find the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{1 - x^2/2 - \cos(x)}{x^3}.
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='KL0PLU9j' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='08Dhfslh' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="KL0PLU9j" type="number" class="form-control">
+<input id="08Dhfslh" type="number" class="form-control">
 
 </div>
-  
-<div id='KL0PLU9j_message'></div>
+
+<div id='08Dhfslh_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#KL0PLU9j').on('change', function() {
+$('#08Dhfslh').on('change', function() {
   correct = Math.abs(this.value - 0.0) <= 0.001;
 
   if(correct) {
-     $('#KL0PLU9j_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#08Dhfslh_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#KL0PLU9j_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#08Dhfslh_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h6>Question</h6><p>By using a common denominator to rewrite this expression, use L'Hospital's rule to find the limit</p>$$~
 L = \lim_{x \rightarrow 0} \frac{1}{x} - \frac{1}{\sin(x)}.
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='Y7i0gPYM' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='9FhTtaI4' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="Y7i0gPYM" type="number" class="form-control">
+<input id="9FhTtaI4" type="number" class="form-control">
 
 </div>
-  
-<div id='Y7i0gPYM_message'></div>
+
+<div id='9FhTtaI4_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#Y7i0gPYM').on('change', function() {
+$('#9FhTtaI4').on('change', function() {
   correct = Math.abs(this.value - 0.0) <= 0.001;
 
   if(correct) {
-     $('#Y7i0gPYM_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#9FhTtaI4_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#Y7i0gPYM_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#9FhTtaI4_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h5>Question</h5><p>Use  L'Hospital's rule  to find the limit</p>$$~
 L = \lim_{x \rightarrow \infty} \log(x)/x
 ~$$
-<p>What is $L$?</p><form name='WeaveQuestion' data-id='WAA1muZK' data-controltype='numeric'>
+<p>What is $L$?</p><form name='WeaveQuestion' data-id='0kWkipm1' data-controltype='numeric'>
 <div class='form-group '>
 <div class='controls'>
 
 
-
 <div class="input-group">
-<input id="WAA1muZK" type="number" class="form-control">
+<input id="0kWkipm1" type="number" class="form-control">
 
 </div>
-  
-<div id='WAA1muZK_message'></div>
+
+<div id='0kWkipm1_message'></div>
 </div>
 </div>
 </form>
 <script text='text/javascript'>
-$('#WAA1muZK').on('change', function() {
+$('#0kWkipm1').on('change', function() {
   correct = Math.abs(this.value - 0.0) <= 0.001;
 
   if(correct) {
-     $('#WAA1muZK_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
+     $('#0kWkipm1_message').html('<div class="alert alert-success"><span class="glyphicon glyphicon-thumbs-up">&nbsp;Correct</span></div>');
   } else {
-     $('#WAA1muZK_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
+     $('#0kWkipm1_message').html('<div class="alert alert-danger"><span class="glyphicon glyphicon-thumbs-down">&nbsp;Incorrect</span></div>');
   }
 });
 </script>
 <h5>Question</h5><p>Using  L'Hospital's rule, does</p>$$~
 \lim_{x \rightarrow 0+} x^{\log(x)}
 ~$$
-<p>exist?</p><p>Consider $x^{\log(x)} = e^{\log(x)\log(x)}$.</p><form name="WeaveQuestion" data-id="GzDxFZp5" data-controltype="radio">
+<p>exist?</p><p>Consider $x^{\log(x)} = e^{\log(x)\log(x)}$.</p><form name="WeaveQuestion" data-id="HOy7DrPN" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_GzDxFZp5" value="1"><div class="markdown"><p>Yes</p>
+      <input type="radio" name="radio_HOy7DrPN" value="1"><div class="markdown"><p>Yes</p>
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_GzDxFZp5" value="2"><div class="markdown"><p>No</p>
+      <input type="radio" name="radio_HOy7DrPN" value="2"><div class="markdown"><p>No</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="GzDxFZp5_message"></div>
+<div id="HOy7DrPN_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_GzDxFZp5']").on("change", function() {
+$("input:radio[name='radio_HOy7DrPN']").on("change", function() {
   correct = this.value == 2;
 
   if(correct) {
-     $("#GzDxFZp5_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#HOy7DrPN_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#GzDxFZp5_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#HOy7DrPN_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
@@ -743,64 +700,57 @@ $("input:radio[name='radio_GzDxFZp5']").on("change", function() {
 <h5>Question</h5><p>Using  L'Hospital's rule, find the limit of</p>$$~
 \lim_{x \rightarrow 1} (2-x)^{\tan(\pi/2 \cdot x)}.
 ~$$
-<p>(Hint, express as $\exp^{\tan(\pi/2 \cdot x) \cdot \log(2-x)}$ and take the limit of the resulting exponent.)</p><form name="WeaveQuestion" data-id="N97RDLXO" data-controltype="radio">
+<p>(Hint, express as $\exp^{\tan(\pi/2 \cdot x) \cdot \log(2-x)}$ and take the limit of the resulting exponent.)</p><form name="WeaveQuestion" data-id="k4A2EFlJ" data-controltype="radio">
 <div class="form-group ">
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_N97RDLXO" value="1"><div class="markdown"><p>It does not exist</p>
+      <input type="radio" name="radio_k4A2EFlJ" value="1"><div class="markdown">$0$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_N97RDLXO" value="2"><div class="markdown">${2\pi}$
+      <input type="radio" name="radio_k4A2EFlJ" value="2"><div class="markdown">$e^{2/\pi}$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_N97RDLXO" value="3"><div class="markdown">$e^{2/\pi}$
+      <input type="radio" name="radio_k4A2EFlJ" value="3"><div class="markdown">$1$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_N97RDLXO" value="4"><div class="markdown">$0$
+      <input type="radio" name="radio_k4A2EFlJ" value="4"><div class="markdown">${2\pi}$
 </div>
     </label>
     </div>
-    
-    <div  class="radio"> 
+    <div  class="radio">
     <label>
-      <input type="radio" name="radio_N97RDLXO" value="5"><div class="markdown">$1$
+      <input type="radio" name="radio_k4A2EFlJ" value="5"><div class="markdown"><p>It does not exist</p>
 </div>
     </label>
     </div>
-    
 
-
-<div id="N97RDLXO_message"></div>
+<div id="k4A2EFlJ_message"></div>
 </div>
 </form>
 <script text="text/javascript">
-$("input:radio[name='radio_N97RDLXO']").on("change", function() {
-  correct = this.value == 3;
+$("input:radio[name='radio_k4A2EFlJ']").on("change", function() {
+  correct = this.value == 2;
 
   if(correct) {
-     $("#N97RDLXO_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
+     $("#k4A2EFlJ_message").html("<div class='alert alert-success'><span class='glyphicon glyphicon-thumbs-up'>&nbsp;Correct</span></div>");
   } else {
-     $("#N97RDLXO_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
+     $("#k4A2EFlJ_message").html("<div class='alert alert-warning'><span class='glyphicon glyphicon-thumbs-down'>&nbsp;Incorrect</span></div>");
   }
 });
 
 </script>
 
   </div>
-</div>  
+</div>
 
 </body>
 </html>

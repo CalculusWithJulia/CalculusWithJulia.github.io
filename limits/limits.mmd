@@ -1,14 +1,14 @@
 # Limits
 
 ```nocode,noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
 An historic problem in the history of math was to find the area under
 the graph of $f(x)=x^2$ between $[0,1]$.
 
-    
+
 
 There isn't a ready-made formula for the area of this
 shape, as there is for a triangle or a square. However,
@@ -101,7 +101,7 @@ xs = [1/10^i for i in 1:5]
 [xs f.(xs)]
 ```
 
-However viewed, this is an approximate value for the actual answer -- which is $e$. Cauchy 
+However viewed, this is an approximate value for the actual answer -- which is $e$. Cauchy
 demonstrates this value with a fair amount of work.
 
 These two cases illustrate that though the definition of the limit
@@ -152,7 +152,7 @@ defined.
 Let's return to the function $f(x) = \sin(x)/x$. This function was studied by Euler as part of his solution to the [Basel](http://en.wikipedia.org/wiki/Basel_problem) problem. He knew that near $0$, $\sin(x) \approx x$, so the ratio is close to $1$ if $x$ is near $0$. Hence, the intuition is $\lim_{x \rightarrow 0} \sin(x)/x = 1$, as Cauchy wrote. We can verify this limit graphically two ways. First, a simple graph shows no issue at $0$:
 
 ```
-using Plots
+using CalculusWithJulia  # to load Plots and SymPy
 f(x) = sin(x)/x
 plot(f, -pi/2, pi/2)
 ```
@@ -369,18 +369,19 @@ graph shows.
 ## Symbolic approach to limits
 
 The `SymPy` package provides a `limit` function for finding the limit
-of an expression in a given variable. Its use requires the expression,
+of an expression in a given variable. It is loaded above, when the `CalculusWithJulia` package was loaded. The `limit` function's use requires the expression,
 the variable and a value for $c$. (Similar to the three things in the
 notation $\lim_{x \rightarrow c}f(x)$.)
 
 For example, the limit at $0$ of $(1-\cos(x))/x^2$ is easily handled:
 
 ```
-using SymPy
 @vars x real=true
 f(x) = (1 - cos(x)) / x^2
 limit(f(x), x=>0)		# f(x) is a symbolic expression when x is
 ```
+
+The pair notation (`x=>0`) is used to indicate the variable and the value it is going to.
 
 As a convenience, there is also an "operator" version of `limit` for univariate functions, where only a function object and `c` need be specified:
 
@@ -496,7 +497,7 @@ descr = [""" This says that limits involving sums, differences or scalar
   as $x$ approaches $L$."""]
   d = DataFrame(Rule=rules, Description=descr)
   table(d)
-```  
+```
 
 
 These, together with the fact that our basic algebraic functions have limits
@@ -596,7 +597,7 @@ We show "numerically" that $\delta = \epsilon/3$.
 f(x) = 3x + 2
 c, L = 1, 5
 epsilon = rand()                 # some number in (0,1)
-delta = epsilon / 3 
+delta = epsilon / 3
 xs = c + delta * rand(100)       # 100 numbers, c < x < c + delta
 as = [abs(f(x) - L) < epsilon for x in xs]
 all(as)                          # are all the as true?
@@ -655,7 +656,7 @@ From the graph, find the limit $L$:
 
 $$~
 L = \lim_{x \rightarrow -2} \frac{x}{x+1} \frac{x^2}{x^2 + 4}
-~$$ 
+~$$
 
 ```
 f(x) = x/(x+1)*x^2/(x^2+4)
@@ -720,7 +721,7 @@ $$~
 \lim_{h \rightarrow 0} \frac{e^{x + h} - e^x}{h} = L.
 ~$$
 
-Factoring out $e^x$ from the top and using rules of limits this becomes, 
+Factoring out $e^x$ from the top and using rules of limits this becomes,
 
 $$~
 L = e^x \lim_{h \rightarrow 0} \frac{e^h - 1}{h}.
@@ -838,7 +839,7 @@ numericq(val)
 
 ###### Question
 
-Find the limit 
+Find the limit
 
 $$~
 L = \lim_{x \rightarrow \pi/2} \frac{\tan (2x)}{x - \pi/2}
@@ -910,7 +911,7 @@ choices = [
 "Yes, the value is `-11.5123`",
 "No, the value heads to negative infinity"
 ];
-ans = 3;      
+ans = 3;
 radioq(choices, ans)
 ```
 
@@ -941,4 +942,3 @@ f(x) =  1/PI * cos(PI*x)/(1 - (2x)^2)
 val = N(limit(f, 1//2))
 numericq(val)
 ```
-

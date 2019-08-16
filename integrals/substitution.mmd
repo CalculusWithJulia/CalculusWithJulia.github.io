@@ -1,7 +1,7 @@
 # Substitution
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -37,7 +37,7 @@ That is, this substitution formula applies:
 
 > $$~ \int_a^b g(u(x)) u'(x) dx = \int_{u(a)}^{u(b)} g(x) dx. ~$$
 
-We have seen a special case of subsitution where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
+We have seen a special case of substitution where $u(x) = x-c$ in the formula $\int_{a-c}^{b-c} g(x) dx= \int_a^b g(x-c)dx$.
 
 
 
@@ -114,7 +114,7 @@ that about $\pi/2$ the function has odd-like symmetry, so the answer of $0$ is s
 
 
 ```
-using Plots
+using CalculusWithJulia  # loads `Plots`, `SymPy`, `QuadGK`
 f(x) = cos(x)^3 * sin(x)
 plot(f, 0, 1pi)
 ```
@@ -236,10 +236,9 @@ The `integrate` function in `SymPy` can handle most problems which involve subst
 * This integral, $\int_0^2 4x/\sqrt{x^2 +1}dx$, involves a substitution for $x^2 + 1$:
 
 ```
-using SymPy
-x,t = symbols("x, t", real=true)
+@vars x t real=true
 f(x) = 4x / sqrt(x^2 + 1)
-integrate(f(x), x, 0, 2)
+integrate(f(x), (x, 0, 2))
 ```
 
 
@@ -247,10 +246,10 @@ integrate(f(x), x, 0, 2)
 
 ```
 f(x) = 1/(x*log(x))
-integrate(f(x), x, E, E^2)
+integrate(f(x), (x, e, Sym(e)^2))
 ```
 
-(We used `E`---and not `e`---to avoid a conversion to floating point.)
+(We used `Sym(e)`---and not `e`---to avoid a conversion to floating point, which would yield an inexact answer.)
 
 
 The antiderivative is interesting here:
@@ -277,7 +276,7 @@ exponential functions is integrable. Missing from this list are
 absolute values, so something as simple as
 
 ```
-integrate(abs(x), x, -2, 2)
+integrate(abs(x), (x, -2, 2))
 ```
 
 is not found.
@@ -305,7 +304,7 @@ We can help `SymPy` out by substitution:
 
 ```
 u(x) = x * log(x)
-w, dw = symbols("w, dw")
+@vars w dw
 ex = f(x)
 ex = ex(u(x) => w, diff(u(x),x) => dw)
 ```
@@ -327,7 +326,7 @@ ex1(w => u(x))
 
 note("""
 Lest it be thought this is an issue with `SymPy`, but not other
-systems, this example was [borrowed](http://faculty.uml.edu/jpropp/142/Integration.pdf) from an 
+systems, this example was [borrowed](http://faculty.uml.edu/jpropp/142/Integration.pdf) from an
 illustration for helping Mathematica.
 """)
 ```
@@ -358,7 +357,7 @@ Let's see some examples where a trigonometric substitution is all that is needed
 Consider $\int 1/(1+x^2) dx$. This is an antiderivative of some function, but if that isn't observed, we might notice the $1+x^2$ and try to simplify that. First, an attempt at a $u$-substitution:
 
 
-Letting $u = 1+x^2$ we get $du = 2xdx$ which gives $\int 1/u (2x) du$. We aren't able to address the "$2x$" part successfully, so this attempt is for naught. 
+Letting $u = 1+x^2$ we get $du = 2xdx$ which gives $\int 1/u (2x) du$. We aren't able to address the "$2x$" part successfully, so this attempt is for naught.
 
 
 Now we try the trigonometric substitution taking advantage of $1+\tan(x)^2 = \sec(x)^2$. Letting $\tan(u) = x$ yields $\sec(u)^2 du = dx$ and we get:
@@ -648,5 +647,3 @@ L"We could differentiate $\log\lvert (\sec(u) + \tan(u))\rvert$ "]
 ans = 2
 radioq(choices, ans)
 ```
-
-

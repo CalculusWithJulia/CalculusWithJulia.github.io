@@ -18,7 +18,7 @@ line approximation.
 
 {{{taylor_animation}}}
 
-## The secant line and the tangent line 
+## The secant line and the tangent line
 
 To motivate, we have two related formulas. Suppose we have a function
 $f(x)$ which is defined in a neighborhood of $c$ and has as many
@@ -93,13 +93,13 @@ divided_differences(f, x) = f(x)
 function divided_differences(f, x, xs...)
     xs = sort(vcat(x, xs...))
     (divided_differences(f, xs[2:end]...) - divided_differences(f, xs[1:end-1]...)) / (xs[end] - xs[1])
-end	
+end
 ```
 
 With `SymPy` we have, using $u$ in place of $f$:
 
 ```
-using SymPy
+using CalculusWithJulia   # loads `SymPy`, `ForwardDiff`
 @vars x c real=true
 @vars h positive=true
 u = SymFunction("u")
@@ -134,8 +134,8 @@ approximation to $f''$.)
 This relationship between higher-order divided differences and higher-order derivatives generalizes. This is expressed in this
 [theorem](http://tinyurl.com/zjogv83):
 
-> Suppose $x_0,x_1, x_2, \dots, x_n$ are distinct points with $m$ and $M$ being the smallest and largest of them. If $f$ has $n$
-> continuous derivatives then there exists a value $\xi$ where $m <\xi<M$ satisfying:
+> Suppose $m=x_0 < x_1 < x_2 < \dots < x_n=M$ are distinct points. If $f$ has $n$
+> continuous derivatives then there exists a value $\xi$ where $m < \xi < M$ satisfying:
 
 $$~
 f[x_0, x_1, \dots, x_n] = \frac{1}{n!} \cdot f^{(n)}(\xi).
@@ -202,7 +202,7 @@ simplify(p)
 We can check that this interpolates the three points. Notice that at
 $x_0=c$ and $x_1=c+h$, the last term, $f[x_0, x_1,
 x_2]\cdot(x-x_0)(x-x_1)$, vanishes, so we already have the polynomial
-interpolating there. Only  
+interpolating there. Only
 value $x_2=c+2h$ remains to be checked:
 
 ```
@@ -289,7 +289,7 @@ interpolating polynomial $3$ times (at $x_0$, $x_1$, and $x_2$).
 
 
 
-##### Example 
+##### Example
 
 Consider the function $f(t) = \log(1 + t)$. We have mentioned that for $t$ small, the value $t$ is a good approximation. A better one becomes:
 
@@ -315,7 +315,7 @@ quadratic polynomial tracks the logarithm better farther from $c=0$.
 A wire is bent in the form of a half circle with radius $R$ centered
 at $(0,R)$, so the bottom of the wire is at the origin. A bead is
 released on the wire at angle $\theta$. As time evolves, the bead will
-slide back and forth. How? (Ignoring friction.) 
+slide back and forth. How? (Ignoring friction.)
 
 
 Let $U$ be the potential energy, $U=mgh = mgR \cdot (1 -
@@ -422,17 +422,15 @@ Each of these last three have a pattern that can be expressed quite succinctly i
 
 The output of `series` includes a big "Oh" term, which identifies the
 scale of the error, but also gets in the way of using the
-output. `SymPy` provides the `removeO` function to strip this.
+output. `SymPy` provides the `removeO` method to strip this. (It is called as `object.removeO()`, as it is a method of an object in SymPy.)
 
 
-However, we will define our own function to compute Taylor polynomials from a function. This returns a function, not a symbolic object:
+However, we will define our own function to compute Taylor polynomials from a function. The following returns a function, not a symbolic object, using `D`, from `CalculusWithJulia`, which is based on `ForwardDiff.derivative`, to find higher-order derivatives:
 
 ```
-using ForwardDiff
-D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f,float(x))
 function taylor_poly(f, c=0, n=2)
      x -> f(c) + sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 1:n)
-end	 
+end
 ```
 
 With a function, we can compare values.
@@ -454,14 +452,13 @@ generate the interpolating polynomial as a function:
 
 ```
 function newton_form(f, xs)
-  n = length(xs)
   x -> begin
      tot = divided_differences(f, xs[1])
-     for i in 2:n
+     for i in 2:length(xs)
         tot += divided_differences(f, xs[1:i]...) * prod([x-xs[j] for j in 1:(i-1)])
      end
      tot
-  end	
+  end
 end
 ```
 
@@ -660,13 +657,13 @@ To compute $\log(1\pm s)$, we can find a Taylor series. Let's go out to degree $
 @vars s
 a = series(log(1 + s), s, 0, 19)
 b = series(log(1 - s), s, 0, 19)
-a - b
+a_b = (a - b).removeO()  # remove"Oh" not remove"zero"
 ```
 
 This is re-expressed as $2s + s \cdot p$ with $p$ given by:
 
 ```
-p = cancel((removeO(a-b)-2s)/s)
+p = cancel(a_b - 2s/s)
 ```
 
 Now, $2s = m - s\cdot m$, so the above can be reworked to be $\log(1+m) = m - s\cdot(m-p)$.
@@ -694,9 +691,9 @@ The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of 
 (2/19)*M^19
 ```
 
-Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done. 
+Basically that is machine precision. Which means, that as far as can be told on the computer, the value produced by $2s + s \cdot p$ is as accurate as can be done.
 
-To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$. 
+To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$.
 
 ```
 k, m = 2, 0.25
@@ -908,13 +905,13 @@ Here is one way to get all the values bigger than 1:
 ```
 @vars x
 ex = (1 - x + x^2)*exp(x)
-Tn = removeO(series(ex, x, 0, 100))
-ps = coeffs(Poly(Tn))
+Tn = series(ex, x, 0, 100).removeO()
+ps = sympy.Poly(Tn, x).coeffs()
 qs = numer.(ps)
 qs = qs[qs .> 1]
 ```
 
-Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use `sympy_meth.(:isprime, qs)`).
+Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use `sympy.isprime.(qs)`).
 
 Are they all prime or $1$?
 
@@ -982,4 +979,3 @@ $n+1-4$ zeros of $h^{4}(x)$, $\dots$,
 $n+1-(n-1)$ zeros of $h^{n-1}(x)$, and finally
 $n+1-n$ ($1$) zero of $h^{(n)}(x)$. Call this last zero $\xi$. It satisfies $x_0 \leq \xi \leq x_n$. Further,
 $0 = h^{(n)}(\xi) = f^{(n)}(\xi)  - g^{(n)}(\xi)$. But $g$ is a degree $n$ polynomial, so the $n$th derivative is the coefficient of $x^n$ times $n!$. In this case we have $0 = f^{(n)}(\xi) - f[x_0, \dots, x_n] n!$. Rearranging yields the result.
-

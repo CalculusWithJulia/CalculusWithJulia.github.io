@@ -1,9 +1,8 @@
 # Euler's method
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
-using Roots
 ```
 
 Consider the differential equation:
@@ -12,22 +11,22 @@ $$~
 y'(x) = y(x) \cdot  x, \quad y(1)=1,
 ~$$
 
-which ca be solved with `SymPy`:
+which can be solved with `SymPy`:
 
 ```
-using SymPy
-x, y = symbols("x, y")
+using CalculusWithJulia   # loads `SymPy`, `Roots`, `Plots`
+@vars x y
 u = SymFunction("u")
 x0, y0 = 1, 1
 F(y,x) = y*x
 
-dsolve(u'(x) - F(u(x),x))
+dsolve(u'(x) - F(u(x), x))
 ```
 
 With the given initial condition, the solution becomes:
 
 ```
-out = dsolve(u'(x) - F(u(x),x), x, (u, x0, y0))
+out = dsolve(u'(x) - F(u(x),x), u(x), ics=(u, x0, y0))
 ```
 
 
@@ -48,7 +47,7 @@ What if the graph of the solution were not there, could we use this
 fact to *approximately* reconstruct the solution?
 
 That is, if we stitched together pieces of the slope field, would we
-get a curve that was close to the actual answer? 
+get a curve that was close to the actual answer?
 
 {{{euler_graph}}}
 
@@ -146,7 +145,7 @@ function linterp(xs, ys)
         end
         ys[end]
     end
-end        
+end
 ```
 
 With that, here is our function to find an approximate solution to $y'=F(y,x)$ with initial condition:
@@ -257,7 +256,8 @@ We graphically compare our approximate answer with the exact one:
 ```
 plot(f, x0, xn)
 u = SymFunction("u")
-plot(rhs(dsolve(u'(x) - F(u(x),x), x, (u, x0, y0))), x0, xn)
+out = dsolve(u'(x) - F(u(x),x), u(x), ics = (u, x0, y0))
+plot(rhs(out), x0, xn)
 plot!(f, x0, xn)
 ```
 
@@ -274,8 +274,7 @@ that one returned by `SymPy`.
 First, the `SymPy` solution:
 
 ```
-using SymPy
-x = symbols("x")
+@vars x
 u = SymFunction("u")
 F(y,x) = sin(x*y)
 eqn = u'(x) - F(u(x), x)
@@ -285,7 +284,7 @@ out = dsolve(eqn)
 If we assume $y(0) = 1$, we can continue:
 
 ```
-out = dsolve(eqn, x, (u, 0, 1))
+out = dsolve(eqn, u(x), ics=(u, 0, 1))
 ```
 
 The approximate value given by the Euler method is
@@ -395,7 +394,6 @@ use below need not be widely applicable.
 
 
 ```
-using Roots
 function back_euler(F, x0, xn, y0, n)
     h = (xn - x0)/n
     xs = zeros(n+1)
@@ -417,7 +415,7 @@ We then have with $C=1$ over the interval $[0,1.2]$ the following:
 F(y, x; C=1) = sqrt(C/y - 1)
 x0, xn, y0 = 0, 1.2, 0
 cyc = back_euler(F, x0, xn, y0, 50)
-plot(x -> 1 - cyc(x), x0, xn) 
+plot(x -> 1 - cyc(x), x0, xn)
 ```
 
 Remember, $y$ is the displacement from the top, so it is
@@ -497,7 +495,7 @@ $$~
 x_{n+1} = x_n + h, \quad u_{n+1} = u_n + h v_n, \quad v_{n+1} = v_n - h \cdot g/l \cdot \sin(u_n).
 ~$$
 
-Here we need *two* initial conditions: one for the initial value 
+Here we need *two* initial conditions: one for the initial value
 $u(t_0)$ and the initial value of $u'(t_0)$. We have seen if we start at an angle $a$ and release the bal from rest, so $u'(0)=0$ we get a sinusoidal answer to the linearized model. What happens here? We let $a=1$, $L=5$ and $g=9.8$:
 
 We write a function to solve this starting from $(x_0, y_0)$ and ending at $x_n$:
@@ -523,7 +521,7 @@ solution should be $\pi/4\cos(\sqrt{g/l}x)$ with period $T =
 ```
 l, g = 5, 9.8
 T = 2pi * sqrt(l/g)
-x0, xn, y0, yp0 = 0, 4T, pi/4, 0  
+x0, xn, y0, yp0 = 0, 4T, pi/4, 0
 plot(euler2(x0, xn, y0, yp0, 20), 0, 4T)
 ```
 
@@ -669,14 +667,3 @@ choices = [
 ans = 4
 radioq(choices, ans, keep_order=true)
 ```
-
-
-
-
-
-
-
-
-
-
-

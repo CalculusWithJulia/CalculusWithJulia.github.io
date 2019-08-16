@@ -1,7 +1,7 @@
 # Arc length
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -120,7 +120,7 @@ An analogy might be a sausage maker. These take a mass of ground-up sausage mate
 Let $f(x) = x^2$. The arc length of the graph of $f(x)$ over $[0,1]$ is then $L=\int_0^1 \sqrt{1 + (2x)^2} dx$. A trigonometric substitution of $2x = \sin(\theta)$ leads to the antiderivative:
 
 ```
-using SymPy
+using CalculusWithJulia  # loads `SymPy`, `Plots`, `Roots`, `QuadGK`, `ForwardDiff`
 @vars x
 F = integrate(sqrt(1 + (2x)^2), x)
 ```
@@ -129,10 +129,9 @@ F = integrate(sqrt(1 + (2x)^2), x)
 F(1) - F(0)
 ```
 
-That number has some context, as can be seen from the graph, which gives simple lower and upper bounds of $\sqrt{1^2 + 1^2} = 1.414...$ and $1 + 1 = 2$. 
+That number has some context, as can be seen from the graph, which gives simple lower and upper bounds of $\sqrt{1^2 + 1^2} = 1.414...$ and $1 + 1 = 2$.
 
 ```
-using Plots
 f(x) = x^2
 plot(f, 0, 1)
 ```
@@ -169,7 +168,7 @@ This has a *messy* antiderivative, so we let `SymPy` compute for us:
 
 ```
 @vars x
-ex = integrate(sqrt(1 + (1/x)^2), (x, 1/E, E))
+ex = integrate(sqrt(1 + (1/x)^2), (x, 1/Sym(e), e))    # 1/Sym(e) keeps as symbolic value
 ```
 
 Which isn't so satisfying. From a quick graph, we see the answer should be no more than 4, and we see in fact it is
@@ -178,7 +177,7 @@ Which isn't so satisfying. From a quick graph, we see the answer should be no mo
 N(ex)
 ```
 
-##### Example 
+##### Example
 
 
 A [catenary shape](http://en.wikipedia.org/wiki/Catenary) is the shape a hanging chain will take as it is suspended between two posts. It appears elsewhere, for example, power wires will also have this shape as they are suspended between towers.  A formula for a catenary can be written in terms of the hyperbolic cosine, `cosh` in `julia` or exponentials.
@@ -196,12 +195,10 @@ plot(f, -1, 1)
 
 How long is the chain? Looking at the graph we can guess an answer is
 between $2$ and $2.5$, say, but it isn't much work to get
-an approximate numeric answer. We add in a bit to make `f'(t)` call `D(f)(t)` to match the equations:
+an approximate numeric answer. Recall, the accompanying `CalculusWithJulia` package deines `f'` to find the derivative using the `ForwardDiff` package.
+
 
 ```
-using Roots, QuadGK, ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = x -> D(f)(x)
 quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
 ```
 
@@ -209,7 +206,7 @@ We used a numeric approach, but this can be solved by hand and the answer is sur
 
 ##### Example
 
-This picture of Jasper John's [Near the Lagoon](http://www.artic.edu/aic/collections/artwork/184095) was taken at The Art Institute Chicago. 
+This picture of Jasper John's [Near the Lagoon](http://www.artic.edu/aic/collections/artwork/184095) was taken at The Art Institute Chicago.
 
 
 ```
@@ -226,7 +223,7 @@ The museum notes have
 >    the largest and last work, Johns formed catenaries—a term used to
 >    describe the curve assumed by a cord suspended freely from two
 >    points—by tacking ordinary household string to the canvas or its
->    supports. 
+>    supports.
 
 This particular catenary has a certain length. The basic dimensions
 are 78in wide and 118in drop. We shift the basic function for catenaries to have $f(78/2) = f(-78/2) = 0$ and
@@ -274,17 +271,17 @@ of $1298$m. (Though, in the picture from the link the cable is
 basically unloaded so will form a catenary.) Suppose the drop of the
 main cables is $147$ meters over this span. Then the cable itself can
 be modeled as a parabola with
-    
-* The $x$-intercepts $a = 1298/2$ and $-a$ and 
+
+* The $x$-intercepts $a = 1298/2$ and $-a$ and
 * vertex $(0,b)$ with $b=-147$.
 
-The parabola that fits these three points is 
+The parabola that fits these three points is
 
 $$~
 y = \frac{-b}{a^2}(x^2 - a^2)
 ~$$
 
-Find the  length of the cable in meters.  
+Find the  length of the cable in meters.
 
 ```
 a = 1298/2;
@@ -560,7 +557,7 @@ numericq(val)
 
 ###### Question
 
-The [astroid](http://www-history.mcs.st-and.ac.uk/Curves/Astroid.html) is 
+The [astroid](http://www-history.mcs.st-and.ac.uk/Curves/Astroid.html) is
 a curve  parameterized by $g(t) = \cos(t)^3$ and $f(t) = \sin(t)^3$. Find the arc length of the curve between $t=0$ and $2\pi$. (This can be computed by hand or numerically.)
 
 ```

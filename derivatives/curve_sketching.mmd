@@ -1,7 +1,7 @@
 # Curve Sketching
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -10,7 +10,7 @@ The figure illustrates a means to *sketch* a sine curve -- identify as
 many of the following values as you can: asymptotic behaviour, periodic
 behaviour, vertical asymptotes, $y$ intercept, $x$ intercepts, local
 peaks and valleys (extrema). With these, a sketch fills in between the
-points/lines associated with these values. 
+points/lines associated with these values.
 
 
 
@@ -19,7 +19,7 @@ points/lines associated with these values.
 
 Though this approach is most useful for hand-sketches, the underlying
 concepts are important for properly framing graphs made with the
-computer. 
+computer.
 
 We can easily make a graph of a function over a specified
 interval. What is not always so easy is to pick an interval that shows
@@ -37,7 +37,7 @@ Before beginning, we need some vocabulary:
 
 > A function $f$ is *positive* on an interval $I$ if for any $a$ in $I$ it must be that $f(a) > 0$.
 
-Of course, we  define *negative* in a parallel manner. The intermediate value theorem says a continuous function can not change from positive to negative without crossing $0$. This is not the case for functions with jumps, of course. 
+Of course, we  define *negative* in a parallel manner. The intermediate value theorem says a continuous function can not change from positive to negative without crossing $0$. This is not the case for functions with jumps, of course.
 
 > A function, $f$, is (strictly) *increasing* on an interval $I$ if for any $a < b$ it must be that $f(a) < f(b)$.
 
@@ -53,10 +53,9 @@ helpful to get an idea of where the answer is using exploratory
 graphs.
 
 This helper function plots the function `f` twice: the second time
-only when the second function `g` is positive. 
+only when the second function `g` is positive.
 
-```
-using Plots
+```noeval
 function plotif(f, g, a, b)
        xs = range(a, stop=b, length=251)
        ys = f.(xs)
@@ -65,6 +64,13 @@ function plotif(f, g, a, b)
        p
 end
 ```
+
+Such a function is defined for us in the accompanying package, loaded with
+
+```
+using CalculusWithJulia
+```
+
 
 To see where a function is positive, we simply pass the function
 object in for *both* `f` and `g` above. For example, let's look at
@@ -86,13 +92,8 @@ Maybe surprisingly, we see that the increasing parts of the sine curve are now
 highlighted. Of course, the cosine is the derivative of the sine
 function, now we discuss that this is no coincidence.
 
-For the sequel, we will use `ForwardDiff` to ease the burden of finding (numeric) derivatives:
+For the sequel, we will use `f'` notation to find numeric derivatives, with the notation being defined in the `CalculusWithJulia` package using the `ForwardDiff` package.
 
-```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
-```
 
 ## Relative extrema
 
@@ -177,7 +178,7 @@ question can be answered by considering the first derivative.
 
 The classification part, should be clear: e.g., if the derivative is positive then
 negative, the function $f$ will increase to $(c,f(c))$ then decrease
-from $(c,f(c))$---so a local maximum. 
+from $(c,f(c))$---so a local maximum.
 
 Our definition of critical point *assumes* $f(c)$ exists, as $c$ is in
 the domain of $f$. With this assumption, vertical asymptotes are
@@ -212,7 +213,6 @@ $f(x)$. To do so, we need to know the extent of the zeros. We can try
 some theory, but instead we just guess and if that fails, will work harder:
 
 ```
-using Roots
 f(x) = x^4 - 13x^3 + 56x^2 -92x + 48
 rts = find_zeros(f, -10, 10)
 ```
@@ -346,7 +346,7 @@ plot(f', -2, 2)
 
 We see asymptotes at $x=-1$ and $x=1$! These aren't zeroes of $f'(x)$,
 but rather where $f'(x)$ does not exist. The conclusion is correct --
-each of $-1$, $0$ and $1$ are critical points with the identified characterization---but not for the 
+each of $-1$, $0$ and $1$ are critical points with the identified characterization---but not for the
 reason that they are all zeros.
 
 ```
@@ -368,9 +368,9 @@ Consider the function $f(x) = \sin(x) - x$. Characterize the critical points.
 We will work symbolically for this example.
 
 ```
-using SymPy
 f(x) = sin(x) - x
-fp = diff(f)
+@vars x
+fp = diff(f(x), x)
 cps = solve(fp)
 ```
 
@@ -552,7 +552,7 @@ relative minimum.
 
 ##### Example
 
-Use the second derivative test to characterize the critical points of $f(x) = x^5 - x^4 + x^3$. 
+Use the second derivative test to characterize the critical points of $f(x) = x^5 - x^4 + x^3$.
 
 ```
 f(x) = x^5 - 2x^4 + x^3
@@ -660,29 +660,7 @@ extrema(union(cps, poss_ips))
 
 So a range over $[-5,5]$ should display the key features including the slant asymptote.
 
-Previously we used this function to avoid the distortion that vertical asymptotes can have:
-
-```
-function trimplot(f, a, b, c=20; kwargs...)
-  xs = range(a, stop=b, length=251)
-  ys = f.(xs)
-
-  us, vs = Real[], Real[]
-  p = plot(us, vs, xlim=(a, b), legend=false, kwargs...)
-  for (x,y) in zip(xs, ys)
-    if abs(y) <= c
-       push!(us, x); push!(vs, y)
-    else
-      length(us) > 0 && plot!(p, us, vs, color=:blue)
-      empty!(us); empty!(vs)
-    end
- end	
- length(us) > 0 && plot!(p, us, vs, color=:blue)
- p
-end
-```
-
-producing
+Previously we used the `trimplot` function defined in `CalculusWithJulia` to avoid the distortion that vertical asymptotes can have:
 
 ```
 trimplot(f, -5, 5)
@@ -730,7 +708,7 @@ concavity of the graph. As acceleration is the derivative of velocity,
 it is the second derivative of position---the graph we see. Where the
 acceleration is *positive*, the position graph will be concave *up*,
 where the acceleration is *negative* the graph will be concave
-*down*. The point $t=1$ is an inflection point, and 
+*down*. The point $t=1$ is an inflection point, and
 would be felt by most riders.
 
 ## Questions
@@ -740,9 +718,7 @@ would be felt by most riders.
 Consider this graph:
 
 ```
-import SpecialFunctions: airyai
-p = plot(airyai, -5, 0)
-Outputonly(p)
+plot(airyai, -5, 0)  # airyai in `SpecialFunctions` loaded with `CalculusWithJulia`
 ```
 
 On what intervals (roughly) is the function positive?
@@ -1160,4 +1136,4 @@ choices = [
 ]
 ans = 1
 radioq(choices, ans)
-```		 
+```

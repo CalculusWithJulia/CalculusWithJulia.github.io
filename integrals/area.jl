@@ -14,7 +14,7 @@ colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
 ## Area of parabola
 function make_triangle_graph(n)
     title = "Area of parabolic cup ..."
-    n==1 && (title = "Area = }1/2")
+    n==1 && (title = "Area = 1/2")
     n==2 && (title = "Area = previous + 1/8")
     n==3 && (title = "Area = previous + 2*(1/8)^2")
     n==4 && (title = "Area = previous + 4*(1/8)^3")
@@ -33,7 +33,7 @@ function make_triangle_graph(n)
         ys = map(f, xs)
         k < n && plot!(plt, xs, ys, linetype=:polygon, fill=:black, alpha=.2)
         if k == n
-            plot!(plt, xs, ys, color=colors[k], linetype=:polygon, fill=:black, alpha=.2)            
+            plot!(plt, xs, ys, color=colors[k], linetype=:polygon, fill=:black, alpha=.2)
             plot!(plt, xs, ys, color=:black, linewidth=2)
         end
     end
@@ -75,7 +75,7 @@ archimedes_parabola = gif_to_data(imgfile, caption)
 #     xs = linspace(0,1)
 #     append!(layers, layer(x=xs, y=map(f,xs), Geom.line))
 
-    
+
 #     title = "Area of parabolic cup"
 #     n==1 && (title = "Area = 1/2")
 #     n==2 && (title = "Area = 1/2 + 2 ⋅ (1/2 ⋅ 1/8)")
@@ -86,9 +86,9 @@ archimedes_parabola = gif_to_data(imgfile, caption)
 #         append!(layers, layer(x=[0,0,1],   y=[0,1,1], Geom.line))
 #     elseif n == 1
 #         append!(layers, layer(x=[1,0,0,1, 0], y=[1,1,0,1,1], Geom.line(preserve_order=true), Theme(default_color=color(colors[1]))))
-#     else    
+#     else
 #         for k in (n-1):n
-        
+
 #             xs = linspace(0,1,1+2^(k-1))
 #             ys = map(f, xs)
 #             append!(layers, layer(x=xs, y=ys, Geom.line, Theme(default_color=color(colors[k]))))

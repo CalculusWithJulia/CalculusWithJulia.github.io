@@ -1,7 +1,7 @@
 # Optimization
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -73,7 +73,7 @@ interval). Rather than solve analytically by taking a derivative, we
 simply graph to find the value:
 
 ```
-using Plots
+using CalculusWithJulia   # loads `Plots`, `ForwardDiff`, `Roots`, `SymPy`
 A(b) = b * (10 - b)
 plot(A, 0, 10)
 ```
@@ -115,20 +115,11 @@ functions:
 A(b) = A(b, h(b))
 ```
 
-From this we can solve graphically as before, or numerically. For this, we first define a numeric derivative:
-
-
-```
-using ForwardDiff
-D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
-Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
-```
-
-The we search for zeros of the derivative:
+From this we can solve graphically as before, or numerically.
+We search for zeros of the derivative:
 
 ```
-using Roots
-find_zeros(A', 0, 10)
+find_zeros(A', 0, 10)   # find_zeros in `Roots`,
 ```
 
 
@@ -206,7 +197,7 @@ A(x) = A(x, y(x))
 ```
 
 Of course both $x$ and $y$ are non-negative. The latter forces $x$ to
-be no more than $x=20/(1+\pi/2)$. 
+be no more than $x=20/(1+\pi/2)$.
 
 This leaves us the calculus problem of finding an absolute maximum of
 a continuous function over the closed interval
@@ -230,10 +221,12 @@ $0$ of a function, we plot the derivative using our approximate
 derivative.
 
 ```
-plot(A', 5.5, 5.7) 
+plot(A', 5.5, 5.7)
 ```
 
 We confirm that the critical point is around $5.6$.
+
+(As a reminder, the notation `A'` is defined in `CalculusWithJulia` through `Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`.)
 
 #### Using `find_zero` to locate critical points.
 
@@ -246,7 +239,7 @@ track of is that solving $f'(x) = 0$ means we use the derivative and
 not the original function.
 
 We see from the graph that $[0, 20/(1+\pi/2)]$ will provide a bracket, as there is only one relative maximum:
- 
+
 ```
 x = find_zero(A', (0, 20/(1+pi/2)))
 ```
@@ -270,7 +263,6 @@ rectangles? See [Isoperimetric inequality](https://en.wikipedia.org/wiki/Isoperi
 We could also do the above problem symbolically with the aid of `SymPy`. Here are the steps:
 
 ```
-using SymPy
 @vars width height real=true
 
 Area  = width * height + pi * (width/2)^2 / 2
@@ -287,7 +279,7 @@ is negative at `w0` would suffice to know this. Here we check that
 condition:
 
 ```
-diff(Area, width, 2)(width => 40)
+diff(Area, width, width)(width => 40)
 ```
 
 As an aside, compare the steps involved above for a symbolic solution to those of previous work for a numeric solution:
@@ -352,7 +344,7 @@ That is, we have
 
 ```
 l(l1, l2) = l1 + l2
-l1(t) = 8/sin(t)	
+l1(t) = 8/sin(t)
 l2(t) = 5/cos(t)
 
 l(t) = l(l1(t), l2(t))		# or simply l(t) = 8/sin(t) + 5/cos(t)
@@ -376,7 +368,7 @@ The minimum occurs between 0.5 and 1.0 radians, a bracket for the derivative:
 x = find_zero(l', (0.5, 1.0))
 ```
 
-So the minimum of the function $l$ is 
+So the minimum of the function $l$ is
 
 ```
 l(x)
@@ -391,7 +383,7 @@ is what we know:
 
 * Ethan likes to run. He can run at 10 miles per hour.
 * He can drive a car---usually some concept car by BMW---at 30 miles per hour, but only on the road.
-  
+
 For his mission, he needs to go 10 miles west and 5 miles north. He
 can do this by:
 
@@ -404,7 +396,7 @@ A quick analysis says:
 
 * It would take $(10+5)/30$ hours to just drive
 * It would take $\sqrt{10^2 + 5^2}/10$ hours to just run
-  
+
 Now, if he drives $x$ miles west ($0 < x < 10$) he would run an amount
 given by the hypotenuse of a triangle with lengths $5$ and $10-x$. His
 time driving would be $x/30$ and his time running would be
@@ -425,13 +417,13 @@ T(x) = x/30 + sqrt(5^2 + (10-x)^2)/10
 ```
 
 ```
-plot(T, 0, 10) 
+plot(T, 0, 10)
 ```
 
 The minimum happens way out near 8. We zoom in a bit:
 
 ```
-plot(T, 7, 9) 
+plot(T, 7, 9)
 ```
 
 It appears to be around 8.3. We now use `find_zero` to refine our
@@ -455,7 +447,7 @@ endpoints:
 sqrt(10^2 + 5^2)/10, T(x), (10+5)/30
 ```
 
-Ahh, we see that $T(x)$ is not continous on $[0, 10]$, as it jumps at
+Ahh, we see that $T(x)$ is not continuous on $[0, 10]$, as it jumps at
 $x=10$ down to an even smaller amount of $1/2$.  It may not look as
 impressive as a miles-long sprint, but Mr. Hunt is advised by Benji to drive
 the whole way.
@@ -471,10 +463,9 @@ $(L,-b)$, with $a,b,L$ positive values. Above the $x$ axis travel
 happens at rate $r_0$, and below, travel happens at rate $r_1$, again,
 both positive. What value $x$ in $[0,L]$ will minimize the total travel time?
 
-We approach this with `SymPy`:
+We approach this symbolically with `SymPy`:
 
 ```
-using SymPy
 @vars a b L x r0 r1 positive=true
 
 d0 = sqrt(x^2 + a^2)
@@ -491,7 +482,7 @@ The structure of `dt` is too complicated for simply calling `solve` to find the 
 We can get these terms---$a$, $b$, $c$, and $d$---as follows:
 
 ```
-t1, t2 = args(dt)  # args finds arguments to the outer function (+ in this case)
+t1, t2 = SymPy.Introspection.args(dt)  # args finds arguments to the outer function (+ in this case)
 ```
 
 The equivalent of $a^2d^2 - c^2 b^2$ is found using `numer` and
@@ -504,7 +495,7 @@ ex = numer(t1^2)*denom(t2^2) - denom(t1^2)*numer(t2^2)
 This is a polynomial in the `x` variable of degree $4$:
 
 ```
-coeffs(ex, x)  # a0 + a1⋅x + a2⋅x^2 + a3⋅x^3 + a4⋅x^4
+sympy.Poly(ex, x).coeffs() # a0 + a1⋅x + a2⋅x^2 + a3⋅x^3 + a4⋅x^4
 ```
 
 Fourth degree polynomials can be solved. The critical points of the
@@ -600,14 +591,14 @@ So to approach this problem we first graph it over a wide interval.
 
 ```
 f(x) = x * exp(-x^2)
-plot(f, 0, 100) 
+plot(f, 0, 100)
 ```
 
 Clearly the action is nearer to 1 than 100. We try graphing the
 derivative near that area:
 
 ```
-plot(f', 0, 5) 
+plot(f', 0, 5)
 ```
 
 This shows the value of interest near $0.7$. We use `find_zero` with $[0,1]$ as a bracket
@@ -616,7 +607,7 @@ This shows the value of interest near $0.7$. We use `find_zero` with $[0,1]$ as 
 x = find_zero(f', (0, 1))
 ```
 
-The maximum is then at 
+The maximum is then at
 
 ```
 f(x)
@@ -831,7 +822,7 @@ using Roots
 P = 20
 A(x,y) = x*y + pi * (x/2)^2
 y(x) = (P - pi*x)/2 # P = 2y + 2pi*x/2
-A(x) = A(x,y(x)) 
+A(x) = A(x,y(x))
 x0 = find_zero(D(A), (0, 10))
 val = y(x0)
 numericq(val) # 0
@@ -862,7 +853,7 @@ numericq(val, 1e-1)
 
 ###### Question
 
-A maximum likelihood estimator is a value derived by maximizing a function. For example, if 
+A maximum likelihood estimator is a value derived by maximizing a function. For example, if
 
 ```
 Likhood(t) = t^3 * exp(-3t) * exp(-2t) * exp(-4t) ## 0 <= t <= 10
@@ -965,10 +956,10 @@ total surface area of 12,000 $mm^2$ and maximal screen area. The
 screen is surrounded by bezels with sizes of 8$mm$ on the long sides
 and 32$mm$ on the short sides. (So, for example, the screen width is
 shorter by $2\cdot 8$ mm than the phone width.)
-  
+
 What are the dimensions (width and
-height) that allow the maximum screen area?  
-  
+height) that allow the maximum screen area?
+
 The width is:
 
 ```
@@ -1040,5 +1031,3 @@ L"about $2.6$ times as big",
 ans = 1
 radioq(choices, ans)
 ```
-
-

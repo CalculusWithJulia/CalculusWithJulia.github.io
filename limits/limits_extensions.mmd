@@ -1,7 +1,7 @@
 # Limits, issues, extensions of the concept
 
 ```nocode,noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -27,7 +27,7 @@ question of whether a limit exists at $c=0$.
 A graph shows the issue:
 
 ```nocode
-using Plots
+using CalculusWithJulia   # to load `Plots` and `SymPy`
 f(x) = sin(1/x)
 plot(f, range(-1, stop=1, length=1000))
 ```
@@ -125,14 +125,14 @@ The `SymPy` function `limit` has a keyword argument `dir="+"` or
 
 
 ```
-using SymPy
+@vars x
 f(x) = abs(x)/x
-limit(f, 0, dir="+"), limit(f, 0, dir="-")
+limit(f(x), x=>0, dir="+"), limit(f(x), x=>0, dir="-")
 ```
 
 ```
 alert("""
-However, `SymPy` will actually *not* get this correct as a limit, as one can verify through `limit(f, 0)`. This is because `SymPy` defaults to `dir="+"`. To be certain, you can check both to see they are equal.
+However, `SymPy` will actually *not* get this correct as a limit, as one can verify through `limit(f(x), x=>0)`. This is because `SymPy` defaults to `dir="+"`. To be certain, you can check both to see they are equal.
 """)
 ```
 
@@ -258,7 +258,7 @@ Though rational functions can have only one (at most) horizontal asymptote, this
 
 ```
 f(x) = x / sqrt(x^2 + 4)
-limit(f, oo), limit(f, -oo)
+limit(f(x), x=>oo), limit(f(x), x=>-oo)
 ```
 
 (A simpler example showing this behavior is just the function $|x|/x$ considered earlier.)
@@ -310,7 +310,7 @@ plot!(f, -1, -1/50, color=:blue)
 
 ```
 f(x) = 1/x
-limit(f, 0, dir="-"), limit(f, 0, dir="+")
+limit(f(x), x=>0, dir="-"), limit(f(x), x=>0, dir="+")
 ```
 
 
@@ -329,7 +329,7 @@ plot(f, 1/100, 1)
 We can check with `SymPy`:
 
 ```
-limit(f, 0, dir="+")
+limit(f(x), x=>0, dir="+")
 ```
 ## Limits of sequences
 
@@ -353,7 +353,7 @@ integers.
 ```
 @vars i n integer=true
 s(n) = 1//2 * summation((1//4)^i, (i, 0, n))    # rationals make for an exact answer
-limit(s(n), n, oo)
+limit(s(n), n=>oo)
 ```
 
 ## Summary
@@ -494,7 +494,7 @@ Find $\lim_{x \rightarrow -3-} (x-3)/(x+3)$.
 choices=[L"L=-\infty", L"L=-1", L"L=0", L"L=\infty"]
 ans = 4
 radioq(choices, ans)
-```	
+```
 
 ###### Question <small>No limit</small>
 

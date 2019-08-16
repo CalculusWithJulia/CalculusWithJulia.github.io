@@ -1,7 +1,7 @@
 # Center of Mass
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -58,7 +58,7 @@ Consider now a more general problem, the center of mass of a solid figure. We wi
 This graph shows that the figure is symmetric:
 
 ```
-using Plots
+using CalculusWithJulia  # loads `Plots`, `Roots`, `QuadGK`, `SymPy`
 f(x) = 1 - abs(x)
 plot(f, -1.5, 1.5)
 plot!(zero)
@@ -80,7 +80,7 @@ p = plot(legend=false);
 for i in 1:(n-1)
    xi, xi1 = xs[i], xs[i+1]
    plot!(p, [xi, xi1, xi1, xi], [0,0,1,1]*f(cs[i]), linetype=:polygon, color=:red);
-end    
+end
 
 for i in 1:(n-1)
   ci = cs[i]
@@ -107,7 +107,7 @@ But the top part is an approximation to the integral $\int_a^b x f(x) dx$ and th
 
 > **Center of Mass**: The center of mass (in the $x$ direction) of a region in the $x-y$ plane described by
 > the area under a (positive) function $f(x)$ between $a$ and $b$ is given by
-> 
+>
 > $$~
 > \text{Center of mass} = \text{cm}_x = \frac{\int_a^b xf(x) dx}{\int_a^b f(x) dx}.
 > ~$$
@@ -150,11 +150,10 @@ plot!(g)
 To find it, we need to find the intersection points, then integrate. We do so numerically.
 
 ```
-using Roots, QuadGK
 h(x) = f(x) - g(x)
-a,b = find_zeros(h, -3, 3) 
-top, _ = quadgk(x -> x*h(x), a, b)
-bottom, _ = quadgk(h, a, b)
+a,b = find_zeros(h, -3, 3)
+top, err = quadgk(x -> x*h(x), a, b)
+bottom, err = quadgk(h, a, b)
 cm = top / bottom
 ```
 
@@ -163,10 +162,7 @@ Our guess from the diagram proves correct.
 ```
 note("""
 
-There are a few tricks above. 
-First, it proves convenient to use the `->` notation for an anonymous function above, as our function `h` is not what is being integrated all the time, but some simple modification. If this isn't palatable, a new function could be defined and passed along to `quadgk`.
-
-Second, the `_` is just one way to ignore the second value returned by `quadgk` (the error). The `_` is a name which can be used when the value is unimportant. Alternatively, we could have employed indexing, as with `quadgk(h, a, b)[1]`.
+It proves convenient to use the `->` notation for an anonymous function above, as our function `h` is not what is being integrated all the time, but some simple modification. If this isn't palatable, a new function could be defined and passed along to `quadgk`.
 
 """)
 ```
@@ -263,10 +259,9 @@ As seen, the computation of the center of mass in the $y$ direction has an ident
 
 ##### Example
 
-More generally, consider a right triangle with vertices $(0,0)$, $(0,a)$, and $(b,0)$. The center of mass of this can be computed with the help of the equation for the line that forms the hypotenuse: $x/b + y/a = 1$. We find the center of mass in the $y$ variable by solving for $x$ in terms of $y$, then integrating from $0$ to $a$:
+More generally, consider a right triangle with vertices $(0,0)$, $(0,a)$, and $(b,0)$. The center of mass of this can be computed with the help of the equation for the line that forms the hypotenuse: $x/b + y/a = 1$. We find the center of mass symbolically in the $y$ variable by solving for $x$ in terms of $y$, then integrating from $0$ to $a$:
 
 ```
-using SymPy
 @vars a b x y
 eqn = x/b + y/a - 1
 fy = solve(eqn, x)[1]
@@ -347,7 +342,7 @@ bottom, _ = quadgk( f, -2, 2)
 top/bottom
 ```
 
-The nice answer of $-1/3$ makes us think there may be a different way to visualize this. Were we to rearrange the top integral, we could write it as $\int_{-2}^2 y 2 \sqrt{4 -y^2}dy - \int_0^2 2y\sqrt{1 - (y-1)^2}dy$. Call this $A - B$.  The left term, $A$, is part of the center of mass formula for the big circle (which is this value divided by $M=4\pi$), and the right term, $B$, is part of the center of mass formula for the (drilled out) smaller circle (which is this value divided by $m=\pi$. These values are weighted according to $(AM - Bm)/(M-m)$. In this case $A=0$, $B=1$ and $M=4m$, so the answer is $-1/3$. 
+The nice answer of $-1/3$ makes us think there may be a different way to visualize this. Were we to rearrange the top integral, we could write it as $\int_{-2}^2 y 2 \sqrt{4 -y^2}dy - \int_0^2 2y\sqrt{1 - (y-1)^2}dy$. Call this $A - B$.  The left term, $A$, is part of the center of mass formula for the big circle (which is this value divided by $M=4\pi$), and the right term, $B$, is part of the center of mass formula for the (drilled out) smaller circle (which is this value divided by $m=\pi$. These values are weighted according to $(AM - Bm)/(M-m)$. In this case $A=0$, $B=1$ and $M=4m$, so the answer is $-1/3$.
 
 ## Questions
 

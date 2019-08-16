@@ -1,7 +1,7 @@
 # Ranges and Sets
 
 ```nocode
-include("compat.jl")
+using CalculusWithJulia
 ```
 
 Sequences of numbers are prevalent in math. A simple one is just counting by ones:
@@ -133,7 +133,7 @@ It seems to work as expected. But looking just at the algorithm it isn't quite s
 1/5, 1/5 + 1*1/5, 1/5 + 2*1/5
 ```
 
-Floating point roundoff leads to the last value *exceeding* `0.6`, so should it be included? Well, here it is pretty clear it *should* be, but 
+Floating point roundoff leads to the last value *exceeding* `0.6`, so should it be included? Well, here it is pretty clear it *should* be, but
 better to have something programmed that hits both `a` and `b` and adjusts `h` accordingly.
 
 Enter the base function `range` which solves this seemingly
@@ -141,16 +141,22 @@ simple---but not really---task. It can use `a`, `b`, and `n`. Like the
 range operation, this function returns a generator which can be
 collected to realize the values.
 
-The stopping point and number of points are specified with keyword arguments, as in:
+The number of points is specified with keyword arguments, as in:
 
 ```
-xs = range(-1, stop=1, length=9)
+xs = range(-1, 1, length=9)
 ```
 
 and
 
 ```
 collect(xs)
+```
+
+```
+note("""
+For `Julia` version `1.0` the stop value is also specified with a keyword, as in `range(-1, stop=1, length=9)`. An adjustment will need to be made if that version is used.
+""")
 ```
 
 ## Filtering and modifying arithmetic progressions
@@ -188,16 +194,15 @@ requires us to write a function akin to `iseven`, which isn't hard (e.g.,
 `is_seven(x)=x%7==0`), but isn't something we continue with just yet.
 
 For another example, here is an inefficient way to list the prime
-numbers between 100 and 200 using the `isprime` function from the
-`Primes` package (which may need installation to run this example):
+numbers between 100 and 200. This uses an inefficient `isprime`
+function (which simply checks all possible factors do not divide `n`
+evenly), defined below. For real-world usage, the `Primes` package
+provides an alternative.
 
 ```
-import Primes: isprime
+isprime(n) =  all(!iszero(rem(n, i)) for i in 2:floor(Int,sqrt(n)))
 filter(isprime, 100:200)
 ```
-
-(The `primes` function will list all primes less than its argument `n`
-in a more efficient manner.)
 
 Illustrating `filter` at this point is mainly a motivation to
 illustrate that we can start with a regular set of numbers and then
@@ -234,10 +239,10 @@ x = [0, 2, 4, 6, 8, 10]
 
 That is of course only part of the set of even numbers we want.
 Creating more might be tedious were we to type them all out, as above. In such
-cases, it is best to *generate* the values. 
+cases, it is best to *generate* the values.
 
 
-For this simple case, a range can be used, but more generally a 
+For this simple case, a range can be used, but more generally a
 [comprehension](http://julia.readthedocs.org/en/latest/manual/arrays/#comprehensions)
 provides this ability using a construct that closely mirrors  a set definition, such as $\{2k:
 k=0, \dots, 50\}$. The simplest use of a comprehension takes this
@@ -342,7 +347,7 @@ highlighting changes to the `Julia` language with version
 `v"0.5.0"`, which added features to comprehensions that made this example possible. It involves making change. First, a simple question: using
 pennies, nickels, dimes, and quarters how many different ways can we
 generate one dollar? Clearly $100$ pennies, or $20$ nickels, or $10$ dimes,
-or $4$ quarters will do this, so the answer is atleast four, but how
+or $4$ quarters will do this, so the answer is at least four, but how
 much more than four?
 
 Well, we can use a comprehension to enumerate the
@@ -353,7 +358,7 @@ possibilities. This example illustrates how comprehensions and generators can in
 First, we either have $0,1,2,3$, or $4$ quarters, or $0$, $25$
 cents, $50$ cents, $75$ cents, or a dollar's worth. If we have, say, $1$
 quarter, then we need to make up $75$ cents with the rest. If we had $3$
-dimes, then we need to make up $45$ cents out of nickels and pennies, 
+dimes, then we need to make up $45$ cents out of nickels and pennies,
 if we then had $6$ nickels, we know we must need $15$ pennies.
 
 
@@ -443,7 +448,7 @@ q"1:2:99"
 ]
 ans = 3
 radioq(choices, ans)
-```		   
+```
 
 
 ###### Question

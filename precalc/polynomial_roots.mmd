@@ -8,7 +8,7 @@ the expression yield $0$. For example, the polynomial $x^2 - x$ has
 two roots, $0$ and $1$. A simple graph verifies this:
 
 ```
-using Plots
+using CalculusWithJulia  # to load Plots and SymPy
 f(x) = x^2 - x
 plot(f, -2, 2)
 plot!(zero)
@@ -86,7 +86,7 @@ algorithm then proceeds from left to right. The number just produced
 on the bottom row is multiplied by $c$ and placed under the coefficient
 of $f(x)$. Then values are then added to produce the next number. The
 sequence produced above is `1 2 6 12 29`. The last value (`29`) is
-$r=f(c)$, the others encode the coefficients of `q(x)`, which for this problem 
+$r=f(c)$, the others encode the coefficients of `q(x)`, which for this problem
 is $q(x)=x^3 + 2x + 6 + 12$.  That is, we have written:
 
 $$~
@@ -115,10 +115,9 @@ floating point issues are accounted for. `Julia` has a built-in method
 to compute polynomial evaluations this way.
 
 
-The `SymPy` package can carry out polynomial long division. We load the package and define a variable that is assumed to be a real number:
+The `SymPy` package can carry out polynomial long division. The package was loaded with `CalculusWithJulia`. This command defines a variable that is assumed to be a real number:
 
 ```
-using SymPy
 @vars x real=true
 ```
 
@@ -202,7 +201,7 @@ modular numbers (akin to those on a clock face) and has nothing to do
 with the rational root test.
 
 `SymPy` can quickly find such a factorization, even
-for quite large polynomials with rational or integer coefficients. 
+for quite large polynomials with rational or integer coefficients.
 
 For example, factoring $p = 2x^4 + x^3 -19x^2 -9x +9$. This has
 *possible* rational roots of plus or minus $1$ or $2$ divided by $1$,
@@ -801,18 +800,19 @@ numericq(ans)
 As $1 + 2 + 3 + 4$ is $10$, Cauchy's bound says that the magnitude of
 the largest real root of $x^3 - ax^2 + bx - c$ is $10$ where $a,b,c$
 is one of $2,3,4$. By considering all 6 such possible polynomials
-(such as $x^3 - 3x^2 + 2x - 4$) what is the largest magnitude?
+(such as $x^3 - 3x^2 + 2x - 4$) what is the largest magnitude or a root?
 
 
 ```
-using Combinatorics
+p = Permutation(0,2)
+q = Permutation(1,2)
 m = 0
-
-for (a_,b_,c_) in permutations([2,3,4])
-    fn = x -> x^3 - a_*x^2 + b_*x - c_
+for perm in (p, q, q*p, p*q, p*q*p, p^2)
+    a,b,c =  perm([2,3,4])
+     fn = x -> x^3 - a*x^2 + b*x - c
     rts_ = fzeros(fn, -10, 10)
-	global ans = maximum(abs.(rts_))
-	global m = ans > m ? ans : m
+	global a1 = maximum(abs.(rts_))
+	global m = a1 > m ? a1 : m
 end
 numericq(m)
 ```

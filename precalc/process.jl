@@ -8,37 +8,35 @@ mmd(fname) = mmd_to_md(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus wit
 fnames = [
           "calculator",
           "variables",
-          "logical_expressions",
           "numbers_types",
-          "vectors", ## XXX the first bit is a bit rushed
+          "logical_expressions",
+          "vectors",
           "ranges",
           "functions",
           "plotting",
           "transformations",
+          "inversefunctions",
           "polynomial",
           "polynomial_roots",
           "rational_functions",
+          "exp_log_functions",
           "trig_functions",
           "julia_overview"
 ]
 
 
-[(mmd_to_md("$nm.mmd");markdownToHTML("$nm.md")) for nm in fnames]
+function process_file(nm, twice=false)
+    include("$nm.jl")
+    mmd_to_md("$nm.mmd")
+    markdownToHTML("$nm.md")
+    twice && markdownToHTML("$nm.md")
+end
 
-# mmd("calculator.mmd")
-# mmd("variables.mmd")
-# mmd("logical_expressions.mmd")
-# mmd("numbers_types.mmd")
-# mmd("vectors.mmd") ## XXX the first bit is a bit rushed
-# mmd("ranges.mmd")
-# mmd("functions.mmd")
-# mmd("plotting.mmd")
-# mmd("transformations.mmd")
-# mmd("polynomial.mmd")
-# mmd("polynomial_roots.mmd")
-# mmd("rational_functions.mmd")
-# mmd("trig_functions.mmd")
+process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
 
+"""
+## TODO
 
+* the first bit of vectors is a bit rushed
 
-# mmd("julia_overview.mmd")
+"""

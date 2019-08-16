@@ -1,7 +1,7 @@
 # Area between two curves
 
 ```nocode, noout
-using Plots
+using CalculusWithJulia
 plotly()
 ```
 
@@ -55,7 +55,7 @@ Find the area bounded by the line $y=2x$ and the curve $y=2 - x^2$.
 We can plot to see the area in question:
 
 ```
-using Plots
+using CalculusWithJulia  # loads `Plots`, `Roots`, `QuadGK`, `SymPy`
 f(x) = 2 - x^2
 g(x) = 2x
 plot([f,g], -3,3)
@@ -64,14 +64,12 @@ plot([f,g], -3,3)
 For this problem we need to identify $a$ and $b$. These are found numerically through:
 
 ```
-using Roots
 a,b = find_zeros(x -> f(x) - g(x), -3, 3)
 ```
 
 The answer then can be found numerically:
 
 ```
-using QuadGK
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
@@ -102,13 +100,12 @@ Find the area between $x^n$ and $x^{n+1}$ over $[0,1]$ for $n=1,2,\dots$.
 We have on this interval $x^n \geq x^{n+1}$, so the integral can be found symbolically through:
 
 ```
-using SymPy
-x, n = symbols("x,n", real=true, positive=true)
+@vars x n real=true positive=true
 ex = integrate(x^n - x^(n+1), (x, 0, 1))
 together(ex)
 ```
 
-Based on this answer, what is the value of this 
+Based on this answer, what is the value of this
 
 $$~
 \frac{1}{2\cdot 3} + \frac{1}{3\cdot 4} + \frac{1}{4\cdot 5} + \cdots?
@@ -181,7 +178,7 @@ Find the area bounded by $y=x^4$ and $y=e^x$ when $x^4 \geq e^x$ and
 $x > 0$.
 
 A graph  over $[0,10]$ shows clearly the largest zero, for afterwards
-the exponential dominates the power. 
+the exponential dominates the power.
 
 ```
 f(x) = x^4
@@ -321,7 +318,7 @@ plot(ys, xs)
 ```
 
 By switching the order of the `xs` and `ys` we "flip" the graph
-through the line $x=y$. 
+through the line $x=y$.
 
 We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
 
@@ -539,5 +536,3 @@ a, b = 0, 100
 val, _ = quadgk(x -> mr(x) - mc(x), 0, 100)
 numericq(val)
 ```
-
-

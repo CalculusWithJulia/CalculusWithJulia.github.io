@@ -16,10 +16,10 @@ for non-zero $q$. A rational function is a ratio of *polynomial*
 *functions* of the form $p(x)/q(x)$, again $q$ is non-zero, but may
 have zeros.
 
-We know that polynomials have nice behaviours due to the following
+We know that polynomials have nice behaviors due to the following
 facts:
 
-* Behaviours at $-\infty$, $\infty$ are known just from the leading term.
+* Behaviors at $-\infty$, $\infty$ are known just from the leading term.
 
 * There are possible wiggles up and down, the exact behavior depends
   on intermediate terms, but there can be no more than $n-1$ wiggles.
@@ -60,7 +60,7 @@ f(x) = \frac{(x-1)^2 \cdot (x-2)}{(x+3) \cdot (x-3)}.
 
 
 ```
-using Plots
+using CalculusWithJulia   # to load the `Plots` and `SymPy` packages
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -10, 10)
 ```
@@ -116,14 +116,13 @@ the latter being related to *vertical asymptotes*.
 ### Behaviour as $x \rightarrow \infty$ or $x \rightarrow -\infty$.
 
 Let's look more closely at our example rational function using
-symbolic math. 
+symbolic math.
 
 
 In particular, let's rewrite the expression in terms of its numerator and denominator:
 
 ```
-using SymPy
-x = symbols("x", real=true)
+@vars x real=true
 a =  (x-1)^2 * (x-2)
 b = (x+3)*(x-3)
 ```
@@ -229,7 +228,7 @@ greater than that of the denominator, we have from the division
 algorithm that if $a(x)$ is the numerator and $b(x)$ the denominator,
 then $a(x)/b(x) = q(x) + r(x)/b(x)$ where the degree of $b(x)$ is
 greater than the degree of $r(x)$, so the rightmost term will have a
-horizontal asymptote of $0$. This says that the graph 
+horizontal asymptote of $0$. This says that the graph
 will eventually approach the graph of $q(x)$, giving more detail than just
 saying it follows the shape of the leading term of $q(x)$, at the
 expense of the work required to find $q(x)$.
@@ -269,7 +268,7 @@ $$~
 \frac{5x^3 + 6x^2 + 2}{x-1}
 ~$$
 
-has decompostion $5x^2 + 11x + 11 + 13/(x-1)$:
+has decomposition $5x^2 + 11x + 11 + 13/(x-1)$:
 
 ```
 a = 5x^3 + 6x^2 +2
@@ -436,29 +435,20 @@ get too large. This is not a big request.  If instead of the value of
 connect-the-dots algorithm will skip those values.
 
 This is actually quite easy to implement, if we operate on the
-function object. Here is a `trimplot` function:
+function object. Here is a possible `trimplot` function:
 
-```
+```noeval
 function trimplot(f, a, b, c=20; kwargs...)
-  xs = range(a, stop=b, length=251)
-  ys = f.(xs)
-
-  us, vs = Real[], Real[]
-  p = plot(us, vs, xlim=(a, b), legend=false, kwargs...)
-  for (x,y) in zip(xs, ys)
-    if abs(y) <= c
-       push!(us, x); push!(vs, y)
-    else
-      length(us) > 0 && plot!(p, us, vs, color=:blue)
-      empty!(us); empty!(vs)
-    end
- end	
- length(us) > 0 && plot!(p, us, vs, color=:blue)
- p
+   fn = x -> abs(f(x)) < c ? f(x) : NaN
+   plot(fn, a, b; kwargs...)
 end
 ```
 
+
 As before, the `x ->` of the function indicates that this will return an anonymous function, which does what we want: replace large values with `NaN`.
+
+
+A more robust version of such a function is in the `CalculusWithJulia` package, so the above definition need not be used.
 
 Now to graph:
 
@@ -474,7 +464,7 @@ asymptotic behaviors. However, we can clearly tell where to "zoom in"
 were those of interest.
 
 
-### sign charts
+### Sign charts
 
 When sketching graphs of rational functions by hand, it is useful to use sign charts.
 A sign chart of a function indicates when the function is positive,
@@ -500,14 +490,19 @@ With the computer, where it is convenient to draw a graph, it might be better to
 the sign on the graph of the function. This helper function will do
 so, plotting the function and then coloring it different colors based on the sign of $f(x)$:
 
-```
+```noeval
 function signchart(f, a, b)
    xs = range(a, stop=b, length=200)
    ys = f.(xs)
    cols = [fx < 0 ? :red  : :blue for fx in ys]
    plot(xs, ys, color=cols, linewidth=5, legend=false)
    plot!(zero)
-end
+   end
+```
+
+(The function is defined in `CalculusWithJulia`, so need not be typed in.)
+
+```
 f(x) = x^3 - x
 signchart(f, -3/2, 3/2)
 ```
@@ -744,7 +739,7 @@ ans = 1
 radioq(choices, ans)
 ```
 
-This graph has 
+This graph has
 
 ```
 choices = [L"a slant asymptote with slope $50$",
@@ -758,7 +753,7 @@ radioq(choices, ans)
 
 ##### Question
 
-The (low-order) Pade apprximation for $\sin(x)$ was seen to be $(x - 7/60 \cdot x^3)/(1 + 1/20 \cdot x^2)$. The graph showed that this approximation was fairly close 
+The (low-order) Pade approximation for $\sin(x)$ was seen to be $(x - 7/60 \cdot x^3)/(1 + 1/20 \cdot x^2)$. The graph showed that this approximation was fairly close
 over $[-\pi, \pi]$. Without graphing would you expect the behaviour of the function and its approximation to be similar for *large* values of $x$?
 
 ```
@@ -769,12 +764,10 @@ Why?
 
 ```
 choices = [
-L"The $\sin(x)$ osciallates, but the rational function eventually follows $7/60 \cdot x^3$",
-L"The $\sin(x)$ osciallates, but the rational function has a slant asymptote",
-L"The $\sin(x)$ osciallates, but the rational function has a non-zero horizontal asymptote",
-L"The $\sin(x)$ osciallates, but the rational function has a horizontal asymptote of $0$"]
+L"The $\sin(x)$ oscillates, but the rational function eventually follows $7/60 \cdot x^3$",
+L"The $\sin(x)$ oscillates, but the rational function has a slant asymptote",
+L"The $\sin(x)$ oscillates, but the rational function has a non-zero horizontal asymptote",
+L"The $\sin(x)$ oscillates, but the rational function has a horizontal asymptote of $0$"]
 ans = 2
 radioq(choices, ans)
 ```
-
-

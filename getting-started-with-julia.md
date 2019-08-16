@@ -8,7 +8,7 @@ tablets).
 
 
 We recommend taking advantage of
-[JuliaBox](http://www.juliabox.org), which  provides a web-based interface to `Julia`
+[JuliaBox](https://juliabox.com), which  provides a web-based interface to `Julia`
 built around `Jupyter`, a wildly succesful platform for interacting
 with different open-source software programs. For JuliaBox, a Google account is needed.
 

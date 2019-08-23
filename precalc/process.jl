@@ -18,8 +18,14 @@ fnames = [
           "julia_overview"
 ]
 
-process_file(nm) = WeaveTpl.mmd(nm * ".jmd")
-process_files(cache=:off) = process_file.(fnames, cache=cache)
+process_file(nm; cache=:off) = WeaveTpl.mmd(nm * ".jmd", cache=cache)
+
+function process_files(;cache=:user)
+    for f in fnames
+        @show f
+        process_file(f, cache=cache)
+    end
+end
 
 """
 ## TODO

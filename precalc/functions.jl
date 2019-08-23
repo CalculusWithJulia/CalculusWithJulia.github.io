@@ -1,6 +1,0 @@
-module functions
-
-
-
-
-end

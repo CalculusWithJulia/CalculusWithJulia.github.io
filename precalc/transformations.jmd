@@ -1,6 +1,11 @@
 # Function manipulations
 
-```nocode, noout
+
+```julia;echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
+```julia;echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -17,9 +22,9 @@ to be useful abstractions.
 
 We can talk about the algebra of functions. For example, the sum of functions $f$ and $g$ would be a function whose value at $x$ was just $f(x) + g(x)$. More formally, we would have:
 
-$$~
+$$
 (f + g)(x) = f(x) + g(x),
-~$$
+$$
 
 We have given meaning to a new function $f+g$ by defining what is does
 to $x$ with the rule on the right hand side. Similarly, we can define
@@ -27,14 +32,14 @@ operations for subtraction, multiplication, addition, and
 powers. These aren't defined in base `Julia`, though they could be if
 desired, by a commands such as:
 
-```
+```julia;
 import Base: +
 f::Function + g::Function = x -> f(x) + g(x)
 ```
 
 This adds a method to the generic `+` function for functions. The type annotations `::Function` ensure this applies only to functions. To see that it would work, we could do odd-looking things like:
 
-```
+```julia;
 (sin + sqrt)(4)
 ```
 
@@ -63,9 +68,9 @@ Mathematically, a composition of univariate functions $f$ and $g$ is
 written $f \circ g$ and defined by what it does to a value in the
 domain of $g$ by:
 
-$$~
+$$
 (f \circ g)(x) = f(g(x)).
-~$$
+$$
 
 The output of $g$ becomes the input of $f$.
 
@@ -75,16 +80,16 @@ shoes is quite different from putting on shoes then socks.) Mathematically, we c
 this quite clearly with the functions $f(x) = x^2$ and $g(x) =
 \sin(x)$. Algebraically we have:
 
-$$~
+$$
 (f \circ g)(x) = \sin(x)^2, \quad (g \circ f)(x) = \sin(x^2).
-~$$
+$$
 
 Though they may be *typographically* similar don't be fooled, the following
 graph shows that the two functions aren't even close except for $x$
 near $0$ (for example, one composition is always non-negative, whereas
 the other is not):
 
-```
+```julia;
 using CalculusWithJulia  # to load `Plots`
 f(x) = x^2
 g(x) = sin(x)
@@ -94,7 +99,7 @@ plot([fg, gf], -2, 2)
 ```
 
 
-```
+```julia;echo=false
 note("""
 
 Unlike how the basic arithmetic operations are treated, `Julia` defines the infix
@@ -114,9 +119,9 @@ replaces each $x$ in the rule with a $g(x)$.
 
 So if $f(x) = x^2 + 2x - 1$ and $g(x) = e^x - x$ then $f \circ g$ would be (before any simplification)
 
-$$~
+$$
 (f \circ g)(x) = (e^x - x)^2 + 2(e^x - x) - 1.
-~$$
+$$
 
 
 Here we look at a few compositions:
@@ -133,7 +138,7 @@ other compositions could have been given above. For example, the last
 function is also $f(x) = e^{-x/2}$ composed with $g(x) = x^2$.
 
 
-```
+```julia;echo=false
 note("""
  The real value of composition is to break down more complicated things into a sequence of easier steps. This is good mathematics, but also good practice more generally. For example, when we approach a problem with the computer, we generally use a smallish set of functions and piece them together (that is, compose them) to find a solution.
 """)
@@ -156,7 +161,7 @@ There is a set of operations of functions, which does not really
 change the type of function. Rather, it basically moves and stretches
 how the functions are graphed. We discuss these four main transformations of $f$:
 
-```
+```julia; echo=false
 using DataFrames
 nms = ["*vertical shifts*","*horizontal shifts*","*stretching*","*scaling*"]
 acts = [L"The function $h(x) = k + f(x)$ will have the same graph as $f$ shifted up by $k$ units.",
@@ -169,7 +174,7 @@ table(DataFrame(Transformation=nms, Description=acts))
 
 The functions $h$ are derived from $f$ in a predictable way. To implement these transformations within `Julia`, we define operators (functions which transform one function into another). As these return functions, the function bodies are anonymous functions. The basic definitions are similar, save for the `x -> ...` part that signals the creation of an anonymous function to return:
 
-```
+```julia;
 up(f, k)       = x -> f(x) + k
 over(f, k)     = x -> f(x - k)
 stretch(f, k)  = x -> k * f(x)
@@ -178,33 +183,33 @@ scale(f, k)    = x -> f(k * x)
 
 To illustrate, let's define a hat-shaped function as follows:
 
-```
+```julia;
 f(x) = max(0, 1 - abs(x))
 plot(f, -2,2)
 ```
 
 The same graph of $f$ and its image shifted up by 2 units would be given by:
 
-```
+```julia;
 plot([f, up(f, 2)], -2, 2)
 ```
 
 A graph of $f$ and its shift over by $2$ units would be given  by:
 
-```
+```julia;
 plot([f, over(f, 2)], -2, 4)
 ```
 
 A graph of $f$ and it being stretched by $2$ units would be given by:
 
-```
+```julia;
 plot([f, stretch(f, 2)], -2, 2)
 ```
 
 Finally, a graph of $f$ and it being scaled by $2$ would be given by:
 
 
-```
+```julia;
 plot([f, scale(f, 2)], -2, 2)
 ```
 
@@ -218,14 +223,14 @@ More exciting is what happens if we combine these operations.
 
 A shift right by 2 and up by 1 is achieved through
 
-```
+```julia;
 plot([f, up(over(f,2), 1)], -2, 4)
 ```
 
 
 Shifting and scaling can be confusing. Here we graph `scale(over(f,2),1/3)`:
 
-```
+```julia;
 plot([f, scale(over(f,2), 1/3)], -1,9)
 ```
 
@@ -234,7 +239,7 @@ This graph is over by $6$ with a width of $3$ on each side of the center. Mathem
 
 Compare this to the same operations in opposite order:
 
-```
+```julia;
 plot([f, over(scale(f, 1/3), 2)], -1, 5)
 ```
 
@@ -243,13 +248,13 @@ This graph first scales the symmetric graph, stretching from $-3$ to $3$, then s
 
 As a last example, following up on the last example, a common transformation mathematically is
 
-$$~
+$$
 h(x) = \frac{1}{a}f(\frac{x - b}{a}).
-~$$
+$$
 
 We can view this as a composition of "scale" by $1/a$, then  "over" by $b$,  and finally "stretch" by $1/a$:
 
-```
+```julia;
 a = 2; b = 5
 h(x) = stretch(over(scale(f, 1/a), b), 1/a)(x)
 plot([f, h], -1, 8)
@@ -275,13 +280,13 @@ of sunlight.
 
 A model for a transformed sine curve is
 
-$$~
+$$
 a + b\sin(d(x - c))
-~$$
+$$
 
 Where $b$ is related to the amplitude, $c$ the shift and the period is $T=2\pi/d$. We can find some of these easily from the above:
 
-```
+```julia;
 a = 12
 b = ((15 + 5/60 + 46/60/60) - (9 + 19/60 + 44/60/60)) / 2
 d = 2pi/365
@@ -291,7 +296,7 @@ If we let January 1 be $x=0$ then the first day of spring, March 21,
 is day 79 (`Date(2017, 3, 21) - Date(2017, 1, 1)`). This day aligns
 with the shift of the sine curve.  This shift is 79:
 
-```
+```julia;
 c = 79
 ```
 
@@ -299,7 +304,7 @@ Putting this together, we have our graph is "scaled" by $d$, "over" by
 $c$, "stretched" by $b$ and "up" by $a$. Here we plot it over slightly more than one year so that we can see that the shortest day of light is in late December ($x \approx -10$ or $x \approx 355$).
 
 
-```
+```julia;
 newyork(t) = up(stretch(over(scale(sin, d), c), b), a)(t)
 plot(newyork, -20, 385)
 ```
@@ -310,7 +315,7 @@ we note that it predicts "15h 0m 4s" on July 4, 2015. This is day 184
 (`Date(2015, 7, 4) - Date(2015, 1, 1)`). Our model prediction has a
 difference of
 
-```
+```julia;
 datetime = 15 + 0/60 + 4/60/60
 delta = (newyork(184) - datetime) * 60
 ```
@@ -329,7 +334,7 @@ operator for chaining function calls together.
 
 For example, if $g(x) = \sqrt{x}$ and $f(x) =\sin(x)$ we could call $f(g(x))$ through:
 
-```
+```julia;
 g(x) = sqrt(x)
 f(x) = sin(x)
 pi/2 |> g |> f
@@ -371,19 +376,16 @@ functions, using these operators is relatively straightforward. Two basic patter
 
 - Storing the returned function, then calling it:
 
-```
-Verbatim("""
+```julia; eval=false
 l(x) = action1(f, args...)(x)
 l(10)
-""")
 ```
+
 
 - Composing two operators:
 
-```
-Verbatim("""
+```julia; eval=false
 action2( action1(f, args..), other_args...)
-""")
 ```
 
 Composition like the above is convenient, but can get confusing if more than one composition is involved.
@@ -394,13 +396,13 @@ Composition like the above is convenient, but can get confusing if more than one
 
 (See [Krill](http://arxiv.org/abs/1403.5821) for background on this example.) Consider two operations on functions. The first takes the *difference* between adjacent points. We call this `D`:
 
-```
+```julia;
 D(f::Function) = k -> f(k) - f(k-1)
 ```
 
 To see that it works, we take a typical function and check:
 
-```
+```julia;
 f(k) = 1 + k^2
 D(f)(3), f(3) - f(3-1)
 ```
@@ -415,13 +417,13 @@ f(1) + f(2) + \cdots + f(k-1) + f(k)$, as a function of $k$. Adding up
 $k$ terms is easy to do with a generator and the function `sum` to
 add a vector of numbers:
 
-```
+```julia;
 S(f) = k -> sum(f(i) for i in 1:k)
 ```
 
 To check if this works as expected, compare these two values:
 
-```
+```julia;
 S(f)(4), f(1) + f(2) + f(3) + f(4)
 ```
 
@@ -430,7 +432,7 @@ are somehow inverse to each other so should "cancel" out. This holds
 for these two operations as well, in the following sense: subtracting
 after adding leaves the function alone:
 
-```
+```julia;
 k = 10    # some arbitrary value k >= 1
 D(S(f))(k), f(k)
 ```
@@ -441,7 +443,7 @@ just the last value to accumulate.
 
 Adding after subtracting also leaves the function alone, save for a vestige of $f(0)$:
 
-```
+```julia;
 k=15
 S(D(f))(k),  f(k) - f(0)
 ```
@@ -458,7 +460,7 @@ be known as the "fundamental theorem of calculus."
 
 If $f(x) = 1/x$ and $g(x) = x-2$, what is $g(f(x))$?
 
-```
+```julia;echo=false
 choices=[L"1/(x-2)", L"1/x - 2", L"x - 2", L"-2"]
 ans = 2
 radioq(choices, ans)
@@ -468,7 +470,7 @@ radioq(choices, ans)
 
 If $f(x) = e^{-x}$ and $g(x) = x^2$ and $h(x) = x-3$, what is $f \circ g \circ h$?
 
-```
+```julia;echo=false
 choices=[L"e^{-x^2 - 3}", L"(e^x -3)^2", L"e^{-(x-3)^2}", L"e^x+x^2+x-3"]
 ans = 3
 radioq(choices, ans)
@@ -477,7 +479,7 @@ radioq(choices, ans)
 ###### Question
 If $h(x) = (f \circ g)(x) = \sin^2(x)$ which is  a possibility for $f$ and $g$:
 
-```
+```julia;echo=false
 choices = [L"f(x)=x^2; \quad g(x) = \sin^2(x)",
 	   L"f(x)=x^2; \quad g(x) = \sin(x)",
 	   L"f(x)=\sin(x); \quad g(x) = x^2"]
@@ -489,7 +491,7 @@ radioq(choices, ans)
 ###### Question
 Which function would have the same graph as the sine curve shifted over by 4 and up by 6?
 
-```
+```julia;echo=false
 choices = [L"h(x) = 4 + \sin(6x)", L"h(x) = 6 + \sin(x + 4)", L"h(x) = 6 + \sin(x-4)", L"h(x) = 6\sin(x-4)"]
 ans = 3
 radioq(choices, 3)
@@ -498,7 +500,7 @@ radioq(choices, 3)
 ###### Question
 Let $h(x) = 4x^2$ and $f(x) = x^2$. Which is **not** true:
 
-```
+```julia;echo=false
 choices = [L"The graph of $h(x)$ is the graph of $f(x)$ stretched by a factor of 4",
 	   L"The graph of $h(x)$ is the graph of $f(x)$ scaled by a factor of 2",
 	   L"The graph of $h(x)$ is the graph of $f(x) shifted up by 4 units"]
@@ -510,7 +512,7 @@ radioq(choices, ans)
 
 The transformation $h(x) = (1/a) \cdot f((x-b)/a)$ can be viewed in one sequence:
 
-```
+```julia;echo=false
 choices = [L"scaling by $1/a$, then shifting by $b$, then stretching by $1/a$",
            L"shifting by $a$, then scaling by $b$, and then scaling by $1/a$",
 	   L"shifting by $a$, then scaling by $a$, and then scaling by $b$" ]
@@ -522,28 +524,28 @@ radioq(choices, ans)
 
 This is the graph of a transformed sine curve.
 
-```
+```julia;echo=false
 f(x) = 2*sin(pi*x)
 p = plot(f, -2,2)
 ```
 
 What is the period of the graph?
 
-```
+```julia;echo=false
 val = 2
 numericq(val)
 ```
 
 What is the amplitude of the graph?
 
-```
+```julia;echo=false
 val = 2
 numericq(val)
 ```
 
 What is the form of the function graphed?
 
-```
+```julia;echo=false
 choices = [
 L"2 \sin(x)",
 L"\sin(2x)",
@@ -560,15 +562,15 @@ radioq(choices, ans)
 
 Consider this expression
 
-$$~
+$$
 \left(f(1) - f(0)\right) + \left(f(2) - f(1)\right) + \cdots + \left(f(n) - f(n-1)\right) =
 -f(0) + f(1) - f(1) + f(2) - f(2) + \cdots + f(n-1) - f(n-1) + f(n) =
 f(n) - f(0).
-~$$
+$$
 
 Referring to the definitions of `D` and `S` in the example on operators, which relationship does this support:
 
-```
+```julia;echo=false
 choices = [
 q"D(S(f))(n) = f(n)",
 q"S(D(f))(n) = f(n) - f(0)"
@@ -581,13 +583,13 @@ radioq(choices, ans, keep_order=true)
 
 Consider this expression:
 
-$$~
+$$
 \left(f(1) + f(2) + \cdots + f(n-1) + f(n)\right) - \left(f(1) + f(2) + \cdots + f(n-1)\right) = f(n).
-~$$
+$$
 
 Referring to the definitions of `D` and `S` in the example on operators, which relationship does this support:
 
-```
+```julia;echo=false
 choices = [
 q"D(S(f))(n) = f(n)",
 q"S(D(f))(n) = f(n) - f(0)"

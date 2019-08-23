@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,13 +6,15 @@
 
 
 
-
 <link
   href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
   rel="stylesheet">
 
 <style>
-.julia {font-family: "Source Code Pro";
+.julia {display: block; font-family: "Source Code Pro";
+        color:#0033CC;
+        }
+.hljl {font-family: "Source Code Pro";
         color:#0033CC;
         }
 body { padding-top: 60px; }
@@ -26,6 +27,10 @@ th, td {
   border-bottom: 1px solid #ddd;
 }
 tr:hover {background-color: #f5f5f5;}
+
+.admonition-title:before {content:"\2746\ ";}
+.admonition-title { color:#0033CC}
+
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
@@ -106,14 +111,42 @@ $( document ).ready(function() {
 
 <header>
 </header>
+          <div class="title">
+            
+            
+            
+          </div>
+
+
 
 <div class="container-fluid">
   <div class="span10 offset1">
-<h1>Overview of Julia commands</h1><p><a href="http://www.julialang.org">Julia</a> is a programming language that is freely available.</p><p>We can use <code>Julia</code> without installation on <a href="https://www.juliabox.com">juliabox.com</a>. It uses the <a href="https://jupyter.org/">Jupyter</a> notebook interface, which we will assume, though many other means of interacting with <code>Julia</code> are available. However, <code>juliabox</code> is possibly going to stop as a free service. An alternative is to use <code>Julia</code> through <a href="XXX">mybinder</a>, though slow to start, this requires no account.</p><h2>Commands</h2><p>Commands are typed into a notebook cell in <code>Jupyter</code>. (Or at the command line.)</p><pre class="sourceCode julia">2 + 2   # use shift-enter to evaluate</pre>
-<pre class="output">
-4</pre>
+<h1>Overview of Julia commands</h1>
 
-<p>Commands are executed by using <code>shift-enter</code> or the play button in <code>Jupyter</code>.</p><p>Commands may be separated by new lines or semicolons, allowing multiple commands per cell.</p><p>On a line, anything after a <code>#</code> is a <em>comment</em>.</p><p>The results of the last line executed will be displayed in an output area. Separating values by commas allows more than one value to be displayed. Explicit printing can be done to output intermediate values.</p><h2>Numbers, variable types</h2><p><code>Julia</code> has many different number types beyond the floating point type employed by most calculators. These include</p><ul>
+
+<p><a href="http://www.julialang.org">Julia</a> is a programming language that is freely available.</p>
+<p>We can use <code>Julia</code> without installation on <a href="https://www.juliabox.com">juliabox.com</a>. It uses the <a href="https://jupyter.org/">Jupyter</a> notebook interface, which we will assume, though many other means of interacting with <code>Julia</code> are available. However, <code>juliabox</code> is possibly going to stop as a free service. An alternative is to use <code>Julia</code> through <a href="XXX">mybinder</a>, though slow to start, this requires no account.</p>
+<h2>Commands</h2>
+<p>Commands are typed into a notebook cell in <code>Jupyter</code>. &#40;Or at the command line.&#41;</p>
+
+
+<pre class='hljl'>
+<span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'>   </span><span class='hljl-cs'># use shift-enter to evaluate</span>
+</pre>
+
+
+<pre class="output">
+4
+</pre>
+
+
+<p>Commands are executed by using <code>shift-enter</code> or the play button in <code>Jupyter</code>.</p>
+<p>Commands may be separated by new lines or semicolons, allowing multiple commands per cell.</p>
+<p>On a line, anything after a <code>#</code> is a <em>comment</em>.</p>
+<p>The results of the last line executed will be displayed in an output area. Separating values by commas allows more than one value to be displayed. Explicit printing can be done to output intermediate values.</p>
+<h2>Numbers, variable types</h2>
+<p><code>Julia</code> has many different number types beyond the floating point type employed by most calculators. These include</p>
+<ul>
 <li><p>Floating point numbers: <code>0.5</code></p>
 </li>
 <li><p>Integers: <code>2</code></p>
@@ -122,119 +155,292 @@ $( document ).ready(function() {
 </li>
 <li><p>Complex numbers <code>2 &#43; 0im</code></p>
 </li>
-</ul><p>As much as possible, operations involving  certain types of numbers will produce output of a given type. For example, both of these divisions produce a floating point answer, even though  mathematically, they need not:</p><pre class="sourceCode julia">2/1, 1/2</pre>
-<pre class="output">
-(2.0, 0.5)</pre>
+</ul>
+<p>As much as possible, operations involving  certain types of numbers will produce output of a given type. For example, both of these divisions produce a floating point answer, even though  mathematically, they need not:</p>
 
-<p>Some operations won't work with integer types, but will with floating point types, as the type of output can't be assured. Powers are the main example where <code>2^&#40;1/2&#41;</code> is not defined, but <code>2.0^&#40;1/2&#41;</code> is.</p><p>Powers with negative bases, like <code>&#40;-3.0&#41;^&#40;1/3&#41;</code>, are also not defined. However, <code>Julia</code> provides the special-case function <code>cbrt</code> (and <code>sqrt</code>) for handling these.</p><p>Integer operations may silently overflow, producing odd answers:</p><pre class="sourceCode julia">2^64</pre>
-<pre class="output">
-0</pre>
 
-<p>When different types of numbers are mixed, <code>Julia</code> will usually promote the values to a common type before the operation:</p><pre class="sourceCode julia">(2 + 1//2) + 0.5</pre>
-<pre class="output">
-3.0</pre>
+<pre class='hljl'>
+<span class='hljl-ni'>2</span><span class='hljl-oB'>/</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>/</span><span class='hljl-ni'>2</span>
+</pre>
 
-<p><code>Julia</code> will first add <code>2</code> and <code>1//2</code> converting <code>2</code> to rational before doing so. Then add the result, <code>5//2</code> to <code>0.5</code> by promoting <code>5//2</code> to the floating point number <code>2.5</code> before proceeding.</p><p>The standard mathematical operations are implemented by <code>&#43;</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. Parentheses are used for grouping.</p><h3>Vectors</h3><ul>
+
+<pre class="output">
+&#40;2.0, 0.5&#41;
+</pre>
+
+
+<p>Some operations won&#39;t work with integer types, but will with floating point types, as the type of output can&#39;t be assured. Powers are the main example where <code>2^&#40;1/2&#41;</code> is not defined, but <code>2.0^&#40;1/2&#41;</code> is.</p>
+<p>Powers with negative bases, like <code>&#40;-3.0&#41;^&#40;1/3&#41;</code>, are also not defined. However, <code>Julia</code> provides the special-case function <code>cbrt</code> &#40;and <code>sqrt</code>&#41; for handling these.</p>
+<p>Integer operations may silently overflow, producing odd answers:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-ni'>2</span><span class='hljl-oB'>^</span><span class='hljl-ni'>64</span>
+</pre>
+
+
+<pre class="output">
+0
+</pre>
+
+
+<p>When different types of numbers are mixed, <code>Julia</code> will usually promote the values to a common type before the operation:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>//</span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-nfB'>0.5</span>
+</pre>
+
+
+<pre class="output">
+3.0
+</pre>
+
+
+<p><code>Julia</code> will first add <code>2</code> and <code>1//2</code> converting <code>2</code> to rational before doing so. Then add the result, <code>5//2</code> to <code>0.5</code> by promoting <code>5//2</code> to the floating point number <code>2.5</code> before proceeding.</p>
+<p>The standard mathematical operations are implemented by <code>&#43;</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. Parentheses are used for grouping.</p>
+<h3>Vectors</h3>
+<ul>
 <li><p>A vector is an indexed collection of similarly typed values. Vectors can</p>
 </li>
-</ul><p>be constructed with square brackets (syntax for concatenation):</p><pre class="sourceCode julia">[1,1,2,3,5,8]</pre>
+</ul>
+<p>be constructed with square brackets &#40;syntax for concatenation&#41;:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-ni'>5</span><span class='hljl-p'>,</span><span class='hljl-ni'>8</span><span class='hljl-p'>]</span>
+</pre>
+
+
 <pre class="output">
-6-element Array{Int64,1}:
+6-element Array&#123;Int64,1&#125;:
  1
  1
  2
  3
  5
- 8</pre>
+ 8
+</pre>
 
-<p>(Vectors are used as a return type so some familiarity is needed.)</p><p>Regular arithmetic sequences can be defined by either:</p><ul>
-<li><p>Range operations:  <code>a:h:b</code> or <code>a:b</code> which produces a generator of values starting at <code>a</code> separated by <code>h</code> (<code>h</code> is <code>1</code> in the last form) until they reach <code>b</code>.</p>
+
+<p>&#40;Vectors are used as a return type so some familiarity is needed.&#41;</p>
+<p>Regular arithmetic sequences can be defined by either:</p>
+<ul>
+<li><p>Range operations:  <code>a:h:b</code> or <code>a:b</code> which produces a generator of values starting at <code>a</code> separated by <code>h</code> &#40;<code>h</code> is <code>1</code> in the last form&#41; until they reach <code>b</code>.</p>
 </li>
 <li><p><code>range&#40;a, b, length&#61;n&#41;</code> which produces a generator of <code>n</code> values between <code>a</code> and <code>b</code>;</p>
 </li>
-</ul><h2>Variables</h2><p>Values can be assigned variable names, with <code>&#61;</code>. There are some variants</p><pre class="sourceCode julia">x = 2
-a_really_long_name = 3
-a, b = 1, 2    # multiple assignment
-a1 = a2 = 0    # chained assignment, sets a2 and a1 to 0</pre>
-<pre class="output">
-0</pre>
+</ul>
+<h2>Variables</h2>
+<p>Values can be assigned variable names, with <code>&#61;</code>. There are some variants</p>
 
-<p>The names can be short, as above, or more verbose. They can't start with a number, but can include numbers. It can also be a fancy <a href="../unicode.html">unicode</a> or even an emoji.</p><p>We can then use the variables to reference the values:</p><pre class="sourceCode julia">x + a_really_long_name + a - b</pre>
-<pre class="output">
-4</pre>
 
-<p>Names may be repurposed, even with values of different types (a dynamic language), save for function names, which have some special rules and can only be redefined as an another function.</p><h2>Functions</h2><p>Functions in <code>Julia</code> are just regular objects. In these notes, we often pass them as arguments to other functions. There are many built-in functions and it is easy to define new functions.</p><p>We "call" a function by passing argument(s) to it, grouped by parentheses:</p><pre class="sourceCode julia">sqrt(10)
-sin(pi/3)
-log(5, 100)   # log base 5 of 100</pre>
-<pre class="output">
-2.8613531161467867</pre>
+<pre class='hljl'>
+<span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'>
+</span><span class='hljl-n'>a_really_long_name</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'>
+</span><span class='hljl-n'>a</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-t'>    </span><span class='hljl-cs'># multiple assignment</span><span class='hljl-t'>
+</span><span class='hljl-n'>a1</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>a2</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-t'>    </span><span class='hljl-cs'># chained assignment, sets a2 and a1 to 0</span>
+</pre>
 
-<p>With out parentheses, the name (usually) refers to a generic name and the output lists the number of available implementations.</p><pre class="sourceCode julia">log</pre>
-<pre class="output">
-log (generic function with 36 methods)</pre>
 
-<h3>Built-in functions</h3><p><code>Julia</code> has numerous built-in <a href="http://julia.readthedocs.io/">mathematical</a> functions, we review a few here:</p><h4>Powers logs and roots</h4><p>Besides <code>^</code>, there are <code>sqrt</code> and <code>cbrt</code> for powers. In addition basic functions for exponential and  logarithmic functions:</p><pre class="sourceCode julia">sqrt(x), cbrt(x)
-exp(x)
-log(x) # base e
-log10(x), log2(x), log(b, x)</pre>
-<h4>Trigonometric functions</h4><p>The $6$ standard trig functions are implemented; their implementation for degree arguments; their inverse functions; and the hyperbolic analogs.</p><pre class="sourceCode julia">sin, cos, tan, csc, sec, cot
+<pre class="output">
+0
+</pre>
+
+
+<p>The names can be short, as above, or more verbose. They can&#39;t start with a number, but can include numbers. It can also be a fancy <a href="../unicode.html">unicode</a> or even an emoji.</p>
+<p>We can then use the variables to reference the values:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>a_really_long_name</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-t'> </span><span class='hljl-n'>b</span>
+</pre>
+
+
+<pre class="output">
+4
+</pre>
+
+
+<p>Names may be repurposed, even with values of different types &#40;a dynamic language&#41;, save for function names, which have some special rules and can only be redefined as an another function.</p>
+<h2>Functions</h2>
+<p>Functions in <code>Julia</code> are just regular objects. In these notes, we often pass them as arguments to other functions. There are many built-in functions and it is easy to define new functions.</p>
+<p>We &quot;call&quot; a function by passing argument&#40;s&#41; to it, grouped by parentheses:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>sqrt</span><span class='hljl-p'>(</span><span class='hljl-ni'>10</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>sin</span><span class='hljl-p'>(</span><span class='hljl-n'>pi</span><span class='hljl-oB'>/</span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>log</span><span class='hljl-p'>(</span><span class='hljl-ni'>5</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>100</span><span class='hljl-p'>)</span><span class='hljl-t'>   </span><span class='hljl-cs'># log base 5 of 100</span>
+</pre>
+
+
+<pre class="output">
+2.8613531161467867
+</pre>
+
+
+<p>With out parentheses, the name &#40;usually&#41; refers to a generic name and the output lists the number of available implementations.</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>log</span>
+</pre>
+
+
+<pre class="output">
+log &#40;generic function with 36 methods&#41;
+</pre>
+
+
+<h3>Built-in functions</h3>
+<p><code>Julia</code> has numerous built-in <a href="http://julia.readthedocs.io/">mathematical</a> functions, we review a few here:</p>
+<h4>Powers logs and roots</h4>
+<p>Besides <code>^</code>, there are <code>sqrt</code> and <code>cbrt</code> for powers. In addition basic functions for exponential and  logarithmic functions:</p>
+<pre><code>sqrt&#40;x&#41;, cbrt&#40;x&#41;
+exp&#40;x&#41;
+log&#40;x&#41; # base e
+log10&#40;x&#41;, log2&#40;x&#41;, log&#40;b, x&#41;</code></pre>
+<h4>Trigonometric functions</h4>
+<p>The <span class="math">$6$</span> standard trig functions are implemented; their implementation for degree arguments; their inverse functions; and the hyperbolic analogs.</p>
+<pre><code>sin, cos, tan, csc, sec, cot
 asin, acos, atan, acsc, asec, acot
 sinh, cosh, tanh, csch, sech, coth
-asinh, acosh, atanh, acsch, asech, acoth</pre>
-<p>If degrees are preferred, the following are defined to work with degrees:</p><pre class="sourceCode julia">sind, cosd, tand, cscd, secd, cotd</pre>
-<h4>Useful functions</h4><p>Other useful and familiar functions are defined:</p><ul>
+asinh, acosh, atanh, acsch, asech, acoth</code></pre>
+<p>If degrees are preferred, the following are defined to work with degrees:</p>
+<pre><code>sind, cosd, tand, cscd, secd, cotd</code></pre>
+<h4>Useful functions</h4>
+<p>Other useful and familiar functions are defined:</p>
+<ul>
 <li><p><code>abs&#40;x&#41;</code>: absolute value</p>
 </li>
-<li><p><code>sign&#40;x&#41;</code>: is $\lvert x \rvert/x$ except at $x=0$, where it is $0$.</p>
+<li><p><code>sign&#40;x&#41;</code>: is <span class="math">$\lvert x \rvert/x$</span> except at <span class="math">$x=0$</span>, where it is <span class="math">$0$</span>.</p>
 </li>
 <li><p><code>floor&#40;x&#41;</code>, <code>ceil&#40;x&#41;</code>: greatest integer less or least integer greater</p>
 </li>
-<li><p><code>max&#40;a,b&#41;</code>, <code>min&#40;a,b&#41;</code>: larger (or smaller) of <code>a</code> or <code>b</code></p>
+<li><p><code>max&#40;a,b&#41;</code>, <code>min&#40;a,b&#41;</code>: larger &#40;or smaller&#41; of <code>a</code> or <code>b</code></p>
 </li>
 <li><p><code>maximum&#40;xs&#41;</code>, <code>minimum&#40;xs&#41;</code>: largest or smallest of the collection referred to by <code>xs</code></p>
 </li>
-</ul><h3>User-defined functions</h3><p>Simple mathematical functions can be defined using standard mathematical notation:</p><pre class="sourceCode julia">f(x) = -16x^2 + 100x + 2</pre>
-<pre class="output">
-f (generic function with 1 method)</pre>
+</ul>
+<h3>User-defined functions</h3>
+<p>Simple mathematical functions can be defined using standard mathematical notation:</p>
 
-<p>The argument <code>x</code> is passed into the body of function.</p><p>Other values are found from  the environment where defined:</p><pre class="sourceCode julia">a = 1
-f(x) = 2*a + x
-f(3)   # 2 * 1 + 3
-a = 4
-f(3)  # now 2 * 4 + 3</pre>
-<pre class="output">
-11</pre>
 
-<p>User defined functions can have 0, 1 or more arguments:</p><pre class="sourceCode julia">area(w, h) = w*h</pre>
-<pre class="output">
-area (generic function with 1 method)</pre>
+<pre class='hljl'>
+<span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-ni'>16</span><span class='hljl-n'>x</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-ni'>100</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span>
+</pre>
 
-<p>Julia makes different <em>methods</em> for <em>generic</em> function names, so functions whose argument specification is different are different functions, even if the name is the same. This is <em>polymorphism</em>. The practical use is that it means users need only remember a much smaller set of function names.</p><p>Functions can be defined with <em>keyword</em> arguments that may have defaults specified:</p><pre class="sourceCode julia">f(x; m=1, b=0) = m*x + b     # note ";"
-f(1)                         # uses m=1, b=0   -> 1 * 1 + 0
-f(1, m=10)                   # uses m=10, b=0  -> 10 * 1 + 0
-f(1, m=10, b=5)              # uses m=10, b=5  -> 10 * 1 + 5</pre>
-<pre class="output">
-15</pre>
 
-<p>Longer functions can be defined using the <code>function</code> keyword, the last command executed is returned:</p><pre class="sourceCode julia">function f(x)
-  y = x^2
-  z = y - 3
-  z
-end</pre>
 <pre class="output">
-f (generic function with 1 method)</pre>
+f &#40;generic function with 1 method&#41;
+</pre>
 
-<p>Functions without names, <em>anonymous functions</em>, are made with the <code>-&gt;</code> syntax as in:</p><pre class="sourceCode julia">x -> cos(x)^2 - cos(2x)</pre>
-<pre class="output">
-#2 (generic function with 1 method)</pre>
 
-<p>These are useful when passing a function to another function or when writing a function that <em>returns</em> a function.</p><h2>Conditional statements</h2><p><code>Julia</code> provides the traditional <code>if-else-end</code> statements, but more conveniently has a <code>ternary</code> operator for the simplest case:</p><pre class="sourceCode julia">our_abs(x) = (x < 0) ? -x : x</pre>
-<pre class="output">
-our_abs (generic function with 1 method)</pre>
+<p>The argument <code>x</code> is passed into the body of function.</p>
+<p>Other values are found from  the environment where defined:</p>
 
-<h2>Looping</h2><p>Iterating over a collection can be done with the traditional <code>for</code> loop. However, there are list comprehensions to mimic the definition of a set:</p><pre class="sourceCode julia">[x^2 for x in 1:10]</pre>
+
+<pre class='hljl'>
+<span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-oB'>*</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>   </span><span class='hljl-cs'># 2 * 1 + 3</span><span class='hljl-t'>
+</span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-ni'>4</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>3</span><span class='hljl-p'>)</span><span class='hljl-t'>  </span><span class='hljl-cs'># now 2 * 4 + 3</span>
+</pre>
+
+
 <pre class="output">
-10-element Array{Int64,1}:
+11
+</pre>
+
+
+<p>User defined functions can have 0, 1 or more arguments:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>area</span><span class='hljl-p'>(</span><span class='hljl-n'>w</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>h</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>w</span><span class='hljl-oB'>*</span><span class='hljl-n'>h</span>
+</pre>
+
+
+<pre class="output">
+area &#40;generic function with 1 method&#41;
+</pre>
+
+
+<p>Julia makes different <em>methods</em> for <em>generic</em> function names, so functions whose argument specification is different are different functions, even if the name is the same. This is <em>polymorphism</em>. The practical use is that it means users need only remember a much smaller set of function names.</p>
+<p>Functions can be defined with <em>keyword</em> arguments that may have defaults specified:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>;</span><span class='hljl-t'> </span><span class='hljl-n'>m</span><span class='hljl-oB'>=</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-oB'>=</span><span class='hljl-ni'>0</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>m</span><span class='hljl-oB'>*</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-t'>     </span><span class='hljl-cs'># note &quot;;&quot;</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span><span class='hljl-t'>                         </span><span class='hljl-cs'># uses m=1, b=0   -&gt; 1 * 1 + 0</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>m</span><span class='hljl-oB'>=</span><span class='hljl-ni'>10</span><span class='hljl-p'>)</span><span class='hljl-t'>                   </span><span class='hljl-cs'># uses m=10, b=0  -&gt; 10 * 1 + 0</span><span class='hljl-t'>
+</span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>m</span><span class='hljl-oB'>=</span><span class='hljl-ni'>10</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-oB'>=</span><span class='hljl-ni'>5</span><span class='hljl-p'>)</span><span class='hljl-t'>              </span><span class='hljl-cs'># uses m=10, b=5  -&gt; 10 * 1 + 5</span>
+</pre>
+
+
+<pre class="output">
+15
+</pre>
+
+
+<p>Longer functions can be defined using the <code>function</code> keyword, the last command executed is returned:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>function</span><span class='hljl-t'> </span><span class='hljl-nf'>f</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'>
+  </span><span class='hljl-n'>y</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-t'>
+  </span><span class='hljl-n'>z</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>y</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-t'> </span><span class='hljl-ni'>3</span><span class='hljl-t'>
+  </span><span class='hljl-n'>z</span><span class='hljl-t'>
+</span><span class='hljl-k'>end</span>
+</pre>
+
+
+<pre class="output">
+f &#40;generic function with 1 method&#41;
+</pre>
+
+
+<p>Functions without names, <em>anonymous functions</em>, are made with the <code>-&gt;</code> syntax as in:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>-&gt;</span><span class='hljl-t'> </span><span class='hljl-nf'>cos</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-t'> </span><span class='hljl-nf'>cos</span><span class='hljl-p'>(</span><span class='hljl-ni'>2</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span>
+</pre>
+
+
+<pre class="output">
+#2 &#40;generic function with 1 method&#41;
+</pre>
+
+
+<p>These are useful when passing a function to another function or when writing a function that <em>returns</em> a function.</p>
+<h2>Conditional statements</h2>
+<p><code>Julia</code> provides the traditional <code>if-else-end</code> statements, but more conveniently has a <code>ternary</code> operator for the simplest case:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>our_abs</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>&lt;</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>?</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>:</span><span class='hljl-t'> </span><span class='hljl-n'>x</span>
+</pre>
+
+
+<pre class="output">
+our_abs &#40;generic function with 1 method&#41;
+</pre>
+
+
+<h2>Looping</h2>
+<p>Iterating over a collection can be done with the traditional <code>for</code> loop. However, there are list comprehensions to mimic the definition of a set:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-p'>[</span><span class='hljl-n'>x</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-k'>for</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-kp'>in</span><span class='hljl-t'> </span><span class='hljl-ni'>1</span><span class='hljl-oB'>:</span><span class='hljl-ni'>10</span><span class='hljl-p'>]</span>
+</pre>
+
+
+<pre class="output">
+10-element Array&#123;Int64,1&#125;:
    1
    4
    9
@@ -244,68 +450,1552 @@ our_abs (generic function with 1 method)</pre>
   49
   64
   81
- 100</pre>
+ 100
+</pre>
 
-<h2>Broadcasting, mapping</h2><p>A function can be applied to each element of a vector through mapping or broadcasting. The latter is implemented in a succinct notation. Calling a function with a "." before its opening "(` will apply the function to each individual value in the argument:</p><pre class="sourceCode julia">xs = [1,2,3,4,5]
-sin.(xs)     # gives back [sin(1), sin(2), sin(3), sin(4), sin(5)]</pre>
+
+<h2>Broadcasting, mapping</h2>
+<p>A function can be applied to each element of a vector through mapping or broadcasting. The latter is implemented in a succinct notation. Calling a function with a &quot;.&quot; before its opening &quot;&#40;&#96; will apply the function to each individual value in the argument:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>xs</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-p'>[</span><span class='hljl-ni'>1</span><span class='hljl-p'>,</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-ni'>5</span><span class='hljl-p'>]</span><span class='hljl-t'>
+</span><span class='hljl-n'>sin</span><span class='hljl-oB'>.</span><span class='hljl-p'>(</span><span class='hljl-n'>xs</span><span class='hljl-p'>)</span><span class='hljl-t'>     </span><span class='hljl-cs'># gives back [sin(1), sin(2), sin(3), sin(4), sin(5)]</span>
+</pre>
+
+
 <pre class="output">
-5-element Array{Float64,1}:
+5-element Array&#123;Float64,1&#125;:
   0.8414709848078965
   0.9092974268256817
   0.1411200080598672
  -0.7568024953079282
- -0.9589242746631385</pre>
+ -0.9589242746631385
+</pre>
 
-<h2>Plotting</h2><p>Plotting is <em>not</em> built-in to <code>Julia</code>, rather added through add-on packages.  <code>Julia</code>'s <code>Plots</code> package is an interface to several plotting packages. We mention <code>plotly</code> (built-in) for web based graphics, and <code>gr</code> for other graphics.</p><p>To use an add-on package, it must have been installed and it must be loaded each session. In these notes, the necessary packages are all loaded when an accompanying package, <code>CalculusWithJulia</code> is loaded. Assuming it has been installed, this command will do so:</p><pre class="sourceCode julia">using CalculusWithJulia</pre>
-<p>With <code>Plots</code> loaded, we can plot a function by passing the function object by name to <code>plot</code>, specifying the range of $x$ values to show, as follows:</p><pre class="sourceCode julia">plot(sin, 0, 2pi) # plot a function---by name---over an interval [a,b]</pre>
-    <div id="8cd47ce5-5bf2-498f-8952-21c64068fa14" style="width:600px;height:400px;"></div>
+
+<h2>Plotting</h2>
+<p>Plotting is <em>not</em> built-in to <code>Julia</code>, rather added through add-on packages.  <code>Julia</code>&#39;s <code>Plots</code> package is an interface to several plotting packages. We mention <code>plotly</code> &#40;built-in&#41; for web based graphics, and <code>gr</code> for other graphics.</p>
+<p>To use an add-on package, it must have been installed and it must be loaded each session. In these notes, the necessary packages are all loaded when an accompanying package, <code>CalculusWithJulia</code> is loaded. Assuming it has been installed, this command will do so:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>CalculusWithJulia</span>
+</pre>
+
+
+
+<p>With <code>Plots</code> loaded, we can plot a function by passing the function object by name to <code>plot</code>, specifying the range of <span class="math">$x$</span> values to show, as follows:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>sin</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-n'>pi</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-cs'># plot a function---by name---over an interval [a,b]</span>
+</pre>
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plots.jl</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+            <div id="cd72874f-b441-4bdf-8f5b-7442c37db9c9" style="width:576px;height:384px;"></div>
     <script>
-    PLOT = document.getElementById('8cd47ce5-5bf2-498f-8952-21c64068fa14');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.030680225288853866,0.06136045057770773,0.34504343394708514,0.6287264173164625,0.7992080658377971,0.9696897143591319,1.0417597464278976,1.113829778496663,1.1858998105654286,1.2579698426341943,1.4145463533885865,1.5711228641429789,1.7154725576207572,1.8598222510985358,2.0145803783513556,2.1693385056041756,2.3486409728203155,2.5279434400364558,2.6872863130479567,2.846629186059458,2.986358526427849,3.1260878667962397,3.27843035510683,3.43077284341742,3.5840207449586465,3.7372686464998734,3.906703798257779,4.076138950015684,4.2373522215721,4.398565493128515,4.482377691684766,4.566189890241017,4.650002088797269,4.733814287353519,4.874918324975402,5.016022362597284,5.188294399061325,5.360566435525367,5.522507230894133,5.684448026262899,5.943889738480623,6.203331450698347,6.243258378938966],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.03067541242093728,0.061321953070307515,0.33823755155018476,0.5881151905779408,0.7168041201646171,0.8247102693051217,0.8632937107664949,0.8973950679428847,0.9268372919861522,0.9514675235298343,0.9878177879548484,0.9999999466866806,0.989552636203005,0.9585219599793448,0.9031334125880434,0.8261578853619512,0.7124277016382363,0.5758547097527327,0.43883912087112936,0.29070489558439705,0.15461141539348522,0.015504165579995984,-0.13641106359642388,-0.28516655102344535,-0.42813502702217854,-0.5610684489029837,-0.6926171720883418,-0.8043295777666695,-0.8892759098040912,-0.9511602238189567,-0.9736638213734828,-0.9893319351014062,-0.9980545689901091,-0.999770486890561,-0.9868211552281166,-0.9542564477114475,-0.8888782743946314,-0.7971854551477641,-0.6894127808039027,-0.5635998564911867,-0.3328229035580867,-0.07976901700741997,-0.03991632077017164],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0,6.0],"visible":true,"ticks":"inside","range":[-0.1556971193206495,6.429635723548469],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5","6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-1.0597635998978783,1.0599930596939977],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.0","-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('cd72874f-b441-4bdf-8f5b-7442c37db9c9');
+    Plotly.plot(PLOT, [
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            0.030680225288853866,
+            0.06136045057770773,
+            0.34504343394708514,
+            0.6287264173164625,
+            0.7992080658377971,
+            0.9696897143591319,
+            1.0417597464278976,
+            1.113829778496663,
+            1.1858998105654286,
+            1.2579698426341943,
+            1.4145463533885865,
+            1.5711228641429789,
+            1.7154725576207572,
+            1.8598222510985358,
+            2.0145803783513556,
+            2.1693385056041756,
+            2.3486409728203155,
+            2.5279434400364558,
+            2.6872863130479567,
+            2.846629186059458,
+            2.986358526427849,
+            3.1260878667962397,
+            3.27843035510683,
+            3.43077284341742,
+            3.5840207449586465,
+            3.7372686464998734,
+            3.906703798257779,
+            4.076138950015684,
+            4.2373522215721,
+            4.398565493128515,
+            4.482377691684766,
+            4.566189890241017,
+            4.650002088797269,
+            4.733814287353519,
+            4.874918324975402,
+            5.016022362597284,
+            5.188294399061325,
+            5.360566435525367,
+            5.522507230894133,
+            5.684448026262899,
+            5.943889738480623,
+            6.203331450698347,
+            6.243258378938966
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y1",
+        "zmin": -0.1,
+        "legendgroup": "y1",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(0, 154, 250, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            0.03067541242093728,
+            0.061321953070307515,
+            0.33823755155018476,
+            0.5881151905779408,
+            0.7168041201646171,
+            0.8247102693051217,
+            0.8632937107664949,
+            0.8973950679428847,
+            0.9268372919861522,
+            0.9514675235298343,
+            0.9878177879548484,
+            0.9999999466866806,
+            0.989552636203005,
+            0.9585219599793448,
+            0.9031334125880434,
+            0.8261578853619512,
+            0.7124277016382363,
+            0.5758547097527327,
+            0.43883912087112936,
+            0.29070489558439705,
+            0.15461141539348522,
+            0.015504165579995984,
+            -0.13641106359642388,
+            -0.28516655102344535,
+            -0.42813502702217854,
+            -0.5610684489029837,
+            -0.6926171720883418,
+            -0.8043295777666695,
+            -0.8892759098040912,
+            -0.9511602238189567,
+            -0.9736638213734828,
+            -0.9893319351014062,
+            -0.9980545689901091,
+            -0.999770486890561,
+            -0.9868211552281166,
+            -0.9542564477114475,
+            -0.8888782743946314,
+            -0.7971854551477641,
+            -0.6894127808039027,
+            -0.5635998564911867,
+            -0.3328229035580867,
+            -0.07976901700741997,
+            -0.03991632077017164
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    }
+]
+, {
+    "showlegend": true,
+    "xaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.1556971193206495,
+            6.429635723548469
+        ],
+        "domain": [
+            0.06856347817633907,
+            0.9931649168853893
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "y1"
+    },
+    "paper_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "annotations": [],
+    "height": 384,
+    "margin": {
+        "l": 0,
+        "b": 20,
+        "r": 0,
+        "t": 20
+    },
+    "plot_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "yaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            -1.0,
+            -0.5,
+            0.0,
+            0.5,
+            1.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -1.0597635998978783,
+            1.0599930596939977
+        ],
+        "domain": [
+            0.0391878098571012,
+            0.989747375328084
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "-1.0",
+            "-0.5",
+            "0.0",
+            "0.5",
+            "1.0"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "x1"
+    },
+    "legend": {
+        "tracegroupgap": 0,
+        "bordercolor": "rgba(0, 0, 0, 1.000)",
+        "bgcolor": "rgba(255, 255, 255, 1.000)",
+        "font": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "y": 1.0,
+        "x": 1.0
+    },
+    "width": 576
+}
+);
     </script>
+
+    </body>
+</html>
+
+
+
 <div class="alert alert-info" role="alert">
 
 <div class="markdown"><p>This is in the form of <strong>the</strong> basic pattern employed: <code>verb&#40;function_object, arguments...&#41;</code>. The verb in this example is <code>plot</code>, the object <code>sin</code>, the arguments <code>0, 2pi</code> to specify <code>&#91;a,b&#93;</code> domain to plot over.</p>
 </div>
 
 </div>
-<p>Plotting more than one function over $[a,b]$ is achieved through the <code>plot&#33;</code> function, which modifies the existing plot (<code>plot</code> creates a new one):</p><pre class="sourceCode julia">plot(sin, 0, 2pi)
-plot!(cos)
-plot!(zero)</pre>
-    <div id="974559e0-9142-4267-a219-3e56bc1175b5" style="width:600px;height:400px;"></div>
+
+
+<p>Plotting more than one function over <span class="math">$[a,b]$</span> is achieved through the <code>plot&#33;</code> function, which modifies the existing plot &#40;<code>plot</code> creates a new one&#41;:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-n'>sin</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-n'>pi</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>plot!</span><span class='hljl-p'>(</span><span class='hljl-n'>cos</span><span class='hljl-p'>)</span><span class='hljl-t'>
+</span><span class='hljl-nf'>plot!</span><span class='hljl-p'>(</span><span class='hljl-n'>zero</span><span class='hljl-p'>)</span>
+</pre>
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plots.jl</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+            <div id="7b26443c-b515-4640-8540-5b49bde7d653" style="width:576px;height:384px;"></div>
     <script>
-    PLOT = document.getElementById('974559e0-9142-4267-a219-3e56bc1175b5');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.030680225288853866,0.06136045057770773,0.34504343394708514,0.6287264173164625,0.7992080658377971,0.9696897143591319,1.0417597464278976,1.113829778496663,1.1858998105654286,1.2579698426341943,1.4145463533885865,1.5711228641429789,1.7154725576207572,1.8598222510985358,2.0145803783513556,2.1693385056041756,2.3486409728203155,2.5279434400364558,2.6872863130479567,2.846629186059458,2.986358526427849,3.1260878667962397,3.27843035510683,3.43077284341742,3.5840207449586465,3.7372686464998734,3.906703798257779,4.076138950015684,4.2373522215721,4.398565493128515,4.482377691684766,4.566189890241017,4.650002088797269,4.733814287353519,4.874918324975402,5.016022362597284,5.188294399061325,5.360566435525367,5.522507230894133,5.684448026262899,5.943889738480623,6.203331450698347,6.243258378938966],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.03067541242093728,0.061321953070307515,0.33823755155018476,0.5881151905779408,0.7168041201646171,0.8247102693051217,0.8632937107664949,0.8973950679428847,0.9268372919861522,0.9514675235298343,0.9878177879548484,0.9999999466866806,0.989552636203005,0.9585219599793448,0.9031334125880434,0.8261578853619512,0.7124277016382363,0.5758547097527327,0.43883912087112936,0.29070489558439705,0.15461141539348522,0.015504165579995984,-0.13641106359642388,-0.28516655102344535,-0.42813502702217854,-0.5610684489029837,-0.6926171720883418,-0.8043295777666695,-0.8892759098040912,-0.9511602238189567,-0.9736638213734828,-0.9893319351014062,-0.9980545689901091,-0.999770486890561,-0.9868211552281166,-0.9542564477114475,-0.8888782743946314,-0.7971854551477641,-0.6894127808039027,-0.5635998564911867,-0.3328229035580867,-0.07976901700741997,-0.03991632077017164],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.13961932713851782,-0.12354153495638616,-0.1074637427742545,-0.09138595059212282,0.0572764535877114,0.2059388577675456,0.35460126194737984,0.5032636661272141,0.6819434828487052,0.8606232995701963,1.011694810584445,1.1627663215986936,1.4909783313621288,1.793560773497361,1.955760951953722,2.117961130410083,2.3058859437713393,2.493810757132595,2.6608161538572044,2.8278215505818136,2.974270233734443,3.1207189168870726,3.2803872924942317,3.440055668101391,3.6006729966985676,3.7612903252957435,3.938873321030864,4.116456316765985,4.285422056272942,4.4543877957798985,4.805758125828815,5.1015371002770245,5.282093401606906,5.462649702936788,5.6323779516204135,5.802106200304039,5.938065108465264,6.074024016626489,6.209982924787714,6.345941832948939,6.366865305598822,6.387788778248704,6.408712250898587],"showlegend":true,"mode":"lines","name":"y2","zmin":-0.1,"legendgroup":"y2","zmax":0.1,"line":{"color":"rgba(227, 111, 71, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.990269044741102,0.9923784456436251,0.9942313268072851,0.9958272092811394,0.9983601523117048,0.978869432439755,0.9377850117818598,0.8760132059887586,0.7763492025682254,0.6519649785141663,0.5304247386342927,0.3968018324204925,0.07973327018338885,-0.22092660225749777,-0.37552635116516786,-0.520268056958919,-0.6706536335741562,-0.7974242052002335,-0.8866360840014,-0.9511763934073301,-0.9860342326258931,-0.9997821514681561,-0.990383476673422,-0.955789570808819,-0.896460398477296,-0.8140540828335053,-0.698654860726098,-0.5612808945800644,-0.4141119270474689,-0.2551484044602805,0.09323354235130114,0.3794003656376629,0.5393831771033728,0.6818295046427844,0.7955949385402787,0.886496097352514,0.9410347950026152,0.9782054080010995,0.9973219018287987,0.9980314554372194,0.9965008714886117,0.9945340436373988,0.9921318329130914],"type":"scatter","hoverinfo":"text"},{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[-0.26828246414259654,0.35850447788453144,0.7351773042884211,1.0536493851700612,1.3995993297292568,1.7185345787980475,2.0604668730179587,2.4566289684299014,2.8086910869343873,3.11741783860893,3.4540128689307448,3.7926083759232467,4.166969006867259,4.523163701003934,4.893523537281049,5.205287631123581,5.5859162527264745,5.943718383517188,6.516945143556906],"showlegend":true,"mode":"lines","name":"y3","zmin":-0.1,"legendgroup":"y3","zmax":0.1,"line":{"color":"rgba(62, 164, 78, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0,6.0],"visible":true,"ticks":"inside","range":[-0.4718392923735816,6.720501971787891],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5","6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-1.0,-0.5,0.0,0.5,1.0],"visible":true,"ticks":"inside","range":[-1.0597756144128012,1.0599934096313257],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-1.0","-0.5","0.0","0.5","1.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('7b26443c-b515-4640-8540-5b49bde7d653');
+    Plotly.plot(PLOT, [
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            0.030680225288853866,
+            0.06136045057770773,
+            0.34504343394708514,
+            0.6287264173164625,
+            0.7992080658377971,
+            0.9696897143591319,
+            1.0417597464278976,
+            1.113829778496663,
+            1.1858998105654286,
+            1.2579698426341943,
+            1.4145463533885865,
+            1.5711228641429789,
+            1.7154725576207572,
+            1.8598222510985358,
+            2.0145803783513556,
+            2.1693385056041756,
+            2.3486409728203155,
+            2.5279434400364558,
+            2.6872863130479567,
+            2.846629186059458,
+            2.986358526427849,
+            3.1260878667962397,
+            3.27843035510683,
+            3.43077284341742,
+            3.5840207449586465,
+            3.7372686464998734,
+            3.906703798257779,
+            4.076138950015684,
+            4.2373522215721,
+            4.398565493128515,
+            4.482377691684766,
+            4.566189890241017,
+            4.650002088797269,
+            4.733814287353519,
+            4.874918324975402,
+            5.016022362597284,
+            5.188294399061325,
+            5.360566435525367,
+            5.522507230894133,
+            5.684448026262899,
+            5.943889738480623,
+            6.203331450698347,
+            6.243258378938966
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y1",
+        "zmin": -0.1,
+        "legendgroup": "y1",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(0, 154, 250, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            0.03067541242093728,
+            0.061321953070307515,
+            0.33823755155018476,
+            0.5881151905779408,
+            0.7168041201646171,
+            0.8247102693051217,
+            0.8632937107664949,
+            0.8973950679428847,
+            0.9268372919861522,
+            0.9514675235298343,
+            0.9878177879548484,
+            0.9999999466866806,
+            0.989552636203005,
+            0.9585219599793448,
+            0.9031334125880434,
+            0.8261578853619512,
+            0.7124277016382363,
+            0.5758547097527327,
+            0.43883912087112936,
+            0.29070489558439705,
+            0.15461141539348522,
+            0.015504165579995984,
+            -0.13641106359642388,
+            -0.28516655102344535,
+            -0.42813502702217854,
+            -0.5610684489029837,
+            -0.6926171720883418,
+            -0.8043295777666695,
+            -0.8892759098040912,
+            -0.9511602238189567,
+            -0.9736638213734828,
+            -0.9893319351014062,
+            -0.9980545689901091,
+            -0.999770486890561,
+            -0.9868211552281166,
+            -0.9542564477114475,
+            -0.8888782743946314,
+            -0.7971854551477641,
+            -0.6894127808039027,
+            -0.5635998564911867,
+            -0.3328229035580867,
+            -0.07976901700741997,
+            -0.03991632077017164
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    },
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            -0.13961932713851782,
+            -0.12354153495638616,
+            -0.1074637427742545,
+            -0.09138595059212282,
+            0.0572764535877114,
+            0.2059388577675456,
+            0.35460126194737984,
+            0.5032636661272141,
+            0.6819434828487052,
+            0.8606232995701963,
+            1.011694810584445,
+            1.1627663215986936,
+            1.4909783313621288,
+            1.793560773497361,
+            1.955760951953722,
+            2.117961130410083,
+            2.3058859437713393,
+            2.493810757132595,
+            2.6608161538572044,
+            2.8278215505818136,
+            2.974270233734443,
+            3.1207189168870726,
+            3.2803872924942317,
+            3.440055668101391,
+            3.6006729966985676,
+            3.7612903252957435,
+            3.938873321030864,
+            4.116456316765985,
+            4.285422056272942,
+            4.4543877957798985,
+            4.805758125828815,
+            5.1015371002770245,
+            5.282093401606906,
+            5.462649702936788,
+            5.6323779516204135,
+            5.802106200304039,
+            5.938065108465264,
+            6.074024016626489,
+            6.209982924787714,
+            6.345941832948939,
+            6.366865305598822,
+            6.387788778248704,
+            6.408712250898587
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y2",
+        "zmin": -0.1,
+        "legendgroup": "y2",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(227, 111, 71, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            0.990269044741102,
+            0.9923784456436251,
+            0.9942313268072851,
+            0.9958272092811394,
+            0.9983601523117048,
+            0.978869432439755,
+            0.9377850117818598,
+            0.8760132059887586,
+            0.7763492025682254,
+            0.6519649785141663,
+            0.5304247386342927,
+            0.3968018324204925,
+            0.07973327018338885,
+            -0.22092660225749777,
+            -0.37552635116516786,
+            -0.520268056958919,
+            -0.6706536335741562,
+            -0.7974242052002335,
+            -0.8866360840014,
+            -0.9511763934073301,
+            -0.9860342326258931,
+            -0.9997821514681561,
+            -0.990383476673422,
+            -0.955789570808819,
+            -0.896460398477296,
+            -0.8140540828335053,
+            -0.698654860726098,
+            -0.5612808945800644,
+            -0.4141119270474689,
+            -0.2551484044602805,
+            0.09323354235130114,
+            0.3794003656376629,
+            0.5393831771033728,
+            0.6818295046427844,
+            0.7955949385402787,
+            0.886496097352514,
+            0.9410347950026152,
+            0.9782054080010995,
+            0.9973219018287987,
+            0.9980314554372194,
+            0.9965008714886117,
+            0.9945340436373988,
+            0.9921318329130914
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    },
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            -0.26828246414259654,
+            0.35850447788453144,
+            0.7351773042884211,
+            1.0536493851700612,
+            1.3995993297292568,
+            1.7185345787980475,
+            2.0604668730179587,
+            2.4566289684299014,
+            2.8086910869343873,
+            3.11741783860893,
+            3.4540128689307448,
+            3.7926083759232467,
+            4.166969006867259,
+            4.523163701003934,
+            4.893523537281049,
+            5.205287631123581,
+            5.5859162527264745,
+            5.943718383517188,
+            6.516945143556906
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y3",
+        "zmin": -0.1,
+        "legendgroup": "y3",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(62, 164, 78, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    }
+]
+, {
+    "showlegend": true,
+    "xaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.4718392923735816,
+            6.720501971787891
+        ],
+        "domain": [
+            0.06856347817633907,
+            0.9931649168853893
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "y1"
+    },
+    "paper_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "annotations": [],
+    "height": 384,
+    "margin": {
+        "l": 0,
+        "b": 20,
+        "r": 0,
+        "t": 20
+    },
+    "plot_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "yaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            -1.0,
+            -0.5,
+            0.0,
+            0.5,
+            1.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -1.0597756144128012,
+            1.0599934096313257
+        ],
+        "domain": [
+            0.0391878098571012,
+            0.989747375328084
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "-1.0",
+            "-0.5",
+            "0.0",
+            "0.5",
+            "1.0"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "x1"
+    },
+    "legend": {
+        "tracegroupgap": 0,
+        "bordercolor": "rgba(0, 0, 0, 1.000)",
+        "bgcolor": "rgba(255, 255, 255, 1.000)",
+        "font": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "y": 1.0,
+        "x": 1.0
+    },
+    "width": 576
+}
+);
     </script>
-<p>Plotting an <em>anonymous</em> function is a bit more immediate:</p><pre class="sourceCode julia">plot( x -> exp(-x/pi) * sin(x), 0, 2pi)</pre>
-    <div id="956a3a94-edd6-441d-a193-a45ecd891a30" style="width:600px;height:400px;"></div>
+
+    </body>
+</html>
+
+
+<p>Plotting an <em>anonymous</em> function is a bit more immediate:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>-&gt;</span><span class='hljl-t'> </span><span class='hljl-nf'>exp</span><span class='hljl-p'>(</span><span class='hljl-oB'>-</span><span class='hljl-n'>x</span><span class='hljl-oB'>/</span><span class='hljl-n'>pi</span><span class='hljl-p'>)</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-nf'>sin</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-p'>),</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-n'>pi</span><span class='hljl-p'>)</span>
+</pre>
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plots.jl</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+            <div id="404fcd36-ccbb-4587-bfe4-4918fbd58194" style="width:576px;height:384px;"></div>
     <script>
-    PLOT = document.getElementById('956a3a94-edd6-441d-a193-a45ecd891a30');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.015340112644426933,0.030680225288853866,0.0460203379332808,0.06136045057770773,0.1322811964200521,0.20320194226239643,0.2741226881047408,0.34504343394708514,0.41596417978942946,0.4868849256317738,0.5578056714741182,0.6287264173164625,0.7139672415771299,0.7992080658377971,0.8844488900984645,0.9696897143591319,1.0417597464278976,1.113829778496663,1.1858998105654286,1.2579698426341943,1.3362580980113905,1.4145463533885865,1.4928346087657827,1.5711228641429789,1.7154725576207572,1.8598222510985358,2.0145803783513556,2.1693385056041756,2.3486409728203155,2.5279434400364558,2.846629186059458,3.1260878667962397,3.27843035510683,3.43077284341742,3.5840207449586465,3.7372686464998734,3.906703798257779,4.076138950015684,4.2373522215721,4.398565493128515,4.566189890241017,4.733814287353519,4.874918324975402,5.016022362597284,5.360566435525367,5.684448026262899,6.203331450698347],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[0.015264792141697337,0.03037729992051604,0.045335105840551726,0.06013585579664819,0.1264573922564775,0.18916653257843902,0.24808326025008118,0.30305603659666097,0.3539613639959165,0.4007032165695393,0.44321234728370584,0.48144548066578885,0.5217162627731976,0.5557990350538442,0.5837553553941734,0.605691217010445,0.6196486003857365,0.6295171944484143,0.6354252090723479,0.6375172381208163,0.6356519120536018,0.6296941131820015,0.6198820179486818,0.6064675878191923,0.5731807338416981,0.530273368890018,0.47561534808605227,0.4141648185123159,0.33733712285101886,0.2575428206817879,0.11747181540019927,0.0057318827925132735,-0.048043942474212724,-0.095681453928213,-0.13681222895182346,-0.17075560998574726,-0.1997237144891166,-0.2197595035062834,-0.2308149815050452,-0.23452815535752364,-0.2312655270306402,-0.22156275164670627,-0.20908777198571435,-0.19330764611170087,-0.14471496530626193,-0.09228932885670914,-0.011073484235796845],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,1.0,2.0,3.0,4.0,5.0,6.0],"visible":true,"ticks":"inside","range":[-0.17029962749719063,6.388971190839964],"domain":[0.0658209390492855,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","1","2","3","4","5","6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[-0.2,0.0,0.2,0.4,0.6000000000000001],"visible":true,"ticks":"inside","range":[-0.26068951716187383,0.6636785999251665],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["-0.2","0.0","0.2","0.4","0.6"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('404fcd36-ccbb-4587-bfe4-4918fbd58194');
+    Plotly.plot(PLOT, [
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            0.015340112644426933,
+            0.030680225288853866,
+            0.0460203379332808,
+            0.06136045057770773,
+            0.1322811964200521,
+            0.20320194226239643,
+            0.2741226881047408,
+            0.34504343394708514,
+            0.41596417978942946,
+            0.4868849256317738,
+            0.5578056714741182,
+            0.6287264173164625,
+            0.7139672415771299,
+            0.7992080658377971,
+            0.8844488900984645,
+            0.9696897143591319,
+            1.0417597464278976,
+            1.113829778496663,
+            1.1858998105654286,
+            1.2579698426341943,
+            1.3362580980113905,
+            1.4145463533885865,
+            1.4928346087657827,
+            1.5711228641429789,
+            1.7154725576207572,
+            1.8598222510985358,
+            2.0145803783513556,
+            2.1693385056041756,
+            2.3486409728203155,
+            2.5279434400364558,
+            2.846629186059458,
+            3.1260878667962397,
+            3.27843035510683,
+            3.43077284341742,
+            3.5840207449586465,
+            3.7372686464998734,
+            3.906703798257779,
+            4.076138950015684,
+            4.2373522215721,
+            4.398565493128515,
+            4.566189890241017,
+            4.733814287353519,
+            4.874918324975402,
+            5.016022362597284,
+            5.360566435525367,
+            5.684448026262899,
+            6.203331450698347
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y1",
+        "zmin": -0.1,
+        "legendgroup": "y1",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(0, 154, 250, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            0.015264792141697337,
+            0.03037729992051604,
+            0.045335105840551726,
+            0.06013585579664819,
+            0.1264573922564775,
+            0.18916653257843902,
+            0.24808326025008118,
+            0.30305603659666097,
+            0.3539613639959165,
+            0.4007032165695393,
+            0.44321234728370584,
+            0.48144548066578885,
+            0.5217162627731976,
+            0.5557990350538442,
+            0.5837553553941734,
+            0.605691217010445,
+            0.6196486003857365,
+            0.6295171944484143,
+            0.6354252090723479,
+            0.6375172381208163,
+            0.6356519120536018,
+            0.6296941131820015,
+            0.6198820179486818,
+            0.6064675878191923,
+            0.5731807338416981,
+            0.530273368890018,
+            0.47561534808605227,
+            0.4141648185123159,
+            0.33733712285101886,
+            0.2575428206817879,
+            0.11747181540019927,
+            0.0057318827925132735,
+            -0.048043942474212724,
+            -0.095681453928213,
+            -0.13681222895182346,
+            -0.17075560998574726,
+            -0.1997237144891166,
+            -0.2197595035062834,
+            -0.2308149815050452,
+            -0.23452815535752364,
+            -0.2312655270306402,
+            -0.22156275164670627,
+            -0.20908777198571435,
+            -0.19330764611170087,
+            -0.14471496530626193,
+            -0.09228932885670914,
+            -0.011073484235796845
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    }
+]
+, {
+    "showlegend": true,
+    "xaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.17029962749719063,
+            6.388971190839964
+        ],
+        "domain": [
+            0.06856347817633907,
+            0.9931649168853893
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "y1"
+    },
+    "paper_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "annotations": [],
+    "height": 384,
+    "margin": {
+        "l": 0,
+        "b": 20,
+        "r": 0,
+        "t": 20
+    },
+    "plot_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "yaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            -0.2,
+            0.0,
+            0.2,
+            0.4,
+            0.6000000000000001
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.26068951716187383,
+            0.6636785999251665
+        ],
+        "domain": [
+            0.0391878098571012,
+            0.989747375328084
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "-0.2",
+            "0.0",
+            "0.2",
+            "0.4",
+            "0.6"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "x1"
+    },
+    "legend": {
+        "tracegroupgap": 0,
+        "bordercolor": "rgba(0, 0, 0, 1.000)",
+        "bgcolor": "rgba(255, 255, 255, 1.000)",
+        "font": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "y": 1.0,
+        "x": 1.0
+    },
+    "width": 576
+}
+);
     </script>
-<p>The <code>Plots</code> package has other types of plots. Of note is <code>scatter</code> which is used to make a scatter plot of two data sets.</p><h2>Equations</h2><p>Notation for <code>Julia</code> and math is <em>similar</em> for functions–-but not for equations. In math, an equation  might look like:</p>$$~
+
+    </body>
+</html>
+
+
+<p>The <code>Plots</code> package has other types of plots. Of note is <code>scatter</code> which is used to make a scatter plot of two data sets.</p>
+<h2>Equations</h2>
+<p>Notation for <code>Julia</code> and math is <em>similar</em> for functions–-but not for equations. In math, an equation  might look like:</p>
+<p class="math">\[
+~
 x^2 + y^2 = 3
-~$$
-<p>In <code>Julia</code> the equals sign is <strong>only</strong> for <em>assignment</em>. The <em>left-hand</em> side of an equals sign in <code>Julia</code> is reserved for a) variable assignment; b) function defintion (via <code>f&#40;x&#41; &#61; ...</code>); and c) indexed assignment to a vector or array. (Vectors are indexed by a number allow retrieval and setting of the stored value in the container. The notation mentioned here would be <code>xs&#91;2&#93; &#61; 3</code> to assign to the 2nd element a value <code>3</code>.</p><h2>Symbolic math</h2><p>Symbolic math is available through an add-on package <code>SymPy</code>. As with <code>Plots</code>, this package is also loaded with <code>CalculusWithJulia</code>. Once loaded, symbolic variables are created with <code>@vars</code>:</p><pre class="sourceCode julia">using SymPy   # load package, not needed here as it was done already with CalculusWithJulia
-@vars x a b c # no commas here, though `@vars(x,a,b,c)` can be used</pre>
+~
+\]</p>
+<p>In <code>Julia</code> the equals sign is <strong>only</strong> for <em>assignment</em>. The <em>left-hand</em> side of an equals sign in <code>Julia</code> is reserved for a&#41; variable assignment; b&#41; function defintion &#40;via <code>f&#40;x&#41; &#61; ...</code>&#41;; and c&#41; indexed assignment to a vector or array. &#40;Vectors are indexed by a number allow retrieval and setting of the stored value in the container. The notation mentioned here would be <code>xs&#91;2&#93; &#61; 3</code> to assign to the 2nd element a value <code>3</code>.</p>
+<h2>Symbolic math</h2>
+<p>Symbolic math is available through an add-on package <code>SymPy</code>. As with <code>Plots</code>, this package is also loaded with <code>CalculusWithJulia</code>. Once loaded, symbolic variables are created with <code>@vars</code>:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-k'>using</span><span class='hljl-t'> </span><span class='hljl-n'>SymPy</span><span class='hljl-t'>   </span><span class='hljl-cs'># load package, not needed here as it was done already with CalculusWithJulia</span><span class='hljl-t'>
+</span><span class='hljl-nd'>@vars</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-t'> </span><span class='hljl-n'>c</span><span class='hljl-t'> </span><span class='hljl-cs'># no commas here, though `@vars(x,a,b,c)` can be used</span>
+</pre>
+
+
 <pre class="output">
-(x, a, b, c)</pre>
+&#40;x, a, b, c&#41;
+</pre>
 
-<p>Symbolic expressions–-unlike numeric expressions–-are not immediately evaluated, though they are simplified:</p><pre class="sourceCode julia">p = a*x^2 + b*x + c</pre>
-<div class="well well-sm">
-\begin{equation*}a x^{2} + b x + c\end{equation*}</div>
 
-<p>To substitute a value, we can use <code>pair</code> notation (<code>variable&#61;&gt;value</code>):</p><pre class="sourceCode julia">p(x=>2), p(x=>2, a=>3, b=>4, c=>1)</pre>
+<p>Symbolic expressions–-unlike numeric expressions–-are not immediately evaluated, though they are simplified:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-n'>p</span><span class='hljl-t'> </span><span class='hljl-oB'>=</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-oB'>*</span><span class='hljl-n'>x</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-oB'>*</span><span class='hljl-n'>x</span><span class='hljl-t'> </span><span class='hljl-oB'>+</span><span class='hljl-t'> </span><span class='hljl-n'>c</span>
+</pre>
+
+
+
+<div class="well well-sm">\begin{equation*}a x^{2} + b x + c\end{equation*}</div>
+
+<p>To substitute a value, we can use <code>pair</code> notation &#40;<code>variable&#61;&gt;value</code>&#41;:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>p</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-oB'>=&gt;</span><span class='hljl-ni'>2</span><span class='hljl-p'>),</span><span class='hljl-t'> </span><span class='hljl-nf'>p</span><span class='hljl-p'>(</span><span class='hljl-n'>x</span><span class='hljl-oB'>=&gt;</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>a</span><span class='hljl-oB'>=&gt;</span><span class='hljl-ni'>3</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>b</span><span class='hljl-oB'>=&gt;</span><span class='hljl-ni'>4</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-n'>c</span><span class='hljl-oB'>=&gt;</span><span class='hljl-ni'>1</span><span class='hljl-p'>)</span>
+</pre>
+
+
 <pre class="output">
-(4*a + 2*b + c, 21)</pre>
+&#40;4*a &#43; 2*b &#43; c, 21&#41;
+</pre>
 
-<p>SymPy expressions of a single free variable can be plotted directly:</p><pre class="sourceCode julia">plot(64 - (1/2)*32 * x^2, 0, 2)</pre>
-    <div id="be6b5daf-751f-4fc2-9cad-abb98542b752" style="width:600px;height:400px;"></div>
+
+<p>SymPy expressions of a single free variable can be plotted directly:</p>
+
+
+<pre class='hljl'>
+<span class='hljl-nf'>plot</span><span class='hljl-p'>(</span><span class='hljl-ni'>64</span><span class='hljl-t'> </span><span class='hljl-oB'>-</span><span class='hljl-t'> </span><span class='hljl-p'>(</span><span class='hljl-ni'>1</span><span class='hljl-oB'>/</span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span><span class='hljl-oB'>*</span><span class='hljl-ni'>32</span><span class='hljl-t'> </span><span class='hljl-oB'>*</span><span class='hljl-t'> </span><span class='hljl-n'>x</span><span class='hljl-oB'>^</span><span class='hljl-ni'>2</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>0</span><span class='hljl-p'>,</span><span class='hljl-t'> </span><span class='hljl-ni'>2</span><span class='hljl-p'>)</span>
+</pre>
+
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plots.jl</title>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+            <div id="ac4bb09e-56e5-4eb3-8d8a-e27a40b659b3" style="width:576px;height:384px;"></div>
     <script>
-    PLOT = document.getElementById('be6b5daf-751f-4fc2-9cad-abb98542b752');
-    Plotly.plot(PLOT, [{"xaxis":"x1","colorbar":{"title":""},"yaxis":"y1","text":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"x":[0.019531638039576263,0.20012983433674567,0.30866182261124775,0.4004242374315315,0.5001039400661028,0.5919998090692563,0.6905218928129796,0.8046693886770646,0.9061102122220429,0.99506467308044,1.092048913310639,1.1896095575056242,1.2974753252488085,1.4001068814896869,1.506819887022701,1.5966495073336904,1.7063212919727282,1.809416004257417,1.9745817280321198],"showlegend":true,"mode":"lines","name":"y1","zmin":-0.1,"legendgroup":"y1","zmax":0.1,"line":{"color":"rgba(0, 154, 250, 1.000)","shape":"linear","dash":"solid","width":1},"y":[63.99389624184786,63.359168790533545,62.475646068196845,61.43456688123803,59.99833678608576,58.392579616991426,56.37087224873568,53.640114798817265,50.86342853291079,48.15754074219707,44.91886673499284,41.35726561106037,37.064924485927975,32.63521152648359,27.671901249166318,23.21136561169734,17.415482376968313,11.61621957659397,1.616431989147003],"type":"scatter","hoverinfo":"text"}], {"showlegend":true,"xaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,0.5,1.0,1.5,2.0],"visible":true,"ticks":"inside","range":[-0.039119864660200045,2.0332332307318963],"domain":[0.03619130941965587,0.9934383202099738],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0.0","0.5","1.0","1.5","2.0"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"y1"},"paper_bgcolor":"rgba(255, 255, 255, 1.000)","annotations":[],"height":400,"margin":{"l":0,"b":20,"r":0,"t":20},"plot_bgcolor":"rgba(255, 255, 255, 1.000)","yaxis":{"showticklabels":true,"gridwidth":0.5,"tickvals":[0.0,10.0,20.0,30.0,40.0,50.0,60.0],"visible":true,"ticks":"inside","range":[-0.2548919384340227,65.86522016942888],"domain":[0.03762029746281716,0.9901574803149606],"tickmode":"array","linecolor":"rgba(0, 0, 0, 1.000)","showgrid":true,"title":"","mirror":false,"tickangle":0,"showline":true,"gridcolor":"rgba(0, 0, 0, 0.100)","titlefont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":15},"tickcolor":"rgb(0, 0, 0)","ticktext":["0","10","20","30","40","50","60"],"zeroline":false,"type":"-","tickfont":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"zerolinecolor":"rgba(0, 0, 0, 1.000)","anchor":"x1"},"legend":{"tracegroupgap":0,"bordercolor":"rgba(0, 0, 0, 1.000)","bgcolor":"rgba(255, 255, 255, 1.000)","font":{"color":"rgba(0, 0, 0, 1.000)","family":"sans-serif","size":11},"y":1.0,"x":1.0},"width":600});
+    PLOT = document.getElementById('ac4bb09e-56e5-4eb3-8d8a-e27a40b659b3');
+    Plotly.plot(PLOT, [
+    {
+        "xaxis": "x1",
+        "colorbar": {
+            "title": ""
+        },
+        "yaxis": "y1",
+        "text": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        "x": [
+            0.019531638039576263,
+            0.20012983433674567,
+            0.30866182261124775,
+            0.4004242374315315,
+            0.5001039400661028,
+            0.5919998090692563,
+            0.6905218928129796,
+            0.8046693886770646,
+            0.9061102122220429,
+            0.99506467308044,
+            1.092048913310639,
+            1.1896095575056242,
+            1.2974753252488085,
+            1.4001068814896869,
+            1.506819887022701,
+            1.5966495073336904,
+            1.7063212919727282,
+            1.809416004257417,
+            1.9745817280321198
+        ],
+        "showlegend": true,
+        "mode": "lines",
+        "name": "y1",
+        "zmin": -0.1,
+        "legendgroup": "y1",
+        "zmax": 0.1,
+        "line": {
+            "color": "rgba(0, 154, 250, 1.000)",
+            "shape": "linear",
+            "dash": "solid",
+            "width": 1
+        },
+        "y": [
+            63.99389624184786,
+            63.359168790533545,
+            62.475646068196845,
+            61.43456688123803,
+            59.99833678608576,
+            58.392579616991426,
+            56.37087224873568,
+            53.640114798817265,
+            50.86342853291079,
+            48.15754074219707,
+            44.91886673499284,
+            41.35726561106037,
+            37.064924485927975,
+            32.63521152648359,
+            27.671901249166318,
+            23.21136561169734,
+            17.415482376968313,
+            11.61621957659397,
+            1.616431989147003
+        ],
+        "type": "scatter",
+        "hoverinfo": "text"
+    }
+]
+, {
+    "showlegend": true,
+    "xaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            0.0,
+            0.5,
+            1.0,
+            1.5,
+            2.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.039119864660200045,
+            2.0332332307318963
+        ],
+        "domain": [
+            0.03769928064547487,
+            0.9931649168853894
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "0.0",
+            "0.5",
+            "1.0",
+            "1.5",
+            "2.0"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "y1"
+    },
+    "paper_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "annotations": [],
+    "height": 384,
+    "margin": {
+        "l": 0,
+        "b": 20,
+        "r": 0,
+        "t": 20
+    },
+    "plot_bgcolor": "rgba(255, 255, 255, 1.000)",
+    "yaxis": {
+        "showticklabels": true,
+        "gridwidth": 0.5,
+        "tickvals": [
+            0.0,
+            10.0,
+            20.0,
+            30.0,
+            40.0,
+            50.0,
+            60.0
+        ],
+        "visible": true,
+        "ticks": "inside",
+        "range": [
+            -0.2548919384340227,
+            65.86522016942888
+        ],
+        "domain": [
+            0.0391878098571012,
+            0.989747375328084
+        ],
+        "tickmode": "array",
+        "linecolor": "rgba(0, 0, 0, 1.000)",
+        "showgrid": true,
+        "title": "",
+        "mirror": false,
+        "tickangle": 0,
+        "showline": true,
+        "gridcolor": "rgba(0, 0, 0, 0.100)",
+        "titlefont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 15
+        },
+        "tickcolor": "rgb(0, 0, 0)",
+        "ticktext": [
+            "0",
+            "10",
+            "20",
+            "30",
+            "40",
+            "50",
+            "60"
+        ],
+        "zeroline": false,
+        "type": "-",
+        "tickfont": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "zerolinecolor": "rgba(0, 0, 0, 1.000)",
+        "anchor": "x1"
+    },
+    "legend": {
+        "tracegroupgap": 0,
+        "bordercolor": "rgba(0, 0, 0, 1.000)",
+        "bgcolor": "rgba(255, 255, 255, 1.000)",
+        "font": {
+            "color": "rgba(0, 0, 0, 1.000)",
+            "family": "sans-serif",
+            "size": 11
+        },
+        "y": 1.0,
+        "x": 1.0
+    },
+    "width": 576
+}
+);
     </script>
-<p>SymPy has functions for manipulating expressions: <code>simplify</code>, <code>expand</code>, <code>together</code>, <code>factor</code>, <code>cancel</code>, <code>apart</code>, <code>args</code>, ...</p><p>SymPy has functions for basic math: <code>factor</code>, <code>solve</code>, ...</p><p>SymPy has functions for calculus: <code>limit</code>, <code>diff</code>, <code>integrate</code></p>
+
+    </body>
+</html>
+
+
+<p>SymPy has functions for manipulating expressions: <code>simplify</code>, <code>expand</code>, <code>together</code>, <code>factor</code>, <code>cancel</code>, <code>apart</code>, <code>args</code>, ...</p>
+<p>SymPy has functions for basic math: <code>factor</code>, <code>solve</code>, ...</p>
+<p>SymPy has functions for calculus: <code>limit</code>, <code>diff</code>, <code>integrate</code></p>
+
   </div>
 </div>
 

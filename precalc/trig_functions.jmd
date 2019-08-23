@@ -1,6 +1,11 @@
 # Trigonometric functions
 
-```nocode, noout
+
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -27,7 +32,7 @@ shorter adjacent side the "adjacent" side and the longer adjacent side
 the hypotenuse.
 
 
-```nocode
+```julia; echo=false
 p = plot(legend=false, xlim=(0,5), ylim=(-1/2, 3),
          xticks=nothing, yticks=nothing, border=:none)
 plot!([0,4,4,0],[0,0,3,0], linewidth=3)
@@ -50,7 +55,7 @@ $$~
 \end{align}
 ~$$
 
-```
+```julia; echo=false
 note("""Many students remember these through [SOH-CAH-TOA](http://mathworld.wolfram.com/SOHCAHTOA.html).""")
 ```
 
@@ -59,8 +64,52 @@ Some algebra shows that $\tan(\theta) = \sin(\theta)/\cos(\theta)$. There are al
 
 These definitions in terms of sides only apply for $0 \leq \theta \leq \pi/2$. More generally, if we relate any angle taken in the counter clockwise direction for the $x$-axis with a point $(x,y)$ on the *unit* circle, then we can extend these definitions---the point $(x,y)$ is also $(\cos(\theta), \sin(\theta))$.
 
+```julia; echo=false; cache=true
+## {{{radian_to_trig}}}
 
-{{{radian_to_trig}}}
+#gr()
+pyplot()
+fig_size = (400, 300)
+
+function plot_angle(m)
+    r = m*pi
+
+    ts = range(0, stop=2pi, length=100)
+    tit = "$m * pi -> ($(round(cos(r), digits=2)), $(round(sin(r), digits=2)))"
+    p = plot(cos.(ts), sin.(ts), legend=false, aspect_ratio=:equal,title=tit)
+    plot!(p, [-1,1], [0,0], color=:gray30)
+    plot!(p,  [0,0], [-1,1], color=:gray30)
+
+    if r > 0
+        ts = range(0, stop=r, length=100)
+    else
+        ts = range(r, stop=0, length=100)
+    end
+
+    plot!(p, (1/2 .+ abs.(ts)/10pi).* cos.(ts), (1/2 .+ abs.(ts)/10pi) .* sin.(ts), color=:red, linewidth=3)
+    l = 1 #1/2 + abs(r)/10pi
+    plot!(p, [0,l*cos(r)], [0,l*sin(r)], color=:green, linewidth=4)
+
+    scatter!(p, [cos(r)], [sin(r)], markersize=5)
+    annotate!(p, [(1/4+cos(r), sin(r), "(x,y)")])
+
+    p
+end
+
+
+
+## different linear graphs
+anim = @animate for m in  -4//3:1//6:10//3
+    plot_angle(m)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+caption = "An angle in radian measure corresponds to a point on the unit circle, whose coordinates define the sine and cosine of the angle."
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 
 ### The trigonometric functions in Julia
@@ -108,19 +157,19 @@ This basic fact can be manipulated many ways. For example, dividing through by $
 
 `Julia`'s functions can compute values for any angles, including these fundamental ones:
 
-```
+```julia;
 [cos(theta) for theta in [0, pi/6, pi/4, pi/3, pi/2]]
 ```
 
 These are floating point approximations, as can be seen clearly in the last value. Symbolic math can be used if exactness matters:
 
-```
+```julia;
 using CalculusWithJulia   # to load the `Plots` and `SymPy` packages
 cos.([0, PI/6, PI/4, PI/3, PI/2])
 ```
 
 
-```
+```julia; echo=false
 note(L"""
 
 For really large values, round off error can play a big role. For example, the *exact* value of $\sin(1000000 \pi)$ is $0$, but the returned value is not quite $0$ `sin(1_000_000 * pi) = -2.231912181360871e-10`. For exact multiples of $\pi$ with large multiples the `sinpi` and  `cospi` functions are useful.
@@ -141,7 +190,7 @@ side (the height of the tree) can be solved for with the tangent
 function. For example, if standing $100$ feet from the base of the
 tree the tip makes a 15 degree angle the height is given by:
 
-```
+```julia;
 theta = 15 * 180/pi
 adjacent = 100
 opposite = adjacent * tan(theta)
@@ -161,19 +210,19 @@ Well, we need some facts. Suppose your pace is $3$ feet. Then the
 adjacent length is $90$ feet. The multiplier is the tangent of $10$
 degrees, or:
 
-```
+```julia;
 tan(10 * pi/180)
 ```
 
 Which for sake of memory we will say is $1/6$ (a $5$ percent error)$. So that answer is *roughly* $15$ feet:
 
-```
+```julia;
 30 * 3 / 6
 ```
 
 Similarly, you can use your thumb instead of your first. To use your first you can multiply by $1/6$ the adjacent side, to use your thumb about $1/30$ as this approximates the tangent of $2$ degrees:
 
-```
+```julia;
 1/30, tan(2*pi/180)
 ```
 
@@ -186,7 +235,7 @@ that height by the appropriate amount to find your distance.
 
 The sine function is defined for all real $\theta$ and has a range of $[-1,1]$. Clearly as $\theta$ winds around the $x$-axis, the position of the $y$ coordinate begins to repeat itself. We say the sine function is *periodic* with period $2\pi$. A graph will illustrate:
 
-```
+```julia;
 plot(sin, 0, 4pi)
 ```
 
@@ -197,7 +246,7 @@ From this graph---or considering when the $y$ coordinate is $0$---we see that th
 
 The cosine function is similar, in that it has the same domain and range, but is "out of phase" with the sine curve. A graph of both shows the two are related:
 
-```
+```julia;
 plot([sin, cos], 0, 4pi)
 ```
 
@@ -210,7 +259,7 @@ rather just $\pi$. A graph will show this. Here we avoid the vertical
 asymptotes by keeping them out of the plot domain and layering several
 plots.
 
-```nocode
+```julia; echo=false
 k = -2
 pt = plot(tan, k*pi - pi/2+.1, k*pi + pi/2 - .1, legend=false, color=:blue)
 for k in -1:2
@@ -300,14 +349,14 @@ The  trigonometric functions are all periodic. In particular they are not monoto
 
 For example, the arcsine function is defined for $-1 \leq x \leq 1$ and has a range of $-\pi/2$ to $\pi/2$:
 
-```
+```julia;
 plot(asin, -1, 1)
 ```
 
 
 The arctangent has domain of all real $x$. It has shape given by:
 
-```
+```julia;
 plot(atan, -10, 10)
 ```
 
@@ -326,7 +375,7 @@ This can be limiting at times. A common case is to find the angle in $[0, 2\pi)$
 
 For example, this will not give back $\theta$ without more work to identify the quadrant:
 
-```
+```julia;
 theta = 3pi/4                     # 2.35619...
 x,y = (cos(theta), sin(theta))    # -0.7071..., 0.7071...
 atan(y/x)
@@ -334,7 +383,7 @@ atan(y/x)
 
 But,
 
-```
+```julia;
 atan(y, x)
 ```
 
@@ -351,7 +400,7 @@ If $n=1.5$ (glass), $\alpha = \pi/3$ and $\theta_0=\pi/6$, find the deflection (
 
 We have:
 
-```
+```julia;
 n, alpha, theta0 = 1.5, pi/3, pi/6
 delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
 ```
@@ -361,7 +410,7 @@ For small $\theta_0$ and $\alpha$ the deviation is approximated by $(n-1)\alpha$
 
 We have:
 
-```
+```julia;
 n, alpha, theta0 = 1.5, pi/15, pi/10
 delta = theta0 - alpha + asin(n * sin(alpha - asin(sin(theta0)/n)))
 delta, (n-1)*alpha
@@ -387,7 +436,7 @@ D = \pi + 2i - 4 \arcsin(\frac{1}{n} \sin(i)).
 
 Graphing this for incident angles between $0$ and $\pi/2$ we have:
 
-```
+```julia;
 n = 4/3
 D(i) = pi + 2i - 4 * asin(sin(i)/n)
 plot(D, 0, pi/2)
@@ -395,7 +444,7 @@ plot(D, 0, pi/2)
 
 Descartes was interested in the minimum value of this graph, as it relates to where the light concentrates. This is roughly at $1$ radian or about $57$ degrees:
 
-```
+```julia;
 rad2deg(1.0)
 ```
 
@@ -426,7 +475,7 @@ A few things become clear from the above two representations:
 
 Other properties of this polynomial family are not at all obvious. One is that amongst all polynomials of degree $n$ with roots in $[-1,1]$, $T_n(x)$ will be the smallest in magnitude (after we divide by the leading coefficient to make all polynomials considered to be monic). We can check this for one case. Take $n=4$, then we have: $T_4(x) = 8x^4 - 8x^2 + 1$. Compare this with $q(x) = (x+3/5)(x+1/5)(x-1/5)(x-3/5)$ (evenly spaced zeros):
 
-```
+```julia;
 T4(x) = (8x^4 - 8x^2 + 1) / 8
 q(x) = (x+3/5)*(x+1/5)*(x-1/5)*(x-3/5)
 plot([x -> abs(T4(x)), x -> abs(q(x))], -1,1)
@@ -458,7 +507,7 @@ The hyperbolic tangent is then the ratio of $\sinh$ and $\cosh$. As well, three 
 
 What is bigger $\sin(1.23456)$ or $\cos(6.54321)$?
 
-```
+```julia; echo=false
 a = sin(1.23456) > cos(6.54321)
 choices = [L"\sin(1.23456)", L"\cos(6.54321)"]
 ans = a ? 1 : 2
@@ -469,7 +518,7 @@ radioq(choices, ans, keep_order=true)
 
 Let $x=\pi/4$. What is bigger $\cos(x)$ or $x$?
 
-```
+```julia; echo=false
 x = pi/4
 a = cos(x) > x
 choices = [L"\cos(x)", L"x"]
@@ -481,7 +530,7 @@ radioq(choices, ans, keep_order=true)
 
 The cosine function is a simple tranformation of the sine function. Which one?
 
-```
+```julia; echo=false
 choices = [
 L"\cos(x) = \sin(x - \pi/2)",
 L"\cos(x) = \sin(x + \pi/2)",
@@ -494,7 +543,7 @@ radioq(choices, ans)
 
 Graph the secant function. The vertical asymptotes are at?
 
-```
+```julia; echo=false
 choices = [
 L"The values $k\pi$ for $k$ in $\dots, -2, -1, 0, 1, 2, \dots$",
 L"The values $\pi/2 + k\pi$ for $k$ in $\dots, -2, -1, 0, 1, 2, \dots$",
@@ -513,7 +562,7 @@ $$~
 
 Plot both functions over $[0, 180]$. What is the maximum difference between the two to two decimal points? (You may need to plot the difference of the functions to read off an approximate answer.)
 
-```
+```julia; echo=false
 numericq(.0015, .01)
 ```
 
@@ -525,7 +574,7 @@ $$~
 \cos(x/3) = 1/3.
 ~$$
 
-```
+```julia; echo=false
 val = 3*acos(1/3)
 numericq(val)
 ```
@@ -534,7 +583,7 @@ numericq(val)
 
 For any postive integer $n$ the equation $\cos(x) - nx = 0$ has a solution in $[0, \pi/2]$. Graphically estimate the value when $n=10$.
 
-```
+```julia; echo=false
 val = 0.1
 numericq(val)
 ```
@@ -545,7 +594,7 @@ The sine function is an *odd* function.
 
 * The hyperbolic sine is:
 
-```
+```julia; echo=false
 choices = ["odd", "even", "neither"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -553,7 +602,7 @@ radioq(choices, ans, keep_order=true)
 
 * The hyperbolic cosine is:
 
-```
+```julia; echo=false
 choices = ["odd", "even", "neither"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -561,7 +610,7 @@ radioq(choices, ans, keep_order=true)
 
 * The hyperbolic tangent is:
 
-```
+```julia; echo=false
 choices = ["odd", "even", "neither"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -577,7 +626,7 @@ $$~
 
 Is this identical to the pattern for the regular sine function?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -590,6 +639,6 @@ $$~
 
 Is this identical to the pattern for the regular sine function?
 
-```
+```julia; echo=false
 yesnoq(false)
 ```

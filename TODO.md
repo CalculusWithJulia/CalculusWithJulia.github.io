@@ -1,3 +1,14 @@
+v1.1
+
+* CwJWeaveTpl is name
+* mmd -> jmd for Weave.jl
+* add project.toml, manifest.toml. Can I integrate so build happens?
+* add Contributing.md with notes on editing
+* go over reviews to tighten up.
+* rename? upload WeaveTpl to github
+
+
+
 
 # v1.0
 many deprecations!
@@ -81,6 +92,3 @@ ALL
 ### Vector calc
 
 ALL
-
-
-

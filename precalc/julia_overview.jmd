@@ -1,5 +1,10 @@
 # Overview of Julia commands
 
+
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
 [Julia](http://www.julialang.org) is a programming language that is freely available.
 
 We can use `Julia` without installation on
@@ -15,7 +20,7 @@ though slow to start, this requires no account.
 
 Commands are typed into a notebook cell in `Jupyter`. (Or at the command line.)
 
-```
+```julia;
 2 + 2   # use shift-enter to evaluate
 ```
 
@@ -43,7 +48,7 @@ displayed. Explicit printing can be done to output intermediate values.
 
 As much as possible, operations involving  certain types of numbers will produce output of a given type. For example, both of these divisions produce a floating point answer, even though  mathematically, they need not:
 
-```
+```julia;
 2/1, 1/2
 ```
 
@@ -53,13 +58,13 @@ Powers with negative bases, like `(-3.0)^(1/3)`, are also not defined. However, 
 
 Integer operations may silently overflow, producing odd answers:
 
-```
+```julia;
 2^64
 ```
 
 When different types of numbers are mixed, `Julia` will usually promote the values to a common type before the operation:
 
-```
+```julia;
 (2 + 1//2) + 0.5
 ```
 
@@ -73,7 +78,7 @@ The standard mathematical operations are implemented by `+`, `-`, `*`, `/`, `^`.
 * A vector is an indexed collection of similarly typed values. Vectors can
 be constructed with square brackets (syntax for concatenation):
 
-```
+```julia;
 [1,1,2,3,5,8]
 ```
 
@@ -90,7 +95,7 @@ Regular arithmetic sequences can be defined by either:
 
 Values can be assigned variable names, with `=`. There are some variants
 
-```
+```julia;
 x = 2
 a_really_long_name = 3
 a, b = 1, 2    # multiple assignment
@@ -103,7 +108,7 @@ or even an emoji.
 
 We can then use the variables to reference the values:
 
-```
+```julia;
 x + a_really_long_name + a - b
 ```
 
@@ -117,7 +122,7 @@ Functions in `Julia` are just regular objects. In these notes, we often pass the
 
 We "call" a function by passing argument(s) to it, grouped by parentheses:
 
-```
+```julia;
 sqrt(10)
 sin(pi/3)
 log(5, 100)   # log base 5 of 100
@@ -125,7 +130,7 @@ log(5, 100)   # log base 5 of 100
 
 With out parentheses, the name (usually) refers to a generic name and the output lists the number of available implementations.
 
-```
+```julia;
 log
 ```
 
@@ -137,7 +142,7 @@ log
 
 Besides `^`, there are `sqrt` and `cbrt` for powers. In addition basic functions for exponential and  logarithmic functions:
 
-```verbatim
+```
 sqrt(x), cbrt(x)
 exp(x)
 log(x) # base e
@@ -148,7 +153,7 @@ log10(x), log2(x), log(b, x)
 
 The $6$ standard trig functions are implemented; their implementation for degree arguments; their inverse functions; and the hyperbolic analogs.
 
-```verbatim
+```
 sin, cos, tan, csc, sec, cot
 asin, acos, atan, acsc, asec, acot
 sinh, cosh, tanh, csch, sech, coth
@@ -157,7 +162,7 @@ asinh, acosh, atanh, acsch, asech, acoth
 
 If degrees are preferred, the following are defined to work with degrees:
 
-```verbatim
+```
 sind, cosd, tand, cscd, secd, cotd
 ```
 
@@ -182,7 +187,7 @@ Other useful and familiar functions are defined:
 
 Simple mathematical functions can be defined using standard mathematical notation:
 
-```
+```julia;
 f(x) = -16x^2 + 100x + 2
 ```
 
@@ -190,7 +195,7 @@ The argument `x` is passed into the body of function.
 
 Other values are found from  the environment where defined:
 
-```
+```julia;
 a = 1
 f(x) = 2*a + x
 f(3)   # 2 * 1 + 3
@@ -200,7 +205,7 @@ f(3)  # now 2 * 4 + 3
 
 User defined functions can have 0, 1 or more arguments:
 
-```
+```julia;
 area(w, h) = w*h
 ```
 
@@ -208,7 +213,7 @@ Julia makes different *methods* for *generic* function names, so functions whose
 
 Functions can be defined with *keyword* arguments that may have defaults specified:
 
-```
+```julia;
 f(x; m=1, b=0) = m*x + b     # note ";"
 f(1)                         # uses m=1, b=0   -> 1 * 1 + 0
 f(1, m=10)                   # uses m=10, b=0  -> 10 * 1 + 0
@@ -218,7 +223,7 @@ f(1, m=10, b=5)              # uses m=10, b=5  -> 10 * 1 + 5
 
 Longer functions can be defined using the `function` keyword, the last command executed is returned:
 
-```
+```julia;
 function f(x)
   y = x^2
   z = y - 3
@@ -228,7 +233,7 @@ end
 
 Functions without names, *anonymous functions*, are made with the `->` syntax as in:
 
-```
+```julia;
 x -> cos(x)^2 - cos(2x)
 ```
 
@@ -239,7 +244,7 @@ writing a function that *returns* a function.
 
 `Julia` provides the traditional `if-else-end` statements, but more conveniently has a `ternary` operator for the simplest case:
 
-```
+```julia;
 our_abs(x) = (x < 0) ? -x : x
 ```
 
@@ -247,7 +252,7 @@ our_abs(x) = (x < 0) ? -x : x
 
 Iterating over a collection can be done with the traditional `for` loop. However, there are list comprehensions to mimic the definition of a set:
 
-```
+```julia;
 [x^2 for x in 1:10]
 ```
 
@@ -255,7 +260,7 @@ Iterating over a collection can be done with the traditional `for` loop. However
 
 A function can be applied to each element of a vector through mapping or broadcasting. The latter is implemented in a succinct notation. Calling a function with a "." before its opening "(` will apply the function to each individual value in the argument:
 
-```
+```julia;
 xs = [1,2,3,4,5]
 sin.(xs)     # gives back [sin(1), sin(2), sin(3), sin(4), sin(5)]
 ```
@@ -269,17 +274,17 @@ graphics, and `gr` for other graphics.
 
 To use an add-on package, it must have been installed and it must be loaded each session. In these notes, the necessary packages are all loaded when an accompanying package, `CalculusWithJulia` is loaded. Assuming it has been installed, this command will do so:
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
 With `Plots` loaded, we can plot a function by passing the function object by name to `plot`, specifying the range of $x$ values to show, as follows:
 
-```
+```julia;
 plot(sin, 0, 2pi) # plot a function---by name---over an interval [a,b]
 ```
 
-```
+```julia; echo=false
 note("""
 This is in the form of **the** basic pattern employed: `verb(function_object, arguments...)`. The verb in this example is `plot`, the object `sin`, the arguments `0, 2pi` to specify `[a,b]` domain to plot over.
 """)
@@ -287,7 +292,7 @@ This is in the form of **the** basic pattern employed: `verb(function_object, ar
 
 Plotting more than one function over $[a,b]$ is achieved through the `plot!` function, which modifies the existing plot (`plot` creates a new one):
 
-```
+```julia;
 plot(sin, 0, 2pi)
 plot!(cos)
 plot!(zero)
@@ -297,7 +302,7 @@ plot!(zero)
 
 Plotting an *anonymous* function is a bit more immediate:
 
-```
+```julia;
 plot( x -> exp(-x/pi) * sin(x), 0, 2pi)
 ```
 
@@ -318,7 +323,7 @@ In `Julia` the equals sign is **only** for *assignment*. The *left-hand* side of
 
 Symbolic math is available through an add-on package `SymPy`. As with `Plots`, this package is also loaded with `CalculusWithJulia`. Once loaded, symbolic variables are created with `@vars`:
 
-```
+```julia;
 using SymPy   # load package, not needed here as it was done already with CalculusWithJulia
 @vars x a b c # no commas here, though `@vars(x,a,b,c)` can be used
 ```
@@ -326,19 +331,19 @@ using SymPy   # load package, not needed here as it was done already with Calcul
 
 Symbolic expressions---unlike numeric expressions---are not immediately evaluated, though they are simplified:
 
-```
+```julia;
 p = a*x^2 + b*x + c
 ```
 
 To substitute a value, we can use `pair` notation (`variable=>value`):
 
-```
+```julia;
 p(x=>2), p(x=>2, a=>3, b=>4, c=>1)
 ```
 
 SymPy expressions of a single free variable can be plotted directly:
 
-```
+```julia;
 plot(64 - (1/2)*32 * x^2, 0, 2)
 ```
 

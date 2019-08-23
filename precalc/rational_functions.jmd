@@ -1,5 +1,8 @@
 # Rational functions
 
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
 
 A rational expression is the ratio of two polynomial expressions.
 Such expressions arise in many modeling situations. As well, as many
@@ -59,7 +62,7 @@ f(x) = \frac{(x-1)^2 \cdot (x-2)}{(x+3) \cdot (x-3)}.
 ~$$
 
 
-```
+```julia;
 using CalculusWithJulia   # to load the `Plots` and `SymPy` packages
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -10, 10)
@@ -73,7 +76,7 @@ The question of big or small $x$ is not answered well with this graph,
 as the spikes dominate the scale of the $y$-axis. Setting a much
 larger viewing window illuminates this question:
 
-```
+```julia;
 plot(f, -100, 100)
 ```
 
@@ -121,7 +124,7 @@ symbolic math.
 
 In particular, let's rewrite the expression in terms of its numerator and denominator:
 
-```
+```julia;
 @vars x real=true
 a =  (x-1)^2 * (x-2)
 b = (x+3)*(x-3)
@@ -144,20 +147,20 @@ The rational expression on the right-hand side has larger degree in the denomina
 
 The division algorithm is implemented in `Julia` generically through the `divrem` method:
 
-```
+```julia;
 q, r = divrem(a, b)
 ```
 
 This yield the decomposition of `a/b`:
 
-```
+```julia;
 q + r/b
 ```
 
 
 A similar result can be found using the `apart` function, which can be easier to use if the expression is not given in terms of a separate numerator and denominator.
 
-```
+```julia;
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3))  # as a function
 p = f(x)                                # a symbolic expression
 apart(p)
@@ -170,7 +173,7 @@ that is the line with slope $1$ and $y$-intercept $4$. As $x$ goes to
 $\infty$, the second piece will clearly go towards 0, as this simple
 graph shows:
 
-```
+```julia;
 plot(apart(p) - (x - 4), 10, 100)
 ```
 
@@ -192,7 +195,7 @@ The factored form, as $p$ is presented, is a bit hard to work with,
 rather we use the expanded form, which we get through the `cancel`
 function
 
-```
+```julia;
 cancel(p)
 ```
 
@@ -255,7 +258,7 @@ $$~
 
 Then we can see that the ratio of the leading terms is $x^5 / (5x^4) = (1/5)x$. We expect a slant asymptote with slope $1/5$, though we would need to divide to see the exact intercept. This is found with
 
-```
+```julia;
 p = (x^5 - 2x^4 + 3x^3 - 4x^2 + 5) / (5x^4 + 4x^3 + 3x^2 + 2x + 1)
 apart(p)
 ```
@@ -270,7 +273,7 @@ $$~
 
 has decomposition $5x^2 + 11x + 11 + 13/(x-1)$:
 
-```
+```julia;
 a = 5x^3 + 6x^2 +2
 b = x-1
 q, r = divrem(a, b)
@@ -278,14 +281,14 @@ q, r = divrem(a, b)
 
 The graph of $a/b$ has nothing in common with the graph of $g$ for small $x$
 
-```
+```julia;
 plot(a/b, -3, 3)
 plot!(q)
 ```
 
 But the graphs do match for large $x$:
 
-```
+```julia;
 plot(a/b, 5, 10)
 plot!(q)
 ```
@@ -319,7 +322,7 @@ lower degree than the denominator. Hence the horizontal asymptotes of $0$.
 
 To see another example we have:
 
-```
+```julia;
 x = symbols("x")
 p = (x-1)*(x-2)
 q = (x-3)^3 * (x^2 - x - 1)
@@ -335,7 +338,7 @@ possibly with a power.
 
 As just discussed, the graph of $1/x$ will have a horizontal asymptote. However it will also show a spike at $0$:
 
-```
+```julia;
 plot(1/x, -1, 1)
 ```
 
@@ -381,7 +384,7 @@ For example, the function $f(x) = ((x-1)^2 \cdot (x-2)) / ((x+3) \cdot
 (x-3))$ has vertical asymptotes at $-3$ and $3$, as its graph
 illustrated. Without the graph we could see this as well:
 
-```
+```julia;
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 f(3), f(-3)
 ```
@@ -402,7 +405,7 @@ We can avoid the vertical asymptotes in our viewing window. For
 example we could look at the area between the vertical asymptotes, by
 plotting over $(-2.9, 2.9)$, say:
 
-```
+```julia;
 f(x) = (x-1)^2 * (x-2) / ((x+3)*(x-3) )
 plot(f, -2.9, 2.9)
 ```
@@ -421,7 +424,7 @@ We can also clip the `y` axis. The `plot` function can be passed an
 argument `ylims=(lo, hi)` to limit which values are plotted. With this,
 we can have:
 
-```
+```julia;
 plot(f, -5, 5, ylims=(-20, 20))
 ```
 
@@ -437,7 +440,7 @@ connect-the-dots algorithm will skip those values.
 This is actually quite easy to implement, if we operate on the
 function object. Here is a possible `trimplot` function:
 
-```noeval
+```julia; eval=false
 function trimplot(f, a, b, c=20; kwargs...)
    fn = x -> abs(f(x)) < c ? f(x) : NaN
    plot(fn, a, b; kwargs...)
@@ -452,7 +455,7 @@ A more robust version of such a function is in the `CalculusWithJulia` package, 
 
 Now to graph:
 
-```
+```julia;
 trimplot(f, -25, 25, 30)
 ```
 
@@ -472,10 +475,8 @@ negative, $0$, or undefined. It typically is represented along the
 lines of this one for $f(x) = x^3 - x$:
 
 ```
-Verbatim("""
     -    0   +   0   -   0   +
 < ----- -1 ----- 0 ----- 1 ----- >
-""")
 ```
 
 
@@ -490,7 +491,7 @@ With the computer, where it is convenient to draw a graph, it might be better to
 the sign on the graph of the function. This helper function will do
 so, plotting the function and then coloring it different colors based on the sign of $f(x)$:
 
-```noeval
+```julia; eval=false
 function signchart(f, a, b)
    xs = range(a, stop=b, length=200)
    ys = f.(xs)
@@ -502,7 +503,7 @@ function signchart(f, a, b)
 
 (The function is defined in `CalculusWithJulia`, so need not be typed in.)
 
-```
+```julia;
 f(x) = x^3 - x
 signchart(f, -3/2, 3/2)
 ```
@@ -533,14 +534,14 @@ $$~
 
 We can look graphically at these approximations:
 
-```
+```julia;
 sin_p(x) = (x - (7/60)*x^3) / (1 + (1/20)*x^2)
 tan_p(x) = (x - (1/15)*x^3) / (1 - (2/5)*x^2)
 plot(sin, -pi, pi)
 plot!(sin_p)
 ```
 
-```
+```julia;
 plot(tan, -pi/2 + 0.2, pi/2 - 0.2)
 plot!(tan_p)
 ```
@@ -551,7 +552,7 @@ plot!(tan_p)
 
 The rational expression $(x^3 - 2x + 3) / (x^2 - x + 1)$ would have
 
-```
+```julia; echo=false
 choices = [L"A horizontal asymptote $y=0$",
 L"A horizontal asymptote $y=1$",
 L"A slant asymptote with slope $m=1$"]
@@ -564,7 +565,7 @@ radioq(choices, ans)
 
 The rational expression $(x^2 - x + 1)/ (x^3 - 2x + 3)$ would have
 
-```
+```julia; echo=false
 choices = [L"A horizontal asymptote $y=0$",
 L"A horizontal asymptote $y=1$",
 L"A slant asymptote with slope $m=1$"]
@@ -579,7 +580,7 @@ radioq(choices, ans)
 
 The rational expression $(x^2 - x + 1)/ (x^2 - 3x + 3)$ would have
 
-```
+```julia; echo=false
 choices = [L"A horizontal asymptote $y=0$",
 L"A horizontal asymptote $y=1$",
 L"A slant asymptote with slope $m=1$"]
@@ -600,7 +601,7 @@ $$~
 would have
 
 
-```
+```julia; echo=false
 choices = [L"A horizontal asymptote $y=0$",
 L"A horizontal asymptote $y=1$",
 L"A slant asymptote with slope $m=1$"]
@@ -620,7 +621,7 @@ $$~
 
 would have
 
-```
+```julia; echo=false
 choices = [L"A vertical asymptote $x=1$",
 L"A slant asymptote with slope $m=1$",
 L"A vertical asymptote $x=5$"
@@ -642,7 +643,7 @@ $$~
 
 has a slant asymptote. What is the equation of that line?
 
-```
+```julia; echo=false
 choices = [L"y = 3x",
 L"y = (1/3)x",
 L"y = (1/3)x - (1/3)"
@@ -656,7 +657,7 @@ radioq(choices, ans)
 
 Look at the graph of the function $f(x) = ((x-1)\cdot(x-2)) / ((x-3)\cdot(x-4))$
 
-```nocode
+```julia; echo=false
 f(x) = ((x-1) * (x-2)) / ((x-3) *(x-4))
 delta = 1e-1
 col = :blue
@@ -669,7 +670,7 @@ p
 
 Is the following common conception true: "The graph of a function never crosses its asymptotes."
 
-```
+```julia; echo=false
 choices = ["No, the graph clearly crosses the drawn asymptote",
 "Yes, this is true"]
 ans = 1
@@ -687,18 +688,18 @@ intersect the given curve. It can sometimes take a while to change perception.)
 
 Consider the two graphs of $f(x) = 1/x$ over $[10,20]$ and $[100, 200]$:
 
-```nocode
+```julia; echo=false
 plot(x -> 1/x, 10, 20)
 ```
 
 
-```nocode
+```julia; echo=false
 plot(x -> 1/x, 100, 200)
 ```
 
 The two shapes are basically identical and do not look like straight lines. How does this reconcile with the fact that $f(x)=1/x$ has a horizontal asymptote $y=0$?
 
-```
+```julia; echo=false
 choices = ["The horizontal asymptote is not a straight line.",
 L"The $y$-axis scale shows that indeed the $y$ values are getting close to $0$.",
 L"The graph is always decreasing, hence it will eventually reach $-\infty$."
@@ -718,7 +719,7 @@ r(t) = \frac{50t^2}{t^3 + 20}, \quad t \geq  0.
 
 What is the amount of the drug after $1$ hour?
 
-```
+```julia; echo=false
 r1(t) = 50t^2 / (t^3 + 20)
 val = r1(1)
 numericq(val)
@@ -726,14 +727,14 @@ numericq(val)
 
 What is the amount of drug in the bloodstream after 24 hours?
 
-```
+```julia; echo=false
 val = r1(24)
 numericq(val)
 ```
 
 What is more accurate: the peak amount is
 
-```
+```julia; echo=false
 choices = ["between 0 and 8 hours", "between 8 and 16 hours", "between 16 and 24 hours", "after one day"]
 ans = 1
 radioq(choices, ans)
@@ -741,7 +742,7 @@ radioq(choices, ans)
 
 This graph has
 
-```
+```julia; echo=false
 choices = [L"a slant asymptote with slope $50$",
 L"a horizontal asymptote $y=20$",
 L"a horizontal asymptote $y=0$",
@@ -756,13 +757,13 @@ radioq(choices, ans)
 The (low-order) Pade approximation for $\sin(x)$ was seen to be $(x - 7/60 \cdot x^3)/(1 + 1/20 \cdot x^2)$. The graph showed that this approximation was fairly close
 over $[-\pi, \pi]$. Without graphing would you expect the behaviour of the function and its approximation to be similar for *large* values of $x$?
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
 Why?
 
-```
+```julia; echo=false
 choices = [
 L"The $\sin(x)$ oscillates, but the rational function eventually follows $7/60 \cdot x^3$",
 L"The $\sin(x)$ oscillates, but the rational function has a slant asymptote",

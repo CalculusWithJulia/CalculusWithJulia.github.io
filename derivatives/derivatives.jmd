@@ -1,8 +1,9 @@
-# Derivatives
+```julia; echo=false; results="hidden"
+using WeaveTpl
+```
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
-plotly()
 ```
 
 Before defining the derivative of a function, let's begin with two
@@ -31,7 +32,7 @@ Using some mathematical notation, would give $x(t) = v\cdot t$, where
 $x$ is position at time $t$, $v$ is the velocity and $t$ the time
 traveled in hours. A simple graph of the first three hours of travel would show:
 
-```
+```julia
 using CalculusWithJulia   # Load `Plots` and `SymPy`
 position(t) = 60 * t
 plot(position, 0, 3)
@@ -44,7 +45,7 @@ minutes, the displayed speed may have varied, the *average speed*
 would simply be the change in distance over the change in time, or
 $\Delta x / \Delta t$. That is
 
-```
+```julia
 15/(1/2)
 ```
 
@@ -52,7 +53,7 @@ $\Delta x / \Delta t$. That is
 Now suppose that after $6$ hours of travel the GPS in the car gives us a readout of distance traveled
 as a function of time. The graph looks like this:
 
-```nocode
+```julia;echo=false
 function position(t)
   if t <= 3
      60*t
@@ -76,19 +77,19 @@ about half an hour, then the slope continues on with same value as in the first
 
 Based on the graph, what was the average speed over the first three hours? Well, we traveled 180 miles, and took 3 hours:
 
-```
+```julia
 180/3
 ```
 
 What about the next half hour? Squinting shows the amount traveled was 15 miles (195 - 180) and it took 1/2 an hour:
 
-```
+```julia
 15/(1/2)
 ```
 
 And the half hour after that? The average speed is found from the distance traveled, 37.5 miles, divided by the time, 1/2 hour:
 
-```
+```julia
 37.5 / (1/2)
 ```
 
@@ -98,7 +99,7 @@ The next half hour the car did not move. What was the average speed? Well the ch
 
 Perhaps a graph of the speed is a bit more clear. We can do this based on the above:
 
-```
+```julia
 function speed(t)
   if     0   < t <= 3
      60
@@ -122,7 +123,7 @@ segments, and we could have derived the graph of `x` from that of
 `speed`, just using the simple formula relating distance, rate, and
 time.
 
-```
+```julia;echo=false
 note("""
 
 We were pretty loose with some key terms. There is a distinction
@@ -154,7 +155,7 @@ units of the distance traveled in the first second that the distance
 traveled between subsequent seconds was $3$ times, then $5$ times, then
 $7$ times, ... This table summarizes.
 
-```
+```julia; echo=false
 using DataFrames
 ts = [0,1,2,3,4,5]
 dxs = [0,1,3, 5, 7, 9]
@@ -165,7 +166,7 @@ table(d)
 
 A graph of distance versus time could be found by interpolating between the measured points:
 
-```
+```julia
 ts = [0,1,2,3,4, 5]
 xs = [0,1,4,9,16,25]
 plot(ts, xs)
@@ -175,13 +176,13 @@ The graph looks almost quadratic. What would the following questions have yielde
 
 * What is the average speed between $0$ and $3$?
 
-```
+```julia
 (9-0) / (3-0)  # (xs[4] - xs[1]) / (ts[4] - ts[1])
 ```
 
 * What is the average speed between $2$ and $3$?
 
-```
+```julia
 (9-4) / (3-2)  # (xs[4] - xs[3]) / (ts[4] - ts[3])
 ```
 
@@ -193,7 +194,7 @@ to any of the line segments.
 
 The average speed between $k$ and $k+1$ for this graph is:
 
-```
+```julia
 xs[2]-xs[1], xs[3] - xs[2], xs[4] - xs[3], xs[5] - xs[4]
 ```
 
@@ -234,7 +235,45 @@ over a given period, $h$. What if this rate is so variable, that it
 makes sense to take smaller and smaller periods $h$? In fact, what if
 $h$ goes to $0$?
 
-{{{secant_line_tangent_line}}}
+```julia;echo=false; cache=true
+fig_size=(600, 400)
+
+function secant_line_tangent_line_graph(n)
+    f(x) = sin(x)
+    c = pi/3
+    h = 2.0^(-n) * pi/4
+    m = (f(c+h) - f(c))/h
+
+    xs = range(0, stop=pi, length=50)
+    plt = plot(f, 0, pi, legend=false, size=fig_size)
+    plot!(plt, xs, f(c) .+ cos(c)*(xs .- c), color=:orange)
+    plot!(plt, xs, f(c) .+ m*(xs .- c), color=:black)
+    scatter!(plt, [c,c+h], [f(c), f(c+h)], color=:orange, markersize=5)
+
+    plot!(plt, [c, c+h, c+h], [f(c), f(c), f(c+h)], color=:gray30)
+    annotate!(plt, [(c+h/2, f(c), text("h", :top)), (c + h + .05, (f(c) + f(c + h))/2, text("f(c+h) - f(c)", :left))])
+
+    plt
+end
+caption = L"""
+
+The slope of each secant line represents the *average* rate of change between $c$ and $c+h$. As $h$ goes towards $0$, we recover the slope of the tangent line, which represents the *instantatneous* rate of change.
+
+"""
+
+
+
+n = 5
+anim = @animate for i=0:n
+    secant_line_tangent_line_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+ImageFile(imgfile, caption)
+```
+
 
 
 The graphic suggests that the slopes of the secant line converge to
@@ -250,20 +289,48 @@ the point with the slope from the limit above -- provided that limit
 exists. Informally, the tangent line is the line through the point
 that best approximates the function.
 
-{{{line_approx_fn}}}
+```julia; echo=false; cache=true
+function line_approx_fn_graph(n)
+    f(x) = sin(x)
+    c = pi/3
+    h = round(2.0^(-n) * pi/2, digits=2)
+    m = cos(c)
+
+    Delta = max(f(c) - f(c-h), f(min(c+h, pi/2)) - f(c))
+
+    p = plot(f, c-h, c+h, legend=false, xlims=(c-h,c+h), ylims=(f(c)-Delta,f(c)+Delta ))
+    plot!(p, x -> f(c) + m*(x-c))
+    scatter!(p, [c], [f(c)])
+    p
+end
+caption = L"""
+
+The tangent line is the best linear approximation to the function at the point $(c, f(c))$. As the viewing window zooms in on $(c,f(c))$ we
+    can see how the graph and its tangent line get more similar.
+
+"""
+
+n = 6
+anim = @animate for i=1:n
+    line_approx_fn_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+ImageFile(imgfile, caption)
+```
 
 The tangent line is not just a line that intersects the graph in one
 point, nor does it need only intersect the line in just one point.
 
-```
+```julia; echo=false
 note("""
-
 This last point was certainly not obvious at
 first. [Barrow](http://www.maa.org/sites/default/files/0746834234133.di020795.02p0640b.pdf),
 who had Newton as a pupil and was the first to sketch a proof of part
 of the Fundamental Theorem of Calculus, understood a tangent line to
 be a line that intersects a curve at only one point.
-
 """)
 ```
 
@@ -274,7 +341,7 @@ What is the slope of the tangent line to $f(x) = \sin(x)$ at $c=0$?
 We need to compute the limit $(\sin(c+h) - \sin(c))/h$ which is the
 limit as $h$ goes to $0$ of $\sin(h)/h$. We know this to be 1.
 
-```
+```julia
 f(x) = sin(x)
 c = 0
 tl(x) = f(c) + 1 * (x - c)
@@ -303,7 +370,7 @@ at a point.
 - **The power rule**. What is the derivative of the monomial $f(x) = x^n$? We need to look
   at $(x+h)^n - x^n$ for positive, integer-value $n$. Let's look at a case, $n=5$
 
-```
+```julia
 @vars x h real=true
 n = 5
 ex = expand((x+h)^n - x^n)
@@ -311,7 +378,7 @@ ex = expand((x+h)^n - x^n)
 
 All terms have an `h` in them, so we cancel it out:
 
-```
+```julia
 cancel(ex/h, h)
 ```
 
@@ -335,7 +402,7 @@ general, the power rule applies for any $n$ where $x^n$ is defined.
 
 We need to consider the difference $\sin(x+h) - \sin(x)$:
 
-```
+```julia
 ex = sympy.expand_trig(sin(x+h) - sin(x))  # expand_trig is not exposed in `SymPy`
 ```
 
@@ -349,7 +416,7 @@ $$~
 
 and take a limit. If the answer isn't clear, we can let `SymPy` do this work:
 
-```
+```julia
 limit((sin(x+h) - sin(x))/ h, h=>0)
 ```
 
@@ -368,12 +435,12 @@ e$, and since $\log(e)$ is $1$ we get this expression has a limit of $1/x$.
 
 We verify through:
 
-```
+```julia
 limit((log(x+h) - log(x))/h, h=>0)
 ```
 
 
-```
+```julia; echo=false
 alert(L"""
 
 There are several different
@@ -453,7 +520,7 @@ Other rules can be similarly derived. `SymPy` can give us them as
 well. Here we define to symbolic functions `u` and `v` and let `SymPy`
 derive a formula for the derivative of a product of functions:
 
-```
+```julia
 u,v = SymFunction("u,v") # make symbolic functions
 f(x) = u(x) * v(x)
 limit((f(x+h) - f(x))/h, h=>0)
@@ -535,7 +602,7 @@ proof (one of the two detailed
 
 We can verify this using `SymPy`:
 
-```
+```julia
 limit(( u(v(x+h)) - u(v(x)) ) / (v(x+h) - v(x)), h=>0)
 ```
 
@@ -629,25 +696,25 @@ $$~
 We can verify these with `SymPy`. Rather than take a limit, we will
 use `SymPy`'s `diff` function to compute derivatives.
 
-```
+```julia
 diff(x^5 * sin(x))
 ```
 
-```
+```julia
 diff(x^5/sin(x))
 ```
 
-```
+```julia
 diff(sin(x^5))
 ```
 
 and finally,
 
-```
+```julia
 diff(sin(x)^5)
 ```
 
-```
+```julia; echo=false
 note("""
 The `diff` function can be called as `diff(ex)` when there is just one
 free variable, as in the above examples; as  `diff(ex, var)` when there are parameters in the
@@ -756,7 +823,7 @@ This table summarizes the rules of derivatives that allow derivatives
 of more complicated expressions to be computed with the derivatives of
 their pieces.
 
-```
+```julia; echo=false
 using DataFrames
 nm = ["Power rule", "constant", "sum/difference", "product", "quotient", "chain"]
 rule = [L"[x^n]' = n\cdot x^{n-1}",
@@ -771,7 +838,7 @@ table(d)
 
 This table gives some useful derivatives:
 
-```
+```julia; echo=false
 fn = [L"x^n \text{ all } n",
 L"e^x",
 L"\log(x)",
@@ -809,14 +876,14 @@ e^{-x^2}(4x^2 - 2).
 
 This can be verified:
 
-```
+```julia
 diff(diff(e^(-x^2))) |> simplify
 ```
 
 Having to iterate the use of `diff` is cumbersome. An alternate notation is either specifying the variable twice: `diff(ex, x, x)` or using a number after the variable: `diff(ex, x, 2)`:
 
 
-```
+```julia
 diff(e^(-x^2), x, x) |> simplify
 ```
 
@@ -836,34 +903,34 @@ function `SymPy.Introspection.funcname` will return the function, and
 
 To illustrate, we define some variables and look at the operations:
 
-```
+```julia
 args, funcname = SymPy.Introspection.args, SymPy.Introspection.funcname # args, funcname are not exported
 @vars x y z
 ```
 
 This shows how addition is identified:
 
-```
+```julia
 ex = x + y + z
 funcname(ex)
 ```
 
 The arguments are all three variables being added:
 
-```
+```julia
 args(ex)
 ```
 
 Similarly, with expressions of a single variable
 
-```
+```julia
 ex = x^2 + sin(x) + sqrt(x^2 + 2)
 funcname(ex)
 ```
 
 and now the arguments are the expressions being added:
 
-```
+```julia
 args(ex)
 ```
 
@@ -871,14 +938,14 @@ When addition is the "outside" function, the next step would be to apply the sum
 
 What about multiplication?
 
-```
+```julia
 ex = x * y * z
 funcname(ex)
 ```
 
 and
 
-```
+```julia
 args(ex)
 ```
 
@@ -888,7 +955,7 @@ is typically viewed mathematically. The output of `args` can be 2 or more expres
 
 The power rule is an easy to use derivative rule. SymPy recognizes when the "outer" function is a power:
 
-```
+```julia
 ex = x^4
 funcname(ex)
 ```
@@ -897,7 +964,7 @@ The power rule would be used *if* the variable is not in the exponent, of course
 
 Exploring the quotient rule offers a surprise:
 
-```
+```julia
 ex = x/y
 funcname(ex)
 ```
@@ -906,14 +973,14 @@ The surprise? We may have expected division, but see multiplication. SymPy uses 
 different form to represent division, which can be gleaned from
 looking at the resulting arguments:
 
-```
+```julia
 args(ex)
 ```
 
 
 And the expression `1/y` is really a power:
 
-```
+```julia
 ex = 1/y
 funcname(ex)
 ```
@@ -924,19 +991,19 @@ To differentiate, we need to recursively apply derivative rules,
 peeling back one level at a time. When would you stop? When a number
 or a free symbol is encountered, as with:
 
-```
+```julia
 funcname(x)
 ```
 
 or
 
-```
+```julia
 funcname(Sym(3))
 ```
 
 In each of these cases, `args` returns an empty container:
 
-```
+```julia
 args(x), args(Sym(3))
 ```
 
@@ -951,7 +1018,7 @@ used in the following to specialize based on the type of "outside" function. Thi
 technical, but is exactly what is needed as different types of
 functions need different rules of differentiation.
 
-```
+```julia
 function diffex(ex)
     n = length(free_symbols(ex))
 
@@ -968,7 +1035,7 @@ thrown, and if one, the outside function is identified.
 
 For sums, we want the sum rule. This is the sum of the individual derivatives, simply implemented as:
 
-```
+```julia
 _diff(::Type{Val{:Add}}, xs...) = sum(diffex(ex) for ex in xs)
 ```
 
@@ -976,7 +1043,7 @@ The product rule is a bit more advanced. We use a formula derived above:
 if $f = f_1 \cdot f_2 \cdots f_n$
 then $f' = \sum f'_i/f_i \cdot f$:
 
-```
+```julia
 function _diff(::Type{Val{:Mul}}, fs...)
     f = prod(fs)
     sum(diffex(fi)/fi * f for fi in fs)
@@ -988,7 +1055,7 @@ where the variable exists (in the base, exponent, or both). The
 following avoids this by reexpressing $a^b = \exp(b \ln(a))$ and then
 applying the *chain* rule:
 
-```
+```julia
 _diff(::Type{Val{:Pow}}, a, b) = sympy.powsimp(a^b * diffex(b * log(a)))
 ```
 
@@ -996,7 +1063,7 @@ The `powsimp` function is used to encourage SymPy to simplify $a^b/b$ into $a^{b
 
 Now to catch some special cases. First, when we encounter the symbol, we want to return `1`, as $d/dx[x] = 1$:
 
-```
+```julia
 _diff(::Type{Val{:Symbol}}) = Sym(1)
 ```
 
@@ -1005,7 +1072,7 @@ types, we define a catch all distinguishing them by the fact that the
 `args` call is empty.
 
 
-```
+```julia
 _diff(::Any) = Sym(0)
 ```
 
@@ -1013,40 +1080,41 @@ Now for some specific functions. Here is where the chain rule comes
 in. For example, the derivative when the `log` function is encountered
 has an extra product of `diffex(ex)`:
 
-```
+```julia
 _diff(::Type{Val{:log}}, ex) =  1/ex * diffex(ex)
 ```
 
 Similarly, here is the rule for `exp`:
 
-```
+```julia
 _diff(::Type{Val{:exp}}, ex) = exp(ex) * diffex(ex)
 ```
 
 Finally, we define values for some trigonometric functions. Many more special
 cases, as these, would be needed to fully implement this approach:
 
-```
+```julia
 _diff(::Type{Val{:sin}}, ex) =  cos(ex)   * diffex(ex)
 _diff(::Type{Val{:cos}}, ex) = -sin(ex)   * diffex(ex)
 _diff(::Type{Val{:tan}}, ex) =  sec(ex)^2 * diffex(ex)
 ```
 
+(The chain rule uses fall into a pattern that could be exploited to make the code only depend on a mapping of terms like `:sin -> cos`.)
 
 Here we try it out:
 
-```
+```julia
 diffex(x^5 + x^4 + x^3 + x^2 + x + 1)
 ```
 
 
-```
+```julia
 diffex(sin(x^2) + cos(1/x))
 ```
 
 And
 
-```
+```julia
 diffex(x^x * exp(x))
 ```
 
@@ -1058,14 +1126,14 @@ diffex(x^x * exp(x))
 
 The derivative at $c$ is the slope of the tangent line at $x=c$. Answer the following based on this graph:
 
-```
+```julia
 fn = x -> -x*exp(x)*sin(pi*x)
 plot(fn, 0, 2)
 ```
 
 At which of these points $c= 1/2, 1, 3/2$ is the derivative negative?
 
-```
+```julia; echo=false
 choices = [L"1/2", L"1", L"3/2"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -1073,7 +1141,7 @@ radioq(choices, ans, keep_order=true)
 
 Which value looks bigger from reading the graph:
 
-```
+```julia; echo=false
 choices = [L"f(1)", L"f(3/2)"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -1081,7 +1149,7 @@ radioq(choices, ans, keep_order=true)
 
 At $0.708 \dots$ and $1.65\dots$ the derivative has a common value. What is it?
 
-```
+```julia; echo=false
 numericq(0, 1e-2)
 ```
 
@@ -1089,14 +1157,14 @@ numericq(0, 1e-2)
 
 Consider the graph of the `airyai` function (from `SpecialFunctions`) over $[-5, 5]$.
 
-```nocode
+```julia;echo=false
 import SpecialFunctions: airyai
 plot(airyai, -5, 5)
 ```
 
 At $x = -2.5$  the derivative is postive or negative?
 
-```
+```julia; echo=false
 choices = ["positive", "negative"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -1105,7 +1173,7 @@ radioq(choices, ans, keep_order=true)
 
 At $x=0$ the derivative is postive or negative?
 
-```
+```julia; echo=false
 choices = ["positive", "negative"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -1113,7 +1181,7 @@ radioq(choices, ans, keep_order=true)
 
 At $x = 2.5$  the derivative is postive or negative?
 
-```
+```julia; echo=false
 choices = ["positive", "negative"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -1123,7 +1191,7 @@ radioq(choices, ans, keep_order=true)
 
 Compute the derivative of $e^x$ using `limit`. What do you get?
 
-```
+```julia; echo=false
 choices = [L"e^x", L"x^e", L"(e-1)x^e", L"e x^{(e-1)}", "something else"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -1133,7 +1201,7 @@ radioq(choices, ans, keep_order=true)
 
 Compute the derivative of $x^e$ using `limit`. What do you get?
 
-```
+```julia; echo=false
 choices = [L"e^x", L"x^e", L"(e-1)x^e", L"e x^{(e-1)}", "something else"]
 ans = 5
 radioq(choices, ans, keep_order=true)
@@ -1143,7 +1211,7 @@ radioq(choices, ans, keep_order=true)
 
 Compute the derivative of $e^{e\cdot x}$ using `limit`. What do you get?
 
-```
+```julia; echo=false
 choices = [L"e^x", L"x^e", L"(e-1)x^e", L"e x^{(e-1)}", L"e \cdot e^{e\cdot x}", "something else"]
 ans = 5
 radioq(choices, ans, keep_order=true)
@@ -1159,7 +1227,7 @@ L = \lim_{h \rightarrow 0} \frac{\cos(h) - 1}{h}.
 
 This is
 
-```
+```julia; echo=false
 choices = [
 L" $1$, as this is clearly the analog of the limit of $\sin(h)/h$.",
 L"Does not exist. The answer is $0/0$ which is undefined",
@@ -1172,7 +1240,7 @@ radioq(choices, ans)
 
 Let $f(x) = (e^x + e^{-x})/2$ and $g(x) = (e^x - e^{-x})/2$. Which is true?
 
-```
+```julia; echo=false
 choices = [
 L"f'(x) =  g(x)",
 L"f'(x) = -g(x)",
@@ -1189,7 +1257,7 @@ radioq(choices, ans)
 
 Let $f(x) = (e^x + e^{-x})/2$ and $g(x) = (e^x - e^{-x})/2$. Which is true?
 
-```
+```julia; echo=false
 choices = [
 L"f''(x) =  g(x)",
 L"f''(x) = -g(x)",
@@ -1208,14 +1276,14 @@ radioq(choices, ans)
 Consider the function $f$ and its transformation $g(x) = a + f(x)$
 (shift up by $a$). Do $f$ and $g$ have the same derivative?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
 Consider the function $f$ and its transformation $g(x) = f(x - a)$
 (shift right by $a$). Do $f$ and $g$ have the same derivative?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -1224,27 +1292,27 @@ yesnoq("no")
 Consider the function $f$ and its transformation $g(x) = f(x - a)$
 (shift right by $a$). Is $f'$ at $x$ equal to $g'$ at $x-a$?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
 Consider the function $f$ and its transformation $g(x) = c f(x)$, $c >
 1$. Do $f$ and $g$ have the same derivative?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
 Consider the function $f$ and its transformation $g(x) = f(x/c)$, $c >
 1$. Do $f$ and $g$ have the same derivative?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
 Which of the following is true?
 
-```
+```julia; echo=false
 choices = [
 L"If the graphs of $f$ and $g$ are translations up and down, the tangent line at corresponding points is unchanged.",
 L"If the graphs of $f$ and $g$ are rescalings of each other through $g(x)=f(x/c)$, $c > 1$. Then the tangent line for corresponding points is the same.",
@@ -1260,7 +1328,7 @@ radioq(choices, ans)
 
 The rate of change of volume with respect to height is $3h$. The rate of change of height with respect to time is $2t$. At at $t=3$ the height is $h=14$ what is the rate of change of volume with respect to time when $t=3$?
 
-```
+```julia; echo=false
 ## dv/dt = dv/dh * dh/dt = 3h * 2t
 h = 14; t=3
 val = (3*h) * (2*t)
@@ -1272,7 +1340,7 @@ numericq(val)
 
 Which equation below is $f(x) = \sin(k\cdot x)$ a solution of ($k > 1$)?
 
-```
+```julia; echo=false
 choices = [
 L"f'(x) = k^2\cdot f(x)",
 L"f'(x) = -k^2\cdot f(x)",
@@ -1287,7 +1355,7 @@ radioq(choices, ans)
 Let $f(x) = e^{k\cdot x}$, $k > 1$. Which equation below is $f(x)$ a solution of?
 
 
-```
+```julia; echo=false
 choices = [
 L"f'(x) = k^2\cdot f(x)",
 L"f'(x) = -k^2\cdot f(x)",

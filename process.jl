@@ -2,22 +2,25 @@
 ## TODO: only run when [m]md file is newer than html file?
 
 
-using WeavePynb
-using Mustache
-mdhtml(fname) = markdownToHTML(fname, BRAND_HREF="toc.html", BRAND_NAME="Calculus with Julia")
+using WeaveTpl
 
 ## process top-level files
-markdownToHTML("toc.md")
-cp("toc.md", "README.md", force=true)
-cp("toc.html", "index.html", force=true)
+fnames = ["toc",
+          "getting-started-with-julia",
+          "quick-notes",
+          "julia_interfaces",
+          "calculus_with_julia",
+          "unicode",
+          "bibliography"]
 
 
-mdhtml("getting-started-with-julia.md")
-mdhtml("quick-notes.md")
-mdhtml("julia_interfaces.md")
-mdhtml("calculus_with_julia.md")
-mdhtml("unicode.md")
+process_file(nm) = WeaveTpl.mmd(nm * ".jmd")
 
-mdhtml("bibliography.md")
+function process_files()
+    process_file.(fnames)
+    cp("toc.jmd", "README.md", force=true)
+    cp("toc.html", "index.html", force=true)
+end
+
 
 ## TODO: compile subdirectories

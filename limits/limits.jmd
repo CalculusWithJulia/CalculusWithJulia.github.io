@@ -1,6 +1,12 @@
 # Limits
 
-```nocode,noout
+
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
+
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -16,9 +22,61 @@ shape, as there is for a triangle or a square. However,
 found a method to compute areas enclosed by a parabola and line
 segments that cross the parabola.
 
+```julia; echo=false; cache=true
+###{{{archimedes_parabola}}}
+pyplot()
+fig_size=(400, 300)
 
-{{{archimedes_parabola}}}
+f(x) = x^2
+colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
 
+## Area of parabola
+function make_triangle_graph(n)
+    title = "Area of parabolic cup ..."
+    n==1 && (title = "\${Area = }1/2\$")
+    n==2 && (title = "\${Area = previous }+ 1/8\$")
+    n==3 && (title = "\${Area = previous }+ 2*(1/8)^2\$")
+    n==4 && (title = "\${Area = previous }+ 4*(1/8)^3\$")
+    n==5 && (title = "\${Area = previous }+ 8*(1/8)^4\$")
+    n==6 && (title = "\${Area = previous }+ 16*(1/8)^5\$")
+    n==7 && (title = "\${Area = previous }+ 32*(1/8)^6\$")
+
+
+
+    plt = plot(f, 0, 1, legend=false, size = fig_size, linewidth=2)
+    annotate!(plt, [(0.05, 0.9, text(title,:left))])  # if in title, it grows funny with gr
+    n >= 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linetype=:polygon, fill=colors[1], alpha=.2)
+    n == 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linewidth=2)
+    for k in 2:n
+        xs = range(0,stop=1, length=1+2^(k-1))
+        ys = map(f, xs)
+        k < n && plot!(plt, xs, ys, linetype=:polygon, fill=:black, alpha=.2)
+        if k == n
+            plot!(plt, xs, ys, color=colors[k], linetype=:polygon, fill=:black, alpha=.2)
+            plot!(plt, xs, ys, color=:black, linewidth=2)
+        end
+    end
+    plt
+end
+
+
+n = 7
+anim = @animate for i=1:n
+    make_triangle_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = L"""
+The first triangle has area $1/2$, the second has area $1/8$, then $2$ have area $(1/8)^2$, $4$ have area $(1/8)^3$, ...
+With some algebra, the total area then should be $1/2 \cdot (1 + (1/4) + (1/4)^2 + \cdots) = 2/3$.
+"""
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 The figure illustrates a means to compute the area bounded by the
 parabola, the line $y=1$ and the line $x=0$ using triangles. It
@@ -88,14 +146,14 @@ To discuss the case of $(1+x)^{1/x}$, Cauchy first resorts to log tables
 to illustrate an approximate value. We can use `Julia` to find his
 approximate value:
 
-```
+```julia;
 x = 1/10000
 (1 + x)^(1/x)
 ```
 
 A table can show the progression to this value:
 
-```
+```julia;
 f(x) = (1 + x)^(1/x)
 xs = [1/10^i for i in 1:5]
 [xs f.(xs)]
@@ -114,26 +172,26 @@ First it should be noted that for most of the functions encountered, the concept
 
 `Julia` can help -- at times -- identify these indeterminate forms, as many such operations produce `NaN`. For example:
 
-```
+```julia;
 0/0, Inf/Inf, 0 * Inf, Inf - Inf
 ```
 
 However, the values with powers generally do not help, as the IEEE standard has `0^0` evaluating to 1:
 
-```
+```julia;
 0^0, 1^Inf, Inf^0
 ```
 
 However, this can be unreliable, as floating point issues may mask the true evaluation. However, as a cheap trick it can work. So, the limit as $x$ goes to $1$ of $\sin(x)/x$ is simply found by evaluation:
 
-```
+```julia;
 x = 1
 sin(x) / x
 ```
 
 But at $x=0$ we get an indicator that there is an issue with just evaluating the function:
 
-```
+```julia;
 x = 0
 sin(x) / x
 ```
@@ -151,7 +209,7 @@ defined.
 
 Let's return to the function $f(x) = \sin(x)/x$. This function was studied by Euler as part of his solution to the [Basel](http://en.wikipedia.org/wiki/Basel_problem) problem. He knew that near $0$, $\sin(x) \approx x$, so the ratio is close to $1$ if $x$ is near $0$. Hence, the intuition is $\lim_{x \rightarrow 0} \sin(x)/x = 1$, as Cauchy wrote. We can verify this limit graphically two ways. First, a simple graph shows no issue at $0$:
 
-```
+```julia;
 using CalculusWithJulia  # to load Plots and SymPy
 f(x) = sin(x)/x
 plot(f, -pi/2, pi/2)
@@ -165,7 +223,7 @@ that the points sampled to graph do not include $0$. Otherwise, since
 
 We can also verify Euler's intuition through this graph:
 
-```
+```julia;
 plot([sin, x -> x], -pi/2,  pi/2)
 ```
 
@@ -189,7 +247,7 @@ $$~
 Noting that this is a ratio of nice polynomial functions, we first
 check whether there is anything to do:
 
-```
+```julia;
 f(x) = (x^2 - 5x + 6) / (x^2 + x - 6)
 c = 2
 f(c)
@@ -199,7 +257,7 @@ The `NaN` indicates that this function is indeterminate at $c=2$. A
 quick plot gives us an idea that the limit exists and is roughly
 $-0.2$:
 
-```
+```julia;
 c, delta = 2, 1
 plot(f, c - delta, c + delta)
 ```
@@ -211,7 +269,7 @@ $x=2$ results in a "continuous" function.
 
 As an aside, we can redefine `f` using the "ternary operator":
 
-```
+```julia;
 f(x) = x == 2.0 ? -0.2 :  (x^2 - 5x + 6) / (x^2 + x - 6)
 ```
 
@@ -249,7 +307,7 @@ $$~
 
 We first define a function and check if there are issues at 25:
 
-```
+```julia;
 f(x) = (sqrt(x) - 5) / (sqrt(x-16) - 3)
 c = 25
 f(c)
@@ -257,20 +315,20 @@ f(c)
 
 So yes, an issue of the indeterminate form $0/0$. We investigate numerically by making a set of numbers getting close to $c$. This is most easily done making numbers getting close to $0$ and adding them to or subtracting them from $c$. Some natural candidates are negative powers of 10:
 
-```
+```julia;
 hs = [1/10^i for i in 1:8]
 ```
 
 We can add these to $c$ and then evaluate:
 
-```
+```julia;
 xs = c .+ hs
 ys = f.(xs)
 ```
 
 To visualize, we can put in a table using `[xs ys]` notation:
 
-```
+```julia;
 [xs ys]
 ```
 
@@ -278,7 +336,7 @@ The $y$-values seem to be getting near $0.6$.
 
 Since limits are defined by the expression $0 < \lvert x-c\rvert < \delta$, we should also look at values smaller than $c$. There isn't much difference (note the `.-` sign in `c .- hs`):
 
-```
+```julia;
 xs = c .- hs
 ys = f.(xs)
 [xs ys]
@@ -301,7 +359,7 @@ secant line connecting the two points $(c,f(c))$ and $(c+h, f(c+h))$.
 
 To look at the limit in this example, we have (recycling the values in `hs`):
 
-```
+```julia;
 c = 1
 f(x) = x^x
 ys = [(f(c + h) - f(c)) / h for  h in hs]
@@ -310,7 +368,7 @@ ys = [(f(c + h) - f(c)) / h for  h in hs]
 
 The limit looks like $L=1$. A similar check on the left will confirm this numerically:
 
-```
+```julia;
 ys = [(f(c + h) - f(c)) / h for  h in -hs]
 [-hs ys]
 ```
@@ -329,14 +387,14 @@ $$~
 
 We can see that it is indeterminate of the form $0/0$:
 
-```
+```julia;
 f(x) = (1 - cos(x)) / x^2
 f(0)
 ```
 
 What is the value of $L$, if it exists? A quick attempt numerically yields:
 
-```
+```julia;
 c = 0
 xs = c .+ hs
 ys = [f(x) for x in xs]
@@ -347,7 +405,7 @@ Hmm, the values in `ys` appear to be going to $0.5$, but then end up at
 $0$. Is the limit $0$ or $1/2$? The answer is $1/2$. The last $0$ is
 an artifact of floating point arithmetic. To investigate, we look more carefully at the two ratios:
 
-```
+```julia;
 y1s = [1 - cos(x) for x in xs]
 y2s = [x^2 for x in xs]
 [xs y1s y2s]
@@ -375,7 +433,7 @@ notation $\lim_{x \rightarrow c}f(x)$.)
 
 For example, the limit at $0$ of $(1-\cos(x))/x^2$ is easily handled:
 
-```
+```julia;
 @vars x real=true
 f(x) = (1 - cos(x)) / x^2
 limit(f(x), x=>0)		# f(x) is a symbolic expression when x is
@@ -385,7 +443,7 @@ The pair notation (`x=>0`) is used to indicate the variable and the value it is 
 
 As a convenience, there is also an "operator" version of `limit` for univariate functions, where only a function object and `c` need be specified:
 
-```
+```julia;
 limit(f, 0)
 ```
 
@@ -401,20 +459,20 @@ $$~
 
 We have for the first:
 
-```
+```julia;
 limit( (2sin(x) - sin(2x)) / (x - sin(x)), x=>0)
 ```
 
 The second is similarly done, though here we define a function for variety:
 
-```
+```julia;
 f(x) = (exp(x) - 1 - x) / x^2
 limit(f, 0)
 ```
 
 Finally, for the third we define a new variable and proceed:
 
-```
+```julia;
 @vars rho real=true
 limit( (x^(1-rho) - 1) / (1 - rho), rho=>1)
 ```
@@ -430,7 +488,7 @@ exact values to floating point values.
 To Illustrate, let's look at the limit as $x$ goes to $\pi/2$ of $f(x)
 = \cos(x) / (x - \pi/2)$. We follow our past practice:
 
-```
+```julia;
 c = pi/2
 f(x) = cos(x) / (x - pi/2)
 f(c)
@@ -440,13 +498,13 @@ The value is not `NaN`, rather `Inf`. This is because `cos(pi/2)` is
 not exactly $0$ as it should be, as `pi/2` is rounded. This minor
 difference is important. If we try and correct for this by using `PI` we have:
 
-```
+```julia;
 limit(f(x), x=>PI/2)
 ```
 
 The value is not right, as this simple graph suggests the limit is in fact $-1$:
 
-```
+```julia;
 plot(f, c - pi/4, c + pi/4)
 ```
 
@@ -459,7 +517,7 @@ at.
 
 Trying again, being more aware of how `pi` and `PI` differ, we have:
 
-```
+```julia;
 f(x) = cos(x) / (x - PI/2)
 limit(f(x), x => PI/2)
 ```
@@ -470,7 +528,7 @@ The `limit` function doesn't compute limits from the definition,
 rather it applies some known facts about functions within a set of
 rules. Some of these rules are the following. Suppose the individual limits of $f$ and $g$ always exist below.
 
-```
+```julia; echo=false
 using DataFrames
 rules = [L"\lim_{x \rightarrow c} (a \cdot f(x) + b \cdot g(x)) = a \cdot
   \lim_{x \rightarrow c} f(x) + b \cdot \lim_{x \rightarrow c}
@@ -536,14 +594,14 @@ $$~
 
 We know the first factor has a limit found by evaluation: $2/\pi$, so it is really just a constant. The second we can compute:
 
-```
+```julia;
 g(x) = cos(PI*x) / (1 - (2x)^2)
 limit(g, 1//2)
 ```
 
 Putting together, we would get $1/2$. Which we could have done directly in this case:
 
-```
+```julia;
 limit(sin(PI*x)/(PI*x) * g(x), x=>1//2)
 ```
 
@@ -551,7 +609,7 @@ limit(sin(PI*x)/(PI*x) * g(x), x=>1//2)
 
 Consider again the limit of $\cos(\pi x) / (1 - (2x)^2)$ at $c=1/2$. A graph of both the top and bottom functions shows the indeterminate, $0/0$, form:
 
-```
+```julia;
 plot(cos(pi*x), 0.4, 0.6)
 plot!(1 - (2x)^2)
 ```
@@ -561,13 +619,13 @@ at $0$ of $1$ as $\sin(x) \approx x$, and $x/x$ has a limit of $1$ at
 $c=0$, we can see that $\cos(\pi x)$ looks like $-\pi\cdot (x - 1/2)$
 and $(1 - (2x)^2)$ looks like $-4(x-1/2)$ around $x=1/2$:
 
-```
+```julia;
 plot(cos(pi*x), 0.4, 0.6)
 plot!(-pi*(x - 1/2))
 ```
 
 
-```
+```julia;
 plot(1 - (2x)^2, 0.4, 0.6)
 plot!(-4(x - 1/2))
 ```
@@ -593,12 +651,12 @@ A simple case is the linear case. Consider the function $f(x) = 3x + 2$. Verify 
 
 We show "numerically" that $\delta = \epsilon/3$.
 
-```
+```julia;
 f(x) = 3x + 2
 c, L = 1, 5
 epsilon = rand()                 # some number in (0,1)
 delta = epsilon / 3
-xs = c + delta * rand(100)       # 100 numbers, c < x < c + delta
+xs = c .+ delta * rand(100)       # 100 numbers, c < x < c + delta
 as = [abs(f(x) - L) < epsilon for x in xs]
 all(as)                          # are all the as true?
 ```
@@ -621,8 +679,59 @@ scale. For non-linear functions, finding $\delta$ for a given
 $\epsilon$ can be a challenge. For the function $f(x) = x^3$,
 illustrated below, a value of $\delta=\epsilon^{1/3}$ is used for $c=0$:
 
+```julia; echo=false; cache=true
+## {{{ limit_e_d }}}
+pyplot()
+function make_limit_e_d(n)
+    f(x) = x^3
 
-{{{ limit_e_d }}}
+    xs = range(-.9, stop=.9, length=50)
+    ys = map(f, xs)
+
+
+    plt = plot(f, -.9, .9, legend=false, size=fig_size)
+    if n == 0
+        nothing
+    else
+        k = div(n+1,2)
+        epsilon = 1/2^k
+        delta = cbrt(epsilon)
+        if isodd(n)
+            plot!(plt, xs, 0*xs .+ epsilon, color=:orange)
+            plot!(plt, xs, 0*xs .- epsilon, color=:orange)
+        else
+            plot!(delta * [-1,  1], epsilon * [ 1, 1], color=:orange)
+            plot!(delta * [ 1, -1], epsilon * [-1,-1], color=:orange)
+            plot!(delta * [-1, -1], epsilon * [-1, 1], color=:red)
+            plot!(delta * [ 1,  1], epsilon * [-1, 1], color=:red)
+        end
+    end
+    plt
+end
+
+
+n = 11
+anim = @animate for i=1:n
+    make_limit_e_d(i-1)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = L"""
+
+Demonstration of $\epsilon$-$\delta$ proof of $\lim_{x \rightarrow 0}
+x^3 = 0$. For any $\epsilon>0$ (the orange lines) there exists a
+$\delta>0$ (the red lines of the box) for which the function $f(x)$
+does not leave the top or bottom of the box (except possibly at the
+edges). In this example $\delta^3=\epsilon$.
+
+"""
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 
 ## Questions
@@ -637,14 +746,13 @@ L = \lim_{x\rightarrow 1}  \frac{x^2−3x+2}{x^2−6x+5}
 ~$$
 
 
-```
+```julia; echo=false
 f(x) = (x^2 - 3x +2) / (x^2 - 6x + 5)
-p = plot(f, 0,2)
-Outputonly(p)
+plot(f, 0,2)
 ```
 
 
-```
+```julia; echo=false
 ans = 1/4
 numericq(ans, 1e-1)
 ```
@@ -658,13 +766,12 @@ $$~
 L = \lim_{x \rightarrow -2} \frac{x}{x+1} \frac{x^2}{x^2 + 4}
 ~$$
 
-```
+```julia; echo=false
 f(x) = x/(x+1)*x^2/(x^2+4)
-p = plot(f, -3, -1.25)
-Outputonly(p)
+plot(f, -3, -1.25)
 ```
 
-```
+```julia; echo=false
 f(x) = x/(x+1)*x^2/(x^2+4)
 val = f(-2)
 numericq(val, 1e-1)
@@ -683,14 +790,13 @@ L = \lim_{x \rightarrow 0} \frac{e^x - 1}{x}.
 What is the value of $L$?
 
 
-```
+```julia; echo=false
 f(x) = (exp(x) - 1)/x
 p = plot(f, -1, 1)
-Outputonly(p)
 ```
 
 
-```
+```julia; echo=false
 val = N(limit(f, 0))
 numericq(val, 1e-1)
 ```
@@ -707,7 +813,7 @@ $$~
 
 The limit exists, what is the value?
 
-```
+```julia; echo=false
 val = 0
 numericq(val, 1e-2)
 ```
@@ -730,7 +836,7 @@ L = e^x \lim_{h \rightarrow 0} \frac{e^h - 1}{h}.
 What is $L$?
 
 
-```
+```julia; echo=false
 choices = [L"0", L"1", L"e^x"]
 ans = 3
 radioq(choices, ans)
@@ -758,7 +864,7 @@ L = \cos(x) \lim_{h \rightarrow 0}\frac{\sin(h)}{h} + \sin(x) \lim_{h \rightarro
 
 Using the last result, what is the value of $L$?
 
-```
+```julia; echo=false
 choices = [L"\cos(x)", L"\sin(x)", "1", "0", L"\sin(h)/h"]
 ans = 1
 radioq(choices, ans)
@@ -771,7 +877,7 @@ radioq(choices, ans)
 Let's look at the function $f(x) = x \sin(1/x)$. A graph around $0$
 can be made with:
 
-```{results="block"}
+```julia;
 f(x) = x == 0 ? NaN : x * sin(1/x)
 c, delta = 0, 1/4
 plot([f, abs, x -> -abs(x)], c - delta, c + delta)
@@ -782,7 +888,7 @@ graphs of both $g(x) = \lvert x\rvert$ and $h(x) = - \lvert x\rvert$. From this 
 easy to see by the "squeeze theorem" that the limit at $x=0$ is
 $0$. Why?
 
-```
+```julia; echo=false
 choices=[L"""The functions $g$ and $h$ both have a limit of $0$ at $x=0$ and the function $f$ is in
 between both $g$ and $h$, so must to have a limit of $0$.
 """,
@@ -802,7 +908,7 @@ $$~
 f(x) = \frac{3x^2 - x -10}{x^2 - 4}
 ~$$
 
-```
+```julia; echo=false
 f(x) = (3x^2 - x - 10)/(x^2 - 4);
 val = convert(Float64, N(limit(f, 2)))
 numericq(val)
@@ -817,7 +923,7 @@ $$~
 f(x) = \frac{\frac{1}{x} + \frac{1}{2}}{x^3 + 8}
 ~$$
 
-```
+```julia; echo=false
 f(x) = ((1/x) + (1/2))/(x^3 + 8)
 numericq(-1/48, .001)
 ```
@@ -831,7 +937,7 @@ $$~
 f(x) = \frac{x - 27}{x^{1/3} - 3}
 ~$$
 
-```
+```julia; echo=false
 f(x) = (x - 27)/(x^(1//3) - 3)
 val = N(limit(f, 27))
 numericq(val)
@@ -846,7 +952,7 @@ L = \lim_{x \rightarrow \pi/2} \frac{\tan (2x)}{x - \pi/2}
 ~$$
 
 
-```
+```julia; echo=false
 f(x) = tan(2x)/(x-PI/2)
 val = N(limit(f, PI/2))
 numericq(val)
@@ -859,7 +965,7 @@ The limit of $\sin(x)/x$ at $0$ has a numeric value. This depends upon
 the fact that $x$ is measured in radians. Try to find this limit:
 `limit(sind(x)/x, x=>0)`. What is the value?
 
-```
+```julia; echo=false
 choices = [q"0", q"1", q"pi/180", q"180/pi"]
 ans = 3
 radioq(choices, ans)
@@ -868,7 +974,7 @@ radioq(choices, ans)
 
 What is the limit `limit(sinpi(x)/x, x=>0)`?
 
-```
+```julia; echo=false
 choices = [q"0", q"1", q"pi", q"1/pi"]
 ans = 3
 radioq(choices, ans)
@@ -890,7 +996,7 @@ be unchanged, provided all the limits in question exist.
 Use one or the either to find the limit of $f(x) = \sin(x) + \tan(x) +
 \cos(x)$ as $x$ goes to $0$.
 
-```
+```julia; echo=false
 f(x) = sin(x) + tan(x) + cos(x)
 numericq(f(0), 1e-5)
 ```
@@ -905,7 +1011,7 @@ $$~
 ~$$
 
 
-```
+```julia; echo=false
 choices = [
 "Yes, the value is `-9.2061`",
 "Yes, the value is `-11.5123`",
@@ -923,7 +1029,7 @@ $$~
 \lim_{x \rightarrow 1} \frac{x}{x-1} - \frac{1}{\log(x)}.
 ~$$
 
-```
+```julia; echo=false
 f(x) = x/(x-1) - 1/log(x)
 val = convert(Float64, N(limit(f, 1)))
 numericq(val)
@@ -937,7 +1043,7 @@ $$~
 \lim_{x \rightarrow 1/2} \frac{1}{\pi} \frac{\cos(\pi x)}{1 - (2x)^2}.
 ~$$
 
-```
+```julia; echo=false
 f(x) =  1/PI * cos(PI*x)/(1 - (2x)^2)
 val = N(limit(f, 1//2))
 numericq(val)

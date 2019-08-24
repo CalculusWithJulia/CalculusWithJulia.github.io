@@ -1,14 +1,20 @@
 # Continuity
 
+
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
+
 The definition Google finds for *continuous* is *forming an unbroken whole; without interruption*.
 
 The concept in calculus, as transferred to functions, is
 similar. Roughly speaking, a continuous function is one whose graph
 could be drawn without having to lift (or interrupt) the pencil drawing it.
-
+nte(
 Consider these two graphs:
 
-```nocode
+```julia; echo=false
 using CalculusWithJulia
 plt = plot([-1,0], [-1,-1],  color=:black, legend=false, linewidth=5)
 plot!(plt, [0, 1], [ 1, 1], color=:black, linewidth=5)
@@ -17,7 +23,7 @@ plt
 
 and
 
-```nocode
+```julia; echo=false
 plot([-1,-.1, .1, 1], [-1,-1, 1, 1], color=:black, legend=false, linewidth=5)
 ```
 
@@ -65,7 +71,7 @@ continuity and *left* continuity at a point, where the limit in the
 defintion is replaced by a right or left limit, as appropriate.
 
 
-```
+```julia; echo=false
 alert("""
 The limit in the definition of continuity is the basic limit and not an extended sense where
 infinities are accounted for. As with limits, such extensions are qualified in the language,
@@ -125,7 +131,7 @@ function is not left or right continuous at $0$. It is continous everywhere exce
 
 * Similarly, the function defined by this graph
 
-```nocode
+```julia; echo=false
 plot([-1,-.01], [-1,-.01], legend=false, color=:black)
 plot!([.01, 1], [.01, 1], color=:black)
 scatter!([0], [1/2], markersize=5, markershape=:circle)
@@ -136,7 +142,7 @@ value $f(0) =1/2$, but the limit and the function value are not equal.
 
 * The `floor` function, which rounds down to the nearest integer, is also not continuous at the integers, but is right continuous at the integers, as, for example, $\lim_{x \rightarrow 0+} f(x) = f(0)$. This graph emphasizes the right continuity by placing a point for the value of the function when there is a jump:
 
-```nocode
+```julia; echo=false
 x = [0,1]; y=[0,0]
 plt = plot(x.-2, y.-2, color=:black, legend=false)
 plot!(plt, x.-1, y.-1, color=:black)
@@ -180,8 +186,8 @@ What value of $c$ will make $f(x)$ a continuous function?
 
 To be continuous we not that for $x < 0$ and for $x > 0$ the function is a simple polynomial, so is continous. At $x=0$ to be continuous we need a limit to exists and be equal to $f(0)$, which is $c$. A limit exists if the left and right limits are equal. This means we need to solve for $c$ to make the left and right limits equal.
 
-```
-using CalculusWithJuila   # load `Plots` and `SymPy`
+```julia;
+using CalculusWithJulia   # load `Plots` and `SymPy`
 @vars x c
 ex1 = 3x^2 + c
 ex2 = 2x-3
@@ -190,7 +196,7 @@ del = limit(ex1, x=>0, dir="+") - limit(ex2, x=>0, dir="-")
 
 We need to solve for $c$ to make `del` zero:
 
-```
+```julia;
 solve(del, c)
 ```
 
@@ -235,7 +241,7 @@ $$~
 f+g,~ f-g,~ f\cdot g,~ f\circ g,~ f/g
 ~$$
 
-```
+```julia; echo=false
 choices = [L"f+g", L"f-g", L"f\cdot g", L"f\circ g", L"f/g"]
 ans = length(choices)
 radioq(choices, ans)
@@ -247,7 +253,7 @@ Let $f(x) = \sin(x)$, $g(x) = \sqrt{x}$.
 
 When will $f\circ g$ be continuous?
 
-```
+```julia; echo=false
 choices = [L"For all $x$", L"For all $x > 0$", L"For all $x$ where $\sin(x) > 0$"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -255,7 +261,7 @@ radioq(choices, ans, keep_order=true)
 
 When will $g \circ f$ be continuous?
 
-```
+```julia; echo=false
 choices = [L"For all $x$", L"For all $x > 0$", L"For all $x$ where $\sin(x) > 0$"]
 ans = 3
 radioq(choices, ans, keep_order=true)
@@ -265,7 +271,7 @@ radioq(choices, ans, keep_order=true)
 
 The composition $f\circ g$ will be continuous everywhere provided:
 
-```
+```julia; echo=false
 choices = [
 L"The function $g$ is continuous everywhere",
 L"The function $f$ is continuous everywhere",
@@ -279,7 +285,7 @@ radioq(choices, ans, keep_order=true)
 
 At which values is $f(x) = 1/\sqrt{x-2}$ not continuous?
 
-```
+```julia; echo=false
 choices=[
 L"When $x > 2$",
 L"When $x \geq 2$",
@@ -303,7 +309,7 @@ continuous function?
 
 
 
-```
+```julia; echo=false
 f(x) = (x^2 -4)/(x-2);
 numericq(f(2.00001), .001)
 ```
@@ -325,7 +331,7 @@ $f(0)$ to be, to make $f$ a continuous function?
 
 
 
-```
+```julia; echo=false
 numericq(0, .001)
 ```
 
@@ -343,7 +349,7 @@ c + \sin(2x - \pi/2) & x > 0\\
 
 What value of $c$ will make $f(x)$ continuous?
 
-```
+```julia; echo=false
 val = (3*0 - 4) - (sin(2*0 - pi/2))
 numericq(val)
 ```
@@ -352,7 +358,7 @@ numericq(val)
 
 Suppose $f(x)$, $g(x)$, and $h(x)$ are continuous functions on $(a,b)$. If $a < c < b$, are you sure that $lim_{x \rightarrow c} f(g(x))$ is $f(g(c))$?
 
-```
+```julia; echo=false
 choices = [L"No, as $g(c)$ may not be in the interval $(a,b)$",
 "Yes, composition of continuous functions results in a continous function, so the limit is just the function value."
 ]
@@ -364,7 +370,7 @@ radioq(choices, ans)
 
 Consider the function $f(x)$ given by the following graph
 
-```nocode
+```julia; echo=false
 xs = range(0, stop=2, length=50)
 plot(xs, [sqrt(1 - (x-1)^2) for x in xs], legend=false, xlims=(0,4))
 plot!([2,3], [1,0])
@@ -375,25 +381,25 @@ scatter!([4],[0], markersize=5)
 
 The function $f(x)$ is continous at $x=1$?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 The function $f(x)$ is continous at $x=2$?
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
 The function $f(x)$ is right continous at $x=3$?
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
 The function $f(x)$ is left continous at $x=4$?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -401,27 +407,27 @@ yesnoq(true)
 
 Let $f(x)$ and $g(x)$ be continuous functions whose graph of $[0,1]$ is given by:
 
-```nocode
+```julia; echo=false
 plot(xs, [sin.(2pi*xs) cos.(2pi*xs)], layout=2, title=["f" "g"], legend=false)
 ```
 
 What is $\lim_{x \rightarrow 0.25} f(g(x))$?
 
-```
+```julia; echo=false
 val = sin(2pi * cos(2pi * 1/4))
 numericq(val)
 ```
 
 What is $\lim{x \rightarrow 0.25} g(f(x))$?
 
-```
+```julia; echo=false
 val = cos(2pi * sin(2pi * 1/4))
 numericq(val)
 ```
 
 What is $\lim_{x \rightarrow 0.5} f(g(x))$?
 
-```
+```julia; echo=false
 choices = ["Can't tell",
 L"-1.0",
 L"0.0"

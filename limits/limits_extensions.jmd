@@ -1,6 +1,11 @@
 # Limits, issues, extensions of the concept
 
-```nocode,noout
+
+```julia; echo=false; results="hidden"
+using CwJWeaveTpl
+```
+
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -26,7 +31,7 @@ question of whether a limit exists at $c=0$.
 
 A graph shows the issue:
 
-```nocode
+```julia; echo=false
 using CalculusWithJulia   # to load `Plots` and `SymPy`
 f(x) = sin(1/x)
 plot(f, range(-1, stop=1, length=1000))
@@ -59,7 +64,7 @@ $$~
 
 The following figure illustrates:
 
-```
+```julia;
 f(x) = x * sin(1/x)
 plot(f, -1, 1)
 plot!(abs)
@@ -81,7 +86,7 @@ where division by $0$ is possible.
 
 It's graph is
 
-```
+```julia;
 f(x) = abs(x)/x
 plot(f, -2, 2)
 ```
@@ -124,13 +129,13 @@ The `SymPy` function `limit` has a keyword argument `dir="+"` or
 `dir="-"` to request that a one-sided limit be formed.
 
 
-```
+```julia;
 @vars x
 f(x) = abs(x)/x
 limit(f(x), x=>0, dir="+"), limit(f(x), x=>0, dir="-")
 ```
 
-```
+```julia; echo=false
 alert("""
 However, `SymPy` will actually *not* get this correct as a limit, as one can verify through `limit(f(x), x=>0)`. This is because `SymPy` defaults to `dir="+"`. To be certain, you can check both to see they are equal.
 """)
@@ -144,7 +149,7 @@ function $f$ has both existing, but the two limits are not equal.
 There are other such functions that jump. Another useful one is the
 floor function, which just rounds down to the nearest integer. A graph shows the basic shape:
 
-```
+```julia;
 plot(floor, -5,5)
 ```
 
@@ -167,7 +172,7 @@ $f(x) = x^x$ at $x=0$. This function is not well defined for all $x <
 0$, so it is typical to just take the domain to be $x > 0$. Still it
 has a right limit $\lim_{x \rightarrow 0+} x^x = 1$. `SymPy` can verify:
 
-```
+```julia;
 @vars x real=true
 limit(x^x, x, 0, dir="+")
 ```
@@ -181,7 +186,7 @@ have a limit of $1$.
 
 Consider this funny graph:
 
-```nocode
+```julia; echo=false
 xs = range(0,stop=1, length=50)
 
 plot(x->x^2, -2, -1, legend=false)
@@ -227,7 +232,7 @@ eventually gets close to a single value.
 
 `SymPy` gives an odd answer here indicating the range of values:
 
-```
+```julia;
 limit(sin(x), x=>oo)
 ```
 
@@ -238,7 +243,7 @@ limit(sin(x), x=>oo)
 
 However, a damped oscillation, such as $f(x) = e^{-x} \sin(x)$ will have a limit:
 
-```
+```julia;
 @vars x real=true
 limit(exp(-x)*sin(x), x=>oo)
 ```
@@ -249,14 +254,14 @@ limit(exp(-x)*sin(x), x=>oo)
 We have rational functions will have the expected limit. In this
 example $m = n$, so we get a horizontal asymptote that is not $y=0$:
 
-```
+```julia;
 limit((x^2 - 2x +2)/(4x^2 + 3x - 2), x=>oo)
 ```
 ----
 
 Though rational functions can have only one (at most) horizontal asymptote, this isn't true for all functions. Consider the following $f(x) = x / \sqrt{x^2 + 4}$. It has different limits:
 
-```
+```julia;
 f(x) = x / sqrt(x^2 + 4)
 limit(f(x), x=>oo), limit(f(x), x=>-oo)
 ```
@@ -284,7 +289,7 @@ the extended sense above. For $M>0$, we can take any $0 < \delta <
 1/\sqrt{M}$. The following graph shows $M=25$ where the function
 values are outside of the box, as $f(x) > M$ for those $x$ values with $0 < |x-0| < 1/\sqrt{M}$.
 
-```nocode
+```julia; echo=false
 f(x) = 1/x^2
 M = 25
 delta = 1/sqrt(M)
@@ -300,7 +305,7 @@ plot!([delta, delta], [0,M], color=colorant"red")
 
 The function $f(x)=1/x$ requires us to talk about left and right limits of infinity, with the natural generalization. We can see that the left limit at $0$ is $-\infty$ and the right limit $\infty$:
 
-```nocode
+```julia; echo=false
 f(x) = 1/x
 plot(f, 1/50, 1,    color=:blue, legend=false)
 plot!(f, -1, -1/50, color=:blue)
@@ -308,7 +313,7 @@ plot!(f, -1, -1/50, color=:blue)
 
 `SymPy` agrees:
 
-```
+```julia;
 f(x) = 1/x
 limit(f(x), x=>0, dir="-"), limit(f(x), x=>0, dir="+")
 ```
@@ -321,14 +326,14 @@ Consider the function $f(x) = x^x(1 + \log(x)), x > 0$. Does this have a *right*
 
 A quick graph shows that a limit may be $-\infty$:
 
-```
+```julia;
 f(x) = x^x * (1 + log(x))
 plot(f, 1/100, 1)
 ```
 
 We can check with `SymPy`:
 
-```
+```julia;
 limit(f(x), x=>0, dir="+")
 ```
 ## Limits of sequences
@@ -350,7 +355,7 @@ integers.
 
 `SymPy` is happy to compute limits of sequences. Defining this one involving a sum is best done with the `summation` function:
 
-```
+```julia;
 @vars i n integer=true
 s(n) = 1//2 * summation((1//4)^i, (i, 0, n))    # rationals make for an exact answer
 limit(s(n), n=>oo)
@@ -361,7 +366,7 @@ limit(s(n), n=>oo)
 The following table captures the various changes to the definition of
 the limit to accommodate some of the possible behaviors.
 
-```
+```julia; echo=false
 limit_type=[
 "limit",
 "right limit",
@@ -422,27 +427,27 @@ Consider the function $f(x) = \sqrt{x}$.
 
 Does this function have a limit at every $c > 0$?
 
-```
+```julia; echo=false
 booleanq(true, labels=["Yes", "No"])
 ```
 
 Does this function have a limit at $c=0$?
 
 
-```
+```julia; echo=false
 booleanq(false, labels=["Yes", "No"])
 ```
 
 
 Does this function have a right limit at $c=0$?
 
-```
+```julia; echo=false
 booleanq(true, labels=["Yes", "No"])
 ```
 
 Does this function have a left limit at $c=0$?
 
-```
+```julia; echo=false
 booleanq(false, labels=["Yes", "No"])
 ```
 
@@ -450,7 +455,7 @@ booleanq(false, labels=["Yes", "No"])
 
 Find $\lim_{x \rightarrow \infty} \sin(x)/x$.
 
-```
+```julia; echo=false
 numericq(0)
 ```
 
@@ -459,7 +464,7 @@ numericq(0)
 
 Find $\lim_{x \rightarrow \infty} (1-\cos(x))/x^2$.
 
-```
+```julia; echo=false
 numericq(0)
 ```
 
@@ -468,7 +473,7 @@ numericq(0)
 
 Find $\lim_{x \rightarrow \infty} \log(x)/x$.
 
-```
+```julia; echo=false
 numericq(0)
 ```
 
@@ -480,7 +485,7 @@ numericq(0)
 
 Find $\lim_{x \rightarrow 2+} (x-3)/(x-2)$.
 
-```
+```julia; echo=false
 choices=[L"L=-\infty", L"L=-1", L"L=0", L"L=\infty"]
 ans = 1
 radioq(choices, ans)
@@ -490,7 +495,7 @@ Find $\lim_{x \rightarrow -3-} (x-3)/(x+3)$.
 
 
 
-```
+```julia; echo=false
 choices=[L"L=-\infty", L"L=-1", L"L=0", L"L=\infty"]
 ans = 4
 radioq(choices, ans)
@@ -500,7 +505,7 @@ radioq(choices, ans)
 
 Some functions do not have a limit. Make a graph of $\sin(1/x)$ from $0.0001$ to $1$ and look at the output. Why does a limit not exist?
 
-```
+```julia; echo=false
 choices=["The limit does exist---it is any number from -1 to 1",
   "Err, the limit does exists and is 1",
   "The function oscillates too much and its y values do not get close to any one value",
@@ -525,7 +530,7 @@ $$~
 Consider different values of $k$ to see if this limit depends on $k$ or not. What is $L$?
 
 
-```
+```julia; echo=false
 choices = [L"1", L"k", L"\log(k)", "The limit does not exist"]
 ans = 1
 radioq(choices, ans)
@@ -540,7 +545,7 @@ $$~
 
 In `julia`, $\log_k(x)$ is found with `log(k,x)`. The default, `log(x)` takes $k=e$ so gives the natural log. So, we would define `f`, for a given `k`, with
 
-```
+```julia; echo=false
 k = 10				# say. Replace with actual value
 f(x) = x^(1/log(k, x))
 ```
@@ -550,7 +555,7 @@ f(x) = x^(1/log(k, x))
 Consider different values of $k$ to see if the limit depends on $k$ or not. What is $L$?
 
 
-```
+```julia; echo=false
 choices = [L"1", L"k", L"\log(k)", "The limit does not exist"]
 ans = 2
 radioq(choices, ans)
@@ -566,7 +571,7 @@ $$~
 x^4/x^3,\quad x^{100+1}/x^{100}, \quad x/\log(x), \quad 3^x / 2^x, \quad e^x/x^{100}
 ~$$
 
-```
+```julia; echo=false
 choices=[
 "the first one",
 "the first and second ones",
@@ -584,7 +589,7 @@ A slant asymptote is a line $mx + b$ for which the graph of $f(x)$
 gets close to as $x$ gets large. We can't express this directly as a
 limit, as "$L$" is not a number. How might we?
 
-```
+```julia; echo=false
 choices = [
 L"We can talk about the limit at $\infty$ of $f(x) - (mx + b)$ being $0$",
 L"We can talk about the limit at $\infty$ of $f(x) - mx$ being $b$",
@@ -603,19 +608,19 @@ Consider the function $f(x) = \sin(1/x)$, $a=0$, and the two sequences implicitl
 
 What is $\lim_{x_n \rightarrow 0} f(x_n)$?
 
-```
+```julia; echo=false
 numericq(1)
 ```
 
 What is $\lim_{x_n \rightarrow 0} f(y_n)$?
 
-```
+```julia; echo=false
 numericq(-1)
 ```
 
 This shows that
 
-```
+```julia; echo=false
 choices = [L" $f(x)$ has a limit of $1$ as $x \rightarrow 0$",
 L" $f(x)$ has a limit of $-11$ as $x \rightarrow 0$",
 L" $f(x)$ does not have a limit as $x \rightarrow 0$"

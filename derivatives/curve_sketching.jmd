@@ -1,6 +1,6 @@
 # Curve Sketching
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -13,9 +13,67 @@ peaks and valleys (extrema). With these, a sketch fills in between the
 points/lines associated with these values.
 
 
+```julia; echo=false; cache=true
+### {{{ sketch_sin_plot }}}
+pyplot()
+fig_size=(600, 400)
 
-{{{ sketch_sin_plot }}}
 
+
+using ForwardDiff
+D(f, n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
+Base.adjoint(f::Function) = D(f)    # for f' instead of D(f)
+
+
+
+function sketch_sin_plot_graph(i)
+    f(x) = 10*sin(pi/2*x)  # [0,4]
+    deltax = 1/10
+    deltay = 5/10
+
+    zs = find_zeros(f, 0-deltax, 4+deltax)
+    cps = find_zeros(D(f), 0-deltax, 4+deltax)
+    xs = range(0, stop=4*(i-2)/6, length=50)
+    if i == 1
+        ## plot zeros
+        title = "Plot the zeros"
+        p = scatter(zs, 0*zs, title=title, xlim=(-deltax,4+deltax), ylim=(-10-deltay,10+deltay), legend=false)
+    elseif i == 2
+        ## plot extrema
+        title = "Plot the local extrema"
+        p = scatter(zs, 0*zs, title=title, xlim=(-deltax,4+deltax), ylim=(-10-deltay,10+deltay), legend=false)
+        scatter!(p, cps, f.(cps))
+    else
+        ##  sketch graph
+        title = "sketch the graph"
+        p = scatter(zs, 0*zs, title=title, xlim=(-deltax,4+deltax), ylim=(-10-deltay,10+deltay), legend=false)
+        scatter!(p, cps, f.(cps))
+        plot!(p, xs, f.(xs))
+    end
+    p
+end
+
+
+caption = L"""
+
+After identifying asymptotic behaviours,
+a curve sketch involves identifying the $y$ intercept, if applicable; the $x$ intercepts, if possible; and the local extrema. From there a sketch fills in between the points. In this example, the periodic function $f(x) = 10\cdot\sin(\pi/2\cdot x)$ is sketched over $[0,4]$.
+
+"""
+
+
+
+n = 8
+anim = @animate for i=1:n
+    sketch_sin_plot_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 Though this approach is most useful for hand-sketches, the underlying
 concepts are important for properly framing graphs made with the
@@ -55,7 +113,7 @@ graphs.
 This helper function plots the function `f` twice: the second time
 only when the second function `g` is positive.
 
-```noeval
+```julia; eval=false
 function plotif(f, g, a, b)
        xs = range(a, stop=b, length=251)
        ys = f.(xs)
@@ -67,7 +125,7 @@ end
 
 Such a function is defined for us in the accompanying package, loaded with
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
@@ -76,7 +134,7 @@ To see where a function is positive, we simply pass the function
 object in for *both* `f` and `g` above. For example, let's look at
 where $f(x) = \sin(x)$ is positive:
 
-```
+```julia;
 f(x) = sin(x)
 plotif(f, f, -2pi, 2pi)
 ```
@@ -84,7 +142,7 @@ plotif(f, f, -2pi, 2pi)
 
 Let's graph with `cos` in the masking spot and see what happens:
 
-```
+```julia;
 plotif(sin, cos, -2pi, 2pi)
 ```
 
@@ -152,7 +210,7 @@ the derivative as the masking function in our `plotif` function, as long as we a
 For example, here we see where a more complicated function is
 increasing by passing in its derivative to `plotif`:
 
-```
+```julia;
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
 plotif(f, f', -2, 2)
 ```
@@ -192,7 +250,7 @@ minimum by the first derivative test.
 
 Consider the function $f(x) = e^{-\lvert x\rvert} \cos(\pi x)$ over $[-3,3]$:
 
-```
+```julia;
 f(x) = exp(-abs(x)) * cos(pi * x)
 plotif(f, f', -3, 3)
 ```
@@ -212,7 +270,7 @@ work to produce a graph that shows the zeros, peaks, and valleys of
 $f(x)$. To do so, we need to know the extent of the zeros. We can try
 some theory, but instead we just guess and if that fails, will work harder:
 
-```
+```julia;
 f(x) = x^4 - 13x^3 + 56x^2 -92x + 48
 rts = find_zeros(f, -10, 10)
 ```
@@ -221,7 +279,7 @@ As we found $4$ roots, we know by the fundamental theorem of algebra we have the
 
 To know where the peaks and valleys are, we look for the critical points:
 
-```
+```julia;
 cps = find_zeros(f', 1, 6)
 ```
 
@@ -236,7 +294,7 @@ oscillations. This could happen if the $y$ values at the end points
 are too much larger than the $y$ values at the peaks and valleys, as
 only so many pixels can be used within a graph. For this we have:
 
-```
+```julia;
 f.([0, cps..., 7])
 ```
 
@@ -244,7 +302,7 @@ The values at $0$ and at $7$ area a bit large, and since we know the
 graph is eventually $U$-shaped, this offers no insight. So we narrow
 the range a bit for the graph:
 
-```
+```julia;
 plot(f, 0.5, 6.5)
 ```
 
@@ -262,7 +320,7 @@ pieces of $f$ are everywhere differentiable and no quotients are
 involved, the function $f$ will be everywhere differentiable. As such,
 only zeros of $f'(x)$ can be critical points. We find these with
 
-```
+```julia;
 f(x) = sin(pi*x) * (x^3 - 4x^2 + 2)
 cps = find_zeros(f', -2, 2)
 ```
@@ -274,7 +332,7 @@ relative maximum if the function crosses the axis, so these can not be
 check that all the critical points are accounted for by graphing the
 derivative:
 
-```
+```julia;
 plot(f', -2, 2, legend=false)
 plot!(zero)
 scatter!(cps, 0*cps)
@@ -300,7 +358,7 @@ functions. We should expect that the only critical points will occur
 when the interior polynomial, $x^2-1$ has values of interest, which is
 around the interval $(-1, 1)$. So we look to the slightly wider interval $[-2, 2]$:
 
-```
+```julia;
 f(x) = sqrt(abs(x^2 - 1))
 cps = find_zeros(f', -2, 2)
 ```
@@ -315,7 +373,7 @@ above.
 We can then pick intermediate values to test for positive or negative
 values:
 
-```
+```julia;
 pts = union(-2, cps, 2)  # this includes the endpoints (a, b) and the critical points
 test_pts = pts[1:end-1] + diff(pts)/2 # midpoints of intervals between pts
 [test_pts sign.(f'.(test_pts))]
@@ -331,7 +389,7 @@ Reading this we have:
 
 Just for fun, we define a function to print `+` or `-` instead of just using `sign`:
 
-```
+```julia;
 plus_or_minus(x, tol=1e-12) = x > tol ? "+" : (x < -tol ? "-" : "0")
 [test_pts plus_or_minus.(f'.(test_pts))]
 ```
@@ -340,7 +398,7 @@ plus_or_minus(x, tol=1e-12) = x > tol ? "+" : (x < -tol ? "-" : "0")
 
 We did this all without graphs. But, let's look at the graph of the derivative:
 
-```
+```julia;
 plot(f', -2, 2)
 ```
 
@@ -349,7 +407,7 @@ but rather where $f'(x)$ does not exist. The conclusion is correct --
 each of $-1$, $0$ and $1$ are critical points with the identified characterization---but not for the
 reason that they are all zeros.
 
-```
+```julia;
 plot(f, -2, 2)
 ```
 
@@ -367,7 +425,7 @@ Consider the function $f(x) = \sin(x) - x$. Characterize the critical points.
 
 We will work symbolically for this example.
 
-```
+```julia;
 f(x) = sin(x) - x
 @vars x
 fp = diff(f(x), x)
@@ -378,7 +436,7 @@ We get values of $0$ and $2\pi$. Let's look at the derivative at these points:
 
 At $x=0$ we have to the left and right signs found by
 
-```
+```julia;
 vals = fp.([-1/10, 1/10])
 [vals plus_or_minus.(vals)]
 ```
@@ -387,7 +445,7 @@ Both are negative. The derivative does not change sign at $0$, so the critical p
 
 What about at $2\pi$? We do something similar:
 
-```
+```julia;
 vals = fp.(2*pi .+ [-1/10,  1/10])
 [vals plus_or_minus.(vals)]
 ```
@@ -397,7 +455,7 @@ $2\pi$, so again the critical point is neither a relative minimum or maximum.
 
 A graph verifies this:
 
-```
+```julia;
 plot(f, -3pi, 3pi)
 ```
 
@@ -412,7 +470,7 @@ an integer.
 As a comment, the `solveset` function, which is replacing `solve`,
 returns the entire collection of zeros:
 
-```
+```julia;
 solveset(fp)
 ```
 
@@ -442,7 +500,7 @@ The latter is consistent with a $7$th degree polynomial with positive leading co
 Consider the function $f(x) = x^2$. Over this function we draw some
 secant lines for a few pairs of $x$ values:
 
-```nocode
+```julia; echo=false
 f(x) = x^2
 seca(f,a,b) = x -> f(a) + (f(b) - f(a)) / (b-a) * (x-a)
 p = plot(f, -2, 3, legend=false, linewidth=5, xlim=(-2,3), ylim=(-2, 9))
@@ -510,20 +568,20 @@ Let's look at the function $x^2 \cdot e^{-x}$ for positive $x$. A
 quick graph shows the function is concave up, then down, then up in
 the region plotted:
 
-```
+```julia;
 f(x) = x^2 * exp(-x)
 plotif(f, f'', 0, 8)
 ```
 
 From the graph, we would expect that the second derivative---which is continuous---would have two zeros on $[0,8]$:
 
-```
+```julia;
 ips = find_zeros(f'', 0, 8)
 ```
 
 As well, between the zeros we should have the sign pattern `+`, `-`, and `+`, as we verify:
 
-```
+```julia;
 ps = [0, 1, 4]
 [ps plus_or_minus.(f''.(ps))]
 ```
@@ -554,20 +612,20 @@ relative minimum.
 
 Use the second derivative test to characterize the critical points of $f(x) = x^5 - x^4 + x^3$.
 
-```
+```julia;
 f(x) = x^5 - 2x^4 + x^3
 cps = find_zeros(f', -3, 3)
 ```
 
 The critical point $x=0$ is masked by floating point issues. Here we work around that:
 
-```
+```julia;
 cps = [0.0, 0.6, 1.0]
 ```
 
 We can check the sign of the second derivative for each critical point:
 
-```
+```julia;
 vals = f''.(cps)
 [cps plus_or_minus.(vals)]
 ```
@@ -582,13 +640,13 @@ This should be consistent with
 this graph, where $-0.25$, and $1.25$ are chosen to capture the zero at
 $0$ and the two relative extrema:
 
-```
+```julia;
 plotif(f, f'', -0.25, 1.25)
 ```
 
 For the graph we see that $0$ **is** not a relative maximum or minimum. We could have seen this numerically by checking the first derivative test, and noting there is no sign change:
 
-```
+```julia;
 plus_or_minus.(f'.([-0.1, 0.1]))
 ```
 
@@ -610,14 +668,14 @@ f(x) = e^{-x^2/2}.
 A graph suggests relative a maximum at $x=0$, a horizontal asymptote of $y=0$,
 and two inflection points:
 
-```
+```julia;
 f(x) = exp(-x^2/2)
 plotif(f, f'', -3, 3)
 ```
 
 The inflection points can be found directly, if desired, or numerically with:
 
-```
+```julia;
 find_zeros(f'', -3, 3)
 ```
 
@@ -634,7 +692,7 @@ f(x) = \frac{(x-1)\cdot(x-3)^2}{x \cdot (x-2)}.
 
 Not much to do here if you are satisfied with a graph that only gives insight into the asymptotes of this rational function:
 
-```
+```julia;
 f(x) = ( (x-1)*(x-3)^2 ) / (x * (x-2) )
 plot(f, -10, 10)
 ```
@@ -652,7 +710,7 @@ function the asymptotic behaviour is determined after the concavity is
 done changing and we are past all relative extrema, so we should take an interval that include all
 potential inflection points and critical points:
 
-```
+```julia;
 cps = find_zeros(f', -10, 10)
 poss_ips = find_zero(f'', (-10, 10))
 extrema(union(cps, poss_ips))
@@ -662,7 +720,7 @@ So a range over $[-5,5]$ should display the key features including the slant asy
 
 Previously we used the `trimplot` function defined in `CalculusWithJulia` to avoid the distortion that vertical asymptotes can have:
 
-```
+```julia;
 trimplot(f, -5, 5)
 ```
 
@@ -674,15 +732,14 @@ With this graphic, we can now clearly see in the graph the two zeros at $x=1$ an
 A car travels from a stop for 1 mile in 2 minutes. A graph of its
 position as a function of time might look like any of these graphs:
 
-```
+```julia; echo=false
 v(t) = 30/60*t
 w(t) = t < 1/2 ? 0.0 : (t > 3/2 ? 1.0 : (t-1/2))
 y(t) = 1 / (1 + exp(-t))
 y1(t) = y(2(t-1))
 y2(t) = y1(t) - y1(0)
 y3(t) = 1/y2(2) * y2(t)
-p = plot([v, w, y3], 0, 2)
-Outputonly(p)
+plot([v, w, y3], 0, 2)
 ```
 
 All three graphs have the same *average* velocity which is just the
@@ -717,13 +774,13 @@ would be felt by most riders.
 
 Consider this graph:
 
-```
+```julia;
 plot(airyai, -5, 0)  # airyai in `SpecialFunctions` loaded with `CalculusWithJulia`
 ```
 
 On what intervals (roughly) is the function positive?
 
-```
+```julia; echo=false
 choices=[
 L"(-3.2,-1)",
 L"(-5, -4.2)",
@@ -738,15 +795,14 @@ radioq(choices, ans)
 
 Consider this graph:
 
-```
+```julia; echo=false
 import SpecialFunctions: besselj
 p = plot(x->besselj(x, 1), -5,-3)
-Outputonly(p)
 ```
 
 On what intervals (roughly) is the function negative?
 
-```
+```julia; echo=false
 choices=[
 L"(-5.0, -4.0)",
 L"(-25.0, 0.0)",
@@ -760,15 +816,14 @@ radioq(choices, ans)
 
 Consider this graph
 
-```
-p = plot(x->besselj(x, 21), -5,-3)
-Outputonly(p)
+```julia; echo=false
+plot(x->besselj(x, 21), -5,-3)
 ```
 
 On what interval(s) is this function increasing?
 
 
-```
+```julia; echo=false
 choices=[
 L"(-5.0, -3.8)",
 L"(-3.8, -3.0",
@@ -784,15 +839,14 @@ radioq(choices, ans)
 
 Consider this graph
 
-```
+```julia; echo=false
 p = plot(x -> 1 / (1+x^2), -3, 3)
-Outputonly(p)
 ```
 
 On what interval(s) is this function concave up?
 
 
-```
+```julia; echo=false
 choices=[
 L"(0.1, 1.0)",
 L"(-3.0, 3.0)",
@@ -807,17 +861,16 @@ radioq(choices, ans)
 
 Consider this graph
 
-```
+```julia; echo=false
 f(x) = (x-2)* (x-2.5)*(x-3) / ((x-1)*(x+1))
 p = plot(f, -20, -1-.3, legend=false, xlim=(-15, 15), color=:blue)
 plot!(p, f, -1 + .2, 1 - .02, color=:blue)
 plot!(p, f, 1 + .05, 20, color=:blue)
-Outputonly(p)
 ```
 
 What kind of *asymptotes* does it appear to have?
 
-```
+```julia; echo=false
 choices = [
 L"Just a horizontal asymptote, $y=0$",
 L"Just vertical asymptotes at $x=-1$ and $x=1$",
@@ -838,7 +891,7 @@ If it is known that:
 
 What can be concluded?
 
-```
+```julia; echo=false
 choices = [
 "Nothing",
 L"That the critical point at $-1$ is a relative maximum",
@@ -854,7 +907,7 @@ radioq(choices, ans, keep_order=true)
 
 Mystery function $f(x)$ has $f'(2) = 0$ and $f''(0) = 2$. What is the *most* you can say about $x=2$?
 
-```
+```julia; echo=false
 choices = [
 L" $f(x)$ is continuous at 2",
 L" $f(x)$ is continuous and differentiable at 2",
@@ -870,7 +923,7 @@ radioq(choices, ans, keep_order=true)
 
 Find  the smallest critical point of $f(x) = x^3 e^{-x}$.
 
-```
+```julia; echo=false
 f(x)= x^3*exp(-x)
 using Roots
 cps = find_zeros(D(f), -5, 10)
@@ -883,7 +936,7 @@ numericq(val)
 
 How many critical points does $f(x) = x^5 - x + 1$ have?
 
-```
+```julia; echo=false
 f(x) = x^5 - x + 1
 cps = find_zeros(D(f), -3, 3)
 val = length(cps)
@@ -895,7 +948,7 @@ numericq(val)
 How many inflection points does $f(x) = x^5 - x + 1$ have?
 
 
-```
+```julia; echo=false
 f(x) = x^5 - x + 1
 cps = find_zeros(D(f,2), -3, 3)
 val = length(cps)
@@ -906,7 +959,7 @@ numericq(val)
 
 At $c$, $f'(c) = 0$ and $f''(c) = 1 + c^2$. Is $(c,f(c))$ a relative maximum? ($f$ is a "nice" function.)
 
-```
+```julia; echo=false
 choices = [
 "No, it is a relative minimum",
 "No, the second derivative test is possibly inconclusive",
@@ -921,7 +974,7 @@ radioq(choices, ans)
 
 At $c$, $f'(c) = 0$ and $f''(c) = c^2$. Is $(c,f(c))$ a relative minimum? ($f$ is a "nice" function.)
 
-```
+```julia; echo=false
 choices = [
 "No, it is a relative maximum",
 L"No, the second derivative test is possibly inconclusive if $c=0$, but otherwise yes",
@@ -935,15 +988,14 @@ radioq(choices, ans)
 
 ###### Question
 
-```
+```julia; echo=false
 f(x) = exp(-x) * sin(pi*x)
-p = plot(D(f), 0, 3)
-Outputonly(p)
+plot(D(f), 0, 3)
 ```
 
 The graph shows $f'(x)$. Is it possible that $f(x) = e^{-x} \sin(\pi x)$?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -951,16 +1003,15 @@ yesnoq(true)
 
 ###### Question
 
-```
+```julia; echo=false
 f(x) = x^4 - 3x^3 - 2x + 4
-p = plot(D(f,2), -2, 4)
-Outputonly(p)
+plot(D(f,2), -2, 4)
 ```
 
 
 The graph shows $f'(x)$. Is it possible that $f(x) = x^4 - 3x^3 - 2x + 4$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -968,29 +1019,28 @@ yesnoq("no")
 
 ###### Question
 
-```
+```julia; echo=false
 f(x) = (1+x)^(-2)
-p = plot(D(f,2), 0,2)
-Outputonly(p)
+plot(D(f,2), 0,2)
 ```
 
 
 The graph shows $f''(x)$. Is it possible that $f(x) = (1+x)^{-2}$?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
 ###### Question
 
-```nocode
+```julia; echo=false
 f_p(x) = (x-1)*(x-2)^2*(x-3)^2
 plot(f_p, 0, 4)
 ```
 
 This plot shows the graph of $f'(x)$. What is true about the critical points and their characterization?
 
-```
+```julia; echo=false
 choices = [
 L"The critical points are at $x=1$ (a relative minimum), $x=2$ (not a relative extrema), and $x=3$ (not a relative extrema).",
 L"The critical points are at $x=1$ (a relative maximum), $x=2$ (not a relative extrema), and $x=3$ (not a relative extrema).",
@@ -1005,7 +1055,7 @@ radioq(choices, ans)
 
 You know $f''(x) = (x-1)^3$. What do you know about $f(x)$?
 
-```
+```julia; echo=false
 choices = [
 L"The function is concave down over $(-\infty, 1)$ and concave up over $(1, \infty)",
 L"The function is decreasing over $(-\infty, 1)$ and increasing over $(1, \infty)",
@@ -1019,7 +1069,7 @@ radioq(choices, ans)
 
 While driving we accelerate to get through a light before it turns red. However, at time $t_0$ a car cuts in front of us and we are forced to break. If $s(t)$ represents position, what is $t_0$:
 
-```
+```julia; echo=false
 choices = ["A zero of the function",
 "A critical point for the function",
 "An inflection point for the function"]
@@ -1035,7 +1085,7 @@ Two models for population growth are *exponential* growth: $P(t) = P_0 a^t$ and 
 
 Letting $K=10$, $P_0=5$, and $a= e^(1/4)$. A plot over $[0,5]$ shows somewhat similar behaviour:
 
-```
+```julia;
 K, P0, a = 50, 5, exp(1/4)
 egrowth(t) = P0 * a^t
 lgrowth(t) = K * P0 * a^t / (K + P0*(a^t-1))
@@ -1045,19 +1095,19 @@ plot([egrowth, lgrowth], 0, 5)
 
 Does a plot over $[0,50]$ show qualitatively	 similar behaviour?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 Exponential growth has $P''(t) = P_0 a^t \log(a)^2 > 0$, so has no inflection point. By plotting over a sufficiently wide interval, can you answer: does the logistic growth model have an inflection point?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 If yes, find it numerically:
 
-```
+```julia; echo=false
 using Roots
 val = find_zero(D(lgrowth,2), (0, 20))
 numericq(val)
@@ -1065,7 +1115,7 @@ numericq(val)
 
 The available resources are quantified by $K$. As $K \rightarrow \infty$ what is the limit of the logistic growth model:
 
-```
+```julia; echo=false
 choices = [
 "The exponential growth model",
 "The limit does not exist",
@@ -1083,7 +1133,7 @@ to be large.
 
 Why are sub-intervals where the second derivative is large different than those where the second derivative is small?
 
-```
+```julia; echo=false
 choices = [
 "The function will increase (or decrease) rapidly when the second derivative is large, so there needs to be more points to capture the shape",
 "The function will have more curvature when the second derivative is large, so there  needs to be more points to capture the shape",
@@ -1105,7 +1155,7 @@ three features: periodicity, asymptotics, and monotonicity."
 
 Why would periodicity matter?
 
-```
+```julia; echo=false
 choices = [
 "An informative graph only needs to show one or two periods, as others can be inferred.",
 "An informative graph need only show a part of the period, as the rest can be inferred.",
@@ -1116,7 +1166,7 @@ radioq(choices, ans)
 
 Why should asymptotics matter?
 
-```
+```julia; echo=false
 choices = [
 L"A vertical asymptote can distory the $y$ range, so it is important to avoid too-large values",
 L"A horizontal asymptote must be plotted from $-\infty$ to $\infty$",
@@ -1128,7 +1178,7 @@ radioq(choices, ans)
 
 Monotonicity means increasing or decreasing. This is important for what reason?
 
-```
+```julia; echo=false
 choices = [
 "For monotonic regions, a large slope or very concave function might require more care to plot",
 "For monotonic regions, a function is basically a straight line",

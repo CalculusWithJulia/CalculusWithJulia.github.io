@@ -184,7 +184,60 @@ known and is equal to the right.
 
 ### L'Hospital's picture
 
-{{{lhopitals_picture}}}
+```julia; echo=false; cache=true
+## {{{lhopitals_picture}}}
+pyplot()
+fig_size=(600, 400)
+
+
+function lhopitals_picture_graph(n)
+
+    g = (x) -> sqrt(1 + x) - 1 - x^2
+    f = (x) -> x^2
+    ts = range(-1/2, stop=1/2, length=50)
+
+
+    a, b = 0, 1/2^n * 1/2
+    m = (f(b)-f(a)) /  (g(b)-g(a))
+
+    ## get bounds
+    tl = (x) -> g(0) + m * (x - f(0))
+
+    lx = max(fzero(x -> tl(x) - (-0.05),-1000, 1000), -0.6)
+    rx = min(fzero(x -> tl(x) - (0.25),-1000, 1000), 0.2)
+    xs = [lx, rx]
+    ys = map(tl, xs)
+
+    plt = plot(g, f, -1/2, 1/2, legend=false, size=fig_size, xlim=(-.6, .5), ylim=(-.1, .3))
+    plot!(plt, xs, ys, color=:orange)
+    scatter!(plt, [g(a),g(b)], [f(a),f(b)], markersize=5, color=:orange)
+    plt
+end
+
+caption = L"""
+
+Geometric interpretation of $L=\lim_{x \rightarrow 0} x^2 / (\sqrt{1 +
+x} - 1 - x^2)$. At $0$ this limit is indeterminate of the form
+$0/0$. The value for a fixed $x$ can be seen as the slope of a secant
+line of a parametric plot of the two functions, plotted as $(g,
+f)$. In this figure, the limiting "tangent" line has $0$ slope,
+corresponding to the limit $L$. In general, L'Hospital's rule is
+nothing more than a statement about slopes of tangent lines.
+
+"""
+
+n = 6
+anim = @animate for i=1:n
+    lhopitals_picture_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 ## Generalizations
 
@@ -265,7 +318,7 @@ we utilize `SymPy` taking care to use rational numbers for the
 fractional powers, so as not to lose precision through floating point
 roundoff:
 
-```
+```julia;
 using CalculusWithJulia    # loads `SymPy`
 @vars a x positive=true real=true
 f(x) = sqrt(2a^3*x - x^4) - a * (a^2*x)^(1//3)
@@ -274,25 +327,25 @@ g(x) = a - (a*x^3)^(1//4)
 
 We can see that at $x=a$ we have the indeterminate form $0/0$:
 
-```
+```julia;
 f(a), g(a)
 ```
 
 What about the derivatives?
 
-```
+```julia;
 fp, gp = subs(diff(f(x),x), x=>a), subs(diff(g(x),x), x=>a)
 ```
 
 Their ratio will not be indeterminate, so the limit in question is just the ratio:
 
-```
+```julia;
 fp/gp
 ```
 
 Of course, we could have just relied on `limit`, which knows about L'Hospital's rule:
 
-```
+```julia;
 limit(f(x)/g(x), x, a)
 ```
 
@@ -303,7 +356,7 @@ limit(f(x)/g(x), x, a)
 
 This function $f(x) = \sin(5x)/x$ is *indeterminate* at $x=0$. What type?
 
-```
+```julia; echo=false
 choices = [
 L"0/0",
 L"\infty/\infty",
@@ -319,7 +372,7 @@ radioq(choices, ans, keep_order=true)
 
 This function $f(x) = \sin(x)^{\sin(x)}$ is *indeterminate* at $x=0$. What type?
 
-```
+```julia; echo=false
 choices = [
 L"0/0",
 L"\infty/\infty",
@@ -335,7 +388,7 @@ radioq(choices, ans, keep_order=true)
 
 This function $f(x) = (x-2)/(x^2 - 4)$ is *indeterminate* at $x=2$. What type?
 
-```
+```julia; echo=false
 choices = [
 L"0/0",
 L"\infty/\infty",
@@ -351,7 +404,7 @@ radioq(choices, ans, keep_order=true)
 
 This function $f(x) = (g(x+h) - g(x-h)) / (2h)$ ($g$ is continuous) is *indeterminate* at $h=0$. What type?
 
-```
+```julia; echo=false
 choices = [
 L"0/0",
 L"\infty/\infty",
@@ -367,7 +420,7 @@ radioq(choices, ans, keep_order=true)
 
 This function $f(x) = x \log(x)$ is *indeterminate* at $x=0$. What type?
 
-```
+```julia; echo=false
 choices = [
 L"0/0",
 L"\infty/\infty",
@@ -388,7 +441,7 @@ $$~
 \lim_{x \rightarrow \pi} \frac{\sin(\pi x)}{\pi x}.
 ~$$
 
-```
+```julia; echo=false
 choices = [
 L"Yes. It is of the form $0/0$",
 "No. It is not indeterminate"
@@ -407,7 +460,7 @@ L = \lim_{x \rightarrow 0} \frac{4x - \sin(x)}{x}.
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 f(x) = (4x - sin(x))/x
 L = float(N(limit(f, 0)))
@@ -425,7 +478,7 @@ L = \lim_{x \rightarrow 0} \frac{\sqrt{1+x} - 1}{x}.
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 f(x) = (sqrt(1+x) - 1)/x
 L = float(N(limit(f, 0)))
@@ -445,7 +498,7 @@ L = \lim_{x \rightarrow 0} \frac{x - \sin(x)}{x^3}.
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 f(x) = (x - sin(x))/x^3
 L = float(N(limit(f, 0)))
@@ -464,7 +517,7 @@ L = \lim_{x \rightarrow 0} \frac{1 - x^2/2 - \cos(x)}{x^3}.
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 f(x) = (1 - x^2/2 - cos(x))/x^3
 L = float(N(limit(f, 0)))
@@ -481,7 +534,7 @@ L = \lim_{x \rightarrow 0} \frac{1}{x} - \frac{1}{\sin(x)}.
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 f(x) = 1/x - 1/sin(x)
 L = float(N(limit(f, 0)))
@@ -498,7 +551,7 @@ L = \lim_{x \rightarrow \infty} \log(x)/x
 
 What is $L$?
 
-```
+```julia; echo=false
 using SymPy
 @vars x
 L = float(N(limit(log(x)/x, x=>oo)))
@@ -518,7 +571,7 @@ exist?
 
 Consider $x^{\log(x)} = e^{\log(x)\log(x)}$.
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
@@ -533,7 +586,7 @@ $$~
 
 (Hint, express as $\exp^{\tan(\pi/2 \cdot x) \cdot \log(2-x)}$ and take the limit of the resulting exponent.)
 
-```
+```julia; echo=false
 choices = [
 L"e^{2/\pi}",
 L"{2\pi}",

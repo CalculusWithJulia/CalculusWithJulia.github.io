@@ -1,6 +1,6 @@
 # Optimization
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -44,7 +44,39 @@ We begin with the question of which rectangles of perimeter 20 have
 the largest area? The figure shows a few different rectangles with
 this perimeter and their respective areas.
 
-{{{perimeter_area_graphic}}}
+```julia; echo=false; cache=true
+### {{{perimeter_area_graphic}}}
+pyplot()
+fig_size = (400, 400)
+
+
+function perimeter_area_graphic_graph(n)
+    h = 1 + 2n
+    w = 10-h
+    plt = plot([0,0,w,w,0], [0,h,h,0,0], legend=false, size=fig_size,
+               xlim=(0,10), ylim=(0,10))
+    scatter!(plt, [w], [h], color=:orange, markersize=5)
+    annotate!(plt, [(w/2, h/2, "Area=$(round(w*h,digits=1))")])
+    plt
+end
+
+caption = """
+
+Some possible rectangles that satisfy the constraint on the perimeter and their area.
+
+"""
+n = 6
+anim = @animate for i=1:n
+    perimeter_area_graphic_graph(i-1)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
+
 
 The basic mathematical approach is to find a function of a single
 variable to maximize or minimize. In this case we have two variables
@@ -72,7 +104,7 @@ existence of extrema (a continuous function on a closed
 interval). Rather than solve analytically by taking a derivative, we
 simply graph to find the value:
 
-```
+```julia;
 using CalculusWithJulia   # loads `Plots`, `ForwardDiff`, `Roots`, `SymPy`
 A(b) = b * (10 - b)
 plot(A, 0, 10)
@@ -92,7 +124,7 @@ abstraction. This was discussed in the section on
 [functions](../precalc/functions.html). Let's first write area as a
 function of both base and height:
 
-```
+```julia;
 A(b, h) = b*h
 ```
 
@@ -102,7 +134,7 @@ Here we write area, quite naturally, as a function of two variables.
 Then from the constraint given by the perimeter being a fixed value we
 can solve for `h` in terms of `b`. We write this as a function:
 
-```
+```julia;
 h(b) = (20 - 2b) / 2
 ```
 
@@ -111,19 +143,19 @@ formula for the area, `A`. However, instead of doing the substitution
 ourselves using algebra we let `Julia` do it through composition of
 functions:
 
-```
+```julia;
 A(b) = A(b, h(b))
 ```
 
 From this we can solve graphically as before, or numerically.
 We search for zeros of the derivative:
 
-```
+```julia;
 find_zeros(A', 0, 10)   # find_zeros in `Roots`,
 ```
 
 
-```
+```julia; echo=false
 alert("""
 
 Look at the last definition of `A`. The function `A` appears on both sides, though on the left side with one argument and on the right with two. These are two "methods" of a *generic* function, `A`. `Julia` allows multiple definitions for the same name as long as the arguments (their number and type) can disambiguate which to use. In this instance, when one argument is passed in then the last defintion is used (`A(b,h(b))`), whereas if two are passed in, then the method that multiplies both arguments is used. The advantage of multiple dispatch is illustrated: the same concept---area---has one function name, though there may be different ways to compute the area, so there is more than one implementation.
@@ -149,12 +181,12 @@ This figure shows two such windows, one with base length given by
 $x=4$, the other with base length given by $x=3$. The one with base
 length $4$ seems to have much bigger area, what value of $x$ will lead to the largest area?
 
-```nocode
+```julia; echo=false
 ts = range(0, stop=pi, length=50)
 x1,y1 = 4, 4.85840
 x2,y2 = 3, 6.1438
 delta = 4
-p = plot(delta+x1*[0, 1,1,0], y1*[0,0,1,1],          linetype=:polygon, fillcolor=:blue, legend=false)
+p = plot(delta .+ x1*[0, 1,1,0], y1*[0,0,1,1],          linetype=:polygon, fillcolor=:blue, legend=false)
 plot!(p, x2*[0, 1,1,0], y2*[0,0,1,1],                linetype=:polygon, fillcolor=:blue)
 
 plot!(p, delta .+ x1/2 .+ x1/2*cos.(ts), y1.+x1/2*sin.(ts), linetype=:polygon, fillcolor=:red)
@@ -172,7 +204,7 @@ A = xy + \pi(x/2)^2/2
 
 In `Julia` this is
 
-```
+```julia;
 A(x, y) = x*y + pi*(x/2)^2 / 2
 ```
 
@@ -186,13 +218,13 @@ P = 2y + x + \pi(x/2) = 20
 
 We solve for $y$ in the first with $y = (20 - x - \pi(x/2))/2$ so that in `julia` we have:
 
-```
+```julia;
 y(x) = (20 - x - pi * x/2) / 2
 ```
 
 And then we substitute in `y(x)` for `y` in the area formula through:
 
-```
+```julia;
 A(x) = A(x, y(x))
 ```
 
@@ -207,7 +239,7 @@ now proceed to find it.
 We begin by simply graphing and estimating the values of the maximum and
 where it occurs.
 
-```
+```julia;
 plot(A, 0, 20/(1+pi/2))
 ```
 
@@ -220,7 +252,7 @@ As reading the maximum from the graph is more difficult than reading a
 $0$ of a function, we plot the derivative using our approximate
 derivative.
 
-```
+```julia;
 plot(A', 5.5, 5.7)
 ```
 
@@ -240,7 +272,7 @@ not the original function.
 
 We see from the graph that $[0, 20/(1+\pi/2)]$ will provide a bracket, as there is only one relative maximum:
 
-```
+```julia;
 x = find_zero(A', (0, 20/(1+pi/2)))
 ```
 
@@ -249,7 +281,7 @@ the position of the value that will maximize the function. This value is
 sometimes referred to as the *argmax*, or argument which maximizes the
 function. The value and maximum area is then given by:
 
-```
+```julia;
 (x, A(x))
 ```
 
@@ -262,7 +294,7 @@ rectangles? See [Isoperimetric inequality](https://en.wikipedia.org/wiki/Isoperi
 
 We could also do the above problem symbolically with the aid of `SymPy`. Here are the steps:
 
-```
+```julia;
 @vars width height real=true
 
 Area  = width * height + pi * (width/2)^2 / 2
@@ -278,13 +310,13 @@ work. We shall see soon, that just knowing that the second derivative
 is negative at `w0` would suffice to know this. Here we check that
 condition:
 
-```
+```julia;
 diff(Area, width, width)(width => 40)
 ```
 
 As an aside, compare the steps involved above for a symbolic solution to those of previous work for a numeric solution:
 
-```
+```julia;
 A(w, h) = w*h + pi*(w/2)^2 / 2
 h(w)    = (20 - w - pi * w/2) / 2
 A(w)    =  A(w, h(w))
@@ -309,7 +341,7 @@ The figure shows a ladder of length $l_1 + l_2$ that got stuck---it
 was too long.
 
 
-```nocode
+```julia; echo=false
 p = plot([0, 0, 15], [15, 0, 0], color=:blue, legend=false)
 plot!(p, [5, 5, 15], [15, 8, 8], color=:blue)
 plot!(p, [0,14.53402874075368], [12.1954981558864, 0], linewidth=3)
@@ -342,7 +374,7 @@ $5/l_2 = \cos\theta$.
 
 That is, we have
 
-```
+```julia;
 l(l1, l2) = l1 + l2
 l1(t) = 8/sin(t)
 l2(t) = 5/cos(t)
@@ -357,20 +389,20 @@ undefined at the endpoints. That being said, a quick plot will
 convince us that the minimum occurs at a critical point and there is
 only one critical point in $(0, \pi/2)$.
 
-```
+```julia;
 delta = 0.2
 plot(l, delta, pi/2 - delta)
 ```
 
 The minimum occurs between 0.5 and 1.0 radians, a bracket for the derivative:
 
-```
+```julia;
 x = find_zero(l', (0.5, 1.0))
 ```
 
 So the minimum of the function $l$ is
 
-```
+```julia;
 l(x)
 ```
 
@@ -412,30 +444,30 @@ $T(0) = \sqrt{10^2 + 5^2}/10$ and $T(10) = (10 + 5)/30$.
 
 Let's plot $T(x)$ over the interval $(0,10)$ and look:
 
-```
+```julia;
 T(x) = x/30 + sqrt(5^2 + (10-x)^2)/10
 ```
 
-```
+```julia;
 plot(T, 0, 10)
 ```
 
 The minimum happens way out near 8. We zoom in a bit:
 
-```
+```julia;
 plot(T, 7, 9)
 ```
 
 It appears to be around 8.3. We now use `find_zero` to refine our
 guess at the critical point using $[7,9]$ as a bracket:
 
-```
+```julia;
 x = find_zero(T', (7, 9))
 ```
 
 Okay, got it. Around 8.23. So is  our minimum time
 
-```
+```julia;
 T(x)
 ```
 
@@ -443,7 +475,7 @@ We know this is a relative minimum, but not that it is the global
 minimum over the closed time interlal. For that we must also check the
 endpoints:
 
-```
+```julia;
 sqrt(10^2 + 5^2)/10, T(x), (10+5)/30
 ```
 
@@ -454,7 +486,26 @@ the whole way.
 
 ## Rate times time ... the origin story
 
-{{{lhopital_43}}}
+```julia; echo=false
+### {{{lhopital_43}}}
+
+imgfile = "figures/fcarc-may2016-fig43-250.gif"
+caption = L"""
+
+Image number $43$ from l'Hospital's calculus book (the first). A
+traveler leaving location $C$ to go to location $F$ must cross two
+regions separated by the straight line $AEB$. We suppose that in the
+region on the side of $C$, he covers distance $a$ in time $c$, and
+that on the other, on the side of $F$, distance $b$ in the same time
+$c$. We ask through which point $E$ on the line $AEB$ he should pass,
+so as to take the least possible time to get from $C$ to $F$? (From
+http://www.ams.org/samplings/feature-column/fc-2016-05.)
+
+
+"""
+ImageFile(imgfile, caption)
+```
+
 
 The last example is a modern day illustration of a problem of calculus
 dating back to l'Hospital. His parameterization is a bit
@@ -465,7 +516,7 @@ both positive. What value $x$ in $[0,L]$ will minimize the total travel time?
 
 We approach this symbolically with `SymPy`:
 
-```
+```julia;
 @vars a b L x r0 r1 positive=true
 
 d0 = sqrt(x^2 + a^2)
@@ -481,20 +532,20 @@ The structure of `dt` is too complicated for simply calling `solve` to find the 
 
 We can get these terms---$a$, $b$, $c$, and $d$---as follows:
 
-```
+```julia;
 t1, t2 = SymPy.Introspection.args(dt)  # args finds arguments to the outer function (+ in this case)
 ```
 
 The equivalent of $a^2d^2 - c^2 b^2$ is found using `numer` and
 `denom` to access the numerator and denominator of the fractions:
 
-```
+```julia;
 ex = numer(t1^2)*denom(t2^2) - denom(t1^2)*numer(t2^2)
 ```
 
 This is a polynomial in the `x` variable of degree $4$:
 
-```
+```julia;
 sympy.Poly(ex, x).coeffs() # a0 + a1⋅x + a2⋅x^2 + a3⋅x^3 + a4⋅x^4
 ```
 
@@ -508,7 +559,7 @@ swimming across; this corresponds to setting $g=0$ in l'Hospital's
 example, and leads to a quadratic equation." Let's see that case,
 which we can get in our notation by taking $b=0$:
 
-```
+```julia;
 q = ex(b=>0)
 factor(q)
 ```
@@ -518,13 +569,13 @@ case $r_0=r_1$, a straight line is the best solution, and this
 corresponds to $L=0$, which is clear from the formula above, as we
 only have one solution to the following:
 
-```
+```julia;
 solve(q(r1=>r0), x)
 ```
 
 Well, not so fast. We need to check the other endpoint, $x=0$:
 
-```
+```julia;
 ta = t(b=>0, r1=>r0)
 ta(x=>0), ta(x=>L)
 ```
@@ -534,25 +585,25 @@ The value at $x=L$ is smaller, as $L^2 + a^2 \leq (L+a)^2$.
 
 Now, if, say, travel above the line is half as slow as travel along, then $2r_0 = r_1$, and the critical points will be:
 
-```
+```julia;
 out = solve(q(r1 => 2r0), x)
 ```
 
 It is hard to tell which would minimize time without more work. To check a case ($a=1, L=2, r_0=1$) we might have
 
-```
+```julia;
 t(r1 =>2r0, b=>0, x=>out[1], a=>1, L=>2, r0 => 1)  # for x=L
 ```
 
 Compared to the smaller ($x=\sqrt{3}a/3$):
 
-```
+```julia;
 t(r1 =>2r0, b=>0, x=>out[2], a=>1, L=>2, r0 => 1)
 ```
 
 What about $x=0$?
 
-```
+```julia;
 t(r1 =>2r0, b=>0, x=>0, a=>1, L=>2, r0 => 1)
 ```
 
@@ -564,7 +615,7 @@ The traveler in this case is advised to head to the $x$ axis at $x=\sqrt{3}a/3$ 
 Will this approach always be true?  Consider different parameters, say we
 switch the values of $a$ and $L$ so $a > L$:
 
-```
+```julia;
 pts = [0, out...]
 vals = N.([t(r1 =>2r0, b=>0, x=>u, a=>2, L=>1, r0 => 1) for u in pts])
 [pts vals]
@@ -589,7 +640,7 @@ a critical point, not an endpoint. Then let $M$ go to infinity.)
 
 So to approach this problem we first graph it over a wide interval.
 
-```
+```julia;
 f(x) = x * exp(-x^2)
 plot(f, 0, 100)
 ```
@@ -597,19 +648,19 @@ plot(f, 0, 100)
 Clearly the action is nearer to 1 than 100. We try graphing the
 derivative near that area:
 
-```
+```julia;
 plot(f', 0, 5)
 ```
 
 This shows the value of interest near $0.7$. We use `find_zero` with $[0,1]$ as a bracket
 
-```
+```julia;
 x = find_zero(f', (0, 1))
 ```
 
 The maximum is then at
 
-```
+```julia;
 f(x)
 ```
 
@@ -639,19 +690,19 @@ Find the values of $r$ and $h$ which minimize the surface area.
 
 First the surface area in both variables is given by
 
-```
+```julia;
 SA(h, r) = h * 2pi * r + 2pi * r^2
 ```
 
 Solving from the constraint on the volume for `h` in terms of `r` yields:
 
-```
+```julia;
 h(r) = 355 / (pi * r^2)
 ```
 
 Composing gives a function of `r` alone:
 
-```
+```julia;
 SA(r) = SA(h(r), r)
 ```
 
@@ -669,20 +720,20 @@ We start by making a graph, making an educated guess that the answer
 is somewhere near a real life answer, or around 3-5 cms in radius:
 
 
-```
+```julia;
 plot(SA, 2, 10)
 ```
 
 The minimum looks to be around $4$cm and is clearly between $3$ and
 $5$. We can use `find_zero` to zero in on the value of the critical point:
 
-```
+```julia;
 r0 = find_zero(SA', (3, 5))
 ```
 
 Okay, $3.837...$ is our computation for $r$. To get $h$, we use:
 
-```
+```julia;
 h(r0)
 ```
 
@@ -702,7 +753,7 @@ A geometric figure has area given in terms of two measurements by
 $A=\pi a b$ and perimeter $P = \pi (a + b)$. If the perimeter is fixed
 to be 20 units long, what is the maximal area the figure can be?
 
-```
+```julia; echo=false
 A(a,b) = pi*a*b
 P = 20
 b1(a) = 20/pi - a
@@ -718,7 +769,7 @@ A geometric figure has area given in terms of two measurements by
 $A=\pi a b$ and perimeter $P=\pi \cdot \sqrt{a^2 + b^2}/2$. If the
 perimeter is 20 units long, what is the maximal area?
 
-```
+```julia; echo=false
 A(a,b) = pi*a*b
 P = 20
 b1(a) = sqrt((P*2/pi)^2 - a^2)
@@ -737,7 +788,7 @@ existing fence. Say that has length $x$, then $10 = 2y + x$, with $y$
 the other dimension of the pen. What is the maximum area that can be
 made?
 
-```
+```julia; echo=false
 Ar(y) = (10-2y)*y;
 val = Ar(find_zero(Ar',  5))
 numericq(val, 1e-3)
@@ -745,14 +796,14 @@ numericq(val, 1e-3)
 
 Is there "symmetry" in the answer between $x$ and $y$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
 What is you were do do two pens like this back to back, then the
 answer would involve a rectangle. Is there symmetry in the answer now?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
@@ -762,7 +813,7 @@ yesnoq("yes")
 
 A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *smallest* perimeter it can have?
 
-```
+```julia; echo=false
 Prim(x,y) = 2x + 2y
 Prim(x) = Prim(x, 20/x)
 xstar = find_zero(Prim', 5)
@@ -775,7 +826,7 @@ numericq(val)
 
 A rectangle of sides $w$ and $h$ has fixed area $20$. What is the *largest* perimeter it can have?
 
-```
+```julia; echo=false
 choices = [
 "It can be infinite",
 "It is also 20",
@@ -792,7 +843,7 @@ it into thirds. If the sides are bent 90 degrees, then the
 cross-sectional area would be $100 = 10^2$. This is not the largest
 possible amount. For example, if the sides are bent by 45 degrees, the cross sectional area is:
 
-```
+```julia; echo=false
 2 * (1/2 * 10*cos(pi/4) * 10 * sin(pi/4)) + 10*sin(pi/4) * 10
 ```
 
@@ -800,7 +851,7 @@ Find a value in degrees that gives the maximum. (The first task is to
 write the area in terms of $\theta$.
 
 
-```
+```julia; echo=false
 function Ar(t)
 	 opp = 10 * sin(t)
 	 adj = 10 * cos(t)
@@ -817,7 +868,7 @@ Suppose our new "Norman" window has half circular tops at the top and bottom? If
 
 What is the value of $y$ that maximizes the area?
 
-```
+```julia; echo=false
 using Roots
 P = 20
 A(x,y) = x*y + pi * (x/2)^2
@@ -834,7 +885,7 @@ numericq(val) # 0
 A movie screen projects on a wall 20 feet high beginning 10 feet above
 the floor.  This figure shows $\theta$ for $x=30$:
 
-```nocode
+```julia; echo=false
 p = plot([0, 30,30], [0,0,10], xlim=(0, 32), color=:blue, legend=false)
 plot!(p, [30, 30], [10, 30], color=:blue, linewidth=4)
 plot!(p, [0, 30,30,0], [0,10,30,0], color=:orange)
@@ -843,7 +894,7 @@ annotate!(p, [(x,y,l) for (x,y,l) in zip([15, 5, 31, 31], [1.5, 3.5, 5, 20], ["x
 
 What value of $x$ gives the largest angle $\theta$? (In degrees.)
 
-```
+```julia; echo=false
 theta(x) = atan(30/x) - atan(10/x)
 val = find_zero(D(theta), 20); ## careful where one starts
 val = theta(val) * 180/pi
@@ -855,20 +906,20 @@ numericq(val, 1e-1)
 
 A maximum likelihood estimator is a value derived by maximizing a function. For example, if
 
-```
+```julia;
 Likhood(t) = t^3 * exp(-3t) * exp(-2t) * exp(-4t) ## 0 <= t <= 10
 ```
 
 Then `Likhood(t)` is continuous and has single peak, so the maximum occurs
 at the lone critical point. It turns out that this problem is bit sensitive to an initial condition, so we bracket
 
-```
+```julia;
 x = find_zero(Likhood',  (0.1, 0.5))
 ```
 
 Now if $Likhood(t) = \exp(-3t) \cdot \exp(-2t) \cdot \exp(-4t), \quad 0 \leq t \leq 10$, by graphing, explain why the same approach won't work:
 
-```
+```julia; echo=false
 choices=["It does work and the answer is x = 2.27...",
 	 L" $Likhood(t)$ is not continuous on $0$ to $10$",
          L" $Likhood(t)$ takes its maximum at a boundary point---not a critical point"];
@@ -884,21 +935,19 @@ is the smallest this can be (in $x$)?
 
 We approach this using `SymPy` and $n=10$
 
-```
-Verbatim("""
+```julia; eval=false
 using SymPy
 n = 10
 @vars s
 xs = [symbols("x\$i") for i in 1:n]
 s(x) = sum((x-xs[i])^2 for i in 1:n)
 cps = solve(diff(s(x), x), x)
-""")
 ```
 
 Run the above code. Baseed on the critical points found, what do you guess will be the
 minimum value in terms of the values $x_1$, $x_2, \dots$?
 
-```
+```julia; echo=false
 choices=[
 "The mean, or average, of the values",
 "The median, or middle number, of the values",
@@ -912,7 +961,7 @@ radioq(choices, ans)
 
 Minimize the function $f(x) = 2x + 3/x$ over $(0, \infty)$.
 
-```
+```julia; echo=false
 f(x) = 2x + 3/x;
 val = find_zero(f', 1);
 numericq(val, 1e-3)
@@ -923,7 +972,7 @@ numericq(val, 1e-3)
 
 Of all rectangles of area 4, find the one with smallest perimeter. What is the perimeter?
 
-```
+```julia; echo=false
 # 4 = xy
 Prim(x) = 2x + 2*(4/x);
 val = find_zero(D(Prim), 1);
@@ -941,7 +990,7 @@ height. What dimensions minimize the sum $w + h$?
 You have $P(w, h) = 2\pi \cdot (w/2) + 2\cdot(h-w)$.
 
 
-```
+```julia; echo=false
 Ar(w,h) = w + h
 h(w) = (400 - 2pi*w/2 + 2w) / 2
 Ar(w) = Ar(w, h(w)) ## linear
@@ -962,7 +1011,7 @@ height) that allow the maximum screen area?
 
 The width is:
 
-```
+```julia; echo=false
 #A = w*h = 12000
 w(h) = 12_000 / h
 S(w, h) = (w- 2*8) * (h - 2*32)
@@ -974,7 +1023,7 @@ numericq(wstar)
 
 The height is?
 
-```
+```julia; echo=false
 numericq(hstar)
 ```
 
@@ -983,7 +1032,7 @@ numericq(hstar)
 Find the value $x > 0$ which minimizes the distance from the graph of
 $f(x) = \log_e(x) - x$ to the origin $(0,0)$.
 
-```nocode
+```julia; echo=false
 f(x) = log(x) - x
 p = plot(f, 0.2, 2, ylim=(-2,0.25), legend=false, linewidth=3)
 plot!(p, [0,0], [-2, 0.25], color=:blue)
@@ -995,7 +1044,7 @@ annotate!(p, [(.75, f(.5)/2, "d = $(round(sqrt(.5^2 + f(.5)^2), digits=2))")])
 p
 ```
 
-```
+```julia; echo=false
 d2(x) = sqrt((0-x)^2 + (0 - f(x))^2)
 xstar = find_zero(D(d2), 1)
 val = d2(xstar)
@@ -1004,13 +1053,22 @@ numericq(val)
 
 ###### Question
 
-{{{lhopital_40}}}
+```julia; echo=false
+### {{{lhopital_40}}}
+imgfile ="figures/fcarc-may2016-fig40-300.gif"
+caption = L"""
+
+Image number $40$ from l'Hospital's calculus book (the first calculus book). Among all the cones that can be inscribed in a sphere, determine which one has the largest lateral area. (From http://www.ams.org/samplings/feature-column/fc-2016-05)
+
+"""
+ImageFile(imgfile, caption)
+```
 
 The figure above poses a problem about cones in spheres, which can be reduced to a two-dimensional problem. Take a sphere of radius $r=1$, and imagine a secant line of length$l$ connecting $(-r, 0)$ to another point $(x,y)$ with $y>0$. Rotating that line around the $x$ axis produces a cone and its lateral surface is given by $SA=\pi \cdot y \cdot l$. Write $SA$ as a function of $x$ and solve.
 
 The largest lateral surface area is:
 
-```
+```julia; echo=false
 using Roots
 SA(r,l) = pi * r * l
 y(x) = sqrt(1 - x^2)
@@ -1023,7 +1081,7 @@ numericq(val)
 
 The surface area of a sphere of radius $1$ is $4\pi r^2 = 4 \pi$. This is how many times greater than that of the largest cone?
 
-```
+```julia; echo=false
 choices = ["exactly four times",
 L"exactly $\pi$ times",
 L"about $2.6$ times as big",

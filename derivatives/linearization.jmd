@@ -1,6 +1,6 @@
 # Linearization
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -20,7 +20,7 @@ functions within `Julia`. Here we write such a function as an
 operator---it takes a function `f` and returns a function
 representing the tangent line.
 
-```noeval
+```julia; eval=false
 tangent(f, c) = x -> f(c) + f'(c) * (x - c)
 ```
 
@@ -31,13 +31,13 @@ This function along with the `f'` notation, as defined in the
 `Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`,
 is loaded with:
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
 To illustrate the tangent line, we can make some graphs:
 
-```
+```julia;
 f(x) = x^2
 plot(f, -3, 3)
 plot!(tangent(f, -1))
@@ -62,7 +62,7 @@ There are several approximations that are well known in physics, due to their wi
 
 * That $\sin(x) \approx x$ around $x=0$:
 
-```
+```julia;
 f(x) = sin(x)
 plot(f, -pi/2, pi/2)
 plot!(tangent(f, 0))
@@ -70,7 +70,7 @@ plot!(tangent(f, 0))
 
 * That $\log(1 + x) \approx x$ around $x=0$:
 
-```
+```julia;
 f(x) = log(1 + x)
 plot(f, -1/2, 1/2)
 plot!(tangent(f, 0))
@@ -78,7 +78,7 @@ plot!(tangent(f, 0))
 
 * That $1/(1-x) \approx x$ around $x=0$:
 
-```
+```julia;
 f(x) = 1/(1-x)
 plot(f, -1/2, 1/2)
 plot!(tangent(f, 0))
@@ -90,7 +90,7 @@ function.
 
 ## Numeric approximations
 
-```nocode
+```julia; echo=false
 f(x) = sin(x)
 a, b = -1/4, pi/2
 
@@ -118,7 +118,7 @@ effective it is, we look at some examples.
 
 If $f(x) = \sin(x)$, $c=0$ and $\Delta x= 0.1$ then the values for the actual change in the function values and the value of $\Delta y$ are:
 
-```
+```julia;
 f(x) = sin(x)
 c, deltax = 0, 0.1
 f(c + deltax) - f(c), f'(c) * deltax
@@ -126,7 +126,7 @@ f(c + deltax) - f(c), f'(c) * deltax
 
 The values are pretty close. But what is $0.1$ radians? Lets use degrees. Suppose we have $\Delta x = 10^\circ$:
 
-```
+```julia;
 c, deltax = 0, 10*pi/180
 actual=f(c + deltax) - f(c)
 approx = f'(c) * deltax
@@ -135,7 +135,7 @@ actual, approx
 
 They agree until the third decimal value. The *percentage error* is just $1/2$ a percent:
 
-```
+```julia;
 (approx - actual) / actual * 100
 ```
 
@@ -161,7 +161,7 @@ approximately $5/6$ of an hour or 50 minutes.
 
 How much in error are we?
 
-```
+```julia;
 abs(50 - 60/70*60) / (60/70*60) * 100
 ```
 
@@ -184,7 +184,7 @@ f(c + \Delta) \approx f(c) + f'(c) \cdot \Delta = 1000 + f'(c) \cdot (0.1)
 
 Computing the derivative can be done easily, we get for our answer:
 
-```
+```julia;
 fp(x) = 3*x^2
 c, Delta = 10, 0.1
 approx = 1000 + fp(c) * Delta
@@ -192,14 +192,14 @@ approx = 1000 + fp(c) * Delta
 
 This is a relative error as a percent of:
 
-```
+```julia;
 actual = 10.1^3
 (actual - approx)/actual * 100
 ```
 
 The manufacturer may be interested instead in comparing the volume of the actual object to the $1$ liter target. They might use the approximate value for this comparison, which would yield:
 
-```
+```julia;
 (1000 - approx)/approx * 100
 ```
 
@@ -268,7 +268,7 @@ $\lvert\sin(x) - x\rvert \leq x^2/2$.
 
 Can we verify? Let's do so graphically:
 
-```
+```julia;
 h(x) = abs(sin(x) - x)
 g(x) = x^2/2
 plot(h, -2, 2)
@@ -303,7 +303,7 @@ $$~
 
 Plotting we verify:
 
-```
+```julia;
 h(x) = abs(log(1+x) - x)
 g(x) = x < 0 ? x^2/(2*(1+x)^2) : x^2/2
 plot(h, -.5, 2)
@@ -329,7 +329,7 @@ satisfies $0 < \xi < e < x$, so is in $[0,x]$.
 
 `SymPy` can find the tangent line expression as a special case of its `series` function (which implements Taylor series). Here we see the answer provided for $e^{\sin(x)}$:
 
-```
+```julia;
 @vars x
 series(exp(sin(x)), x, 0, 2)
 ```
@@ -432,7 +432,7 @@ Note that $\sin(\exp(x))$ is approximately $\sin(1+x)$ but not approximately $1+
 
 What is the right linear approximation for $\sqrt{1 + x}$ near $0$?
 
-```
+```julia; echo=false
 choices = [
 L"1 + 1/2",
 L"1 + x^{1/2}",
@@ -448,7 +448,7 @@ radioq(choices, ans)
 
 What is the right linear approximation for $(1 + x)^k$ near $0$?
 
-```
+```julia; echo=false
 choices = [
 L"1 + k",
 L"1 + x^k",
@@ -462,7 +462,7 @@ radioq(choices, ans)
 
 What is the right linear approximation for $\cos(\sin(x))$ near $0$?
 
-```
+```julia; echo=false
 choices = [
 L"1",
 L"1 + x",
@@ -478,7 +478,7 @@ radioq(choices, ans)
 
 What is the  right linear approximation for $\tan(x)$ near $0$?
 
-```
+```julia; echo=false
 choices = [
 L"1",
 L"x",
@@ -495,7 +495,7 @@ radioq(choices, ans)
 
 What is the right linear approximation of $\sqrt{25 + x}$ near $x=0$?
 
-```
+```julia; echo=false
 choices = [
 L"5 \cdot (1 + (1/2) \cdot (x/25))",
 L"1 - (1/2) \cdot x",
@@ -514,9 +514,9 @@ radioq(choices, ans)
 Let $f(x) = \sqrt{x}$. Find the actual error in approximating $f(26)$ by the
 value of the tangent line at $(25, f(25))$ at $x=26$.
 
-```
-tangent(x) = 5 + x/10
-ans = tangent(1) - sqrt(26)
+```julia; echo=false
+tgent(x) = 5 + x/10
+ans = tgent(1) - sqrt(26)
 numericq(ans)
 ```
 
@@ -524,7 +524,7 @@ numericq(ans)
 
 An estimate of some quantity was $12.34$ the actual value was $12$. What was the *percentage error*?
 
-```
+```julia; echo=false
 est = 12.34
 act = 12.0
 ans = (est -act)/act * 100
@@ -536,7 +536,7 @@ numericq(ans)
 
 Find the percentage error in estimating $\sin(5^\circ)$ by $5 \pi/180$.
 
-```
+```julia; echo=false
 tl(x) = x
 x0 = 5 * pi/180
 est = x0
@@ -549,7 +549,7 @@ numericq(ans)
 
 The side length of a square is measured roughly to be $2.0$ cm. The actual length $2.2$ cm. What is the difference in area (in absolute values) as *estimated* by a tangent line approximation.
 
-```
+```julia; echo=false
 tl(x) = 4 + 4x
 ans = tl(.2) - 4
 numericq(abs(ans))

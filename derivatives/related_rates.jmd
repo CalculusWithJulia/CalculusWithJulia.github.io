@@ -1,6 +1,6 @@
 # Related rates
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -22,7 +22,49 @@ The following is a typical "book" problem:
 > increasing when its dimensions are 12 cm by 8 cm?
 > [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
 
-{{{growing_rects}}}
+```julia; echo=false; cache=true
+### {{{growing_rects}}}
+pyplot()
+fig_size=(600, 400)
+
+
+
+## Secant line approaches tangent line...
+function growing_rects_graph(n)
+    w = (t) -> 2 + 4t
+    h = (t) -> 3/2 * w(t)
+    t = n - 1
+
+    w_2 = w(t)/2
+    h_2 = h(t)/2
+
+    w_n = w(5)/2
+    h_n = h(5)/2
+
+    plt = plot(w_2 * [-1, -1, 1, 1, -1], h_2 * [-1, 1, 1, -1, -1], xlim=(-17,17), ylim=(-17,17),
+               legend=false, size=fig_size)
+    annotate!(plt, [(-1.5, 1, "Area = $(round(Int, 4*w_2*h_2))")])
+    plt
+
+
+end
+caption = L"""
+
+As $t$ increases, the size of the rectangle grows. The ratio of width to height is fixed. If we know the rate of change in time for the width ($dw/dt$) and the height ($dh/dt$) can we tell the rate of change of *area* with respect to time ($dA/dt$)?
+
+"""
+n=6
+
+anim = @animate for i=1:n
+    growing_rects_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 Here we know $A = w \cdot h$ and we know some things about how $w$ and
 $h$ are related *and* about the rate of how both $w$ and $h$ grow in
@@ -64,25 +106,25 @@ We could also have done this differently. We would recognize the following:
 
 -  The area of a rectangle is just:
 
-```
+```julia;
 A(w,h) = w * h
 ```
 
 - The width---expanding at a rate of $4t$ from a starting value of $2$---must satisfy:
 
-```
+```julia;
 w(t) = 2 + 4*t
 ```
 
 - The height is a constant proportion of the width:
 
-```
+```julia;
 h(t) = 3/2 * w(t)
 ```
 
 This means again that area depends on $t$ through this formula:
 
-```
+```julia;
 A(t) = A(w(t), h(t))
 ```
 
@@ -95,7 +137,7 @@ time.
 
 Now to answer the question, when the width is 8, we must have that $t$ is:
 
-```
+```julia;
 using CalculusWithJulia               # loads `Plots`, `ForwardDiff`, `Roots`
 tstar = fzero(x -> w(x) - 8, [0, 4])  # or solve by hand to get 3/2
 ```
@@ -108,7 +150,7 @@ Here we do so with the aid of `Julia`, though this problem could readily be done
 
 We (again) re-express $A$ as a function of $t$ by composition, then differentiate that:
 
-```
+```julia;
 A(t) = A(w(t), h(t))
 da_dt = A'(tstar)
 ```
@@ -119,20 +161,20 @@ understand if there is some pattern to the numbers in the figure,
 these being $6, 54, 150, 294, 486, 726$. Their differences are the
 *average* rate of change:
 
-```
+```julia;
 xs = [6, 54, 150, 294, 486, 726]
 ds = diff(xs)
 ```
 
 Those seem to be increasing by a fixed amount each time, which we can see by one more application of `diff`:
 
-```
+```julia;
 diff(ds)
 ```
 
 How can this relationship be summarized? Well, let's go back to what we know, though this time using symbolic math:
 
-```
+```julia;
 using SymPy
 @vars t
 diff(A(t), t)
@@ -174,7 +216,7 @@ $$~
 
 We just need to find $h$ for this value of $b$, as the other two quantities in the last equation are known. But $h = \sqrt{l^2 - b^2}$, so the answer is:
 
-```
+```julia;
 l, b, dbdt = 12, 4, 2
 height = sqrt(l^2 - b^2)
 -b/height * dbdt
@@ -189,7 +231,53 @@ goes to $0$, the expression will become $-\infty$.
 
 ##### Example
 
-{{{baseball_been_berry_good}}}
+```julia; echo=false; cache=true
+###{{{baseball_been_berry_good}}}
+## Secant line approaches tangent line...
+pyplot()
+function baseball_been_berry_good_graph(n)
+
+    v0 = 15
+    x = (t) -> 50t
+    y = (t) -> v0*t - 5 * t^2
+
+
+    ns = range(.25, stop=3, length=8)
+
+    t = ns[n]
+    ts = range(0, stop=t, length=50)
+    xs = map(x, ts)
+    ys = map(y, ts)
+
+    degrees = atand(y(t)/(100-x(t)))
+    degrees = degrees < 0 ? 180 + degrees : degrees
+
+    plt = plot(xs, ys, legend=false, size=fig_size, xlim=(0,150), ylim=(0,15))
+    plot!(plt, [x(t), 100], [y(t), 0.0], color=:orange)
+    annotate!(plt, [(55, 4,"theta = $(round(Int, degrees)) degrees"),
+                    (x(t), y(t), "($(round(Int, x(t))), $(round(Int, y(t))))")])
+
+end
+caption = L"""
+
+The flight of the ball as being tracked by a stationary outfielder.  This ball will go over the head of the player. What can the player tell from the quantity $d\theta/dt$?
+
+"""
+n = 8
+
+
+anim = @animate for i=1:n
+    baseball_been_berry_good_graph(i)
+end
+
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
+
 
 A baseball player stands 100 meters from home base. A batter hits the
 ball directly at the player so that the distance from home plate is
@@ -223,7 +311,7 @@ This question requires us to differentiate *again* in $t$. Since we
 have fairly explicit function for $x$ and $y$, we will use `SymPy` to
 do this.
 
-```
+```julia;
 @vars t
 theta = SymFunction("theta")
 
@@ -233,14 +321,14 @@ y(t) = v0*t - 5 * t^2
 eqn = tan(theta(t)) - y(t) / (100 - x(t))
 ```
 
-```
+```julia;
 thetap = diff(theta(t),t)
 dtheta = solve(diff(eqn, t), thetap)[1]
 ```
 
 We could proceed directly by evaluating:
 
-```
+```julia;
 d2theta = diff(dtheta, t)(thetap => dtheta)
 ```
 
@@ -252,14 +340,14 @@ height $y(t)$ and length $(100 - x(t))$. The cosine of this angle will
 be $100 - x(t)$ divided by the length of the hypotenuse. So we can
 substitute:
 
-```
+```julia;
 dtheta = dtheta(cos(theta(t))^2 => (100 -x(t))^2/(y(t)^2 + (100-x(t))^2))
 ```
 
 
 Plotting reveals some interesting things. For $v_{0y} < 10$ we have graphs that look like:
 
-```
+```julia;
 plot(dtheta, 0, v0/5)
 ```
 
@@ -269,7 +357,7 @@ The ball will drop in front of the player, and the change in $d\theta/dt$ is mon
 
 But let's rerun the code with $v_{0y} > 10$:
 
-```
+```julia;
 v0 = 15
 x(t) = 50t
 y(t) = v0*t - 5 * t^2
@@ -371,7 +459,7 @@ Supply and demand. Suppose demand for product $XYZ$ is $d(x)$ and supply
 is $s(x)$. The excess demand is $d(x) - s(x)$. Suppose this is positive. How does this influence
 price? Guess the "law" of economics that applies:
 
-```
+```julia; echo=false
 choices = [
 L"The rate of change of price will be $0$",
 "The rate of change of price will increase",
@@ -385,7 +473,7 @@ radioq(choices, ans, keep_order=true)
 
 Which makes more sense from an economic viewpoint?
 
-```
+```julia; echo=false
 choices = [
 "If the rate of change of unemployment is negative, the rate of change of wages will be negative.",
 "If the rate of change of unemployment is negative, the rate of change of wages will be positive."
@@ -402,7 +490,7 @@ In chemistry there is a fundamental relationship between pressure
 ($P$), temperature ($T)$ and volume ($V$) given by $PV=cT$ where $c$
 is a constant. Which of the following would be true with respect to time?
 
-```
+```julia; echo=false
 choices = [
 L"The rate of change of pressure is always increasing by $c$",
 "If volume is constant, the rate of change of pressure is proportional to the temperature",
@@ -419,7 +507,7 @@ circles. Suppose one of the circles expands at a rate of 1 foot per second and
 the radius of the circle is 10 feet, what is the rate of change of
 the area enclosed by the circle?
 
-```
+```julia; echo=false
 # a = pi*r^2
 # da/dt = pi * 2r * drdt
 r = 10; drdt = 1
@@ -433,7 +521,7 @@ A pizza maker tosses some dough in the air. The dough is formed in a
 circle with radius 10. As it rotates, its area increases at a rate of
 1 inch$^2$ per second. What is the rate of change of the radius?
 
-```
+```julia; echo=false
 # a = pi*r^2
 # da/dt = pi * 2r * drdt
 r = 10; dadt = 1
@@ -453,7 +541,7 @@ the gangster, how fast is the gangster moving? (In kilometers per minute.)
 [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
 
 
-```
+```julia; echo=false
 ## tan(theta) = x/y
 ## sec^2(theta) dtheta/dt = 1/y dx/dt (y is constant)
 ## dxdt = y sec^2(theta) dtheta/dt
@@ -474,7 +562,7 @@ wall when he is 50 feet from the wall?
 [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
 (As the question is written the answer should be positive.)
 
-```
+```julia; echo=false
 ## y/200 = 6/x
 ## dydt = 200 * 6 * -1/x^2 dxdt
 x0 = 200 - 50
@@ -493,7 +581,7 @@ increasing at a rate of $f(x)$ units/sec. If its $y$-coordinate is
 decreasing at a constant rate of $1$ unit/sec, what is $f(x)$?
 [Source.](http://oregonstate.edu/instruct/mth251/cq/Stage9/Practice/ratesProblems.html)
 
-```
+```julia; echo=false
 choices = [
 L"f(x) = 1/x",
 L"f(x) = x^0",
@@ -511,7 +599,7 @@ $V=4/3 \pi r^3$ for the volume. If it is being filled with a rate of
 change of volume per unit time is $2$ and the radius is $3$, what is
 rate of change of radius per unit time?
 
-```
+```julia; echo=false
 r, dVdt = 3, 2
 drdt = dVdt / (4 * pi * r^2)
 numericq(drdt, units="units per unit time")
@@ -521,7 +609,7 @@ numericq(drdt, units="units per unit time")
 
 Consider the curve $f(x) = x^2 - \log(x)$. For a given $x$, the tangent line intersects the $y$ axis. Where?
 
-```
+```julia; echo=false
 choices = [
 L"y = 1 - x^2 - \log(x)",
 L"y = 1 - x^2",
@@ -534,7 +622,7 @@ radioq(choices, ans)
 
 If $dx/dt = -1$, what is $dy/dt$?
 
-```
+```julia; echo=false
 choices = [
 L"dy/dt = 2x + 1/x",
 L"dy/dt = 1 - x^2 - \log(x)",

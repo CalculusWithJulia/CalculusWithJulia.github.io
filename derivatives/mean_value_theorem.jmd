@@ -1,6 +1,6 @@
 # The Mean Value Theorem and other facts about differentiable functions.
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -32,7 +32,7 @@ might give an indication that this won't be the case---we just need a
 function which is continuous but has a point with no tangent line. The
 usual suspect is $f(x) = \lvert x\rvert$ at $0$.
 
-```
+```julia;
 using CalculusWithJulia  # Loads `Plot`, `SymPy`, `ForwardDiff`, `Roots`
 f(x) = abs(x)
 plot(f, -1,1)
@@ -49,7 +49,7 @@ There are other functions that have kinks. These are often associated
 with powers. For example, at $x=0$ this function will not have a
 derivative:
 
-```
+```julia;
 f(x) = (x^2)^(1/3)
 plot(f, -1, 1)
 ```
@@ -57,7 +57,7 @@ plot(f, -1, 1)
 
 Other functions have tangent lines that become vertical. The natural slope would be $\infty$, but this isn't a limiting answer (except in the extended sense we don't apply to the definition of derivatives). A candidate is the cube root function:
 
-```
+```julia;
 f(x) = cbrt(x)
 plot(f, -1, 1)
 ```
@@ -68,7 +68,7 @@ power rule: $f'(x) = 1/3 \cdot x^{-2/3}$, which has a vertical
 asymptote at $x=0$.
 
 
-```
+```julia; echo=false
 note("""
 
 The `cbrt` function is used above, instead of `f(x) = x^(1/3)`, as the
@@ -108,7 +108,7 @@ The difference is a bit subtle, for an absolute maximum the interval
 is specified ahead of time, for a relative maximum there just needs to
 exist some interval, that can be really small, but must be bigger than a point.
 
-```
+```julia; echo=false
 note("""
 
 A hiker can appreciate the difference. A relative maximum would be the
@@ -172,7 +172,18 @@ A similar statement holds for an absolute minimum.  This gives a
 restricted set of places to look for absolute maximum and minimum values---all the
 critical points and the endpoints.
 
-{{{lhopital_32}}}
+```julia; echo=false;
+### {{{lhopital_32}}}
+imgfile = "figures/lhopital-32.png"
+caption =  L"""
+Image number 32 from L'Hopitals calculus book (the first) showing that
+at a relative minimum, the tangent line is parallel to the
+$x$-axis. This of course is true when the tangent line is well defined
+by Fermat's observation.
+"""
+ImageFile(imgfile, caption)
+```
+
 
 
 ### Numeric derivatives
@@ -180,7 +191,7 @@ critical points and the endpoints.
 The `ForwardDiff` package provides a means to numerically compute derivatives without approximations at a point. In `CalculusWithJulia` this is extended to find derivatives of functions and the `'` notation is overloaded for function objects. (Through this definition `Base.adjoint(f::Function)=x->ForwardDiff.derivative(f, float(x))`.) Hence these two give nearly identical answers:
 
 
-```
+```julia;
 f(x) = 3x^3 - 2x
 fp(x) = 9x^2 - 2
 f'(3), fp(3)
@@ -196,7 +207,7 @@ question, and in fact differentiable on $(0,5)$, so any critical point
 will be a zero of the derivative. We can check for these with:
 
 
-```
+```julia;
 f(x) = x^2 * exp(-x)
 cps = find_zeros(f', -1, 6)     # find_zeros in `Roots`
 ```
@@ -205,7 +216,7 @@ We get $0$ and $2$ are critical points. The endpoints are $0$ and
 $5$. So the absolute maximum over this interval is either at $0$, $2$
 or $5$:
 
-```
+```julia;
 f(0), f(2), f(5)
 ```
 
@@ -217,7 +228,7 @@ didn't. Second, it can be easier sometimes to check the values using
 the "dot" notation. If `f`, `a`,`b` are the function and the interval,
 then this would typically follow this pattern:
 
-```
+```julia;
 a, b = 0, 5
 cps = find_zeros(f', a, b)
 f.(cps), f(a), f(b)
@@ -226,7 +237,7 @@ f.(cps), f(a), f(b)
 For this problem, we have the left endpoint repeated, but in general
 this won't be a point where the derivative is zero.
 
-```
+```julia; echo=false
 note("""
 
 If you don't like how the output has the values at critical points in a vector, the following, though a bit cryptic, could be done: `f.( (cps..., a, b) )`
@@ -241,14 +252,14 @@ For the function $f(x) = e^x\cdot(x^3 - x)$ find the  absolute maximum over the 
 
 We follow the same pattern. Since $f(x)$ is continuous on the closed interval and differentiable on the open interval we know that the absolute maximum must occur at an endpoint ($0$ or $2$) or a critical point where $f'(c)=0$. To solve for these, we have again:
 
-```
+```julia;
 f(x) = exp(x) * (x^3 - x)
 cps = find_zeros(f', 0, 2)
 ```
 
 And checking values gives:
 
-```
+```julia;
 f.(cps), f(0), f(2)
 ```
 
@@ -256,7 +267,7 @@ Here the maximum occurs at an endpoint. The critical point $c=0.67\dots$
 does not produce a maximum value. Rather $f(0.67\dots)$ is an absolute
 minimum.
 
-```
+```julia; echo=false
 note(L"""
 
 **Absolute minimum** We haven't discussed the parallel problem of
@@ -297,17 +308,16 @@ won't be a simple zero (as we will see soon), so Rolle's theorem
 guarantees that this will find *at* *least* one answer (unless numeric
 issues arise):
 
-```
+```julia;
 f(x) = exp(x) * x * (x-1)
 find_zeros(f', 0, 1)
 ```
 
 This graph illustrates the lone value for $c$ for this problem
 
-```
+```julia; echo=false
 x0 = fzero(f', 0, 1)
-p = plot([f, x->f(x0) + 0*(x-x0)], 0, 1)
-Outputonly(p)
+plot([f, x->f(x0) + 0*(x-x0)], 0, 1)
 ```
 
 
@@ -340,7 +350,7 @@ value theorem. In this figure, there are two such lines, rendered
 using red.
 
 
-```
+```julia; echo=false
 f(x) = x^3 - x
 a, b = -2, 1.75
 m = (f(b) - f(a)) / (b-a)
@@ -353,7 +363,7 @@ scatter!([a,b], [f(a), f(b)])
 for cp in cps
   plot!(x -> f(cp) + f'(cp)*(x-cp), color=:red)
 end
-Outputonly(p)
+p
 ```
 
 Like Rolle's theorem this is a guarantee that something exists, not a
@@ -425,7 +435,50 @@ graph plots the points $(g(t), f(t))$ for some range of $t$. That is,
 it graphs *both* functions at the same time. The following illustrates
 the construction of such a graph:
 
-{{{parametric_fns}}}
+```julia; echo=false; cache=true
+### {{{parametric_fns}}}
+
+using Printf
+pyplot()
+fig_size = (600, 400)
+
+
+function parametric_fns_graph(n)
+    f = (x) -> sin(x)
+    g = (x) -> x
+
+    ns = (1:10)/10
+    ts = range(-pi/2, stop=-pi/2 + ns[n] * pi, length=100)
+
+    plt = plot(f, g, -pi/2, -pi/2 + ns[n] * pi, legend=false, size=fig_size,
+               xlim=(-1.1,1.1), ylim=(-pi/2-.1, pi/2+.1))
+    scatter!(plt, [f(ts[end])], [g(ts[end])], color=:orange, markersize=5)
+    val = @sprintf("% 0.2f", ts[end])
+    annotate!(plt, [(0, 1, "t = $val")])
+end
+caption = L"""
+
+Illustration of parametric graph of $(g(t), f(t))$ for $-\pi/2 \leq t
+\leq \pi/2$ with $g(x) = \sin(x)$ and  $f(x) = x$. Each point on the
+graph is from some value $t$ in the interval. We can see that the
+graph goes through $(0,0)$ as that is when $t=0$. As well, it must go
+through $(1, \pi/2)$ as that is when $t=\pi/2$
+
+"""
+
+
+n = 10
+anim = @animate for i=1:n
+    parametric_fns_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 
 With $g(x) = \sin(x)$ and $f(x) = x$, we can take $I=[a,b] =
@@ -434,7 +487,7 @@ connects $(g(a), f(a))$ with the point $(g(b), f(b))$, and hence
 has slope $\Delta f/\Delta g$. The parallel lines drawn show the *tangent* lines with slope $f'(c)/g'(c)$. Two exist for this problem, the mean value theorem guarantees at least one will.
 
 
-```
+```julia; echo=false
 g(x) = sin(x)
 f(x) = x
 ts = range(-pi/2, stop=pi/2, length=50)
@@ -451,7 +504,7 @@ for c in cps
   plot!(x -> f(c) + m * (x - g(c)), -1, 1, color=:orange)
 end
 
-Outputonly(p)
+p
 ```
 
 
@@ -463,7 +516,7 @@ Outputonly(p)
 
 The extreme value theorem is a guarantee of a value, but does not provide a recipe to find it. For the function $f(x) = \sin(x)$ on $I=[0, \pi]$ find a value $c$ satisfying the theorem for an absolute maximum.
 
-```
+```julia; echo=false
 c = pi/2
 numericq(c)
 ```
@@ -472,7 +525,7 @@ numericq(c)
 
 The extreme value theorem is a guarantee of a value, but does not provide a recipe to find it. For the function $f(x) = \sin(x)$ on $I=[\pi, 3\pi/2]$ find a value $c$ satisfying the theorem for an absolute maximum.
 
-```
+```julia; echo=false
 c = pi
 numericq(c)
 ```
@@ -480,7 +533,7 @@ numericq(c)
 
 Rolle's theorem is a guarantee of a value, but does not provide a recipe to find it. For the function $1 - x^2$ over the interval $[-5,5]$, find a value $c$ that satisfies the result.
 
-```
+```julia; echo=false
 c = 0
 numericq(c)
 ```
@@ -489,7 +542,7 @@ numericq(c)
 
 The mean value theorem is a guarantee of a value, but does not provide a recipe to find it. For $f(x) = x^2$ on $[0,2]$ find a value of $c$ satisfying the theorem.
 
-```
+```julia; echo=false
 c = 1
 numericq(c)
 ```
@@ -498,7 +551,7 @@ numericq(c)
 
 The Cauchy mean value theorem is a guarantee of a value, but does not provide a recipe to find it. For $f(x) = x^3$ and $g(x) = x^2$ find a value $c$ in the interval $[1, 2]$
 
-```
+```julia; echo=false
 using SymPy
 c,x = symbols("c, x", real=true)
 val = solve(3c^2 / (2c) - (2^3 - 1^3) / (2^2 - 1^2), c)[1]
@@ -510,7 +563,7 @@ numericq(float(val))
 
 Will the function $f(x) = x + 1/x$ satisfy the conditions of the mean value theorem over $[-1/2, 1/2]$?
 
-```
+```julia; echo=false
 radioq(["Yes", "No"], 2)
 ```
 
@@ -521,7 +574,7 @@ $f(x)$ is a constant, so too is it a fact that if $f'(x) = g'(x)$ that
 $f(x) - g(x)$ is a constant. What function would you consider, if you
 wanted to prove this with the mean value theorem?
 
-```
+```julia; echo=false
 choices = [
 L"h(x) = f(x) - (f(b) - f(a)) / (b - a)",
 L"h(x) = f(x) - (f(b) - f(a)) / (b - a) \cdot g(x)",
@@ -536,7 +589,7 @@ radioq(choices, ans)
 
 Suppose $f''(x) > 0$ on $I$. Why is it impossible that $f'(x) = 0$ at more than one value in $I$?
 
-```
+```julia; echo=false
 choices = [
 L"It isn't. The function $f(x) = x^2$ has two zeros and $f''(x) = 2 > 0$",
 "By the Rolle's theorem, there is at least one, and perhaps more",
@@ -550,7 +603,7 @@ radioq(choices, ans)
 
 Let $f(x) = 1/x$. For $0 < a < b$, find $c$ so that $f'(c) = (f(b) - f(a)) / (b-a)$.
 
-```
+```julia; echo=false
 choices = [
 L"c = (a+b)/2",
 L"c = \sqrt{ab}",
@@ -565,7 +618,7 @@ radioq(choices, ans)
 
 Let $f(x) = x^2$. For $0 < a < b$, find $c$ so that $f'(c) = (f(b) - f(a)) / (b-a)$.
 
-```
+```julia; echo=false
 choices = [
 L"c = (a+b)/2",
 L"c = \sqrt{ab}",
@@ -586,7 +639,7 @@ In an example, we used the fact that if $0 < c < x$, for some $c$ given by the m
 
 Why is it known that $g(x)$ goes to $0$ as $x$ goes to zero (from the right)?
 
-```
+```julia; echo=false
 choices = [L"The squeeze theorem applies, as $0 < g(x) < x$.",
 L"As $f(x)$ goes to zero by Rolle's theorem it must be that $g(x)$ goes to $0$.",
 L"This follows by the extreme value theorem, as there must be some $c$ in $[0,x]$."]
@@ -596,7 +649,7 @@ radioq(choices, ans)
 
 Since $g(x)$ goes to zero, why is it true that if $f(x)$ goes to $L$ as $x$ goes to zero that $f(g(x))$ must also have a limit $L$?
 
-```
+```julia; echo=false
 choices = ["It isn't true. The limit must be 0",
 L"The squeeze theorem applies, as $0 < g(x) < x$",
 "This follows from the limit rules for composition of functions"]

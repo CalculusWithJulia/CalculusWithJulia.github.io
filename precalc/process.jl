@@ -1,4 +1,4 @@
-using WeaveTpl
+using CwJWeaveTpl
 fnames = [
           "calculator",
           "variables",
@@ -18,7 +18,7 @@ fnames = [
           "julia_overview"
 ]
 
-process_file(nm; cache=:off) = WeaveTpl.mmd(nm * ".jmd", cache=cache)
+process_file(nm; cache=:off) = CwJWeaveTpl.mmd(nm * ".jmd", cache=cache)
 
 function process_files(;cache=:user)
     for f in fnames

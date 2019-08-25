@@ -15,8 +15,45 @@ We will see in this section how the Taylor polynomial answers these
 questions, and is the appropriate generalization of the tangent
 line approximation.
 
+```julia; echo=false; cache=true
+###{{{taylor_animation}}}
+pyplot()
+fig_size = (600, 400)
 
-{{{taylor_animation}}}
+taylor(f, x, c, n) = series(f, x, c, n+1).removeO()
+function make_taylor_plot(u, a, b, k)
+    k = 2k
+    plot(u, a, b, title="plot of T_$k", linewidth=5, legend=false, size=fig_size, ylim=(-2,2.5))
+    if k == 1
+        plot!(zero, range(a, stop=b, length=100))
+    else
+        plot!(taylor(u, x, 0, k), range(a, stop=b, length=100))
+    end
+end
+
+
+
+@vars x
+u = 1 - cos(x)
+a, b = -2pi, 2pi
+n = 8
+anim = @animate for i=1:n
+    make_taylor_plot(u, a, b, i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = L"""
+
+Illustration of the Taylor polynomial of degree $k$, $T_k(x)$, at $c=0$ and its graph overlayed on that of the function $1 - \cos(x)$.
+
+"""
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 ## The secant line and the tangent line
 
@@ -88,7 +125,7 @@ tangent line at $x=c$.
 
 To see that this isn't far-fetched, we investigate with `SymPy`. First we create a recursive function to compute the divided differences:
 
-```
+```julia;
 divided_differences(f, x) = f(x)
 function divided_differences(f, x, xs...)
     xs = sort(vcat(x, xs...))
@@ -98,7 +135,7 @@ end
 
 With `SymPy` we have, using $u$ in place of $f$:
 
-```
+```julia;
 using CalculusWithJulia   # loads `SymPy`, `ForwardDiff`
 @vars x c real=true
 @vars h positive=true
@@ -109,20 +146,20 @@ ex = divided_differences(u, c, c+h)
 
 We can take a limit and see the familiar (yet differently represented) value of $u'(c)$:
 
-```
+```julia;
 limit(ex, h => 0)
 ```
 
 Now, let's look at:
 
-```
+```julia;
 ex = divided_differences(u, c, c+h, c+2h)
 simplify(ex)
 ```
 
 Not so bad after simplification. The limit shows this to be an approximation to the second derivative divided by $2$:
 
-```
+```julia;
 limit(ex, h => 0)
 ```
 
@@ -173,14 +210,14 @@ f[c] + f[c, c+h](x-c).
 As mentioned, we can verify directly that it
 interpolates the points $(c,f(c))$ and $(c+h, f(c+h))$. He we let `SymPy` do the algebra:
 
-```
+```julia;
 p = divided_differences(u, c) + divided_differences(u, c, c+h) * (x-c)
 p(x => c) - u(c)
 ```
 
 and
 
-```
+```julia;
 p(x => c+h) - u(c+h)
 ```
 
@@ -194,7 +231,7 @@ f[c] + f[c, c+h](x-c) + f[c, c+h, c+2h](x-c)(x-(c+h)).
 
 We add the next term to our previous polynomial and simplify
 
-```
+```julia;
 p = p + divided_differences(u, c, c+h, c+2h)*(x-c)*(x-(c+h))
 simplify(p)
 ```
@@ -205,19 +242,19 @@ x_2]\cdot(x-x_0)(x-x_1)$, vanishes, so we already have the polynomial
 interpolating there. Only
 value $x_2=c+2h$ remains to be checked:
 
-```
+```julia;
 p(x => c+2h) - u(c+2h)
 ```
 
 Hmm, doesn't seem correct---that was supposed to be $0$. The issue isn't the math, it is that SymPy needs to be encouraged to simplify:
 
-```
+```julia;
 simplify(p(x => c+2h) - u(c+2h))
 ```
 
 By contrast, at the point $x=c+3h$ we have no guarantee of interpolation, and indeed don't, as this expression is non-zero:
 
-```
+```julia;
 simplify(p(x => c+3h) - u(c+3h))
 ```
 
@@ -233,7 +270,7 @@ $x=c$, but carrying an extra quadratic term.
 Here we visualize the approximations with
 the function $f(x) = \cos(x)$ at $c=0$.
 
-```
+```julia;
 f(x) = cos(x)
 a, b = -pi/2, pi/2
 c = 0
@@ -268,7 +305,7 @@ In this sense, the above quadratic polynomial, called the Taylor Polynomial of d
 The graphs of the secant line and approximating parabola for $h=1/4$ are similar:
 
 
-```
+```julia;
 x0, x1, x2 = c-h, c, c+h
 f0 = divided_differences(f, x0)
 fd = divided_differences(f, x0, x1)
@@ -299,7 +336,7 @@ f(0) + f'(0) \cdot t + \frac{1}{2} \cdot f''(0) \cdot t^2 = 0 + 1t - \frac{t^2}{
 
 A graph shows the difference:
 
-```
+```julia;
 f(t) = log(1 + t)
 a, b = -1/2, 1
 plot(f, a, b, legend=false, linewidth=5)
@@ -387,7 +424,7 @@ polynomial for a given $n$. For example, here is the series expansion
 to 10 terms of the function $\log(1+x)$ about $c=0$:
 
 
-```
+```julia;
 @vars x
 c, n = 0, 10
 l = series(log(1 + x), x, c, n+1)
@@ -400,20 +437,20 @@ A pattern can be observed.
 Using `series`, we can see Taylor polynomials for several familiar functions:
 
 
-```
+```julia;
 series(1/(1-x), x, 0, 10)   # sum x^i for i in 0:n
 ```
 
-```
+```julia;
 series(exp(x), x, 0, 10)    # sum x^i/i! for i in 0:n
 ```
 
-```
+```julia;
 series(sin(x), x, 0, 10)    # sum (-1)^i * x^(2i+1) / (2i+1)! for i in 0:n
 ```
 
 
-```
+```julia;
 series(cos(x), x, 0, 10)    # sum (-1)^i * x^(2i) / (2i)! for i in 0:n
 ```
 
@@ -427,7 +464,7 @@ output. `SymPy` provides the `removeO` method to strip this. (It is called as `o
 
 However, we will define our own function to compute Taylor polynomials from a function. The following returns a function, not a symbolic object, using `D`, from `CalculusWithJulia`, which is based on `ForwardDiff.derivative`, to find higher-order derivatives:
 
-```
+```julia;
 function taylor_poly(f, c=0, n=2)
      x -> f(c) + sum(D(f, i)(c) * (x-c)^i / factorial(i) for i in 1:n)
 end
@@ -436,7 +473,7 @@ end
 With a function, we can compare values.
 For example, here we see the difference between the Taylor polynomial and the answer for a small value of $x$:
 
-```
+```julia;
 a = .1
 f(x) = log(1+x)
 Tn = taylor_poly(f, 0, 5)
@@ -450,7 +487,7 @@ Let's now visualize a function and the two approximations---the Taylor
 polynomial and the interpolating polynomial. We use this function to
 generate the interpolating polynomial as a function:
 
-```
+```julia;
 function newton_form(f, xs)
   x -> begin
      tot = divided_differences(f, xs[1])
@@ -464,7 +501,7 @@ end
 
 To see a plot, we have
 
-```
+```julia;
 f(x) = sin(x)
 c, h, n = 0, 1/4, 4
 int_poly = newton_form(f, [c + i*h for i in 0:n])
@@ -477,7 +514,7 @@ plot!(tp, color=:red)
 
 To get a better sense, we plot the residual differences here:
 
-```
+```julia;
 d1(x) = f(x) - int_poly(x)
 d2(x) = f(x) - tp(x)
 plot(d1, -pi, pi, color=:blue)
@@ -493,7 +530,7 @@ the values, but quickly deviate away:
 In this graph we make a plot of the Taylor polynomial for different sizes of $n$:
 
 
-```
+```julia;
 f(x) = 1 - cos(x)
 a, b = -pi, pi
 plot(f, a, b, linewidth=5)
@@ -542,7 +579,7 @@ A satellite phone utilizes low orbit satellites to relay phone communications. T
 
 Compare the approximate value with 1 term to the exact value.
 
-```
+```julia;
 G = 6.67408e-11
 h = 780 * 1000
 R =  3959 * 1609.34   # 1609 meters per mile
@@ -556,13 +593,13 @@ Preal, P1
 
 With terms out to the fifth power, we get a better approximation:
 
-```
+```julia;
 P5 = P0 * (1 + 3*hR/2 + 3*hR^2/8 - hR^3/16 + 3*hR^4/128 - 3*hR^5/256)
 ```
 
 The units of the period above are in seconds. That answer here is about 100 minutes:
 
-```
+```julia;
 Preal/60
 ```
 
@@ -574,7 +611,7 @@ is the same when $h$ is larger than $R$.
 
 The height of a [GPS satellite](http://www.gps.gov/systems/gps/space/) is about $12,550$ miles. Compute the period of a circular orbit and compare with the estimates.
 
-```
+```julia;
 h = 12250 * 1609.34   # 1609 meters per mile
 hR = h/R
 
@@ -590,10 +627,10 @@ that these approximations are locally good, but may not be good on all
 scales. Here $h \approx 3R$. We can see from this graph
 of $(1+x)^{3/2}$ and its 5th degree Taylor polynomial $T_5$ that it is a bad approximation when $x > 2$.
 
-```nocode
+```julia; echo=false
 f1(x) = (1+x)^(3/2)
 p2(x) = 1 + 3x/2 + 3x^2/8 - x^3/16 + 3x^4/128 - 3x^5/256
-plot(f1, -1, 3, linewidth=4)
+plot(f1, -1, 3, linewidth=4, legend=false)
 plot!(p2)
 ```
 
@@ -605,7 +642,7 @@ units through computations, and convert between similar units with
 `uconvert`. In this example, we define several units, then show how
 they can then be used as constants.
 
-```
+```julia;
 using Unitful
 m, mi, kg, s, hr = u"m", u"mi", u"kg", u"s", u"hr"
 
@@ -620,7 +657,7 @@ Preal = P0 * (1 + hR)^(3/2)    # in seconds
 
 We see `Preal` has the right units---the units of mass and distance cancel leaving a measure of time---but it is hard to sense how long this is. Converting to hours, helps us see the satellite orbits about twice per day:
 
-```
+```julia;
 uconvert(hr, Preal)  # ≈ 11.65 hours
 ```
 
@@ -653,7 +690,7 @@ $\log(1+m)=\log(1+s)-\log(1-s)$.  $\log(1+s) - \log(1-s)$ for some small range o
 
 To compute $\log(1\pm s)$, we can find a Taylor series. Let's go out to degree $19$ and use `SymPy` to do the work:
 
-```
+```julia;
 @vars s
 a = series(log(1 + s), s, 0, 19)
 b = series(log(1 - s), s, 0, 19)
@@ -662,7 +699,7 @@ a_b = (a - b).removeO()  # remove"Oh" not remove"zero"
 
 This is re-expressed as $2s + s \cdot p$ with $p$ given by:
 
-```
+```julia;
 p = cancel(a_b - 2s/s)
 ```
 
@@ -674,20 +711,20 @@ Now, $2s = m - s\cdot m$, so the above can be reworked to be $\log(1+m) = m - s\
 
 How big can the error be between this *approximations* and $\log(1+m)$? We plot to see how big $s$ can be:
 
-```
+```julia;
 @vars u
 plot(u/(2+u), sqrt(2)/2 - 1, sqrt(2)-1)
 ```
 
 This shows, $s$ is as big as
 
-```
+```julia;
 M = (u/(2+u))(u => sqrt(2) - 1)
 ```
 
-The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of $M$. Large is relative, it is really small:
+The error term is like $2/19 \cdot \xi^{19}$ which  is largest at this value of $M$. Large is relative--it is really small:
 
-```
+```julia;
 (2/19)*M^19
 ```
 
@@ -695,7 +732,7 @@ Basically that is machine precision. Which means, that as far as can be told on 
 
 To try this out to compute $\log(5)$. We have $5 = 2^2(1+0.25)$, so $k=2$ and $m=0.25$.
 
-```
+```julia;
 k, m = 2, 0.25
 s = m / (2+m)
 p = 2 * sum(s^(2i)/(2i+1) for i in 1:8)  # where the polynomial approximates the logarithm...
@@ -705,7 +742,7 @@ log(1 + m), m - s*(m-p), log(1 + m) - ( m - s*(m-p))
 
 The two values differ by less than $10^{-16}$ as advertised. Re-assembling then, we compare the computed values:
 
-```
+```julia;
 k * log(2) + (m - s*(m-p)), log(5)
 ```
 
@@ -730,7 +767,7 @@ solve for all applicable values.
 
 Compute the Taylor polynomial  of degree 10 for $\sin(x)$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
 
-```
+```julia; echo=false
 choices = [
 L"\sum_{k=0}^{10} x^k",
 L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
@@ -745,7 +782,7 @@ radioq(choices, ans)
 
 Compute the Taylor polynomial  of degree 10 for $e^x$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
 
-```
+```julia; echo=false
 choices = [
 L"\sum_{k=0}^{10} x^k",
 L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
@@ -762,7 +799,7 @@ radioq(choices, ans)
 
 Compute the Taylor polynomial  of degree 10 for $1/(1-x)$ about $c=0$ using `SymPy`. Based on the form, which formula seems appropriate:
 
-```
+```julia; echo=false
 choices = [
 L"\sum_{k=0}^{10} x^k",
 L"\sum_{k=1}^{10} (-1)^{n+1} x^n/n",
@@ -777,7 +814,7 @@ radioq(choices, ans)
 
 Let $T_5(x)$ be the Taylor polynomial of degree 5 for the function $\sqrt{1+x}$ about $x=0$. What is the coefficient of the $x^5$ term?
 
-```
+```julia; echo=false
 choices = [
 L"7/256",
 L"-5/128",
@@ -794,7 +831,7 @@ The 5th order Taylor polynomial for $\sin(x)$ about $c=0$ is: $x - x^3/3! + x^5/
 
 They are:
 
-```
+```julia; echo=false
 choices = [
 L"x^2 - x^6/3! + x^{10}/5!",
 L"x^2",
@@ -816,7 +853,7 @@ f(x) = a + bx + cx^2 + dx^3 + ex^4 + \cdots
 
 If this is true, then formally evaluating at $x=0$ gives $f(0) = a$, so $a$ is determined. Similarly, formally differentiating and evaluating at $0$ gives $f'(0) = b$. What is the result of formally differentiating $4$ times and evaluating at $0$:
 
-```
+```julia; echo=false
 choices = [L"f''''(0) = e",
 L"f''''(0) = 4\cdot 3\cdot2 e",
 L"f''''(0) = 0"]
@@ -833,13 +870,13 @@ The error is known to be $(  f^{(6)}(\xi)/6!) \cdot x^6$ for some $\xi$ in $[-1,
 
 * The 6th derivative of $e^x$ is still $e^x$:
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 * Which is true about the function $e^x$:
 
-```
+```julia; echo=false
 choices =["It is increasing", "It is decreasing", "It both increases and decreases"]
 ans = 1
 radioq(choices, ans)
@@ -848,7 +885,7 @@ radioq(choices, ans)
 
 * The maximum value of $e^x$ over $[-1,1]$ occurs at
 
-```
+```julia; echo=false
 choices=["A critical point", "An end point"]
 ans = 2
 radioq(choices, ans)
@@ -856,7 +893,7 @@ radioq(choices, ans)
 
 * Which theorem tells you that for a *continuous* function over  *closed* interval, a maximum value will exist?
 
-```
+```julia; echo=false
 choices = [
 "The intermediate value theorem",
 "The mean value theorem",
@@ -867,7 +904,7 @@ radioq(choices, ans)
 
 * What is the *largest* possible value of the error:
 
-```
+```julia; echo=false
 choices = [
 L"1/6!\cdot e^1 \cdot 1^6",
 L"1^6 \cdot 1 \cdot 1^6"]
@@ -881,7 +918,7 @@ The error in using $T_k(x)$ to approximate $e^x$ over the interval $[-1/2, 1/2]$
 
 * Why?
 
-```
+```julia; echo=false
 choices = [
 L"The function $e^x$ is increasing, so takes on its largest value at the endpoint and the function $|x^n| \leq |x|^n \leq (1/2)^n$",
 L"The function has a critical point at $x=1/2$",
@@ -893,7 +930,7 @@ radioq(choices, ans)
 
 Assuming the above is right, find the smallest value $k$ guaranteeing a error no more than $10^{-16}$.
 
-```
+```julia; echo=false
 f(k) = 1/factorial(k+1) * exp(1/2) * (1/2)^(k+1)
 (f(13) > 1e-16 && f(14) < 1e-16) && numericq(14)
 ```
@@ -902,20 +939,20 @@ f(k) = 1/factorial(k+1) * exp(1/2) * (1/2)^(k+1)
 
 Here is one way to get all the values bigger than 1:
 
-```
+```julia;
 @vars x
 ex = (1 - x + x^2)*exp(x)
 Tn = series(ex, x, 0, 100).removeO()
 ps = sympy.Poly(Tn, x).coeffs()
 qs = numer.(ps)
-qs = qs[qs .> 1]
+qs[qs .> 1]  |> Tuple # format better for output
 ```
 
 Verify by hand that each of the remaining values is a prime number to answer the question (Or you can use `sympy.isprime.(qs)`).
 
 Are they all prime or $1$?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -958,7 +995,7 @@ By Rolle's theorem, between any two such zeros $x_i, x_{i+1}$, $0 \leq i < n$ th
 
 We visualize this with $f(x) = \sin(x)$ and $x_i = i$ for $i=0, 1, 2, 3$, The $x_i$ values are indicated with circles, the $\xi^1_i$ values indicated with squares:
 
-```nocode
+```julia; echo=false
 using Roots
 f(x) = sin(x)
 xs = 0:3
@@ -966,7 +1003,7 @@ dd = divided_differences
 g(x) = dd(f,0) + dd(f, 0,1)*x + dd(f, 0,1,2)*x*(x-1) + dd(f, 0,1,2,3)*x*(x-1)*(x-2)
 h1(x) = f(x) - g(x)
 cps = find_zeros(D(h1), -1, 4)
-plot(h1, -1/4, 3.25, linewidth=3)
+plot(h1, -1/4, 3.25, linewidth=3, legend=false)
 scatter!(xs, h1.(xs))
 scatter!(cps, h1.(cps), markersize=3, marker=:square)
 ```

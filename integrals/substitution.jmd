@@ -1,6 +1,6 @@
 # Substitution
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -113,7 +113,7 @@ total area after substitution is $0$. A graph of this function shows
 that about $\pi/2$ the function has odd-like symmetry, so the answer of $0$ is supported by the plot:
 
 
-```
+```julia;
 using CalculusWithJulia  # loads `Plots`, `SymPy`, `QuadGK`
 f(x) = cos(x)^3 * sin(x)
 plot(f, 0, 1pi)
@@ -235,7 +235,7 @@ The `integrate` function in `SymPy` can handle most problems which involve subst
 
 * This integral, $\int_0^2 4x/\sqrt{x^2 +1}dx$, involves a substitution for $x^2 + 1$:
 
-```
+```julia;
 @vars x t real=true
 f(x) = 4x / sqrt(x^2 + 1)
 integrate(f(x), (x, 0, 2))
@@ -244,7 +244,7 @@ integrate(f(x), (x, 0, 2))
 
 * This integral, $\int_e^{e^2} 1/(x\log(x)) dx$ involves a substitution of $u=\log(x)$. Here we see the answer:
 
-```
+```julia;
 f(x) = 1/(x*log(x))
 integrate(f(x), (x, e, Sym(e)^2))
 ```
@@ -254,7 +254,7 @@ integrate(f(x), (x, e, Sym(e)^2))
 
 The antiderivative is interesting here:
 
-```
+```julia;
 integrate(f(x), x)
 ```
 
@@ -275,7 +275,7 @@ expressions involving rational functions, radicals, logarithms, and
 exponential functions is integrable. Missing from this list are
 absolute values, so something as simple as
 
-```
+```julia;
 integrate(abs(x), (x, -2, 2))
 ```
 
@@ -293,7 +293,7 @@ $$~
 A quick attempt with `SymPy` turns up nothing:
 
 
-```
+```julia;
 f(x) = (1 + log(x)) * sqrt(1 + (x*log(x))^2 )
 integrate(f(x), x)
 ```
@@ -302,7 +302,7 @@ But were we to try $u=x\log(x)$, we'd see that this simplifies to $\int \sqrt{1 
 
 We can help `SymPy` out by substitution:
 
-```
+```julia;
 u(x) = x * log(x)
 @vars w dw
 ex = f(x)
@@ -311,19 +311,18 @@ ex = ex(u(x) => w, diff(u(x),x) => dw)
 
 This verifies the above. Can it be integrated in `w`? The "`dw`" is only for familiarity, `SymPy` doesn't use this, so we set it to 1 then integrate:
 
-```
+```julia;
 ex = ex(dw => 1)
 ex1 = integrate(ex, w)
 ```
 
 Finally, we put back in the `u(x)` to get an antiderivative.
 
-```
+```julia;
 ex1(w => u(x))
 ```
 
-```
-
+```julia; echo=false
 note("""
 Lest it be thought this is an issue with `SymPy`, but not other
 systems, this example was [borrowed](http://faculty.uml.edu/jpropp/142/Integration.pdf) from an
@@ -368,7 +367,7 @@ $$~
 
 But $\tan(u) = x$, so in terms of $x$, an antiderivative is just $\tan^{-1}(x)$, or the arctangent. Here we verify with `SymPy`:
 
-```
+```julia;
 integrate(1/(1+x^2), x)
 ```
 
@@ -438,7 +437,7 @@ $b=a$, we see that this gives the correct answer for a circle.
 
 For $\int \sin(x) \cos(x) dx$, let $u=\sin(x)$. What is the resulting substitution?
 
-```
+```julia; echo=false
 choices = [
 L"\int u du",
 L"\int u (1 - u^2) du",
@@ -452,7 +451,7 @@ radioq(choices, ans)
 
 For $\int \tan(x)^4 \sec(x)2 dx$ what $u$-substitution makes this easy?
 
-```
+```julia; echo=false
 choices = [
 L"u=\tan(x)",
 L"u=\tan(x)^4",
@@ -467,7 +466,7 @@ radioq(choices, ans)
 
 For $\int x \sqrt{x^2 - 1} dx$ what $u$ substitution makes this easy?
 
-```
+```julia; echo=false
 choices = [
 L"u=x^2 - 1",
 L"u=x^2",
@@ -481,13 +480,13 @@ radioq(choices, ans)
 
 For $\int x^2(1-x)^2 dx$ will the substitution $u=1-x$ prove effective?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
 What about expanding the factored polynomial to get a fourth degree polynomial, will this prove effective?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
@@ -495,7 +494,7 @@ yesnoq("yes")
 
 For  $\int (\log(x))^3/x dx$ the substitution $u=\log(x)$ reduces this to what?
 
-```
+```julia; echo=false
 choices = [
 L"\int u^3 du",
 L"\int u du",
@@ -508,7 +507,7 @@ radioq(choices, ans)
 
 For $\int \tan(x) dx$ what substitution will prove effective?
 
-```
+```julia; echo=false
 choices = [
 L"u=\cos(x)",
 L"u=\sin(x)",
@@ -528,7 +527,7 @@ $$~
 
 What are $a$ and $b$?
 
-```
+```julia; echo=false
 choices = [
 L"a=0,~ b=1",
 L"a=1,~ b=0",
@@ -543,7 +542,7 @@ radioq(choices, ans)
 
 The integral $\int \sqrt{1 - x^2} dx$ lends itself to what substitution?
 
-```
+```julia; echo=false
 choices = [
 L"\sin(u) = x",
 L"\tan(u) = x",
@@ -558,7 +557,7 @@ radioq(choices, ans)
 
 The integral $\int x/(1+x^2) dx$ lends itself to what substitution?
 
-```
+```julia; echo=false
 choices = [
 L"u = 1 + x^2",
 L"\sin(u) = x",
@@ -573,7 +572,7 @@ radioq(choices, ans)
 
 The integral $\int dx / \sqrt{1 - x^2}$ lends itself to what substitution?
 
-```
+```julia; echo=false
 choices = [
 L"\sin(u) = x",
 L"\tan(u) = x",
@@ -590,7 +589,7 @@ radioq(choices, ans)
 
 The integral $\int dx / \sqrt{x^2 - 16}$ lends itself to what substitution?
 
-```
+```julia; echo=false
 choices = [
 L"4\sec(u) = x",
 L"\sec(u) = x",
@@ -605,7 +604,7 @@ radioq(choices, ans)
 The integral $\int dx / (a^2 + x^2)$ lends itself to what substitution?
 
 
-```
+```julia; echo=false
 choices = [
 L"\tan(u) = x",
 L"\tan(u) = x",
@@ -625,7 +624,7 @@ $$~
 
 What are $a$ and $b$?
 
-```
+```julia; echo=false
 choices =[
 L"a=\pi/6,~ b=\pi/2",
 L"a=\pi/4,~ b=\pi/2",
@@ -640,7 +639,7 @@ radioq(choices, ans)
 
 How would we verify that $\log\lvert (\sec(u) + \tan(u))\rvert$ is an antiderivative for $\sec(u)$?
 
-```
+```julia; echo=false
 choices = [
 L"We could differentiate $\sec(u)$.",
 L"We could differentiate $\log\lvert (\sec(u) + \tan(u))\rvert$ "]

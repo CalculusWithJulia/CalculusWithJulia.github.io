@@ -1,6 +1,6 @@
 # Fundamental Theorem or Calculus
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -125,7 +125,7 @@ With these heuristics, we now have:
 
 
 
-```
+```julia; echo=false
 note(L"""
 
 In Part 1, the integral $F(x) = \int_a^x f(u) du$ is defined for any
@@ -257,27 +257,27 @@ antiderivative.
 
 To illustrate, we have, this call finds an antiderivative:
 
-```
+```julia;
 using CalculusWithJulia  # loads `Plots`, `SymPy`, `QuadGK`
 integrate(sin)
 ```
 
 Whereas this call computes the "area" under $f(x)$ between `a` and `b`:
 
-```
+```julia;
 integrate(sin, 0, pi)
 ```
 
 In the last two example, function objects were integrated. We can also integrate expressions, though in this usage we must specify the variable:
 
-```
+```julia;
 @vars x n real=true
 integrate(x^n, x)          # indefinite integral
 ```
 
 For a definite integral we have
 
-```
+```julia;
 integrate(acos(1-x), (x, 0, 2))
 ```
 
@@ -381,8 +381,51 @@ F(x) = \int_a^x f(u) du.
 
 The value of $a$ does not matter, as long as the integral is defined.
 
-{{{ftc_graph}}}
+```julia; echo=false; cache=true
+##{{{ftc_graph}}}
+pyplot()
+fig_size = (600, 400)
 
+function make_ftc_graph(n)
+    a, b = 2, 3
+    ts = range(0, stop=b, length=50)
+    xs = range(a, stop=b, length=8)
+    g(x) = x
+    G(x) = x^2/2
+
+    xn,xn1 = xs[n:(n+1)]
+    xbar = (xn+xn1)/2
+    rxs = collect(range(xn, stop=xn1, length=2))
+    rys = map(g, rxs)
+
+    p = plot(g, 0, b, legend=false, size=fig_size, xlim=(0,3.25), ylim=(0,5))
+    plot!(p, [xn, rxs..., xn1], [0,rys...,0], linetype=:polygon, color=:orange)
+    plot!(p, [xn1, xn1], [G(xn), G(xn1)], color=:orange, alpha = 0.25)
+    annotate!(p, collect(zip([xn1, xn1], [G(xn1)/2, G(xn1)], ["A", "A"])))
+
+    p
+end
+
+caption = L"""
+
+Illustration showing $F(x) = \int_a^x f(u) du$ is a function that
+accumulates area. The value of $A$ is the area over $[x_{n-1}, x_n]$
+and also the difference $F(x_n) - F(x_{n-1})$.
+
+"""
+
+n = 7
+
+anim = @animate for i=1:n
+    make_ftc_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 
 The picture for this, for non-negative $f$, is of accumulating area as
@@ -481,7 +524,7 @@ F'(x) = (-2x)e^{-x^2} \int_0^x e^{t^2} dt + e^{-x^2} e^{x^2} = -2x F(x) + 1
 
 We need to figure out when this is $0$. For that, we use some numeric math.
 
-```
+```julia;
 F(x) = exp(-x^2) * quadgk(t -> exp(t^2), 0, x)[1]
 Fp(x) = -2x*F(x) + 1
 cps = find_zeros(Fp, -4,4)
@@ -490,7 +533,7 @@ cps = find_zeros(Fp, -4,4)
 We could take a second derivative to characterize. For that we use
 $F''(x) = [-2xF(x) + 1]' = -2F(x) + -2x(-2xF(x) + 1)$, so
 
-```
+```julia;
 Fpp(x) = -2F(x) + 4x^2*F(x) - 2x
 Fpp.(cps)
 ```
@@ -551,14 +594,12 @@ was the number of dots displayed, or the sum of each column of dots.
 An example might be:
 
 ```
-Verbatim("""
 
   **
   ****
   *****
  ********
 **********
-""")
 ```
 
 
@@ -568,12 +609,10 @@ In this example display there was 1 calorie burned in the first minute, then
 
 In her work the junior engineer found this old function for updating the display
 
-```
-Verbatim("""
+```julia; eval=false
 function cnew = update(Cnew, Cold)
   cnew = Cnew - Cold
 end
-""")
 ```
 
 She discovered that the function was written awhile ago, and in MATLAB. The function
@@ -589,7 +628,7 @@ updated every 30 seconds and still display 10 minutes worth of data. What should
 
 Her first attempt was simply to rewrite the function in `Julia`:
 
-```
+```julia;
 function update(Cnew, Cold)
   cnew = Cnew - Cold
 end
@@ -601,14 +640,12 @@ in the past 10 minutes.
 
 
 ```
-Verbatim("""
 
 
 
      * *
     ****** *
  ************* *
-""")
 ```
 
 
@@ -626,7 +663,7 @@ calorie. This makes the "area" constant.  She also generalized letting
 `n` be the number of updates per minute, in anticipation of even
 further improvements in the display technology:
 
-```
+```julia;
 function update(Cnew, Cold, n)
    cnew = (Cnew - Cold) * n
 end
@@ -658,7 +695,7 @@ and $t-10$ (or $C(t)-C(t-10)$) by the Fundamental Theorem of Calculus.
 
 If $F(x) = e^{x^2}$ is an antiderivative for $f$, find $\int_0^2 f(x) dx$.
 
-```
+```julia; echo=false
 F(x) = exp(x^2)
 val = F(2) - F(0)
 numericq(val)
@@ -668,7 +705,7 @@ numericq(val)
 
 If $\sin(x) - x\cos(x)$ is an antiderivative for $x\sin(x)$, find the following integral $\int_0^\pi x\sin(x) dx$.
 
-```
+```julia; echo=false
 F(x) = sin(x) - x*cos(x)
 a, b= 0, pi
 val = F(b) - F(a)
@@ -679,7 +716,7 @@ numericq(val)
 
 Find an antiderivative then evaluate $\int_0^1 x(1-x) dx$.
 
-```
+```julia; echo=false
 f(x) = x*(1-x)
 a,b = 0, 1
 F(x) = x^2/2 - x^3/3
@@ -691,7 +728,7 @@ numericq(val)
 
 Use the fact that $[e^x]' = e^x$ to evaluate $\int_0^e (e^x - 1) dx$.
 
-```
+```julia; echo=false
 f(x) = exp(x) - 1
 a, b = 0, exp(a)
 F(x) = exp(x) - x
@@ -703,7 +740,7 @@ numericq(val)
 
 Find the value of $\int_0^1 (1-x^2/2 + x^4/24) dx$.
 
-```
+```julia; echo=false
 f(x) = 1 - x^2/2 + x^4/24
 a, b = 0, 1
 val, _ = quadgk(f, a, b)
@@ -714,7 +751,7 @@ numericq(val)
 
 Using `SymPy`, what is an antiderivative for $x^2 \sin(x)$?
 
-```
+```julia; echo=false
 choices = [
 L"-x^2\cos(x)",
 L"-x^2\cos(x) + 2x\sin(x)",
@@ -729,7 +766,7 @@ radioq(choices, ans, keep_order=true)
 
 Using `SymPy`, what is an antiderivative for $xe^{-x}$?
 
-```
+```julia; echo=false
 choices = [
 L"-e^{-x}",
 L"-xe^{-x}",
@@ -744,7 +781,7 @@ radioq(choices, ans, keep_order=true)
 
 Using `SymPy`, integrate the function $\int_0^{2\pi} e^x \cdot \sin(x) dx$.
 
-```
+```julia; echo=false
 using SymPy
 @vars x
 val = N(integrate(exp(x) * sin(x), (x, 0, 2pi)))
@@ -756,7 +793,7 @@ numericq(val)
 
 A particle has velocity $v(t) = 2t^2 - t$ between $0$ and $1$. If $x(0) = 0$, find the position $x(1)$.
 
-```
+```julia; echo=false
 v(t) = 2t^2 - t
 f(x) = quadgk(v, 0, x)[1] - 0
 numericq(f(1))
@@ -768,7 +805,7 @@ numericq(f(1))
 A particle has acceleration given by $\sin(t)$ between $0$ and
 $\pi$. If the initial velocity is $v(0) = 0$, find $v(\pi/2)$.
 
-```
+```julia; echo=false
 f(x) = quadgk(sin, 0, x)[1] - 0
 numericq(f(pi/2))
 ```
@@ -779,7 +816,7 @@ numericq(f(pi/2))
 The position of a particle is given by $x(t) = \int_0^t g(u) du$,
 where $x(0)=0$ and $g(u)$ is given by this piecewise linear graph:
 
-```
+```julia; echo=false
 function g1(x)
   if x < 2
     -1 + x
@@ -790,13 +827,12 @@ function g1(x)
   end
   end
 using Plots
-p1 = plot(g1, 0, 5)
-Outputonly(p1)
+plot(g1, 0, 5)
 ```
 
 * The velocity of the particle is positive over:
 
-```
+```julia; echo=false
 choices = [
 "It is always positive",
 "It is always negative",
@@ -809,7 +845,7 @@ radioq(choices, ans, keep_order=true)
 
 * The position of the particle is $0$ at $t=0$ and:
 
-```
+```julia; echo=false
 choices = [
 L"t=1",
 L"t=2",
@@ -821,14 +857,14 @@ radioq(choices, ans, keep_order=true)
 
 * The position of the particle at time $t=5$ is?
 
-```
+```julia; echo=false
 val = 4
 numericq(val)
 ```
 
 * On the interval $[2,3]$:
 
-```
+```julia; echo=false
 choices = [
 L"The position, $x(t)$, stays constant",
 L"The position, $x(t)$, increases with a slope of $1$",
@@ -843,7 +879,7 @@ radioq(choices, ans, keep_order=true)
 
 Let $F(x) = \int_{t-10}^t f(u) du$ for $f(u)$ a positive, continuous function. What is $F'(t)$?
 
-```
+```julia; echo=false
 choices = [
 L"f(t)",
 L"-f(t-10)",
@@ -857,7 +893,7 @@ radioq(choices, ans, keep_order=true)
 
 Suppose $f(x) \geq 0$ and $F(x) = \int_0^x f(u) du$. $F(x)$ is continuous and so has a maximum value on the interval $[0,1]$ taken at some $c$ in $[0,1]$. It is
 
-```
+```julia; echo=false
 choices = [
 "At a critical point",
 L"At the endpoint $0$",
@@ -870,7 +906,7 @@ radioq(choices, ans, keep_order=true)
 
 Suppose $f(x)$ is monotonically decreasing with $f(0)=1$, $f(1/2) = 0$ and $f(1) = -1$. Let $F(x) = \int_0^x f(u) du$. $F(x)$ is continuous and so has a maximum value on the interval $[0,1]$ taken at some $c$ in $[0,1]$. It is
 
-```
+```julia; echo=false
 choices = [
 L"At a critical point, either $0$ or $1$",
 L"At a critical point, $1/2$",
@@ -895,7 +931,7 @@ $P$ to $x$. ($\lvert Tx \rvert \cdot \lvert Qx \rvert = \lvert Px
 \rvert$.) Barrow showed that the line segment $PT$ is tangent to the graph of
 $A(x)$. This figure illustrates the labeling for some function:
 
-```
+```julia; echo=false
 f(x) = x^(2/3)
 x = 2
 A(x) = quadgk(f, 0, x)[1]
@@ -913,13 +949,13 @@ annotate!(p, collect(zip([T, x, x+.1, x+.1], [0-.15, 0-.15, Q-.1, P], ["T", "x",
 plot!(p,  [T-1/4, x+1/4], map(secpt, [T-1/4, x + 1/4]), color=:orange)
 plot!(p, [T, x, x], [0, 0, P], color=:green)
 
-Outputonly(p)
+p
 ```
 
 The fact that $\lvert Tx \rvert \cdot \lvert Qx \rvert = \lvert Px
 \rvert$ says what in terms of $f(x)$, $A(x)$ and $A'(x)$?
 
-```
+```julia; echo=false
 choices = [
 L"\lvert Tx \rvert \cdot f(x) = A(x)",
 L"A(x) / \lvert Tx \rvert = A'(x)",
@@ -932,7 +968,7 @@ radioq(choices, ans, keep_order=true)
 The fact that $\lvert PT \rvert$ is tangent says what in terms of $f(x)$, $A(x)$ and $A'(x)$?
 
 
-```
+```julia; echo=false
 choices = [
 L"\lvert Tx \rvert \cdot f(x) = A(x)",
 L"A(x) / \lvert Tx \rvert = A'(x)",
@@ -944,7 +980,7 @@ radioq(choices, ans, keep_order=true)
 
 Solving, we get:
 
-```
+```julia; echo=false
 choices = [
 L"A'(x) = f(x)",
 L"A(x) = A^2(x) / f(x)",
@@ -959,7 +995,7 @@ radioq(choices, ans)
 
 According to [Bressoud](http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/) "Newton observes that the rate of change of an accumulated quantity is the rate at which that quantity is accumulating". Which part of the FTC does this refer to:
 
-```
+```julia; echo=false
 choices = [
 L"Part 1: $[\int_a^x f(u) du]' = f$",
 L"Part 2: $\int_a^b f(u) du = F(b)- F(a)$."]

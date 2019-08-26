@@ -1,6 +1,6 @@
 # Area between two curves
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -18,7 +18,7 @@ rectangle in the figure has area: $(f(a)-g(a)) \cdot (b-a)$ which
 could be a term in a left Riemann sum of the integral of $f(x) - g(x)$:
 
 
-```nocode
+```julia; echo=false
 f1(x) = x^2
 g1(x) = sqrt(x)
 a,b = 1/4, 3/4
@@ -54,7 +54,7 @@ Find the area bounded by the line $y=2x$ and the curve $y=2 - x^2$.
 
 We can plot to see the area in question:
 
-```
+```julia;
 using CalculusWithJulia  # loads `Plots`, `Roots`, `QuadGK`, `SymPy`
 f(x) = 2 - x^2
 g(x) = 2x
@@ -63,13 +63,13 @@ plot([f,g], -3,3)
 
 For this problem we need to identify $a$ and $b$. These are found numerically through:
 
-```
+```julia;
 a,b = find_zeros(x -> f(x) - g(x), -3, 3)
 ```
 
 The answer then can be found numerically:
 
-```
+```julia;
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
 
@@ -79,7 +79,7 @@ Find the integral between $f(x) = \sin(x)$ and $g(x)=\cos(x)$ over $[0,2\pi]$ wh
 
 A plot shows the areas:
 
-```
+```julia;
 f(x) = sin(x)
 g(x) = cos(x)
 plot([f,g], 0, 2pi)
@@ -88,7 +88,7 @@ plot([f,g], 0, 2pi)
 There is a single interval when $f \geq g$ and this can be found
 algebraically using basic trigonometry, or numerically:
 
-```
+```julia;
 a,b = find_zeros(x -> f(x) - g(x), 0, 2pi)  # pi/4, 5pi/4
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
@@ -99,7 +99,7 @@ Find the area between $x^n$ and $x^{n+1}$ over $[0,1]$ for $n=1,2,\dots$.
 
 We have on this interval $x^n \geq x^{n+1}$, so the integral can be found symbolically through:
 
-```
+```julia;
 @vars x n real=true positive=true
 ex = integrate(x^n - x^(n+1), (x, 0, 1))
 together(ex)
@@ -113,7 +113,7 @@ $$~
 
 This should should be no surprise, given how the areas computed carve up the area under the line $y=x^1$ over $[0,1]$:
 
-```
+```julia;
 summation(1/(n+1)/(n+2), (n, 1, oo))
 ```
 
@@ -122,7 +122,7 @@ summation(1/(n+1)/(n+2), (n, 1, oo))
 Verify [Archimedes'](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola) finding that the area of the parabolic segment is $4/3$rds that of the triangle joining $a$, $(a+b)/2$ and $b$.
 
 
-```nocode
+```julia; echo=false
 f(x) = 2 - x^2
 a,b = -1, 1/2
 c = (a+b)/2
@@ -139,7 +139,7 @@ plot!(xs, f.(xs), linewidth=3)
 For concreteness, let $f(x) = 2-x^2$ and $[a,b] = [-1, 1/2]$, as in
 the figure. Then the area of the triangle can be computed through:
 
-```
+```julia;
 f(x) = 2 - x^2
 a,b = -1, 1/2
 c = (a +b)/2
@@ -162,13 +162,13 @@ the integral over $[a,c]$ and $[c,b]$.
 
 The area of the parabolic segment is more straightforward.
 
-```
+```julia;
 val2 = quadgk(x -> f(x) - f2(x), a, b)[1]
 ```
 
 Finally, if Archimedes was right, this relationship should bring about $0$ (or something within round-off error):
 
-```
+```julia;
 val1 * 4/3 - val2
 ```
 
@@ -180,7 +180,7 @@ $x > 0$.
 A graph  over $[0,10]$ shows clearly the largest zero, for afterwards
 the exponential dominates the power.
 
-```
+```julia;
 f(x) = x^4
 g(x) = exp(x)
 plot([f, g], 0, 10)
@@ -192,7 +192,7 @@ exponential to the left of $5$. (Otherwise, plotting over $[0,2]$ will
 clearly reveal the other zero.) We now find these intersection points
 numerically and then integrate:
 
-```
+```julia;
 a,b = find_zeros(x -> f(x) - g(x), 0, 10)
 quadgk(x -> f(x) - g(x), a, b)[1]
 ```
@@ -205,7 +205,7 @@ first positive intersection depends on $m$ (where $0 \leq m \leq
 line is tangent at $x=0$), the area is $0$. What is it for other
 values of $m$? The picture for $m=1/2$ is:
 
-```
+```julia;
 m = 1/2
 plot(sin, 0, pi)
 plot!(x -> m*x, 0, pi)
@@ -214,7 +214,7 @@ plot!(x -> m*x, 0, pi)
 For a given $m$, the area is found after computing $b$, the
 intersection point. We express this as a function of $m$ for later reuse:
 
-```
+```julia;
 B(m) = maximum(find_zeros(x -> sin(x) - m*x, 0, pi))
 a = 0
 b = B(m)
@@ -224,20 +224,20 @@ quadgk(x -> sin(x) - m*x, a, b)[1]
 
 In general, the area then as a function of `m` is found by substitution `B(m)` for `b`:
 
-```
+```julia;
 area(m) = quadgk(x -> sin(x) - m*x, 0, B(m))[1]
 ```
 
 A plot shows the relationship:
 
-```
+```julia;
 plot(area, 0, 1)
 ```
 
 While here, let's also answer the question of which $m$ gives an area
 of $1$, or one-half the total? This can be done as follows:
 
-```
+```julia;
 find_zero(m -> area(m) - 1, (0, 1))
 ```
 
@@ -249,7 +249,7 @@ Find the area bounded by the $x$ axis, the line $x-1$ and the function $\log(x+1
 
 A plot shows us the basic area:
 
-```
+```julia;
 f(x) = log(x+1)
 g(x) = x - 1
 plot([f,g,zero],0, 3)
@@ -257,7 +257,7 @@ plot([f,g,zero],0, 3)
 
 The value for "$b$" is found from the intersection point of  $\log(x+1)$ and $x-1$, which is near $2$:
 
-```
+```julia;
 a = 0
 b = find_zero(x -> f(x) - g(x), 2)
 ```
@@ -266,13 +266,13 @@ We see that the lower part of the area has a condition: if $x < 1$ then use $0$,
 
 * break the integral into two pieces and add:
 
-```
+```julia;
 quadgk(x -> f(x) - zero(x), a, 1)[1] + quadgk(x -> f(x) - g(x), 1, b)[1]
 ```
 
 * make a new function for the bottom bound:
 
-```
+```julia;
 h(x) = x < 1 ? 0.0 : g(x)
 quadgk(x -> f(x) - h(x), a, b)[1]
 ```
@@ -280,7 +280,7 @@ quadgk(x -> f(x) - h(x), a, b)[1]
 * Turn the picture on its side and integrate in the $y$ variable. To
   do this, we need to solve for inverse functions:
 
-```
+```julia;
 a1=f(a)
 b1=f(b)
 f1(y)=y+1                # y=x-1, so x=y+1
@@ -288,7 +288,7 @@ g1(y)=exp(y)-1           # y=log(x+1) so e^y = x + 1, x = e^y - 1
 quadgk(y -> f1(y) - g1(y), a1, b1)[1]
 ```
 
-```
+```julia; echo=false
 note("""
 
 When doing problems by hand this latter style can often reduce the complications, but when approaching the task numerically, the first two styles are generally easier, though computationally more expensive.
@@ -310,7 +310,7 @@ $y=x$. This has the effect of taking the graph of $f(x)$ to the graph
 of $f^{-1}(x)$ and vice versa. Here is an example with $f(x) = x^3$
 over $[-1,1]$.
 
-```
+```julia;
 f(x) = x^3
 xs = range(-1, stop=1, length=50)
 ys = f.(xs)
@@ -322,7 +322,7 @@ through the line $x=y$.
 
 We can use this symmetry to our advantage. Suppose instead of being given an equation $y=f(x)$, we are given it in "inverse" style: $x = f(y)$, for example suppose we have $x = y^3$. We can plot this as above via:
 
-```
+```julia;
 ys = range(-1, stop=1, length=50)
 xs = [y^3 for y in ys]
 plot(xs, ys)
@@ -339,7 +339,7 @@ a function of $y$, are given a length of $y^3$ and height of "$dy$".
 For a less trivial problem, consider the area between $x = y^2$ and $x
 = 2-y$ in the first quadrant.
 
-```
+```julia;
 ys = range(0, stop=2, length=50)
 xs = [y^2 for y in ys]
 plot(xs, ys)
@@ -353,7 +353,7 @@ terms of two integrals, but in the $y$ variable in terms of the
 difference of two functions with the limits of integration running
 from $y=0$ to $y=1$. So, this area may be found as follows:
 
-```
+```julia;
 f(y) = 2-y
 g(y) = y^2
 a, b = 0, 1
@@ -367,7 +367,7 @@ quadgk(y -> f(y) - g(y), a, b)[1]
 
 Find the area enclosed by the curves $y=2-x^2$ and $y=x^2 - 3$.
 
-```
+```julia; echo=false
 using Roots
 f(x) = 2 - x^2
 g(x) = x^2 - 3
@@ -380,7 +380,7 @@ numericq(val)
 
 Find the area between $f(x) = \cos(x)$, $g(x) = x$ and the $y$ axis.
 
-```
+```julia; echo=false
 f(x) = cos(x)
 g(x) = x
 a = 0
@@ -393,7 +393,7 @@ numericq(val)
 
 Find the area between the line $y=1/2(x+1)$ and half circle $y=\sqrt{1 - x^2}$.
 
-```
+```julia; echo=false
 f(x) = sqrt(1 - x^2)
 g(x) = 1/2 * (x + 1)
 a,b = find_zeros(x -> f(x) - g(x), -1, 1)
@@ -405,7 +405,7 @@ numericq(val)
 
 Find the area in the first quadrant between the lines $y=x$, $y=1$, and the curve $y=x^2 + 4$.
 
-```
+```julia; echo=false
 f(x) = x
 g(x) = 1.0
 h(x) = min(f(x), g(x))
@@ -419,7 +419,7 @@ numericq(val)
 
 Find the area between $y=x^2$ and $y=-x^4$ for $\lvert x \rvert \leq 1$.
 
-```
+```julia; echo=false
 f(x) = x^2
 g(x) = -x^4
 a,b = -1, 1
@@ -431,7 +431,7 @@ numericq(val)
 
 Let `f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + t^2)^(-1)` and `g(x) = 1/sqrt(2*pi) * exp(-x^2/2)`. These graphs intersect in two points. Find the area bounded by them.
 
-```
+```julia; echo=false
 import SpecialFunctions: gamma
 f(x) = 1/(sqrt(pi)*gamma(1/2)) * (1 + x^2)^(-1)
 g(x) = 1/sqrt(2*pi) * exp(-x^2/2)
@@ -446,7 +446,7 @@ numericq(val)
 
 Find the area in the first quadrant bounded by the graph of $x = (y-1)^2$, $x=3-y$ and $x=2\sqrt{y}$. (Hint: integrate in the $y$ variable.)
 
-```
+```julia; echo=false
 f(y) = (y-1)^2
 g(y) = 3 - y
 h(y) = 2sqrt(y)
@@ -462,7 +462,7 @@ numericq(val)
 
 Find the total area bounded by the lines $x=0$, $x=2$ and the curves $y=x^2$ and $y=x$. This would be $\int_a^b \lvert f(x) - g(x) \rvert dx$.
 
-```
+```julia; echo=false
 f(x) = x^2
 g(x) = x
 a, b = 0, 2
@@ -486,7 +486,7 @@ square inches, then multiply by an assumed thickness of one inch, we
 have the cubic volume. The density of galvanized steel is 7850
 kg/$m^3$ which we convert into pounds/in$^3$ via:
 
-```
+```julia;
 7850 * 2.2 * (1/39.3)^3
 ```
 
@@ -500,7 +500,7 @@ f(x) = x^2/70, \quad g(x) = 35 + x^2/140
 
 Put this altogether to give an estimated weight in pounds.
 
-```
+```julia; echo=false
 f(x) = x^2/70
 g(x) = 35 + x^2/140
 a,b = find_zeros(x -> f(x) - g(x), -100, 100)
@@ -511,7 +511,7 @@ numericq(val)
 
 Is the guess that the entire sculpture is more than two tons?
 
-```
+```julia; echo=false
 choices=["Less than two tons", "More than two tons"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -529,7 +529,7 @@ $$~
 
 Find the profit to produce 100 units: $P = \int_0^{100} (\text{mr}(x) - \text{mc}(x)) dx$.
 
-```
+```julia; echo=false
 mr(x) = 2 + exp((-x/10)) / (1 + exp(-x/10))
 mc(x) = 1 + (1/2) * exp(-x/5) / (1 + exp(-x/5))
 a, b = 0, 100

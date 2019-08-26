@@ -1,18 +1,18 @@
 # Arc length
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
 
-```
-using WeavePynb
-out = gif_to_data("figures/jump-rope.png", """
+```julia; echo=false
+imgfile = "figures/jump-rope.png"
+caption = """
 
 A kids' jump rope by Lifeline is comprised of little plastic segments of uniform length around a cord. The length of the rope can be computed by adding up the lengths of each segment, regardless of how the rope is arranged.
 
-""")
-WeavePynb.HTMLoutput(out)
+"""
+ImageFile(imgfile, caption)
 ```
 
 The length of the jump rope in the picture can be computed by either looking at the packaging it came in, or measuring the length of each plastic segment and multiplying by the number of segments. The former is easier, the latter provides the intuition as to how we can find the length of curves in the $x-y$ plane. The idea is old, [Archimedes](http://www.maa.org/external_archive/joma/Volume7/Aktumen/Polygon.html) used fixed length segments of polygons to approximate $\pi$ using the circumference of circle producing the bounds $3~\frac{1}{7} > \pi > 3~\frac{10}{71}$.
@@ -34,7 +34,7 @@ g'(t)}$ is Riemann integrable.
 > $$~ L = \int_a^b \sqrt{g'(t) + f'(t)} dt. ~$$ For the special case of the graph of a function $f(x)$ between $a$ and $b$ the formula becomes $L = \int_a^b \sqrt{ 1 + f'(x)} dx$ (taking $g(t) = t$).
 
 
-```
+```julia; echo=false
 note(L"""
 
 The form of the integral may seem daunting with the square root and
@@ -52,7 +52,46 @@ value of the derivative of position.
 
 To see why, any partition of the interval $[a,b]$ by $a = t_0 < t_1 < \cdots < t_n =b$ gives rise to $n+1$ points in the plane given by $(g(t_i), f(t_i))$.
 
-{{{arclength_graph}}}
+```julia; echo=false; cache=true
+## {{{arclength_graph}}}
+pyplot()
+fig_size=(600, 400)
+
+function make_arclength_graph(n)
+
+    ns = [10,15,20, 30, 50]
+
+    g(t) = cos(t)/t
+    f(t) = sin(t)/t
+
+    ts = range(1, stop=4pi, length=200)
+    tis = range(1, stop=4pi, length=ns[n])
+
+    p = plot(g, f, 1, 4pi, legend=false, size=fig_size,
+             title="Approximate arc length with $(ns[n]) points")
+    plot!(p,  map(g, tis), map(f, tis), color=:orange)
+
+    p
+
+end
+
+n = 5
+anim = @animate for i=1:n
+    make_arclength_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+caption = L"""
+
+The arc length of the parametric curve can be approximated using straight line segments connecting points. This gives rise to an integral expression defining the length in terms of the functions $f$ and $g$.
+
+"""
+
+plotly()
+ImageFile(imgfile, caption)
+```
+
 
 
 
@@ -95,7 +134,7 @@ L = \int_a^b \sqrt{f'(t) + g'(t)} dt.
 (This needs a technical adjustment to the Riemann theorem, as we are evaluating our function at two points in the interval. A general proof is [here](https://randomproofs.files.wordpress.com/2010/11/arc_length.pdf).)
 
 
-```
+```julia; echo=false
 note(L"""
 
 [Bressoud](http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/)
@@ -119,24 +158,24 @@ An analogy might be a sausage maker. These take a mass of ground-up sausage mate
 
 Let $f(x) = x^2$. The arc length of the graph of $f(x)$ over $[0,1]$ is then $L=\int_0^1 \sqrt{1 + (2x)^2} dx$. A trigonometric substitution of $2x = \sin(\theta)$ leads to the antiderivative:
 
-```
+```julia;
 using CalculusWithJulia  # loads `SymPy`, `Plots`, `Roots`, `QuadGK`, `ForwardDiff`
 @vars x
 F = integrate(sqrt(1 + (2x)^2), x)
 ```
 
-```
+```julia;
 F(1) - F(0)
 ```
 
 That number has some context, as can be seen from the graph, which gives simple lower and upper bounds of $\sqrt{1^2 + 1^2} = 1.414...$ and $1 + 1 = 2$.
 
-```
+```julia;
 f(x) = x^2
 plot(f, 0, 1)
 ```
 
-```
+```julia; echo=false
 note(L"""
 
 The integrand $\sqrt{1 + f'(x)^2}$ may seem odd at first, but it can be interpreted as the length of the hypotenuse of a right triangle with "run" of $1$ and rise of $f'(x)$. This triangle is easily formed using the tangent line to the graph of $f(x)$. By multiplying by $dx$, the integral is "summing" up the lengths of infinitesimal pieces of the tangent line approximation.
@@ -166,14 +205,14 @@ L = \int_{1/e}^e \sqrt{1 + (\frac{1}{x})^2} dx.
 
 This has a *messy* antiderivative, so we let `SymPy` compute for us:
 
-```
+```julia;
 @vars x
 ex = integrate(sqrt(1 + (1/x)^2), (x, 1/Sym(e), e))    # 1/Sym(e) keeps as symbolic value
 ```
 
 Which isn't so satisfying. From a quick graph, we see the answer should be no more than 4, and we see in fact it is
 
-```
+```julia;
 N(ex)
 ```
 
@@ -188,7 +227,7 @@ y = a \cosh(x/a) = a \cdot \frac{e^{x/a} + e^{-x/a}}{2}.
 
 Suppose we have the following chain hung between $x=-1$ and $x=1$ with $a = 2$:
 
-```
+```julia;
 f(x; a=2) = a * cosh(x/a)
 plot(f, -1, 1)
 ```
@@ -198,7 +237,7 @@ between $2$ and $2.5$, say, but it isn't much work to get
 an approximate numeric answer. Recall, the accompanying `CalculusWithJulia` package deines `f'` to find the derivative using the `ForwardDiff` package.
 
 
-```
+```julia;
 quadgk(x -> sqrt(1 + f'(x)^2), -1, 1)[1]
 ```
 
@@ -209,10 +248,10 @@ We used a numeric approach, but this can be solved by hand and the answer is sur
 This picture of Jasper John's [Near the Lagoon](http://www.artic.edu/aic/collections/artwork/184095) was taken at The Art Institute Chicago.
 
 
-```
-using WeavePynb
-out = gif_to_data("figures/johns-catenary.jpg", "One of Jasper Johns' Catenary series. Art Institute of Chicago.")
-WeavePynb.HTMLoutput(out)
+```julia; echo=false
+imgfile = "figures/johns-catenary.jpg"
+caption = "One of Jasper Johns' Catenary series. Art Institute of Chicago."
+ImageFile(imgfile, caption)
 ```
 
 
@@ -242,7 +281,7 @@ $$~
 
 Evaluating at $78/2$ gives: $a \cdot \cosh(78/(2a)) - (a + 118) = 0$. This can be solved numerically for a:
 
-```
+```julia;
 cat(x; a=1, b=0) = a*cosh(x/a) - b
 a = find_zero(a -> cat(78/2, a=a, b=118 + a), 10)
 ```
@@ -250,7 +289,7 @@ a = find_zero(a -> cat(78/2, a=a, b=118 + a), 10)
 Rounding, we take $a=13$. With these parameters ($a=13$, $b = 131$), we
 compute the length of Johns' catenary in inches:
 
-```
+```julia;
 a = 13
 b = 118 + a
 f(x) = cat(x, a=13, b=118+13)
@@ -283,7 +322,7 @@ y = \frac{-b}{a^2}(x^2 - a^2)
 
 Find the  length of the cable in meters.
 
-```
+```julia;
 a = 1298/2;
 b = -147;
 f(x) = (-b/a^2)*(x^2 - a^2);
@@ -306,7 +345,7 @@ f(t) &= a(3\sin(t) - \sin(3t)).
 
 Taking $a=1$ we have this graph:
 
-```
+```julia;
 a = 1
 g(t) = a*(3cos(t) - cos(3t))
 f(t) = a*(3sin(t) - sin(3t))
@@ -319,7 +358,7 @@ We have $\sqrt{g'(t)^ + f'(t)^2} = \sqrt{18 - 18\cos(2t)}$.
 An antiderivative isn't forthcoming through `SymPy`, so we take a numeric approach to find the length:
 
 
-```
+```julia;
 quadgk(t -> sqrt(g'(t)^2 + f'(t)^2), 0, 2pi)[1]
 ```
 
@@ -394,14 +433,14 @@ s(u) = \int_0^u \sqrt{(-\sin(t))^2 + b\cos(t)^2} dt = \int_0^u \sqrt{\sin(t))^2 
 
 But, despite it not being too daunting, this integral is not tractable through our techniques and has an answer involving elliptic integrals. We can work numerically though. Letting $a=1$ and $b=2$, we have the arc length is given by:
 
-```
+```julia;
 a, b= 1, 2
 s(u) = quadgk(t -> sqrt(a^2 * sin(t)^2 + b^2 * cos(t)^2), 0, u)[1]
 ```
 
 This  has a graph, which does not look familiar, but we can see is monotonically increasing, so will have an inverse function:
 
-```
+```julia;
 plot(s, 0, 2pi)
 ```
 
@@ -409,14 +448,14 @@ The range is $[0, s(2\pi)]$.
 
 The inverse function can be found by solving, we use `find_zero` for this:
 
-```
+```julia;
 using Roots
 sinv(u) = find_zero(x -> s(x) - u, (0, s(2pi)))
 ```
 
 Here we see that the new parameterization yields the same curve:
 
-```
+```julia;
 g(t) = a*cos(t)
 f(t) = b*sin(t)
 
@@ -430,7 +469,7 @@ plot(t->g(s(t)), t-> f(s(t)), 0, s(2*pi))
 
 The length of the curve given by $f(x) = e^x$ between $0$ and $1$ is certainly longer than the length of the line connecting $(0, f(0))$ and $(1, f(1))$. What is that length?
 
-```
+```julia; echo=false
 f(x) = exp(x)
 val = sqrt( (f(1) - f(0))^2 - (1 - 0)^2)
 numericq(val)
@@ -438,14 +477,14 @@ numericq(val)
 
 The length of the curve is certainly less than the length of going from $(0,f(0))$ to $(1, f(0))$ and then up to $(1, f(1))$. What is the length of this upper bound?
 
-```
+```julia; echo=false
 val = (1 - 0) + (f(1) - f(0))
 numericq(val)
 ```
 
 Now find the actual length of the curve numerically:
 
-```
+```julia; echo=false
 a,b = 0, 1
 val, _ = quadgk(x -> sqrt(1 + exp(x)^2), a, b)
 numericq(val)
@@ -455,7 +494,7 @@ numericq(val)
 
 Find the length of the graph of $f(x) = x^{3/2}$ between $0$ and $4$.
 
-```
+```julia; echo=false
 f(x) = x^(3/2)
 a, b = 0, 4
 val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
@@ -467,7 +506,7 @@ numericq(val)
 
 A [pursuit](http://www-history.mcs.st-and.ac.uk/Curves/Pursuit.html) curve is a track an optimal pursuer will take when chasing prey. The function $f(x) = x^2 - \log(x)$ is an example. Find the length of the curve between $1/10$ and $2$.
 
-```
+```julia; echo=false
 f(x) = x^2 - log(x)
 a, b= 1/10, 2
 val, _ = quadgk( x -> sqrt(1 + (f)(x)^2), a, b)
@@ -480,7 +519,7 @@ numericq(val)
 
 Find the length of the graph of $f(x) = \tan(x)$ between $-\pi/4$ and $\pi/4$.
 
-```
+```julia; echo=false
 f(x) = tan(x)
 a, b= -pi/4, pi/4
 val, _ = quadgk( x -> sqrt(1 + f'(x)^2), a, b)
@@ -489,7 +528,7 @@ numericq(val)
 
 Note, the straight line segment should be a close approximation and has length:
 
-```
+```julia;
 sqrt((tan(pi/4) - tan(-pi/4))^2 + (pi/4 - -pi/4)^2)
 ```
 
@@ -497,7 +536,7 @@ sqrt((tan(pi/4) - tan(-pi/4))^2 + (pi/4 - -pi/4)^2)
 
 Find the length of the graph of the function $g(x) =\int_0^x \tan(x)dx$ between $0$ and $\pi/4$ by hand or numerically:
 
-```
+```julia; echo=false
 fp(x) = tan(x)
 a, b = 0, pi/4
 val, _ = quadgk(x -> sqrt(1 + fp(x)^2), a, b)
@@ -517,7 +556,7 @@ y = a \ln\frac{a + \sqrt{a^2 - x^2}}{x} - \sqrt{a^2 - x^2}
 
 This can be entered into `julia` as:
 
-```
+```julia;
 g(x, a) = a * log((a + sqrt(a^2 - x^2))/x) - sqrt(a^2 - x^2)
 ```
 
@@ -525,7 +564,7 @@ g(x, a) = a * log((a + sqrt(a^2 - x^2))/x) - sqrt(a^2 - x^2)
 Let $a=12$, $f(x) = g(x, a)$. Compute the length the bow of the
 boat has traveled between $x=1$ and $x=a$ using `quadgk`.
 
-```
+```julia; echo=false
 a = 12
 f(x) = g(x, a);
 val = quadgk(x -> sqrt(1 + D(f)(x)^2), 1, a)[1];
@@ -535,7 +574,7 @@ numericq(val, 1e-3)
 (The most elementary description of this curve is in terms
 of the relationship $dy/dx = -\sqrt{a^2-x^2}/x$ which could be used in place of `D(f)` in your work.)
 
-```
+```julia; echo=false
 note("""
 
 To see an example of how the tractrix can be found in an everyday observation, follow this link on a description of [bicycle](https://simonsfoundation.org/multimedia/mathematical-impressions-bicycle-tracks) tracks.
@@ -547,7 +586,7 @@ To see an example of how the tractrix can be found in an everyday observation, f
 
 A curve is parameterized by $g(t) = t + \sin(t)$ and $f(t) = \cos(t)$. Find the arc length of the curve between $t=0$ and $\pi$.
 
-```
+```julia; echo=false
 g(t) = t + sin(t)
 f(t) = cos(t)
 a, b = 0, pi
@@ -560,7 +599,7 @@ numericq(val)
 The [astroid](http://www-history.mcs.st-and.ac.uk/Curves/Astroid.html) is
 a curve  parameterized by $g(t) = \cos(t)^3$ and $f(t) = \sin(t)^3$. Find the arc length of the curve between $t=0$ and $2\pi$. (This can be computed by hand or numerically.)
 
-```
+```julia; echo=false
 g(t) = cos(t)^3
 f(t) = sin(t)^3
 a, b = 0, 2pi
@@ -572,7 +611,7 @@ numericq(val)
 
 A curve is parameterized by $g(t) = (2t + 3)^{2/3}/3$ and $f(t) = t + t^2/2$, for $0\leq t \leq 3$. Compute the arc-length numerically or by hand:
 
-```
+```julia; echo=false
 g(t) = (2t+3)^(2/3)/3
 f(t) = t + t^2/2
 a, b = 0, 3
@@ -585,7 +624,7 @@ numericq(val)
 
 The cycloid is parameterized by $g(t) = a(t - \sin(t))$ and $f(t) = a(1 - \cos(t))$ for $a > 0$. Taking $a=1$, and $t$ in $[0, 2\pi]$, find the length of the curve traced out.
 
-```
+```julia; echo=false
 g(t) = t - sin(t)
 f(t) = 1 - cos(t)
 a, b = 0, 2pi

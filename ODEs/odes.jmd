@@ -1,8 +1,8 @@
 # ODEs
 
-```noout, nocode
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
-plotly()
+gr()
 ```
 
 Some relationships are easiest to describe in terms of derivatives. For example:
@@ -155,11 +155,11 @@ A graph of the solution for $T_0=200$ and $T_a=72$ and $r=1/2$ is made
 as follows. We've added a few line segments from the defining formula,
 and see that they are indeed tangent to the solution found for the differential equation.
 
-```nocode
+```julia; echo=false
 T0, Ta, r = 200, 72, 1/2
 f(u, t) = -r*(u - Ta)
 v(t) = Ta + (T0 - Ta) * exp(-r*t)
-p = plot(v, 0, 6, linewidth=4)
+p = plot(v, 0, 6, linewidth=4, legend=false)
 [plot!(p, x -> v(a) + f(v(a), a) * (x-a), 0, 6) for a in 1:2:5]
 p
 ```
@@ -308,9 +308,9 @@ there is a different function, `dsolve`. The basic idea is to describe
 the differential equation using a symbolic function and then call
 `dsolve` to solve the expression.
 
-Symbolic functions are defined by `SymFunction`:
+Symbolic functions are defined by `SymFunction` (or the macro `@symfuns`):
 
-```
+```julia;
 using CalculusWithJulia   # loads `SymPy`, `Plots`
 u = SymFunction("u")
 ```
@@ -332,7 +332,7 @@ restricting `a` to be positive:
 
 
 
-```
+```julia;
 @vars x y
 @vars a positive=true
 ```
@@ -340,7 +340,7 @@ restricting `a` to be positive:
 
 Our equation can be specified by an expression equaling $0$:
 
-```
+```julia;
 eqn = u'(x) - a * u(x) * (1 - u(x))
 ```
 
@@ -348,7 +348,7 @@ In the above, we evaluate the symbolic function at the variable `x`
 through the use of `u(x)` in the expression. Finally, we call `dsolve`
 to find a solution (if possible):
 
-```
+```julia;
 out = dsolve(eqn)
 ```
 
@@ -360,7 +360,7 @@ and otherwise is trapped in between, as expected.
 
 Suppose that $u(0) = 1/2$. Can we solve for $C_1$ symbolically? We can use `solve`, but first we will need to get the symbol for `C_1`:
 
-```
+```julia;
 rhs(x) = x.rhs        # convenience to extract right hand side of an equation
 eq = rhs(out)    # just the right hand side
 C1 = first(setdiff(free_symbols(eq), (x,a))) # fish out constant
@@ -369,13 +369,13 @@ c1 = solve(eq(x=>0) - 1//2, C1)
 
 And we plug in with:
 
-```
+```julia;
 eq(C1 => c1[1])
 ```
 
 That's a lot of work. The `dsolve` function also allows initial conditions to be specified. In this case, ours is $x_0=0$ and $y_0=1/2$. The extra arguments passed are the function (`u(x)`) and tuples of conditions of the form `(SymFunction, x0, y0)` to the `ics` argument:
 
-```
+```julia;
 x0, y0 = 0, 1//2
 dsolve(eqn, u(x), ics=(u, x0, y0))
 ```
@@ -389,7 +389,7 @@ Hooke's law relates the force on an object to its position via $F=ma = -kx$, or 
 
 Suppose $k > 0$. Then we can solve, similar to the above, with:
 
-```
+```julia;
 @vars k m positive=true
 eqn = u''(x) + k/m*u(x)
 dsolve(eqn)
@@ -404,7 +404,7 @@ initial velocity $0$. Here we get the solution specifying initial
 conditions on the function and its derivative (expressed through
 `u'`):
 
-```
+```julia;
 @vars a positive=true
 dsolve(eqn, x, ics = ((u, 0, -a), (u', 0, 0)))
 ```
@@ -424,8 +424,8 @@ $$~
 
 Can this second-order equation be solved by `SymPy`?
 
-```
-g, l = symbols("g, l", positive=true)
+```julia;
+@vars g l positive=true
 eqn = u''(x) + g/l*sin(u(x))
 dsolve(eqn)
 ```
@@ -443,7 +443,7 @@ Here, the solution is in terms of sines and cosines, with period given by $T = 2
 
 If we pull the bob back an angle $a$ and release it then the initial conditions are $\theta(0) = a$ and $\theta'(a) = 0$. This gives the solution:
 
-```
+```julia;
 eqn = u''(x) + g/l * u(x)
 dsolve(eqn, u(x), ics=((u, 0, a), (u', 0, 0)))
 ```
@@ -496,7 +496,7 @@ y''(x) = \frac{w}{H} \sqrt{1 + y'(x)}.
 
 This equation can be solved exactly, though with some work, as a direct approach fails:
 
-```
+```julia;
 u = SymFunction("u")
 @vars x w H positive=true
 out = dsolve(u''(x) - w/H * sqrt(1 + u'(x)^2))
@@ -505,7 +505,7 @@ out = dsolve(u''(x) - w/H * sqrt(1 + u'(x)^2))
 To help `SymPy` out we break the problem into steps. For the first step we solve for the derivative.
 Let $u = y'$, then we have $u'(x) = (w/H)\sqrt{1 + u(x)^2}$:
 
-```
+```julia;
 out = dsolve(u'(x) - w/H * sqrt(1 + u(x)^2))
 ```
 
@@ -513,7 +513,7 @@ So $y'(x) = \sinh(C_1 + w \cdot x/H)$. This can be solved by direct
 integration as there is no $u(x)$ term on the right hand
 side. Repurposing `u` to represent `y` now, we have the equation and solution:
 
-```
+```julia;
 eqn = u'(x) - rhs(out)
 out1 = dsolve(eqn)
 ```
@@ -549,7 +549,7 @@ x(t) = x_0 + v_0 \cos(\alpha) t, \quad y(t) = y_0 + v_0\sin(\alpha)t - \frac{1}{
 
 Furthermore, we can solve for $t$ from $x(t)$, to get an equation describing $y(x)$. Here are all the steps:
 
-```
+```julia;
 @vars x0 y0 v0 alpha g real=true
 @vars x y t
 u = SymFunction("u")
@@ -574,8 +574,8 @@ x''(t) = -\gamma x'(t), \quad y''(t) = -\gamma y'(t) -g, \quad x(0) = x_0, y(0)=
 
 We now attempt to solve these:
 
-```
-gamma = symbols("gamma")
+```julia;
+@vars gamma
 u = SymFunction("u")
 a1 = dsolve(u''(t) + gamma * u'(t),     u(t), ics=((u, 0, x0), (u', 0, v0 * cos(alpha))))
 a2 = dsolve(u''(t) + gamma * u'(t) + g, u(t), ics=((u, 0, y0), (u', 0, v0 * sin(alpha))))
@@ -588,7 +588,7 @@ This gives $y$ as a function of $x$.
 
 There are a lot of symbols. Lets simplify by using constants $x_0=y_0=0$:
 
-```
+```julia;
 y = y(x0 => 0, y0 => 0)
 ```
 
@@ -599,41 +599,51 @@ $-\gamma x + v_0 \cos(\alpha) = 0$.
 
 If we fix some parameters, we can plot.
 
-```
+```julia;
 v_0, gam, alp = 200, 1/2, pi/4
-plot(y(v0=>v_0, gamma=>gam, alpha=>alp, g=>9.8), 0, v_0 * cos(alp) / gam - 1/10)
+soln = y(v0=>v_0, gamma=>gam, alpha=>alp, g=>9.8)
+plot(soln, 0, v_0 * cos(alp) / gam - 1/10, legend=false)
 ```
 
 We can see that the resistance makes the path quite non-symmetric.
 
 ## Visualizing a first-order initial value problem
 
-The solution, $y(x)$, is known through its derivative. A useful tool to visualize the solution to a first-order differential equation is the [slope field](http://tinyurl.com/jspzfok) (or direction field) plot, which at different values of $(x,y)$, plots a vector with slope given through $y'(x)$. The `VectorField` type makes this graph easy to render.
+The solution, $y(x)$, is known through its derivative. A useful tool to visualize the solution to a first-order differential equation is the [slope field](http://tinyurl.com/jspzfok) (or direction field) plot, which at different values of $(x,y)$, plots a vector with slope given through $y'(x)$.The `vectorfieldplot` of the `CalculusWithJulia` package can be used to produce these.
 
 
 
 For example, in a previous example we found a solution to  $y'(x) = x\cdot y(x)$. Suppose $x_0=1$ and $y_0=1$. Then a direction field plot is drawn through:
 
-```
-x, y = symbols("x, y")
+```julia;
+@vars x y
 x0, y0 = 1, 1
-F(x, y) = y*x
-plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5), n=20)
+F(y, x) = y*x
+
+plot(legend=false)
+vectorfieldplot!((x,y) -> [1, F(y,x)], xlims=(x0, 2), ylims=(y0-5, y0+5))
+
 f(x) =  y0*exp(-x0^2/2) * exp(x^2/2)
 plot!(f,  linewidth=5)
 ```
 
-In general, if the first-order equation is written as $y'(x) = F(y,x)$,
+In general, if the first-order equation is written as $y'(x) = F(y,x)$, then we plot a "function" that takes $(x,y)$ and returns an $x$ value of $1$ and a $y$ value of $F(y,x)$, so the slope is $F(y,x)$.
+
+```julia; echo=false
+note(L"""The order of variables in $F(y,x)$ is conventional with the equation $y'(x) = F(y(x),x)$.
+""")
+```
 
 
 The plots are also useful for illustrating solutions for different initial conditions:
 
 
-```
-p = plot(VectorField(F), xlims=(x0, 2), ylims=(y0-5, y0+5), n=20)
+```julia;
+p = plot(legend=false)
+vectorfieldplot!((x,y) -> [1,F(y,x)], xlims=(x0, 2), ylims=(y0-5, y0+5))
 for y0 in -4:4
   f(x) =  y0*exp(-x0^2/2) * exp(x^2/2)
-  plot!(p, f, x0, 2, linewidth=5)
+  plot!(f, x0, 2, linewidth=5)
 end
 p
 ```
@@ -644,11 +654,6 @@ These graphs illustrate the fact that the slope field is tangent to the graph of
 integral curve.
 
 
-```
-note(L"""
-The function passed to `VectorField` is defined with the `x` variable first. It is not uncommon to see the function associated to a first-order ODE, written with the `y` variable first, as in $y'(x) = F(y(x), x)$. Care needs to be taken to match the order expected.
-""")
-```
 
 ## Questions
 
@@ -665,9 +670,9 @@ u' = \frac{1-x}{u}
 
 gives
 
-```
+```julia;
 u = SymFunction("u")
-x = symbols("x")
+@vars x
 dsolve(u'(x) - (1-x)/u(x))
 ```
 
@@ -675,7 +680,7 @@ The two answers track positive and negative solutions. For the initial condition
 
 This value is good for what values of $x$?
 
-```
+```julia; echo=false
 choices = [
 L"[-1, \infty)",
 L"[-1, 4]",
@@ -696,9 +701,9 @@ y'(x) = y(x)^2, \quad y(1) = 1.
 
 What is $y(3/2)$?
 
-```
+```julia; echo=false
 u = SymFunction("u")
-x = symbols("x")
+@vars x
 out = dsolve(u'(x) - u(x)^2, u(x), ics=(u, 1, 1))
 val = N(rhs(out(3/2)))
 numericq(val)
@@ -715,7 +720,7 @@ y' = 1 + x^2 + y(x)^2 + x^2 y(x)^2, \quad y(0) = 1.
 
 Use your answer to find $y(1)$.
 
-```
+```julia; echo=false
 eqn = u'(x) - (1 + x^2 + u(x)^2 + x^2 * u(x)^2)
 out = dsolve(eqn, u(x), ics=(u, 0, 1))
 val = N(rhs(out)(1))
@@ -734,7 +739,7 @@ y'(x) = k\cdot y(x) \cdot (1 - y(x)/M),
 
 when $k=1$, $M=100$, and $y(0) = 20$. Find the value of $y(5)$.
 
-```
+```julia; echo=false
 k, M = 1, 100
 eqn = u'(x) - k * u(x) * (1 - u(x)/M)
 out = dsolve(eqn, u(x), ics=(u, 0, 20))
@@ -753,7 +758,7 @@ y'(t) = \sin(t) - \frac{y(t)}{t}, \quad y(\pi) = 1
 
 Find the value of the solution at $t=2\pi$.
 
-```
+```julia; echo=false
 eqn = u'(x) - (sin(x) - u(x)/x)
 out = dsolve(eqn, u(x), ics=(u, PI, 1))
 val = N(rhs(out(2PI)))
@@ -771,7 +776,7 @@ $$~
 
 Find $u(5)$ using `SymPy`.
 
-```
+```julia; echo=false
 eqn = u'(x) - exp(-x)*u(x)
 out = dsolve(eqn, u(x), ics=(u, 0, 1))
 val = N(rhs(out)(5))
@@ -788,9 +793,9 @@ $$~
 
 can be solved with `SymPy`. What is the value of $c(5)$?
 
-```
+```julia; echo=false
 u = SymFunction("u")
-x = symbols("x")
+@vars x
 eqn = diff(x^2*u'(x), x)
 out = dsolve(eqn, u(x), ics=((u, 1, 2), (u, 10, 1))) |> rhs
 out(5)  # 10/9
@@ -807,7 +812,7 @@ $\gamma$ modeling the effect of air resistance. If `y` is the
 answer---as would be the case if the example were copy-and-pasted
 in---what can be said about `limit(y, gamma=>0)`?
 
-```
+```julia; echo=false
 choices = [
 "The limit is a quadratic polynomial in `x`, mirroring the first part of that example.",
 "The limit does not exists, but the limit to `oo` gives a quadratic polynomial in `x`, mirroring the first part of that example.",

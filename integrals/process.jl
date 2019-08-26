@@ -1,8 +1,3 @@
-using WeavePynb
-using Mustache
-
-mmd(fname) = mmd_to_html(fname, BRAND_HREF="../toc.html", BRAND_NAME="Calculus with Julia")
-
 
 fnames = [
           "area",
@@ -41,5 +36,6 @@ process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
 
 * add in volumes shell???
 * mean value theorem is light?
+* could add surface area problems
 
 """

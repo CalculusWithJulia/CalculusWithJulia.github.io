@@ -1,6 +1,6 @@
 # Improper Integrals
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -14,7 +14,44 @@ or $b$ (or both) are infinite, so the limit won't exist in this case.
 To define integrals  with either functions having singularities or infinite domains, the idea of an improper integral is
 introduced with definitions to handle the two cases above.
 
-{{{sqrt_graph}}}
+```julia; echo=false; cache=true
+### {{{sqrt_graph}}}
+pyplot()
+fig_size=(600, 400)
+
+function make_sqrt_x_graph(n)
+
+    b = 1
+    a = 1/2^n
+    xs = range(1/2^8, stop=b, length=250)
+    x1s = range(a, stop=b, length=50)
+    f(x) = 1/sqrt(x)
+    val = N(integrate(f, 1/2^n, b))
+    title = "area under f over [1/$(2^n), $b] is $(rpad(round(val, digits=2), 4))"
+
+    plt = plot(f, range(a, stop=b, length=251), xlim=(0,b), ylim=(0, 15), legend=false, size=fig_size, title=title)
+    plot!(plt,  [b, a, x1s...], [0, 0, map(f, x1s)...], linetype=:polygon, color=:orange)
+
+    plt
+
+
+end
+caption = L"""
+
+Area under $1/\sqrt{x}$ over $[a,b]$ increases as $a$ gets closer to $0$. Will it grow unbounded or have a limit?
+
+"""
+n = 10
+anim = @animate for i=1:n
+    make_sqrt_x_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 ## Infinite domains
 
@@ -56,7 +93,7 @@ $$~
 \int_{-\infty}^\infty f(x) dx  = \lim_{M \rightarrow -\infty} \int_M^a f(x) dx + \lim_{M \rightarrow \infty} \int_a^M f(x) dx.
 ~$$
 
-```
+```julia; echo=false
 note("""When the integral exists, it is said to *converge*. If it doesn't exist, it is said to *diverge*.
 """)
 ```
@@ -115,7 +152,7 @@ As $M$ goes to $\infty$, this will converge to $1$.
 
 * The sinc function $f(x) = \sin(\pi x)/(\pi x)$ does not have a nice antiderivative.  Seeing if the limit exists is a bit of a problem. However, this function is important enough that there is a built-in function, `Si`, that computes $\int_0^x \sin(u)/u\cdot du$. This function can be used through `sympy.Si(...)`:
 
-```
+```julia;
 using CalculusWithJulia    # loads `SymPy`, `QuadGK`
 @vars M
 limit(sympy.Si(M), M => oo)
@@ -125,7 +162,7 @@ limit(sympy.Si(M), M => oo)
 
 The `quadgk` function (available through `QuadGK` which is loaded with `CalculusWithJulia`) is able to accept `Inf` and `-Inf` as endpoints of the interval. For example, this will integrate $e^{-x^2/2}$ over the real line:
 
-```
+```julia;
 f(x) = exp(-x^2/2)
 quadgk(f, -Inf, Inf)
 ```
@@ -150,7 +187,7 @@ $$~
 = \lim_{M \rightarrow 0+} 2(1) - 2\sqrt{M} = 2.
 ~$$
 
-```
+```julia; echo=false
 note(L"""
 
 The cases $f(x) = x^{-n}$ for $n > 0$ are tricky. For $n > 1$, the functions can be integrated over $[1,\infty)$, but not $(0,1]$. For $0 < n < 1$, the functions can be integrated over $(0,1]$ but not $[1, \infty)$.
@@ -170,7 +207,7 @@ As the limit does not exist, the function is not integrable around $0$.
 
 * `SymPy` may give answers which do not coincide with our definitions, as it uses complex numbers as a default assumption. In this case it returns `NaN` for an integral with no answer:
 
-```
+```julia;
 @vars x
 integrate(1/x, (x, -1, 1))
 ```
@@ -194,7 +231,7 @@ sampled. For example, were we to integrate $1/\sqrt{\lvert x\rvert}$
 over $[-1,1]$, we would want to avoid $0$ as a point to sample. Here
 is how:
 
-```
+```julia;
 f(x) = 1 / sqrt(abs(x))
 quadgk(f, -1, 0, 1)
 ```
@@ -278,7 +315,7 @@ point will not effect the integral as long as the point is finite.
 
 Is $f(x) = 1/x^{100}$ integrable around $0$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -286,7 +323,7 @@ yesnoq("no")
 
 Is $f(x) = 1/x^{1/3}$ integrable around $0$?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
@@ -294,7 +331,7 @@ yesnoq("yes")
 
 Is $f(x) = x\cdot\log(x)$ integrable on $[1,\infty)$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -302,7 +339,7 @@ yesnoq("no")
 
 Is $f(x) = \log(x)/ x$ integrable on $[1,\infty)$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -310,7 +347,7 @@ yesnoq("no")
 
 Is $f(x) = \log(x)$ integrable on $[1,\infty)$?
 
-```
+```julia; echo=false
 yesnoq("no")
 ```
 
@@ -318,7 +355,7 @@ yesnoq("no")
 
 Compute the integral $\int_0^\infty 1/(1+x^2) dx$.
 
-```
+```julia; echo=false
 f(x) = 1/(1+x^2)
 a, b= 0, Inf
 val, _ = quadgk(f, a, b)
@@ -329,7 +366,7 @@ numericq(val)
 
 Compute the the integral $\int_1^\infty \log(x)/x^2 dx$.
 
-```
+```julia; echo=false
 f(x) =log(x)/x^2
 a, b= 1, Inf
 val, _ = quadgk(f, a, b)
@@ -340,7 +377,7 @@ numericq(val)
 
 Compute the integral $\int_0^2 (x-1)^{2/3} dx$.
 
-```
+```julia; echo=false
 f(x) = cbrt((x-1)^2)
 val, _ = quadgk(f , 0, 1, 2)
 numericq(val)
@@ -359,7 +396,7 @@ What can you say about $\int_1^\infty f(x) dx$, as $f(x) \leq 1/x^2$ on $[1, \in
 
 
 
-```
+```julia; echo=false
 choices =[
 "It is convergent",
 "It is divergent",
@@ -375,7 +412,7 @@ Let $f(x) = \lvert \sin(x) \rvert / x$.
 
 What can you say about $\int_1^\infty f(x) dx$, as $f(x) \leq 1/x$ on $[1, \infty)$?
 
-```
+```julia; echo=false
 choices =[
 "It is convergent",
 "It is divergent",
@@ -392,7 +429,7 @@ What can you say about $\int_1^\infty f(x) dx$, as $f(x) \geq 1/x$ on $[1, \inft
 
 
 
-```
+```julia; echo=false
 choices =[
 "It is convergent",
 "It is divergent",
@@ -407,7 +444,7 @@ radioq(choices, ans, keep_order=true)
 Let $f(x) = 1 + 4x^2$.
 What can you say about $\int_1^\infty f(x) dx$, as $f(x) \leq 1/x^2$ on $[1, \infty)$?
 
-```
+```julia; echo=false
 choices =[
 "It is convergent",
 "It is divergent",
@@ -422,7 +459,7 @@ radioq(choices, ans, keep_order=true)
 Let $f(x) = \lvert \sin(x)^{10}\rvert/e^x$.
 What can you say about $\int_1^\infty f(x) dx$, as $f(x) \leq e^{-x}$ on $[1, \infty)$?
 
-```
+```julia; echo=false
 choices =[
 "It is convergent",
 "It is divergent",
@@ -437,7 +474,7 @@ The difference between "blowing up" at $0$ versus being integrable at
 $\infty$ can be seen to be related through the $u$-substitution
 $u=1/x$. With this $u$-substitution, what becomes of $\int_0^1 x^{-2/3} dx$?
 
-```
+```julia; echo=false
 choices = [
 L"\int_1^\infty u^{2/3}/u^2 \cdot du",
 L"\int_0^1 u^{2/3} \cdot du",
@@ -453,7 +490,7 @@ The antiderivative of $f(x) = 1/\pi \cdot 1/\sqrt{x(1-x)}$ is $F(x)=(2/\pi)\cdot
 
 Find $\int_0^1 f(x) dx$.
 
-```
+```julia; echo=false
 f(x) = 1/pi * 1/sqrt(x*(1-x))
 a, b= 0, 1
 val, _ = quadgk(f, a, b)

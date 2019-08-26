@@ -1,12 +1,23 @@
 # Center of Mass
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
 
+```julia; echo=false
+imgfile = "figures/seesaw.png"
+caption = L"""
 
-{{{seesaw_figure}}}
+A silhouette of two children on a seesaw. The seesaw can be balanced
+only if the distance from the central point for each child reflects
+their relative weights, or masses, through the formula $d_1m_1 = d_2
+m_2$. This means if the two children weigh the same the balance will
+tip in favor of the child farther away, and if both are the same
+distance, the balance will tip in favor of the heavier.
+"""
+ImageFile(imgfile, caption)
+```
 
 The game of seesaw is one where children earn an early appreciation for the effects of distance and relative weight. For children with equal weights, the seesaw will balance if they sit an equal distance from the center (on opposite sides, of course). However, with unequal weights that isn't the case. If one child weighs twice as much, the other must sit twice as far.
 
@@ -57,7 +68,7 @@ Consider now a more general problem, the center of mass of a solid figure. We wi
 
 This graph shows that the figure is symmetric:
 
-```
+```julia;
 using CalculusWithJulia  # loads `Plots`, `Roots`, `QuadGK`, `SymPy`
 f(x) = 1 - abs(x)
 plot(f, -1.5, 1.5)
@@ -70,7 +81,7 @@ But what should the center of mass formula be?
 
 As with many formulas that will end up involving a derived integral, we start with a sum approximation. If the region is described as the area under the graph of $f(x)$ between $a$ and $b$, then we can form a Riemann sum approximation, that is a choice of $a = x_0 < x_1 < x_2 \cdots < x_n = b$ and points $c_1$, $\dots$, $c_n$. If all the rectangles are made up of a material of uniform density, say $\rho$, then the mass of each rectangle will be the area times $\rho$, or $\rho f(c_i) \cdot (x_i - x_{i-1})$, for $i = 1, \dots , n$.
 
-```
+```julia; echo=false
 n = 21
 xs = range(-1, stop=1, length=n)
 cs = (xs[1:(end-1)] + xs[2:end]) / 2
@@ -88,9 +99,7 @@ for i in 1:(n-1)
 end
 plot!(p, [-1,1], [0,0])
 
-
-
-Outputonly(p)
+p
 ```
 
 The figure shows the approximating rectangles and circles representing their masses for $n=20$.
@@ -120,7 +129,7 @@ For the triangular shape, we have by the fact that $f(x) = 1 - \lvert x \rvert$ 
 
 What about the center of mass of the triangle formed by the line $x=-1$, the $x$ axis and $(1-x)/2$? This too is defined between $a=-1$ and $b=-1$, but the center of mass will be negative, as a graph shows more mass to the left of $0$ than the right:
 
-```
+```julia;
 f(x) = (1-x)/2
 plot(f, -1, 1)
 plot!(zero)
@@ -140,7 +149,7 @@ Find the center of mass formed by the intersection of the parabolas $y=1 - x^2$ 
 
 The center of mass (in the $x$ direction) can be seen to be close to $x=1/2$:
 
-```
+```julia;
 f(x) = 1 - x^2
 g(x) = (x-1)^2 -2
 plot(f, -3, 3)
@@ -149,7 +158,7 @@ plot!(g)
 
 To find it, we need to find the intersection points, then integrate. We do so numerically.
 
-```
+```julia;
 h(x) = f(x) - g(x)
 a,b = find_zeros(h, -3, 3)
 top, err = quadgk(x -> x*h(x), a, b)
@@ -159,7 +168,7 @@ cm = top / bottom
 
 Our guess from the diagram proves correct.
 
-```
+```julia; echo=false
 note("""
 
 It proves convenient to use the `->` notation for an anonymous function above, as our function `h` is not what is being integrated all the time, but some simple modification. If this isn't palatable, a new function could be defined and passed along to `quadgk`.
@@ -187,7 +196,7 @@ $$~
 
 Solving $1/2 = 1 - e^{-M}$ gives $M=\log(2) = 0.69...$, The median is to the left of the mean in this example.
 
-```
+```julia; echo=false
 note("""
 
 In this example, we used an infinite region, so the idea of "balancing" may be a bit unrealistic, nonetheless, this intuitive interpretation is still a good one to keep this in mind. The point of comparing to the median is that the balancing point is to the right of where the area splits in half. Basically, the center of mass follows in the direction of the area far to the right of the median, as this area is skewed in that direction.
@@ -199,7 +208,7 @@ In this example, we used an infinite region, so the idea of "balancing" may be a
 
 A figure is formed by transformations of the function $\phi(u) = e^{2(k-1)} - e^{2(k-u)}$, for some fixed $k$, as follows:
 
-```
+```julia;
 k = 3
 phi(u) = exp(2(k-1)) - exp(2(k-u))
 f(u) = max(0, phi(u))
@@ -214,7 +223,7 @@ plot!(zero)
 
 The center of mass of this figure is found with:
 
-```
+```julia;
 h(x) = g(x) - f(x)
 top, _ = quadgk(x -> x*h(x), 0, k)
 bottom, _ = quadgk(h, 0, k)
@@ -223,7 +232,7 @@ top/bottom
 
 This figure has constant slices of length $1$ for fixed values of $y$. If we were to approximate the values with blocks of height $1$, then the center of mass would be to the left of $1$---for any $k$, but the top most block would have an overhang to the right of $1$---out to a value of $k$. That is, this figure should balance:
 
-```
+```julia; echo=false
 u(i) = 1/2*(2k - log(exp(2(k-1)) - i))
 p = plot(legend=false);
 for i in 0:floor(phi(k))
@@ -233,8 +242,7 @@ end
 xs = range(0, stop=exp(1), length=50)
 plot!(p, f, 0, e, linewidth=5);
 plot!(p, g, 0, 3, linewidth=5)
-
-Outputonly(p)
+p
 ```
 
 See this [paper](https://math.dartmouth.edu/~pw/papers/maxover.pdf) and its references for some background on this example and its extensions.
@@ -261,7 +269,7 @@ As seen, the computation of the center of mass in the $y$ direction has an ident
 
 More generally, consider a right triangle with vertices $(0,0)$, $(0,a)$, and $(b,0)$. The center of mass of this can be computed with the help of the equation for the line that forms the hypotenuse: $x/b + y/a = 1$. We find the center of mass symbolically in the $y$ variable by solving for $x$ in terms of $y$, then integrating from $0$ to $a$:
 
-```
+```julia;
 @vars a b x y
 eqn = x/b + y/a - 1
 fy = solve(eqn, x)[1]
@@ -270,14 +278,14 @@ integrate(y*fy, (y, 0, a)) / integrate(fy, (y, 0, a))
 
 The answer involves $a$ linearly, but not $b$. If we find the center of mass in $x$, we *could* do something similar:
 
-```
+```julia;
 fx = solve(eqn, y)[1]
 integrate(x*fx, (x, 0, b)) / integrate(fx, (x, 0, b))
 ```
 
 But really, we should have just noted that simply by switching the labels $a$ and $b$ in the diagram we could have discovered this formula.
 
-```
+```julia; echo=false
 note(L"""
 
 The [centroid](http://en.wikipedia.org/wiki/Centroid) of a region in the plane is just $(\text{cm}_x, \text{cm}_y)$. This last fact says the centroid of the right triangle  is just $(b/3, a/3)$. The centroid can be found by other geometric means. The link shows the plumb line method. For triangles, the centroid is also the intersection point of the medians, the lines that connect a vertex with its opposite midpoint.
@@ -291,7 +299,7 @@ Compute the $x$ and $y$ values of the center of mass of the half circle describe
 
 A plot shows the value of cm$_x$ will be $0$ by symmetry:
 
-```
+```julia;
 f(x) = sqrt(1 - x^2)
 plot(f, -1, 1)
 ```
@@ -313,7 +321,7 @@ A disc of radius $2$ is centered at the origin, as a disc of radius $1$ is bored
 
 A picture shows that this could be complicated, especially for $y > 0$, as we need to describe the length of the red lines below for $-2 < y < 2$:
 
-```
+```julia; echo=false
 a,b = 0, 2pi
 ts = range(a, stop=b, length=50)
 p = plot(t -> 2cos(t), t->2sin(t), a, b, legend=false, aspect_ratio=:equal);
@@ -321,8 +329,8 @@ plot!(p, cos.(ts), 1 .+ sin.(ts), linetype=:polygon, color=:red);
 plot!(p, [-sqrt(3), sqrt(3)], [-1,-1], color=:orange);
 plot!(p, [-sqrt(3), -1],      [1,1],   color=:orange);
 plot!(p, [sqrt(3), 1],        [1,1],   color=:orange);
+p
 
-Outputonly(p)
 ```
 
 We can see that cm$_x = 0$, by symmetry, but to compute cm$_y$ we need
@@ -335,7 +343,7 @@ distance from the bigger circle to the smaller, of $2(\sqrt{4 - y^2} -
 
 We use this to compute:
 
-```
+```julia;
 f(y) = y < 0 ? 2*sqrt(4 - y^2) : 2* (sqrt(4 - y^2)- sqrt(1 - (y-1)^2))
 top, _ = quadgk( y -> y * f(y), -2, 2)
 bottom, _ = quadgk( f, -2, 2)
@@ -350,7 +358,7 @@ The nice answer of $-1/3$ makes us think there may be a different way to visuali
 
 Find the center of mass in the $x$ variable for the region bounded by parabola $x=4 - y^2$  and the $y$ axis.
 
-```
+```julia; echo=false
 f(x) = sqrt(4 - x)
 a, b = 0, 4
 top, _ = quadgk(x -> x*f(x), a,b)
@@ -364,7 +372,7 @@ numericq(val)
 
 Find the center of mass in the $x$ variable of the region in the first and fourth quadrants bounded by the ellipse $(x/2)^2 + (y/3)^2 = 1$.
 
-```
+```julia; echo=false
 f(x) = 3 * sqrt(1 - (x/2)^2)
 a, b= 0, 2
 
@@ -378,7 +386,7 @@ numericq(val)
 
 Find the center of mass of the region in the first quadrant bounded by the function $f(x) = x^3(1-x)^4$.
 
-```
+```julia; echo=false
 f(x) = x^3 * (1-x)^4
 a, b= 0, 1
 
@@ -398,7 +406,7 @@ f(x) = \frac{k}{\lambda}(\frac{x}{\lambda})^{k-1} e^{-(x/\lambda)^k}
 
 For $k=2$ and $\lambda = 2$, compute the mean. (The center of mass, assuming the total area is $1$.)
 
-```
+```julia; echo=false
 k, lambda = 2, 2
 f(x) = (k/lambda) * (x/lambda)^(k-1) * exp(-(x/lambda)^k)
 a, b = 0, Inf
@@ -421,7 +429,7 @@ f(x) = \frac{1}{4s} \text{sech}(\frac{x-\mu}{2s})^2, \quad -\infty < x < \infty.
 
 For $m=2$ and $s=4$ compute the mean, or center of mass, of this density.
 
-```
+```julia; echo=false
 m, s = 2, 4
 f(x) = 1/(4s) * sech((x-m)/2s)^2
 a,b = -Inf, Inf
@@ -436,7 +444,7 @@ numericq(val)
 
 A region is formed by intersecting the area bounded by the circle $x^2 + y^2 = 1$ that lies above the line $y=3/4$. Find the center of mass in the $y$ direction (that of the $x$ direction is $0$ by symmetry).
 
-```
+```julia; echo=false
 f(y) = 2*sqrt(1 - y^2)
 a, b = 3/4, 1
 
@@ -451,7 +459,7 @@ numericq(val)
 
 Find the center of mass in the $y$ direction of the area bounded by the cosine curve and the $x$ axis between $-\pi/2$ and $\pi/2$.
 
-```
+```julia; echo=false
 f(y) = 2*acos(y)
 a, b= 0, 1
 
@@ -465,7 +473,7 @@ numericq(val)
 
 A penny, nickel, dime and quarter are stacked so that their right most edges align and are centered so that the center of mass in the $y$ direction is $0$. Find the center of mass in the $x$ direction.
 
-```nocode
+```julia; echo=false
 ds = [0.75, 0.835, 0.705, 0.955]
 rs = ds/2
 xs = rs[4] .- rs
@@ -480,7 +488,7 @@ p
 
 You will need some specifications, such as these from the [US Mint](http://www.usmint.gov/about_the_mint/?action=coin_specifications)
 
-```verbatim
+```
          diameter(in)   weight(gms)
 penny     0.750           2.500
 nickel    0.835           5.000
@@ -491,7 +499,7 @@ quarter   0.955           5.670
 
 (Hint: Though this could be done with integration, it is easier to treat each coin as a single point (its centroid) with the given mass and then apply the formula for sums.)
 
-```
+```julia; echo=false
 ds = [0.75, 0.835, 0.705, 0.955]
 ms = [2.5, 5, 2.268, 5.670]
 rs = ds/2

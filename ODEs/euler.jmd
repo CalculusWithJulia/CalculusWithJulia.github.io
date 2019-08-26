@@ -1,8 +1,8 @@
 # Euler's method
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
-plotly()
+gr()
 ```
 
 Consider the differential equation:
@@ -13,7 +13,7 @@ y'(x) = y(x) \cdot  x, \quad y(1)=1,
 
 which can be solved with `SymPy`:
 
-```
+```julia;
 using CalculusWithJulia   # loads `SymPy`, `Roots`, `Plots`
 @vars x y
 u = SymFunction("u")
@@ -25,15 +25,16 @@ dsolve(u'(x) - F(u(x), x))
 
 With the given initial condition, the solution becomes:
 
-```
+```julia;
 out = dsolve(u'(x) - F(u(x),x), u(x), ics=(u, x0, y0))
 ```
 
 
 Plotting this solution over the slope field
 
-```
-plot(VectorField((x,y) -> F(y,x)), xlims=(0,2.5), ylims=(0,10), n=15)
+```julia;
+p = plot(legend=false)
+vectorfieldplot!((x,y) -> [1, F(x,y)], xlims=(0, 2.5), ylims=(0, 10))
 plot!(rhs(out),  linewidth=5)
 ```
 
@@ -49,7 +50,59 @@ fact to *approximately* reconstruct the solution?
 That is, if we stitched together pieces of the slope field, would we
 get a curve that was close to the actual answer?
 
-{{{euler_graph}}}
+```julia; echo=false; cache=true
+## {{{euler_graph}}}
+
+fig_size = (600, 400)
+function make_euler_graph(n)
+    x, y = symbols("x, y")
+    F(y,x) = y*x
+    x0, y0 = 1, 1
+
+    h = (2-1)/5
+    xs = zeros(n+1)
+    ys = zeros(n+1)
+    xs[1] = x0   # index is off by 1
+    ys[1] = y0
+    for i in 1:n
+        xs[i + 1] = xs[i] + h
+        ys[i + 1] = ys[i] + h * F(ys[i], xs[i])
+    end
+
+	p = plot(legend=false)
+    vectorfieldplot!((x,y) -> [1, F(y,x)], xlims=(1,2), ylims=(0,6))
+
+    ## Add Euler soln
+    plot!(p, xs, ys, linewidth=5)
+    scatter!(p, xs, ys)
+
+    ## add function
+    u = SymFunction("u")
+    out = dsolve(u'(x) - F(u(x), x), u(x), ics=(u, x0, y0))
+    plot!(p, rhs(out), x0, xs[end], linewidth=5)
+
+    p
+end
+
+
+
+
+n = 5
+anim = @animate for i=1:n
+    make_euler_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = """
+Illustration of a function stitching together slope field lines to
+approximate the answer to an initial-value problem. The other function drawn is the actual solution.
+"""
+
+ImageFile(imgfile, caption)
+```
 
 The illustration suggests the answer is yes, let's see. The solution
 is drawn over $x$ values $1$ to $2$. Let's try piecing together $5$
@@ -101,7 +154,7 @@ Below we do this in a loop. We have to be a bit careful, as in `Julia`
 the vector of zeros we create to store our answers begins indexing at
 $1$, and not $0$.
 
-```
+```julia;
 n=5
 h = (2-1)/n
 xs = zeros(n+1)
@@ -116,7 +169,7 @@ end
 
 So how did we do? Let's look graphically:
 
-```
+```julia;
 plot(exp(-1/2)*exp(x^2/2), x0, 2)
 plot!(xs, ys)
 ```
@@ -133,7 +186,7 @@ call to `linterp`, rather than two vectors. The `linterp` function we define bel
 finds a function that linearly interpolates between the points and is
 `NaN` outside of the range of the $x$ values:
 
-```
+```julia;
 function linterp(xs, ys)
     function(x)
         ((x < xs[1]) || (x > xs[end])) && return NaN
@@ -150,7 +203,7 @@ end
 
 With that, here is our function to find an approximate solution to $y'=F(y,x)$ with initial condition:
 
-```
+```julia;
 function euler(F, x0, xn, y0, n)
   h = (xn - x0)/n
   xs = zeros(n+1)
@@ -169,7 +222,7 @@ With `euler`, it becomes easy to explore different values.
 
 For example, we thought the solution would look better with a smaller $h$ (or larger $n$). Instead of $n=5$, let's try $n=50$:
 
-```
+```julia;
 u = euler(F, 1, 2, 1, 50)
 plot(exp(-1/2)*exp(x^2/2), x0, 2)
 plot!(u, x0, 2)
@@ -181,14 +234,14 @@ It is more work for the computer, but not for us, and clearly a much better appr
 ## The Euler method
 
 
-```
-using WeavePynb
-out = gif_to_data("figures/euler.png", """
+```julia; echo=false
+imgfile ="figures/euler.png"
+caption = """
 
 Figure from first publication of Euler's method. From [Gander and Wanner](http://www.unige.ch/~gander/Preprints/Ritz.pdf).
 
-""")
-WeavePynb.HTMLoutput(out)
+"""
+ImageFile(imgfile, caption)
 ```
 
 
@@ -244,7 +297,7 @@ Consider the initial value problem $y'(x) = x + y(x)$ with initial
 condition $y(0)=1$. This problem can be solved exactly. Here we
 approximate over $[0,2]$ using Euler's method.
 
-```
+```julia;
 F(y,x) = x + y
 x0, xn, y0 = 0, 2, 1
 f = euler(F, x0, xn, y0, 25)
@@ -253,7 +306,7 @@ f(xn)
 
 We graphically compare our approximate answer with the exact one:
 
-```
+```julia;
 plot(f, x0, xn)
 u = SymFunction("u")
 out = dsolve(u'(x) - F(u(x),x), u(x), ics = (u, x0, y0))
@@ -273,7 +326,7 @@ that one returned by `SymPy`.
 
 First, the `SymPy` solution:
 
-```
+```julia;
 @vars x
 u = SymFunction("u")
 F(y,x) = sin(x*y)
@@ -283,16 +336,18 @@ out = dsolve(eqn)
 
 If we assume $y(0) = 1$, we can continue:
 
-```
+```julia;
 out = dsolve(eqn, u(x), ics=(u, 0, 1))
 ```
 
 The approximate value given by the Euler method is
 
-```
+```julia;
 x0, xn, y0 = 0, 2, 1
-plot(VectorField((x,y) -> F(y,x)), xlims=(x0,xn), ylims=(0,5), n=15)
-plot!(removeO(rhs(out)),  linewidth=5)
+
+p = plot(legend=false)
+vectorfieldplot!((x,y) -> [1, F(y,x)], xlims=(x0,xn), ylims=(0,5))
+plot!(rhs(out).removeO(),  linewidth=5)
 
 u = euler(F, x0, xn, y0, 10)
 plot!(u, linewidth=5)
@@ -310,14 +365,14 @@ two points for which an object will fall faster along that curve than
 any other. For an example, a bead sliding on a wire will take  a certain amount of time to get from point $A$ to point $B$, the time depending on the shape of the wire. Which shape will take the least amount  of time?
 
 
-```
-using WeavePynb
-out = gif_to_data("figures/bead-game.jpg", """
+```julia; echo=false
+imgfile = "figures/bead-game.jpg"
+caption = """
 
 A child's bead game. What shape wire will produce the shortest time for a bed to slide from a top to the bottom?
 
-""")
-WeavePynb.HTMLoutput(out)
+"""
+ImageFile(imgfile, caption)
 ```
 
 Restrict our attention to the $x$-$y$ plane, and consider a path,
@@ -329,13 +384,94 @@ $A$, so $y(0)=0$ and at the end $y$ will be $A$.
 knew the straight line was not the curve, but incorrectly thought the
 answer was a part of a circle.
 
-{{{galileo_picture}}}
+```julia; echo=false
+imgfile = "figures/galileo.gif"
+caption = """
+As early as 1638, Galileo showed that an object falling along `AC` and then `CB` will fall faster than one traveling along `AB`, where `C` is on the arc of a circle.
+From the [History of Math Archive](http://www-history.mcs.st-and.ac.uk/HistTopics/Brachistochrone.html).
+"""
+ImageFile(imgfile, caption)
+```
 
 
 This simulation also suggests that a curved path is better than the shorter straight one:
 
+```julia; echo=false; cache=true
+##{{{brach_graph}}}
 
-{{{brach_graph}}}
+function brach(f, x0, vx0, y0, vy0, dt, n)
+    m = 1
+    g = 9.8
+
+    axs = Float64[0]
+    ays = Float64[-g]
+    vxs = Float64[vx0]
+    vys = Float64[vy0]
+    xs = Float64[x0]
+    ys = Float64[y0]
+
+    for i in 1:n
+        x = xs[end]
+        vx = vxs[end]
+
+        ax = -f'(x) * (f''(x) * vx^2 + g) / (1 + f'(x)^2)
+        ay = f''(x) * vx^2 + f'(x) * ax
+
+        push!(axs, ax)
+        push!(ays, ay)
+
+        push!(vxs, vx + ax * dt)
+        push!(vys, vys[end] + ay * dt)
+        push!(xs, x       + vxs[end] * dt)# + (1/2) * ax * dt^2)
+        push!(ys, ys[end] + vys[end] * dt)# + (1/2) * ay * dt^2)
+    end
+
+    [xs ys vxs vys axs ays]
+
+end
+
+
+fs = [x -> 1 - x,
+      x -> (x-1)^2,
+      x -> 1 - sqrt(1 - (x-1)^2),
+      x ->  - (x-1)*(x+1),
+      x -> 3*(x-1)*(x-1/3)
+      ]
+
+
+MS = [brach(f, 1/100, 0, 1, 0, 1/100, 100) for f in fs]
+
+
+function make_brach_graph(n)
+
+    p = plot(xlim=(0,1), ylim=(-1/3, 1), legend=false)
+    for (i,f) in enumerate(fs)
+        plot!(f, 0, 1)
+        U = MS[i]
+        x = min(1.0, U[n,1])
+        scatter!(p, [x], [f(x)])
+    end
+    p
+
+end
+
+
+
+n = 4
+anim = @animate for i=[1,5,10,15,20,25,30,35,40,45,50,55,60]
+    make_brach_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = """
+The race is on. An illustration of beads falling along a path, as can be seen, some paths are faster than others. The fastest path would follow a cycloid. See [Bensky and Moelter](https://pdfs.semanticscholar.org/66c1/4d8da6f2f5f2b93faf4deb77aafc7febb43a.pdf) for details on simulating a bead on a wire.
+"""
+
+ImageFile(imgfile, caption)
+```
 
 
 
@@ -393,7 +529,7 @@ caveat is, this function needs a good initial guess, and the one we
 use below need not be widely applicable.
 
 
-```
+```julia;
 function back_euler(F, x0, xn, y0, n)
     h = (xn - x0)/n
     xs = zeros(n+1)
@@ -411,7 +547,7 @@ end
 
 We then have with $C=1$ over the interval $[0,1.2]$ the following:
 
-```
+```julia;
 F(y, x; C=1) = sqrt(C/y - 1)
 x0, xn, y0 = 0, 1.2, 0
 cyc = back_euler(F, x0, xn, y0, 50)
@@ -438,11 +574,11 @@ good. For example, consider the differential equation $y'(x) =
 Euler method to get an answer over $[0,2]$ with $h=0.5$ we don't see
 this:
 
-```
+```julia;
 F(y,x) = -5y
 x0, xn, y0 = 0, 2, 1
 u = euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-plot(VectorField((x,y) -> F(y,x)), xlims=(0, 2), ylims=(-5, 5), n=15)
+vectorfieldplot((x,y) -> [1,F(y,x)], xlims=(0, 2), ylims=(-5, 5))
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```
@@ -450,7 +586,7 @@ plot!(u, 0, 2, linewidth=5)
 What we see is that the value of $h$ is too big to capture the decay
 scale of the solution. A smaller $h$, can do much better:
 
-```
+```julia;
 u = euler(F, x0, xn, y0, 50)    # n=50 => h = 2/50
 plot(x -> y0 * exp(-5x), 0, 2)
 plot!(u, 0, 2)
@@ -463,9 +599,9 @@ $h$s are needed to good results.
 
 The implicit, backward Euler method does not have this issue, as we can see here:
 
-```
+```julia;
 u = back_euler(F, x0, xn, y0, 4)     # n =4 => h = 2/4
-plot(VectorField((x,y) -> F(y,x)),  xlims=(0, 2), ylims=(-1, 1), n=15)
+vectorfieldplot((x,y) -> [1,F(y,x)],  xlims=(0, 2), ylims=(-1, 1))
 plot!(x -> y0 * exp(-5x), 0, 2, linewidth=5)
 plot!(u, 0, 2, linewidth=5)
 ```
@@ -500,7 +636,7 @@ $u(t_0)$ and the initial value of $u'(t_0)$. We have seen if we start at an angl
 
 We write a function to solve this starting from $(x_0, y_0)$ and ending at $x_n$:
 
-```
+```julia;
 function euler2(x0, xn, y0, yp0, n; g=9.8, l = 5)
   xs, us, vs = zeros(n+1), zeros(n+1), zeros(n+1)
   xs[1], us[1], vs[1] = x0, y0, yp0
@@ -518,7 +654,7 @@ Let's take $a = \pi/4$ as the initial angle, then the approximate
 solution should be $\pi/4\cos(\sqrt{g/l}x)$ with period $T =
 2\pi\sqrt{l/g}$. We try first to plot then over 4 periods:
 
-```
+```julia;
 l, g = 5, 9.8
 T = 2pi * sqrt(l/g)
 x0, xn, y0, yp0 = 0, 4T, pi/4, 0
@@ -531,7 +667,7 @@ steps to capture a full up and down motion. Instead, we try to get $20$ steps pe
 so $n$ must be not $20$, but $4 \cdot 20 \cdot T \approx 360$. To this
 graph, we add the approximate one:
 
-```
+```julia;
 plot(euler2(x0, xn, y0, yp0, 360), 0, 4T)
 plot!(x -> pi/4*cos(sqrt(g/l)*x), 0, 4T)
 ```
@@ -557,7 +693,7 @@ $$~
 u'(x) = x - u(x), \quad u(0) = 1
 ~$$
 
-```
+```julia; echo=false
 F(y,x) = x - y
 x0, xn, y0 = 0, 1, 1
 val = euler(F, x0, xn, y0, 5)(1)
@@ -574,7 +710,7 @@ y' = x \cdot \sin(y), \quad y(0) = 1.
 
 Use Euler's method with $n=50$ to find the value of $y(5)$.
 
-```
+```julia; echo=false
 F(y, x) = x * sin(y)
 x0, xn, y0 = 0, 5, 1
 n = 50
@@ -593,7 +729,7 @@ $$~
 
 Use Euler's method to solve for $y(2)$ when $n=50$.
 
-```
+```julia; echo=false
 F(y, x) = 1 - 2y/x
 x0, xn, y0 = 1, 2, 0
 n = 50
@@ -612,7 +748,7 @@ $$~
 
 Use Euler's method to solve for $y(3)$ when $n=25$.
 
-```
+```julia; echo=false
 F(y, x) = y*log(y)/x
 x0, xn, y0 = 2, 3, exp(1)
 n = 25
@@ -633,7 +769,7 @@ Use Euler's method with $n=50$ to approximate the solution $y$ over $[0,2]$.
 
 What is the value at $x=1/2$?
 
-```
+```julia; echo=false
 F(y, x) = y * (1-2x)
 x0, xn, y0 = 0, 2, 1
 n = 50
@@ -643,7 +779,7 @@ numericq(u(1/2))
 
 What is the value at $x=3/2$?
 
-```
+```julia; echo=false
 numericq(u(3/2))
 ```
 
@@ -658,7 +794,7 @@ velocity in the 2nd step in place of the value before the step.
 
 Modify the `euler2` function to implement the Euler-Cromer method. What do you see?
 
-```
+```julia; echo=false
 choices = [
 "The same as before---the amplitude grows",
 "The solution is identical to that of the approximation found by linearization of the sine term",

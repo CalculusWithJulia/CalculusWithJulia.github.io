@@ -1,6 +1,6 @@
 # Area under a curve
 
-```nocode,noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia
 plotly()
 ```
@@ -29,7 +29,7 @@ graph. That is, the area between $f(x)$ and the $x$-axis between $a
 For some functions, this area can be computed by geometry, for
 example, here we see the area under $f(x)$ is just $1$, as it is a triangle with base $2$ and height $1$:
 
-```
+```julia;
 using CalculusWithJulia   # loads `Plots`, `QuadGK`, `Roots`, ...
 f(x) = 1 - abs(x)
 plot([f, zero], -1, 1)
@@ -37,21 +37,21 @@ plot([f, zero], -1, 1)
 
 Similarly, we know this area is also $1$, it being a square:
 
-```
+```julia;
 f(x) = 1
 plot([f, zero], 0, 1)
 ```
 
 This one, is simply $\pi/2$, it being half a circle of radius $1$:
 
-```
+```julia;
 f(x) = sqrt(1 - x^2)
 plot([f, zero], -1, 1)
 ```
 
 And this area can be broken into a sum of the area of square and the area of a rectangle, or $1 + 1/2$:
 
-```
+```julia;
 f(x) = x > 1 ? 2 - x : 1.0
 plot([f, zero], 0, 2)
 ```
@@ -62,7 +62,65 @@ But what of more complicated areas? Can these have their area computed?
 
 In a previous section, we saw this animation:
 
-{{{archimedes_parabola}}}
+```julia; echo=false; cache=true
+## {{{archimedes_parabola}}}
+pyplot()
+fig_size = (600, 400)
+
+
+f(x) = x^2
+colors = [:black, :blue, :orange, :red, :green, :orange, :purple]
+
+## Area of parabola
+
+## Area of parabola
+function make_triangle_graph(n)
+    title = "Area of parabolic cup ..."
+    n==1 && (title = "Area = 1/2")
+    n==2 && (title = "Area = previous + 1/8")
+    n==3 && (title = "Area = previous + 2*(1/8)^2")
+    n==4 && (title = "Area = previous + 4*(1/8)^3")
+    n==5 && (title = "Area = previous + 8*(1/8)^4")
+    n==6 && (title = "Area = previous + 16*(1/8)^5")
+    n==7 && (title = "Area = previous + 32*(1/8)^6")
+
+
+
+    plt = plot(f, 0, 1, legend=false, size = fig_size, linewidth=2)
+    annotate!(plt, [(0.05, 0.9, text(title,:left))])  # if in title, it grows funny with gr
+    n >= 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linetype=:polygon, fill=colors[1], alpha=.2)
+    n == 1 && plot!(plt, [1,0,0,1, 0], [1,1,0,1,1], color=colors[1], linewidth=2)
+    for k in 2:n
+        xs = range(0, stop=1, length=1+2^(k-1))
+        ys = map(f, xs)
+        k < n && plot!(plt, xs, ys, linetype=:polygon, fill=:black, alpha=.2)
+        if k == n
+            plot!(plt, xs, ys, color=colors[k], linetype=:polygon, fill=:black, alpha=.2)
+            plot!(plt, xs, ys, color=:black, linewidth=2)
+        end
+    end
+    plt
+end
+
+
+
+n = 7
+anim = @animate for i=1:n
+    make_triangle_graph(i)
+end
+
+imgfile = tempname() * ".gif"
+gif(anim, imgfile, fps = 1)
+
+
+caption = L"""
+The first triangle has area $1/2$, the second has area $1/8$, then $2$ have area $(1/8)^2$, $4$ have area $(1/8)^3$, ...
+With some algebra, the total area then should be $1/2 \cdot (1 + (1/4) + (1/4)^2 + \cdots) = 2/3$.
+"""
+
+plotly()
+ImageFile(imgfile, caption)
+```
 
 This illustrates a method of
 [Archimedes](http://en.wikipedia.org/wiki/The_Quadrature_of_the_Parabola)
@@ -85,17 +143,17 @@ One such approach is illustrated in this figure due to Beeckman from 1618
 (from
 [Bressoud](http://www.math.harvard.edu/~knill/teaching/math1a_2011/exhibits/bressoud/))
 
-```
-using WeavePynb
-out = gif_to_data("figures/beeckman-1618.png", L"""
+```julia; echo=false
+imgfile = "figures/beeckman-1618.png"
+caption = L"""
 
 Figure of Beeckman (1618) showing a means to compute the area under a
 curve, in this example the line connecting points $A$ and $B$. Using
 approximations by geometric figures with known area is the basis of
 Riemann sums.
 
-""")
-WeavePynb.HTMLoutput(out)
+"""
+ImageFile(imgfile, caption)
 ```
 
 Beeckman actually did more than find the area. He generalized the
@@ -172,7 +230,7 @@ first $n$ natural numbers.
 
 With this expression, it is readily seen that as $n$ gets large this value gets close to $2/6 = 1/3$.
 
-```
+```julia; echo=false
 note("""
 
 The above approach, like Archimedes', ends with a limit being
@@ -185,7 +243,7 @@ the general statement there is a stretching of the concept of a limit.
 ```
 
 
-```
+```julia; echo=false
 note(L"""
 
 There is a more compact notation to $x_1 + x_2 + \cdots + x_n$, this using the *summation notation* or capital sigma. We have:
@@ -257,7 +315,7 @@ are integrable:
 
 
 
-```
+```julia; echo=false
 note(L"""
 
 The expression $V = \int_a^b f(x) dx$ is known as the *definite
@@ -506,7 +564,7 @@ To see the mechanics, let's again return to Archimedes' problem and compute $\in
 
 Let us fix some values:
 
-```
+```julia;
 a, b = 0, 1
 f(x) = x^2
 ```
@@ -514,7 +572,7 @@ f(x) = x^2
 Then for a given $n$ we have some steps to do: create the partition,
 find the $c_i$, multiply the pieces and add up. Here is one way to do all this:
 
-```
+```julia;
 n = 5
 xs = a:(b-a)/n:b       # also range(a, b, length=n)
 deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
@@ -523,7 +581,7 @@ cs = xs[1:end-1]       # finds left-hand end points. xs[2:end] would be right-ha
 
 Now to multiply the values. We want to sum the product `f(cs[i]) * deltas[i]`, here is one way to do so:
 
-```
+```julia;
 sum(f(cs[i]) * deltas[i] for i in 1:length(deltas))
 ```
 
@@ -531,7 +589,7 @@ Our answer is not so close to the value of $1/3$, but what did we
 expect -- we only used $n=5$ intervals. Trying again with $50,000$ gives
 us:
 
-```
+```julia;
 a, b = 0, 1
 f(x) = x^2
 n = 50_000
@@ -551,7 +609,7 @@ Before continuing, we define a function to compute the Riemann sum for
 us with an extra argument to specifying one of three methods for
 computing $c_i$:
 
-```noeval
+```julia; eval=false
 function riemann(f, a, b, n; method="left")
   xs = a:(b-a)/n:b
   deltas = diff(xs)      # forms x2-x1, x3-x2, ..., xn-xn-1
@@ -573,14 +631,14 @@ function to use the familiar template `action(function,
 arguments...)`, so we pass in a function and arguments to describe the
 problem (`a`, `b`, and  `n` and, optionally, the `method`):
 
-```
+```julia;
 f(x) = exp(x)
 riemann(f, 0, 5, 10)   # S_10
 ```
 
 Or with more values intervals in the partition
 
-```
+```julia;
 riemann(f, 0, 5, 50_000)
 ```
 
@@ -615,9 +673,9 @@ If we think of the area below the $x$ axis as "signed" area carrying a minus sig
 
 Consider a function $f(x)$ defined through its piecewise linear graph:
 
-```
+```julia; echo=false
 f(x) = abs(x) > 2 ? 1.0 : abs(x) - 1.0
-Outputonly(plot([f, zero], -3,3))
+plot([f, zero], -3,3)
 ```
 
 * Compute $\int_{-3}^{-1} f(x) dx$. The area comprised of a square of area $1$ and a triangle with area $1/2$, so should be $3/2$.
@@ -654,7 +712,7 @@ poison any subsequent arithmetic operations, so the value returned will
 be `NaN` and not an approximate answer). We could define our function
 with a check:
 
-```
+```julia;
 f(x) = x > 0 ? x * log(x) : 0.0
 ```
 
@@ -663,7 +721,7 @@ slow things down a bit. Since we will call this function 50,000 times, we
 would like to avoid this, if we can. In this case just using the right
 sum will work:
 
-```
+```julia;
 f(x) = x * log(x)
 riemann(f, 0, 2, 50_000, method="right")
 ```
@@ -678,7 +736,7 @@ midpoint, estimate $\pi$. How close are you?
 The partition is $-1 < -1/2 < 0 < 1/2 < 1$. The midpoints are $-3/4,
 -1/4, 1/4, 3/4$. We thus have that $\pi/2$ is approximately:
 
-```
+```julia;
 xs = range(-1, 1, length=5)
 deltas = diff(xs)
 cs = [-3/4, -1/4, 1/4, 3/4]
@@ -690,7 +748,7 @@ a = sum(f(c)*delta for (c,delta) in zip(cs, deltas))
 
 So $\pi$ is about `2a`:
 
-```
+```julia;
 2a
 ```
 
@@ -775,7 +833,7 @@ derivative over $[a,b]$. This is significant, the error in $10$ steps
 of Simpson's rule is on the scale of the error of $10,000$ steps of
 the Riemann sum for well-behaved functions.
 
-```
+```julia; echo=false
 note(L"""
 
 The Wikipedia article mentions that Kepler used a similar formula $100$
@@ -835,7 +893,7 @@ trickier problems require a specification of an error threshold.
 
 To use the function, we have:
 
-```
+```julia;
 using QuadGK       # loaded with CalculusWithJulia
 f(x) = x * log(x)
 quadgk(f, 0, 2)
@@ -856,7 +914,7 @@ problem.
 
 The method should be exact for polynomial functions:
 
-```
+```julia;
 f(x) = x^5 - x + 1
 quadgk(f, -2, 2)
 ```
@@ -873,7 +931,7 @@ Here are some sample integrals computed with `quadgk`:
 
 - $\int_0^\pi \sin(x) dx$
 
-```
+```julia;
 quadgk(sin, 0, pi)
 ```
 
@@ -881,14 +939,14 @@ quadgk(sin, 0, pi)
 
 - $\int_0^2 x^x dx$
 
-```
+```julia;
 f(x) = x^x
 quadgk(f, 0, 2)
 ```
 
 - $\int_0^5 e^x dx$
 
-```
+```julia;
 quadgk(exp, 0, 5)
 ```
 
@@ -897,14 +955,14 @@ When composing the answer with other functions it may be desirable to
 drop the error in the answer. Two styles can be used for this. The
 first is to just name the two returned values:
 
-```
+```julia;
 A, err = quadgk(cos, 0, pi/4)
 A
 ```
 
 The second is to ask for just the first component of the returned value:
 
-```
+```julia;
 A = quadgk(tan, 0, pi/4)[1]
 ```
 
@@ -925,14 +983,14 @@ Compute $C$ (numerically).
 
 The fact that $1 = \int_{-\pi}^\pi C \cdot \exp(\cos(x)) dx = C \int_{-\pi}^\pi \exp(\cos(x)) dx$ implies that $C$ is the reciprocal of
 
-```
+```julia;
 f(x) = exp(cos(x))
 A,err = quadgk(f, -pi, pi)
 ```
 
 So
 
-```
+```julia;
 C = 1/A
 f(x) = C * exp(cos(x))
 ```
@@ -945,7 +1003,7 @@ these?
 
 First we define a function, that computes $F(x)$:
 
-```
+```julia;
 F(x) = quadgk(f, -pi, x)[1]
 ```
 
@@ -959,7 +1017,7 @@ with $-\pi$ and $\pi$. (We solve $F(x) - p = 0$, so $F(\pi) - p > 0$ and $F(-\pi
 function to write the function $h(x) = F(x) - p$ for $p$ taking one of
 three values:
 
-```
+```julia;
 using Roots     # loaded with `CalculusWithJulia`
 [find_zero(x -> F(x) - p, (-pi, pi)) for p in [0.25, 0.5, 0.75]]
 ```
@@ -980,7 +1038,7 @@ $$~
 \int_{-5}^5 \sqrt{5^2 - x^2} dx.
 ~$$
 
-```
+```julia;
 f(x) = sqrt(5^2 - x^2)
 val, _ = quadgk(f, -5,5)
 numericq(val)
@@ -995,7 +1053,7 @@ $$~
 \int_{-2}^2 (2 - \lvert x\rvert) dx
 ~$$
 
-```
+```julia;
 f(x) = 2- abs(x)
 a,b = -2, 2
 val, _ = quadgk(f, a,b)
@@ -1011,7 +1069,7 @@ $$~
 \int_0^3 3 dx + \int_3^9 (3 + 3(x-3)) dx
 ~$$
 
-```
+```julia;
 f(x) = x <= 3 ? 3.0 : 3 + 3*(x-3)
 a,b = 0, 9
 val, _ = quadgk(f, a, b)
@@ -1029,7 +1087,7 @@ $$~
 
 (The notation $\lfloor x \rfloor$ is the integer such that $\lfloor x \rfloor \leq x < \lfloor x \rfloor + 1$.)
 
-```
+```julia;
 f(x) = floor(x)
 a, b = 0, 5
 val, _ = quadgk(f, a, b)
@@ -1042,7 +1100,7 @@ numericq(val)
 
 Using geometry, compute the definite integral between $-3$ and $3$ of this graph comprised of lines and circular arcs:
 
-```
+```julia; echo=false
 function f(x)
   if x < -1
     abs(x+1)
@@ -1052,13 +1110,12 @@ function f(x)
     abs(x-1)
   end
 end
-p = plot(f, -3, 3, aspect_ratio=:equal)
-Outputonly(p)
+plot(f, -3, 3, aspect_ratio=:equal)
 ```
 
 The value is:
 
-```
+```julia;
 val = (1/2 * 2 * 2) * 2 + pi*1^2/2
 numericq(val)
 ```
@@ -1071,7 +1128,7 @@ For the function $f(x) = \sin(\pi x)$, estimate the integral for $-1$
 to $1$ using a left-Riemann sum with the partition $-1 < -1/2 < 0 < 1/2
 < 1$.
 
-```
+```julia;
 f(x) = sin(x)
 xs = -1:1/2:1
 deltas = diff(xs)
@@ -1089,7 +1146,7 @@ $$~
 ~$$
 
 
-```
+```julia;
 val = 0
 numericq(val)
 ```
@@ -1103,7 +1160,7 @@ $$~
 ~$$
 
 
-```
+```julia;
 val = 1
 numericq(val)
 ```
@@ -1115,7 +1172,7 @@ Suppose you know that for the integrable function
 $\int_a^b f(u)du =1$ and $\int_a^c f(u)du = p$. If $a < c < b$ what is
 $\int_c^b f(u)du$?
 
-```
+```julia;
 choices = [
 L"1",
 L"p",
@@ -1129,7 +1186,7 @@ radioq(choices, ans)
 
 What is $\int_0^2 x^4 dx$? Use the rule for integrating $x^n$.
 
-```
+```julia;
 choices = [
 L"2^5 - 0^5",
 L"2^5/5 - 0^5/5",
@@ -1148,7 +1205,7 @@ $$~
 \int_1^x \frac{1}{u}du = 1.
 ~$$
 
-```
+```julia;
 val = exp(1)
 numericq(val)
 ```
@@ -1161,7 +1218,7 @@ $$~
 \int_0^1 x^n dx = \frac{1}{12}.
 ~$$
 
-```
+```julia;
 val = 11
 numericq(val)
 ```
@@ -1170,7 +1227,7 @@ numericq(val)
 
 Suppose $f(x) > 0$ and $a < c < b$. Define $F(x) = \int_a^x f(u) du$. What can be said about $F(b)$ and $F(c)$?
 
-```
+```julia;
 choices = [
 L"The area between $c$ and $b$ must be positive, so $F(c) < F(b)$.",
 L"F(b) - F(c) = F(a).",
@@ -1185,7 +1242,7 @@ radioq(choices, ans)
 
 For the right Riemann sum approximating $\int_0^{10} e^x dx$ with $n=100$ subintervals, what would  be a good estimate for the error?
 
-```
+```julia;
 choices = [
 L"(10 - 0)/100 \cdot (e^{10} - e^{0})",
 L"10/100",
@@ -1204,7 +1261,7 @@ $$~
 \int_1^4 x^x dx   .
 ~$$
 
-```
+```julia;
 f(x) = x^x
 a, b = 1, 4
 val, _ = quadgk(f, a, b)
@@ -1220,7 +1277,7 @@ $$~
 \int_0^3 e^{-x^2} dx   .
 ~$$
 
-```
+```julia;
 f(x) = exp(-x^2)
 a, b = 0, 3
 val, _ = quadgk(f, a, b)
@@ -1236,7 +1293,7 @@ $$~
 \int_0^{9/10} \tan(u \frac{\pi}{2}) du.   .
 ~$$
 
-```
+```julia; echo=false
 f(x) = tan(x*pi/2)
 a, b = 0, 9/10
 val, _ = quadgk(f, a, b)
@@ -1252,7 +1309,7 @@ $$~
 \int_{-1/2}^{1/2} \frac{1}{\sqrt{1 - x^2}} dx
 ~$$
 
-```
+```julia; echo=false
 f(x) = 1/sqrt(1 - x^2)
 a, b =-1/2, 1/2
 val, _ = quadgk(f, a, b)
@@ -1265,19 +1322,19 @@ numericq(val)
 
 Gauss nodes for approximating the integral $\int_{-1}^1 f(x) dx$ for $n=4$ are:
 
-```
+```julia;
 ns = [-0.861136, -0.339981, 0.339981, 0.861136]
 ```
 
 The corresponding weights are
 
-```
+```julia;
 wts = [0.347855, 0.652145, 0.652145, 0.347855]
 ```
 
 Use these to estimate the integral $\int_{-1}^1 \cos(\pi/2 \cdot x)dx$ with $w_1f(x_1) + w_2 f(x_2) + w_3 f(x_3) + w_4 f(x_4)$.
 
-```
+```julia; echo=false
 f(x) = cos(pi/2*x)
 val = sum([f(wi)*ni for (wi, ni) in zip(wts, ns)])
 numericq(val)
@@ -1285,7 +1342,7 @@ numericq(val)
 
 The actual answer is $4/\pi$. How far off is the approximation based on 4 points?
 
-```
+```julia; echo=false
 choices = [
 L"around $10^{-1}$",
 L"around $10^{-2}$",
@@ -1300,7 +1357,7 @@ radioq(choices, ans, keep_order=true)
 
 Using the Gauss nodes and weights from the previous question, estimate the integral of $f(x) = e^x$ over $[-1, 1]$. The value is:
 
-```
+```julia; echo=false
 f(x) = exp(x)
 val = sum([f(wi)*ni for (wi, ni) in zip(wts, ns)])
 numericq(val)

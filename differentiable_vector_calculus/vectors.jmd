@@ -1,6 +1,6 @@
 # Vectors and matrices
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 using CalculusWithJulia, Plots, LinearAlgebra
 gr()
 ```
@@ -35,14 +35,14 @@ Another operation for vectors is *scalar* multiplication. Geometrically this cha
 
 To illustrate we first load our package and define two 3D vectors:
 
-```
-using CalculusWitJulia
+```julia;
+using CalculusWithJulia
 u, v = [1, 2, 3], [4, 3, 2]
 ```
 
 The sum is component-wise summation (`1+4, 2+3, 3+2`):
 
-```
+```julia;
 u + v
 ```
 
@@ -50,7 +50,7 @@ For addition, as the components must pair off, the two vectors being added must 
 
 Scalar multiplication by `2`, say, multiplies each entry by `2`:
 
-```
+```julia;
 2 * u
 ```
 
@@ -82,7 +82,7 @@ Vectors may be visualized in 2 or 3 dimensions using `Plots`. In 2 dimensions, t
 
 To plot `u=[1,2]` from `p=[0,0]` we have the following usage:
 
-```
+```julia;
 using Plots
 gr()       # better arrows than plotly()
 quiver([0],[0], quiver=([1],[2]))
@@ -90,7 +90,7 @@ quiver([0],[0], quiver=([1],[2]))
 
 The cumbersome syntax is typical here. We naturally describe vectors and points using `[a,b,c]` to combine them, but the plotting functions want to plot many such at a time and expect vectors containing just the `x` values, just the `y` values, etc. The above usage looks a bit odd, as these vectors of `x` and `y` values have only one entry. Converting from the one representation to the other requires reshaping the data, which we will do with the following function from the `CalculusWithJulia` package:
 
-```noeval
+```julia; eval=false
 unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
 ```
 
@@ -101,7 +101,7 @@ With `unzip` defined, we can plot a 2-D vector `v` anchored at point `p` through
 
 To illustrate, the following defines 3 vectors (the third through addition), then graphs all three, though in different starting points to emphasize the geometric interpretation of vector addition.
 
-```
+```julia;
 u = [1, 2]
 v = [4, 2]
 w = u + v
@@ -120,7 +120,7 @@ with `plot(unzip([p,p+v])...)`. To avoid all these details, the `CalculusWithJul
 
 With this, the above simplifies to:
 
-```
+```julia;
 plot(legend=false)
 arrow!(p, u)
 arrow!(u, v)
@@ -134,7 +134,7 @@ The distinction between a point and a vector within `Julia` is only mental. We u
 
 To see that a unit vector has the same "direction" as the vector, we might draw them with different widths:
 
-```
+```julia;
 using LinearAlgebra
 v = [2, 3]
 u = v / norm(v)
@@ -154,7 +154,7 @@ The `norm` function is in the standard library, `LinearAlgebra`, which must be l
 
 * **Splatting**. The use of three dots, "`...`", to "splat" the values from a container like a vector (or tuple) into *arguments* of a function can be very convenient. It was used above in the definition for the `arrow!` function: essentially `quiver!(unzip([p])..., quiver=unzip([v]))`. The `quiver` function expects 2 (or 3) arguments describing the `xs` and `ys` (and sometimes `zs`). The `unzip` function returns these in a container, so splatting is used to turn the values in the container into distinct arguments of the function. Whereas the `quiver` argument expects a tuple of vectors, so no splatting is used for that part of the definition. Another use of splatting we will see is with functions of vectors. These can be defined in terms of the vector's components or the vector as a whole, as below:
 
-```
+```julia;
 f(x,y,z) = x^2 + y^2 + z^2
 f(v) = v[1]^2 + v[2]^2 + v[3]^2
 ```
@@ -162,7 +162,7 @@ f(v) = v[1]^2 + v[2]^2 + v[3]^2
 The first uses the components and is arguably, much easier to read. The second uses indexing in the function body to access the components. Both uses have their merits.
 If a function is easier to write in terms of its components, but an interface expects a vector of components as it argument, then splatting can be useful, to go from one style to another, similar to this:
 
-```
+```julia;
 g(x,y,z) =  x^2 + y^2 + z^2
 g(v) = g(v...)
 ```
@@ -175,7 +175,7 @@ The splatting will mean `g(v)` eventually calls `g(x,y,z)` through `Julia`'s mul
 
 For example, if `xs` is a vector and `ys` a scalar, then the value in `ys` is repeated many times to match up with the values of `xs`. Or if `xs` and `ys` have different dimensions, the values of one will be repeated. Consider this:
 
-```
+```julia;
 xs = ys = [0, 1]
 f(x,y) = x + y
 f.(xs, ys)
@@ -183,7 +183,7 @@ f.(xs, ys)
 
 This matches `xs` and `ys` to pass `(0,0)` and then `(1,1)` to `f`, returning `0` and `2`. Now consider
 
-```
+```julia;
 xs = [0, 1]; ys = [0 1]  # xs is a column vector, ys a row vector
 f.(xs, ys)
 ```
@@ -221,7 +221,7 @@ $\cos(\theta) = \hat{v} \cdot \hat{w}$. That is the angle does not depend on the
 
 The dot product is computed in `Julia` by the `dot` function, which is in the `LinearAlgebra` package of the standard library. This must be loaded (as above) before its use either directly or through the `CalculusWithJulia` package:
 
-```
+```julia;
 u = [1, 2]
 v = [2, 1]
 dot(u, v)
@@ -231,14 +231,14 @@ dot(u, v)
 
     In `Julia`, the unicode operator entered by `\cdot[tab]` can also be used to mirror the math notation:
 
-```
+```julia;
 u ⋅ v   # u \cdot[tab] v
 ```
 
 
 Continuing, to find the angle between $\vec{u}$ and $\vec{v}$, we might do this:
 
-```
+```julia;
 ctheta = dot(u/norm(u), v/norm(v))
 acos(ctheta)
 ```
@@ -246,7 +246,7 @@ acos(ctheta)
 
 The cosine of $\pi/2$ is $0$, so two vectors which are at right angles to each other will have a dot product of  $0$:
 
-```
+```julia;
 u = [1, 2]
 v = [2, -1]
 u ⋅ v
@@ -256,7 +256,7 @@ In two dimensions, we learn that a perpendicular line to a line with slope $m$ w
 
 For example, these two vectors are orthogonal, as their dot product is $0$, even though we can't readily visualize them:
 
-```
+```julia;
 u = [1, 2, 3, 4, 5]
 v = [-30, 4, 3, 2, 1]
 u ⋅ v
@@ -267,7 +267,7 @@ u ⋅ v
 
 From right triangle trigonometry, we learn that $\cos(\theta) = \text{adjacent}/\text{hypotenuse}$. If we use a vector, $\vec{h}$ for the hypotenuse, and $\vec{a} = \langle 1, 0 \rangle$, we have this picture:
 
-```
+```julia;
 h = [2, 3]
 a = [1, 0]  # unit vector
 h_hat = h / norm(h)
@@ -303,7 +303,7 @@ A pendulum, a bob on a string, swings back and forth due to the force of gravity
 
 A [force diagram](https://en.wikipedia.org/wiki/Free_body_diagram) is a useful visualization device of physics to illustrate the applied forces involved in a scenario. In this case the bob has two forces acting on it: a force due to tension in the string of unknown magnitude, but in the direction of the string; and a force due to gravity. The latter is in the downward direction and has magnitude $mg$, $g=9.8m/sec^2$ being the gravitational constant.
 
-```
+```julia;
 theta = pi/12
 mass, gravity = 1/9.8, 9.8
 
@@ -318,7 +318,7 @@ scatter!(p[1:1], p[2:2], markersize=5)
 
 The magnitude of the tension force is exactly that of the force of gravity projected onto $\vec{l}$, as the bob is not accelerating in that direction. The component of the gravity force in the perpendicular direction is the part of the gravitational force that causes acceleration in the pendulum. Here we find the projection onto $\vec{l}$ and visualize the two components of the gravitational force.
 
-```
+```julia;
 plot(legend=false, aspect_ratio=:equal)
 arrow!(p, l)
 arrow!(p, Fg)
@@ -339,7 +339,7 @@ Starting with three vectors, we can create three orthogonal vectors using projec
 
 Let's begin with three vectors in $R^3$:
 
-```
+```julia;
 u = [1, 2, 3]
 v = [1, 1, 2]
 w = [1, 2, 4]
@@ -347,7 +347,7 @@ w = [1, 2, 4]
 
 We can find a vector from `v` orthogonal to `u` using:
 
-```
+```julia;
 unit_vec(u) = u / norm(u)
 projection(u, v) = (u ⋅ unit_vec(v)) * unit_vec(v)
 
@@ -357,7 +357,7 @@ worth = w - projection(w, u) - projection(w, vorth)
 
 We can verify the orthogonality through:
 
-```
+```julia;
 u ⋅ vorth, u ⋅ worth, vorth ⋅ worth
 ```
 
@@ -493,7 +493,7 @@ The $3\times 3$ case shows how determinants may be [computed recursively](https:
 
 As mentioned previously, a matrix in `Julia` is defined component by component with `[]`. We separate row entries with spaces and columns with semicolons:
 
-```
+```julia;
 M = [3 4 -5; 5 -5 7; -3 6 9]
 ```
 
@@ -501,14 +501,14 @@ Space is the separator, which means computing a component during definition (i.e
 
 Vectors are defined similarly. As they are *column* vectors, we use a semicolon (or a comma) to separate:
 
-```
+```julia;
 b = [10, 11, 12]   # not b = [10 11 12], which would a row vector.
 ```
 
 
 In `Julia`, entries in a matrix (or a vector) are stored in a container with a type wide enough accomodate each entry. Here the type is SymPy's `Sym` type:
 
-```
+```julia;
 using SymPy
 @vars x1 x2 x3
 x = [x1, x2, x3]
@@ -516,7 +516,7 @@ x = [x1, x2, x3]
 
 Matrices may also be defined from blocks. This example shows how to make two column vectors into a matrix:
 
-```
+```julia;
 u = [10, 11, 12]
 v = [13, 14, 15]
 [u v]   # horizontally combine
@@ -524,7 +524,7 @@ v = [13, 14, 15]
 
 Vertically combining the two will stack themL
 
-```
+```julia;
 [u; v]
 ```
 
@@ -532,57 +532,57 @@ Vertically combining the two will stack themL
 
 Scalar multiplication will just work as expected:
 
-```
+```julia;
 2 * M
 ```
 
 Matrix addition is also straightforward:
 
-```
+```julia;
 M + M
 ```
 
 Matrix addition expects matrices of the same size. An error will otherwise be thrown. However, if addition is *broadcasted* then the sizes need only be commensurate. For example, this will add `1` to each entry of `M`:
 
-```
+```julia;
 M .+ 1
 ```
 
 Matrix multiplication is defined by `*`:
 
-```
+```julia;
 M * M
 ```
 
 We can then see how the system of equations is represented with matrices:
 
-```
+```julia;
 M * x - b
 ```
 
 Here we use `SymPy` to verify the above:
 
-```
+```julia;
 A = [symbols("A$i$j", real=true) for i in 1:3, j in 1:2]
 B = [symbols("B$i$j", real=true) for i in 1:2, j in 1:2]
 ```
 
 The matrix product has the expected size: the number of rows of `A` (3) by the number of columns of `B` (2):
 
-```
+```julia;
 A*B
 ```
 
 This confirms how each entry (`(A*B)[i,j]`) is from a dot product (`A[i,:]  ⋅ B[:,j]`):
 
-```
+```julia;
 [ (A*B)[i,j] == A[i,:] ⋅ B[:,j] for i in 1:3, j in 1:2]
 ```
 
 
 When the multiplication is broadcasted though, with `.*`, the operation will be component wise:
 
-```
+```julia;
 M .* M   # component wise (Hadamard product)
 ```
 
@@ -591,7 +591,7 @@ M .* M   # component wise (Hadamard product)
 
 The determinant is found through `det` provided by the built-in `LinearAlgebra` package:
 
-```
+```julia;
 using LinearAlgebra  # loaded with the CalculusWithJulia package
 det(M)
 ```
@@ -600,13 +600,13 @@ det(M)
 
 The transpose of a matrix is found through `transpose` which doesn't create a new object, but rather an object which knows to switch indices when referenced:
 
-```
+```julia;
 transpose(M)
 ```
 
 For matrices with *real* numbers, the transpose can be performed with the postfix operation `'`:
 
-```
+```julia;
 M'
 ```
 
@@ -616,17 +616,17 @@ M'
 
 With `u` and `v`, vectors from above, we have:
 
-```
+```julia;
 [u' v']   # [u v] was a 3 × 2 matrix, above
 ```
 
 and
 
-```
+```julia;
 [u'; v']
 ```
 
-```
+```julia; echo=false
 note("""
 The adjoint is defined *recursively* in `Julia`. In the `CalculusWithJulia` package, we overload the '\'' notation for *functions* to yield a univariate derivative found with automatic differentiation. This can lead to problems: if we have a matrix of functions, `M`, and took the transpose with `M'`, then the entries of `M'` would be the derivatives of the functions in `M`--not the original functions. This is very much likely to not be what is desired. The `CalculusWithJulia` package commits **type piracy** here *and* abuses the generic idea for '\'' in Julia. In general type piracy is very much frowned upon, as it can change expected behaviour. It is defined in `CalculusWithJulia`, as that package is intended only to act as a means to ease users into the wider package ecosystem of `Julia`.
 """)
@@ -636,14 +636,14 @@ The adjoint is defined *recursively* in `Julia`. In the `CalculusWithJulia` pack
 
 The dot product and matrix multiplication are related, and mathematically  identified through the relation: $\vec{u} \cdot \vec{v} = u^t v$, where the right hand side identifies $\vec{u}$ and $\vec{v}$ with a $n\times 1$ column matrix, and $u^t$ is the transpose, or a $1\times n$ row matrix. However, mathematically the left side is a scalar, but the right side a $1\times 1$ matrix. While distinct, the two are identified as the same. This is similar to the useful identification of a point and a vector. Within `Julia`, these identifications are context dependent. `Julia` stores vectors as 1-dimensional arrays, transposes as $1$-dimensional objects, and matrices as $2$-dimensional arrays. The product of a transpose and a vector is a scalar:
 
-```
+```julia;
 u, v = [1,1,2], [3,5,8]
 u' * v   # a scalar
 ```
 
 But if we make `u` a matrix (here  by "`reshape`ing" in a matrix with $1$ row and $3$ columns), we will get a matrix (actually a vector) in return:
 
-```
+```julia;
 reshape(u,(1,3)) * v
 ```
 
@@ -667,7 +667,7 @@ $$~
 \vec{u} \times \vec{v} =  \| \vec{u} \| \| \vec{v} \| \sin(\theta) \hat{n}.
 ~$$
 
-```
+```julia; echo=false
 note("""
 The right-hand rule is also useful to understand how standard household screws will behave when twisted with a screwdriver. If the right hand fingers curl in the direction of the twisting screwdriver, then the screw will go in or out following the direction pointed to by the thumb.
 """)
@@ -704,7 +704,7 @@ From the $\sin(\theta)$ term in the definition, we see that $\vec{u}\times\vec{u
 
 In `Julia`, the `cross` function from the `LinearAlgebra` package (part of the standard library) implements the cross product. For example:
 
-```
+```julia;
 a = [1, 2, 3]
 b = [4, 2, 1]
 cross(a, b)
@@ -712,20 +712,20 @@ cross(a, b)
 
 There is also the *infix* unicode operator `\times[tab]` that can be used for similarity to traditional mathematical syntax.
 
-```
+```julia;
 a × b
 ```
 
 We can see the cross product is anti-commutative by comparing the last answer with:
 
-```
+```julia;
 b × a
 ```
 
 
 Using vectors of size different than $n=3$ produces a dimension mismatch error:
 
-```
+```julia;
 [1, 2] × [3, 4]
 ```
 
@@ -734,7 +734,7 @@ Using vectors of size different than $n=3$ produces a dimension mismatch error:
 
 Let's see that the matrix definition will be identical (after identifications) to `cross`:
 
-```
+```julia;
 using SymPy, LinearAlgebra  # already loaded with the CalculusWithJulia package
 @vars i j k
 M = [i j k; 3 4 5; 3 6 7]
@@ -743,7 +743,7 @@ det(M) |> simplify
 
 Compare with
 
-```
+```julia;
 M[2,:] × M[3,:]
 ```
 
@@ -752,7 +752,7 @@ M[2,:] × M[3,:]
 
 Consider this extended picture involving two vectors $\vec{u}$ and $\vec{v}$ drawn in two dimensions:
 
-```
+```julia;
 u = [1, 2]
 v = [2, 1]
 p = [0,0]
@@ -772,7 +772,7 @@ The enclosed shape is a parallelogram. To this we added the projection of $\vec{
 
 The *area* of a parallelogram is the length of one side times the perpendicular height. The perpendicular height could be found from `norm(porth)`, so the area is:
 
-```
+```julia;
 norm(v) * norm(porth)
 ```
 
@@ -784,7 +784,7 @@ $$~
 
 We have, for our figure, after extending `u` and `v` to be three dimensional the area of the parallelogram:
 
-```
+```julia;
 u = [1, 2, 0]
 v = [2, 1, 0]
 norm(u × v)
@@ -794,7 +794,7 @@ norm(u × v)
 
 This analysis can be extended to the case of 3 vectors, which--when not co-planar--will form a *parallelepiped*.
 
-```
+```julia;
 plotly()
 u,v,w = [1,2,3], [2,1,0], [1,1,2]
 plot()
@@ -819,7 +819,7 @@ $$~
 that is, the area of the parallelepiped. Wait, what about $(\vec{v}\times\vec{u})\cdot\vec{w}$? That will have an opposite sign. Yes, in the above, there is an assumption that $\vec{n}$ and $\vec{w}$ have a an angle between them within $[0, \pi/2]$, otherwise an absolute value must be used, as volume is non-negative.
 
 
-```
+```julia; echo=false
 note(L"""
 The triple-scalar product, $\vec{u}\cdot(\vec{v}\times\vec{w})$, gives the volume of the parallelepiped up to sign. If the sign of this is positive, the 3 vectors are said to have a *positive* orientation, if they triple-scalar product is negative, the vectors have a *negative* orientation.
 """)
@@ -850,7 +850,7 @@ $$~
 The following shows the algebraic properties stated above hold for
 symbolic vectors. First the linearity of the dot product:
 
-```
+```julia;
 @vars s t u1 u2 u3 v1 v2 v3 w1 w2 w3 real=true
 u = [u1, u2, u3]
 v = [v1, v2, v3]
@@ -861,13 +861,13 @@ u ⋅ (s*v + t*w) - (s*(u⋅v) + t*(u⋅w)) |> simplify
 
 This shows the dot product is commutative:
 
-```
+```julia;
 (u ⋅ v) - (v ⋅ u) |> simplify
 ```
 
 This shows the linearity of the cross product over scalar multiplication and vector addition:
 
-```
+```julia;
 u × (s*v + t*w) - (s*(u×v) + t*(u×w)) .|> simplify
 ```
 
@@ -875,19 +875,19 @@ u × (s*v + t*w) - (s*(u×v) + t*(u×w)) .|> simplify
 
 The cross product is anti-commutative:
 
-```
+```julia;
 u × v + v × u .|> simplify
 ```
 
 but not associative:
 
-```
+```julia;
 u × (v × w) - (u × v) × w .|> simplify
 ```
 
 Finally we verify the decomposition of the triple cross product:
 
-```
+```julia;
 (u × v) × w - ( (u ⋅ w) * v - (v ⋅ w) * u) .|> simplify
 ```
 
@@ -918,7 +918,7 @@ This table shows common usages of the symbols for various multiplication types: 
 
 A line in two dimensions satisfies the equation $ax + by = c$. Suppose $a$ and $b$ are non-zero. This can be represented in vector form, as the collection of all points associated to the vectors: $p + t \vec{v}$ where $p$ is a point on the line, say $(0,c/b)$, and v is the vector $\langle b, -a \rangle$. We can verify, this for values of `t` as follows:
 
-```
+```julia;
 @vars a b c x y t
 
 eq = c - (a*x + b*y)
@@ -937,7 +937,7 @@ In three dimensions, the equation of a plane is $ax + by + cz = d$. Suppose, $a$
 
 First, let $p = (0, 0, d/c)$ be a point on the plane. We find two vectors $u = \langle -b, a, 0 \rangle$ and $v = \langle 0, c, -b \rangle$. Then any point on the plane may be identified with the vector $p + s\vec{u} + t\vec{v}$. We can verify this algebraically through:
 
-```
+```julia;
 @vars d z s
 
 eq = d - (a*x + b*y + c * z)
@@ -964,7 +964,7 @@ any *linear* combination of the two vectors. This figure shows one such linear c
 
 
 
-```
+```julia;
 u = [1,2,3]
 v = [2,3,1]
 n = u × v
@@ -1007,7 +1007,7 @@ You are given that the vectors $\vec{u} =\langle 6, 3, 1 \rangle$ and $\vec{v} =
 
 The key is to find the normal vector to the plane, $\vec{n} = \vec{u} \times \vec{v}$:
 
-```
+```julia;
 u, v, p = [6,3,1], [3,2,1], [1,1,2]
 n = u × v
 a, b, c = n
@@ -1025,21 +1025,21 @@ Let `u=[1,2,3]`, `v=[4,3,2]`, and `w=[5,2,1]`.
 
 Find `u ⋅ v`:
 
-```
+```julia; echo=false
 u,v,w = [1,2,3], [4,3,2], [5,2,1]
 numericq(dot(u,v))
 ```
 
 Are `v` and `w` orthogonal?
 
-```
+```julia; echo=false
 ans = dot(v,w) == 0
 yesnoq(ans)
 ```
 
 Find the angle between `u` and `w`:
 
-```
+```julia; echo=false
 ctheta = (u ⋅ w)/norm(u)/norm(w)
 val = acos(ctheta)
 numericq(val)
@@ -1048,7 +1048,7 @@ numericq(val)
 
 Find `u ×  v`:
 
-```
+```julia; echo=false
 choices = [
 "`[-5, 10, -5]`",
 "`[-1, 6, -7]`",
@@ -1060,14 +1060,16 @@ radioq(choices, ans)
 
 Find the area of the parallelogram formed by `v` and `w`
 
-```
+```julia; echo=false
 val = norm(v  × w)
 numericq(val)
 ```
 
+
+
 Find the  volume of the parallelepiped formed by `u`, `v`, and `w`:
 
-```
+```julia;  echo=false
 val = abs((u × v) ⋅ w)
 numericq(val)
 ```
@@ -1077,21 +1079,21 @@ numericq(val)
 
 The dot product of two vectors may be described in words: pair off the corresponding values, multiply them, then add. In `Julia` the `zip` command will pair off two iterable objects, like vectors, so it seems like this command: `sum(prod.(zip(u,v)))` will find a dot product. Investigate  if it is does or doesn't by testing the following command and comparing to the dot product:
 
-```verbatim
+```julia;  eval=false
 u,v = [1,2,3], [5,4,2]
 sum(prod.(zip(u,v)))
 ```
 
 Does this return the same answer:
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 
 What does command `zip(u,v)` return?
 
-```
+```julia; echo=false
 choices = [
 "An object of type `Base.Iterators.Zip` that is only realized when used",
 "A vector of values `[(1, 5), (2, 4), (3, 2)]`"
@@ -1102,7 +1104,7 @@ radioq(choices, ans)
 
 What does `prod.(zip(u,v))` return?
 
-```
+```julia; echo=false
 choices = [
 "A vector of values `[5, 8, 6]`",
 "An object of type `Base.Iterators.Zip` that when realized will produce a vector of values"
@@ -1119,7 +1121,7 @@ $$~
 (\vec{u} \times \vec{v}) \cdot (\vec{u} \times \vec{v}) + (\vec{u} \cdot \vec{v})^2?
 ~$$
 
-```
+```julia; echo=false
 choices = [
 L"1",
 L"0",
@@ -1133,7 +1135,7 @@ radioq(choices, ans)
 
 Consider the projection of $\langle 1, 2, 3\rangle$ on $\langle 3, 2, 1\rangle$. What is its length?
 
-```
+```julia; echo=false
 u,v = [1,2,3], [3,2,1]
 val = (u ⋅ v)/norm(v)
 numericq(val)
@@ -1143,7 +1145,7 @@ numericq(val)
 
 Let $\vec{u} = \langle 1, 2, 3 \rangle$ and $\vec{v} = \langle 3, 2, 1 \rangle$. Describe the plane created by these two non-parallel vectors going through the origin.
 
-```
+```julia; echo=false
 choices = [
 L"-4x + 8y - 4z = 0",
 L"x + 2y + z = 0",
@@ -1158,7 +1160,7 @@ radioq(choices, ans)
 
 A plane $P_1$ is *orthogonal* to $\vec{n}_1$, a plane $P_2$ is *orthogonal* to $\vec{n}_2$. Explain why vector $\vec{v} = \vec{n}_1 \times \vec{n}_2$ is parallel to the *intersection* of $P_1$ and $P_2$.
 
-```
+```julia; echo=false
 choices = [
 L"$\vec{v}$ is in plane $P_1$, as it is orthogonal to $\vec{n}_1$ and $P_2$ as it is orthogonal to $\vec{n}_2$, hence it is parallel to both planes.",
 L"$\vec{n}_1$ and $\vec{n_2}$ are unit vectors, so the cross product gives the projection, which must be orthogonal to each vector, hence in the intersection"
@@ -1171,7 +1173,7 @@ radioq(choices, ans)
 
 (From Strang). For an (analog) clock draw vectors from the center out to each of the 12 hours marked on the clock. What is the vector sum of these 12 vectors?
 
-```
+```julia; echo=false
 choices = [
 L"\vec{0}",
 L"\langle 12, 12 \rangle",
@@ -1183,7 +1185,7 @@ radioq(choices, ans)
 
 If the vector to 3 o'clock is removed, (call this $\langle 1, 0 \rangle$) what expresses the sum of *all* the remaining vectors?
 
-```
+```julia; echo=false
 choices = [
 L"\langle -1, 0 \rangle",
 L"\langle 1, 0 \rangle",
@@ -1197,7 +1199,7 @@ radioq(choices, ans)
 
 Let $\vec{u}$ and $\vec{v}$ be unit vectors. Let $\vec{w} = \vec{u} + \vec{v}$. Then $\vec{u} \cdot \vec{w} = \vec{v} \cdot \vec{w}$. What is the value?
 
-```
+```julia; echo=false
 choices = [
 L"1 + \vec{u}\cdot\vec{v}",
 L"\vec{u} + \vec{v}",
@@ -1209,7 +1211,7 @@ radioq(choices, ans)
 
 As the two are equal, which interpretation is true?
 
-```
+```julia; echo=false
 choices = [
 L"The angle they make with $\vec{w}$ is the same",
 L"The vector $\vec{w}$ must also be a unit vector",
@@ -1227,7 +1229,7 @@ Suppose $\| \vec{u} + \vec{v} \|^2 = \|\vec{u}\|^2 + \|\vec{v}\|^2$. What is $\v
 
 We have $(\vec{u} + \vec{v})\cdot(\vec{u} + \vec{v}) = \vec{u}\cdot \vec{u} + 2 \vec{u}\cdot\vec{v} + \vec{v}\cdot\vec{v}$. From this, we can infer that:
 
-```
+```julia; echo=false
 choices = [
 L"\vec{u}\cdot\vec{v} = 0",
 L"\vec{u}\cdot\vec{v} = 2",
@@ -1250,7 +1252,7 @@ $$~
 ~$$
 
 
-```
+```julia; echo=false
 choices = [
 "The triple product describes a volume up to sign, this combination preserves the sign",
 "The vectors are *orthogonal*, so these are all zero",
@@ -1264,7 +1266,8 @@ radioq(choices, ans)
 
 Snell's law in planar form is $n_1\sin(\theta_1) = n_2\sin(\theta_2)$ where $n_i$ is a constant depending on the medium.
 
-```
+```julia; echo=false
+gr()
 f(t) = sin(t)
 p = plot(ylim=(.2,1.5), xticks=nothing, yticks=nothing, border=:none, legend=false, aspect_ratio=:equal)
 plot!(f, pi/6, pi/2, linewidth=4, color=:blue)
@@ -1278,18 +1281,21 @@ out = -incident + [.1,0]
 arrow!(p0, -out, linewidth=4, color=:black)
 annotate!([(0.8, 1.0, L"\hat{v}_1"),
         (.6, .75, L"n_1"),
-        (1.075, 0.7, L"\hat{n}"),
+        (1.075, 0.7, L"\hat{N}"),
         (1.25, 0.7, L"\hat{v}_2"),
         (1.5, .75, L"n_2")
         ])
+
+plotly()
+p
 ```
 
 In vector form, we can express it using *unit* vectors through:
 
-```
+```julia; echo=false
 choices = [
-L"n1 (\hat{v_1}\times\hat{n}) = n2  (\hat{v_2}\times\hat{n})",
-L"n1 (\hat{v_1}\times\hat{n}) = -n2  (\hat{v_2}\times\hat{n})"
+L"n_1 (\hat{v_1}\times\hat{N}) = n_2  (\hat{v_2}\times\hat{N})",
+L"n_1 (\hat{v_1}\times\hat{N}) = -n_2  (\hat{v_2}\times\hat{N})"
 ]
 ans = 1
 radioq(choices, ans)
@@ -1308,7 +1314,7 @@ $$~
 simplifies. To what? (Use `SymPy` or randomly generated vectors to see.)
 
 
-```
+```julia; echo=false
 choices = [
 L"\vec{0}",
 L"\vec{a}",

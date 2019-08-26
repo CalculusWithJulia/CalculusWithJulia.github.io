@@ -19,7 +19,7 @@ discuss differentiation in general for a multivariable functions.
 
 We have seen that the gradient of a scalar function, $f:R^2 \rightarrow R$, takes a point in $R^2$ and associates a vector in $R^2$. As such $\nabla{f}:R^2 \rightarrow R^2$ is a vector field. A vector field  can be visualized by sampling a region and representing the field at those points. The details, as previously mentioned, are in the `vectorfieldplot` function of `CalculusWithJulia`.
 
-```
+```julia;
 using CalculusWithJulia
 F(u,v) = [-v, u]
 vectorfieldplot(F, xlim=(-5,5), ylim=(-5,5), nx=10, ny=10)
@@ -40,14 +40,16 @@ the field.
 
 The three dimensional vector field is one way to illustrate a vector field, but there is an alternate using field lines. Like Euler's method, imagine starting at some point, $\vec{r}$ in $R^3$. The field at that point is a vector indicating a direction of motion. Follow that vector for some infinitesimal amount, $d\vec{r}$. From here repeat. The field curve would satisfy $\vec{r}'(t) = F(\vec{r}(t))$. Field curves only show direction, to indicate magnitude at a point, the convention is to use denser lines when the field is stronger.
 
-```
+```julia;echo=false
 #out download("https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/VFPt_Earths_Magnetic_Field_Confusion.svg/320px-VFPt_Earths_Magnetic_Field_Confusion.svg.png")
 #cp(out, "figures/magnetic-field.png")
-ImageFile("figures/magnetic-field.png", """
+
+imgfile = "figures/magnetic-field.png"
+caption = """
 Illustration of the magnetic field of the earth using field lines to indicate the field. From
 [Wikipedia](https://en.wikipedia.org/wiki/Magnetic_field).
 """
-)
+ImageFile(imgfile, caption)
 ```
 
 ---
@@ -63,7 +65,7 @@ coordinates to cartesian coordinates $F(r, \theta) = r
 in blue fixed values of $r$ (circles) and in red fixed values of
 $\theta$ (rays).
 
-```
+```julia;
 gr()
 F(r,theta) = r*[cos(theta), sin(theta)]
 F(v) = F(v...)
@@ -126,17 +128,17 @@ be computed prior to plotting.
 
 Here we define the parameterization using functions to represent each component:
 
-```
+```julia;
 X(theta,phi) = sin(phi) * cos(theta)
 Y(theta,phi) = sin(phi) * sin(theta)
 Z(theta,phi) = cos(phi)
 ```
 
-Only *some* backends for `Plots` will produce this type of plot. Both `plotly()` and `pyplot()` will, but not `gr`.
+Only *some* backends for `Plots` will produce this type of plot. Both `plotly()` and `pyplot()` will, but not `gr()`.
 
-```
-thetas = range(0, stop=pi/2,   length=50)
-phis   = range(0, stop=pi, length=50)
+```julia;
+thetas = range(0, stop=pi/2, length=50)
+phis   = range(0, stop=pi,   length=50)
 
 xs = [X(theta, phi) for theta in thetas, phi in phis]
 ys = [Y(theta, phi) for theta in thetas, phi in phis]
@@ -148,14 +150,14 @@ surface(xs, ys, zs)
 
 Instead of the comprehension, broadcasting can be used
 
-```
+```julia;
 pyplot()  # for variety to compare to plotly()
 surface(X.(thetas, phis'), Y.(thetas, phis'), Z.(thetas, phis'))
 ```
 
 If the parameterization is presented as a function, broadcasting can be used to succintly plot:
 
-```
+```julia;
 Phi(theta, phi) = [X(theta, phi), Y(theta, phi), Z(theta, phi)]
 
 surface(unzip(Phi.(thetas, phis'))...)
@@ -164,7 +166,7 @@ surface(unzip(Phi.(thetas, phis'))...)
 
 The latter is done by the `plot_parametric_surface` function of `CalculusWithJulia`. It is called as follows:
 
-```
+```julia;
 plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi))
 ```
 
@@ -180,7 +182,7 @@ $$~
 Using `SymPy`, we can compute through:
 
 
-```
+```julia;
 using SymPy
 @vars theta phi
 out = [diff.(Phi(theta, phi), theta) diff.(Phi(theta, phi), phi)]
@@ -189,14 +191,14 @@ out = [diff.(Phi(theta, phi), theta) diff.(Phi(theta, phi), phi)]
 
 At the point $(\theta, \phi) = (\pi/12, \pi/6)$ this evaluates to the following.
 
-```
+```julia;
 subs.(out, theta.=> PI/12, phi.=>PI/6) .|> N
 ```
 
 We found numeric values, so that we can
 compare to the numerically identical values computed by the `jacobian` function from `ForwardDiff`:
 
-```
+```julia;
 using ForwardDiff
 Phi(v) = Phi(v...)    # need Phi(v) defined, not Phi(theta, phi)
 out = ForwardDiff.jacobian(Phi, [pi/12, pi/6])
@@ -204,7 +206,7 @@ out = ForwardDiff.jacobian(Phi, [pi/12, pi/6])
 
 What this function computes exactly will be described next, but here we visualize the partial derivatives and see they lie in the tangent plane at the point:
 
-```
+```julia;
 pt = [pi/12, pi/6]
 plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi), legend=false)
 arrow!(Phi(pt), out[:,1], linewidth=3)
@@ -365,7 +367,7 @@ r(a,b) = \sqrt{a^2 + b^2}, \quad
 
 the latter assuming the point is in quadrant I or IV (though `atan(y,x)` will properly handle the other quadrants). The Jacobian of this transformation may be found with
 
-```
+```julia;
 using SymPy, LinearAlgebra   # done by CalculusWithJulia
 @vars a b real=true
 
@@ -380,7 +382,7 @@ simplify.(Jac)
 
 `SymPy` array objects have a `jacobian` method to make this easier to do. The calling style is Python-like, using `object.method(...)`:
 
-```
+```julia;
 [r, theta].jacobian([a, b])
 ```
 
@@ -388,7 +390,7 @@ simplify.(Jac)
 
 The determinant, of geometric interest, will be
 
-```
+```julia;
 det(Jac) |> simplify
 ```
 
@@ -417,7 +419,7 @@ Some mappings are:
 
 Formulas can be found to convert between the different systems, here are a few written as multivariable functions:
 
-```
+```julia;
 function spherical_from_cartesian(x,y,z)
     r = sqrt(x^2 + y^2 + z^2)
     theta = atan(y/x)
@@ -449,7 +451,7 @@ end
 
 The Jacobian of a transformation can be found from these conversions. For example, the conversion from spherical to cartesian would have Jacobian computed by:
 
-```
+```julia;
 @vars r theta phi real=true
 
 ex1 = cartesian_from_spherical(r, theta, phi)
@@ -458,13 +460,13 @@ J1 = ex1.jacobian([r, theta, phi])
 
 This has determinant:
 
-```
+```julia;
 det(J1) |> simplify
 ```
 
 There is no function to convert from spherical to cylindrical above, but clearly one can be made by *composition*:
 
-```
+```julia;
 cylindrical_from_cartesian(v) = cylindrical_from_cartesian(v...)   # allow a vector of arguments
 
 cylindrical_from_spherical(r, theta, phi) = (cylindrical_from_cartesian ∘ cartesian_from_spherical)(r, theta, phi)
@@ -473,14 +475,14 @@ cylindrical_from_spherical(r, theta, phi) = (cylindrical_from_cartesian ∘ cart
 From this composition, we could compute the Jacobian directly, as with:
 
 
-```
+```julia;
 ex2 = cylindrical_from_spherical(r, theta, phi)
 J2 = ex2.jacobian([r, theta, phi])
 ```
 
 Now to see that this last expression could have been found by the *chain rule*. To do this we need to find the Jacobian of each function; evaluate them at the proper places; and, finally, multiply the matrices. The `J1` object, found above, does one Jacobian. We now need to find that of `cylindrical_from_cartesian`:
 
-```
+```julia;
 @vars x y z real=true
 ex3 = cylindrical_from_cartesian(x, y, z)
 J3 = ex3.jacobian([x,y,z])
@@ -488,19 +490,19 @@ J3 = ex3.jacobian([x,y,z])
 
 The chain rule is not simply `J3 * J1` in the notation above, as the `J3` matrix must be evaluated at "`G(a)`", which is `ex1` from above:
 
-```
+```julia;
 J3_Ga = subs.(J3, x .=> ex1[1], y .=> ex1[2], z .=> ex1[3]) .|> simplify  # the dots are important
 ```
 
 The chain rule now says this product should be equivalent to `J2` above:
 
-```
+```julia;
 J3_Ga * J1
 ```
 
 The two are equivalent after simplification, as seen here:
 
-```
+```julia;
 J3_Ga * J1 - J2 .|> simplify
 ```
 
@@ -509,7 +511,7 @@ J3_Ga * J1 - J2 .|> simplify
 
 The above examples were done symbolically. Performing the calculation numerically is quite similar. The `ForwardDiff` package has a gradient function to find the gradient at a point. The `CalculusWithJulia` package extends this to take a gradient of a function and return a function, also called `gradient`. This is defined along the lines of:
 
-```noeval
+```julia; eval=false
 gradient(f::Function) = x -> ForwardDiff.gradient(f, x)
 ```
 
@@ -517,7 +519,7 @@ gradient(f::Function) = x -> ForwardDiff.gradient(f, x)
 
 With this, defining a Jacobian function *could* be done like:
 
-```
+```julia;
 function Jacobian(F, x)
     n = length(F(x...))
     grads = [gradient(x -> F(x...)[i])(x) for i in 1:n]
@@ -530,7 +532,7 @@ But, like `SymPy`, `ForwardDiff` provides a `jacobian` function directly, so we 
 Using the above functions, we can verify the last example at a point:
 
 
-```
+```julia;
 rtp = [1, pi/3, pi/4]
 cylindrical_from_spherical(v) = cylindrical_from_spherical(v...)
 
@@ -539,7 +541,7 @@ ForwardDiff.jacobian(cylindrical_from_spherical, rtp)
 
 The chain rule gives the same answer up to roundoff error:
 
-```
+```julia;
 cartesian_from_spherical(v) = cartesian_from_spherical(v...)
 
 ForwardDiff.jacobian(cylindrical_from_cartesian, cartesian_from_spherical(rtp)) * ForwardDiff.jacobian(cartesian_from_spherical, rtp)
@@ -567,7 +569,7 @@ The theorem is an existential theorem, in that it implies $F^{-1}$ exists, but d
 
 The transformation examples have inverses indicated. Using one of these we can verify things at a point, as done in the following:
 
-```
+```julia;
 cartesian_from_spherical(v) = cartesian_from_spherical(v...) # F
 spherical_from_cartesian(v) = spherical_from_cartesian(v...) # F⁻¹
 
@@ -584,7 +586,7 @@ A1 * A2
 Up to roundoff error, this is the identity matrix.
 As for the relationship between the determinants, up to roundoff error the two are related, as expected:
 
-```
+```julia;
 det(A1), 1/det(A2)
 ```
 
@@ -767,20 +769,18 @@ For the special case of a common variance, $\sigma_i=\sigma$, the above simplifi
 
 The following plots a surface defined by a (hidden) function $F: R^2 \rightarrow R^3$:
 
-```nocode
+```julia; echo=false; results="hidden"
 F(u, v) = [u*cos(v), u*sin(v), 2v]
 plotly()
 ```
 
-```
-us = range(0, stop=1, length=50)
-vs = range(0, stop=2pi, length=50)
+```julia;
 plot_parametric_surface(F, xlim=(0,1), ylim=(0,2pi))
 ```
 
 Is this the surface generated by $F(u,v) = \langle u\cos(v), u\sin(v), 2v\rangle$? This function's surface is termed a helicoid.
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -788,18 +788,18 @@ yesnoq(true)
 
 The following plots a surface defined by a (hidden) function $F: R^2 \rightarrow R^3$ of the form $F(u,v) = \langle r(u)\cos(v), r(u)\sin(v), u\rangle$
 
-```nocode
+```julia; echo=false
 rad(u) = 1 + u^2
 F(u, v) = [rad(u)*cos(v), rad(u)*sin(v), u]
 ```
 
-```
+```julia;
 plot_parametric_surface(F, xlim=(-1,1), ylim=(0,2pi))
 ```
 
 Is this the surface generated by $r(u) = 1+u^2$? This form of a function is for a surface of revolution about the $z$ axis.
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -816,7 +816,7 @@ J = \left[
 \right].
 ~$$
 
-```
+```julia; echo=false
 choices = [
 "Yes",
 "No, it is the transpose"
@@ -839,7 +839,7 @@ J = \left[
 ~$$
 
 
-```
+```julia; echo=false
 choices = [
 "Yes",
 "No, it is the transpose"
@@ -858,7 +858,7 @@ F(\lambda, \phi) = \langle \cos(\phi)\sin(\lambda - \lambda_0),
 
 What does the following `SymPy` code compute?
 
-```
+```julia;
 @vars lambda lambda_0 phi phi_0
 F(lambda,phi) = [cos(phi)*sin(lambda-lambda_0), cos(phi_0)*sin(phi) - sin(phi_0)*cos(phi)*cos(lambda-lambda_0)]
 
@@ -866,7 +866,7 @@ out = [diff.(F(lambda, phi), lambda) diff.(F(lambda, phi), phi)]
 det(out) |> simplify
 ```
 
-```
+```julia; echo=false
 choices = [
 "The determinant of the Jacobian.",
 "The determinant of the Hessian.",
@@ -879,7 +879,7 @@ radioq(choices, ans, keep_order=true)
 
 What would be a more direct method:
 
-```
+```julia; echo=false
 choices = [
 "`det(F(lambda, phi).jacobian([lambda, phi]))`",
 "`det(hessian(F(lambda, phi), [lambda, phi]))`",
@@ -893,7 +893,7 @@ radioq(choices, ans, keep_order=true)
 
 Let $z\sin(z) = x^3y^2 + z$. Compute $\partial{z}/\partial{x}$ implicitly.
 
-```
+```julia; echo=false
 choices = [
 L"3x^2y^2/(z\cos(z) + \sin(z) + 1)",
 L"2x^3y/ (z\cos(z) + \sin(z) + 1)",
@@ -908,7 +908,7 @@ radioq(choices, ans)
 
 Let $x^4 + y^4 + z^4 + x^2y^2z^2 = 1$. Compute $\partial{z}/\partial{y}$ implicitly.
 
-```
+```julia; echo=false
 choices = [
 L"\frac{y \left(- x^{2} z^{2}{\left (x,y \right )} + 2 y^{2}\right)}{\left(x^{2} y^{2} - 2 z^{2}{\left (x,y \right )}\right) z{\left (x,y \right )}}",
 L"\frac{x \left(2 x^{2} - y^{2} z^{2}{\left (x,y \right )}\right)}{\left(x^{2} y^{2} - 2 z^{2}{\left (x,y \right )}\right) z{\left (x,y \right )}}",
@@ -924,7 +924,7 @@ Consider the vector field $R:R^2 \rightarrow R^2$ defined by $R(x,y) = \langle x
 
 What is $\nabla{r}$?
 
-```
+```julia; echo=false
 choices = [
 L"R/r",
 L"S/r",
@@ -936,7 +936,7 @@ radioq(choices, ans)
 
 Let $\phi = r^k$. What is $\nabla{\phi}$?
 
-```
+```julia; echo=false
 choices = [
 L"k r^{k-2} R",
 L"kr^k R",
@@ -948,13 +948,13 @@ radioq(choices, ans)
 
 Based on your last answer, are all radial fields $R/r^n$, $n\geq 0$ gradients of scalar functions?
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 Let $\phi = \tan^{-1}(y/x)$. What is $\nabla{\phi}$?
 
-```
+```julia; echo=false
 choices = [
 L"S/r^2",
 L"S/r",
@@ -966,7 +966,7 @@ radioq(choices, ans)
 
 Express $S/r^n = \langle F_x, F_y\rangle$. For which $n$ is $\partial{F_y}/\partial{x} - \partial{F_x}/\partial{y} = 0$?
 
-```
+```julia; echo=false
 choices = [
 L"As the left-hand side becomes $(-n+2)r^{-n}$, only $n=2$.",
 L"All $n \geq 0$",

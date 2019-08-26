@@ -8,7 +8,7 @@ origin, we focus on a direction and a distance from the origin.
 
 We begin by loading our package providing access to the necessary packages:
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
@@ -17,7 +17,7 @@ using CalculusWithJulia
 
 Polar coordinates parameterize the plane though an angle $\theta$ made from the positive ray of the $x$ axis and a radius $r$.
 
-```nocode
+```julia; echo=false
 gr()
 theta = pi/6
 rr = 1
@@ -66,31 +66,33 @@ considered. This is done with the function `atan` when two arguments are used.
 
 For example, $(-3, 4)$ would have polar coordinates:
 
-```
+```julia;
 x,y = -3, 4
 rad, theta = sqrt(x^2 + y^2), atan(y, x)
 ```
 
 And reversing
 
-```
+```julia;
 rad*cos(theta), rad*sin(theta)
 ```
 
 This figure illustrates:
 
-```nocode
+```julia; echo=false
 gr()
-p = plot([-5,5], [0,0],  color=:blue, legend=false, title=L"$(-3,4)$ Cartesian or $(5, 2.21...)$ polar")
+
+using LaTeXStrings
+p = plot([-5,5], [0,0],  color=:blue, legend=false)
 plot!([0,0],  [-5,5], color=:blue)
 plot!([-3,0], [4,0])
 scatter!([-3], [4])
+title!("(-3,4) Cartesian or (5, 2.21...) polar")
+
+plotly()
 p
 ```
 
-```nocode, noout
-plotly()
-```
 
 The case where $r < 0$ is handled by going 180 degrees in the opposite direction, in other
 words the point $(r, \theta)$ can be described as well by $(-r,\theta+\pi)$.
@@ -119,7 +121,7 @@ The case where $r_0 > R$ will not be defined for all values of $\theta$, only wh
 
 The `Plots.jl` package provides a means to visualize polar plots through `plot(thetas, rs, proj=:polar)`. For example, to plot a circe with $r_0=1/2$ and $\gamma=\pi/6$ we would have:
 
-```
+```julia;
 R, r0, gamma = 1, 1/2, pi/6
 r(theta) = r0 * cos(theta-gamma) + sqrt(R^2 - r0^2*sin(theta-gamma)^2)
 ts = range(0, 2pi, length=100)
@@ -129,7 +131,7 @@ plot(ts, rs, proj=:polar, legend=false)
 
 To avoid having to create values for $\theta$ and values for $r$, the `CalculusWithJulia` package provides a helper function, `plot_polar`. It is essentially this:
 
-```noeval
+```julia; eval=false
 plot_polar(r, a, b; kwargs...) = plot(t -> r(t)*cos(t), t -> r(t)*sin(t), a, b; kwargs...)
 ```
 
@@ -141,7 +143,7 @@ function creates two such functions using the relationship $x=r\cos(\theta)$ and
 
 Using `plot_polar`,  we can plot circles with the following. We have to be a bit careful for the general circle, as when center is farther away from the origin that the radius ($R$), then not all angles will be acceptable and there are two functions needed to describe the radius, as this comes from a quadratic equation and both the "plus" and "minus" terms are used.
 
-```
+```julia;
 R=4; r(t) = R;
 
 function plot_general_circle!(r0, gamma, R)
@@ -176,7 +178,7 @@ $$~
 r(\theta) = a \sin(k\theta)
 ~$$
 
-```
+```julia;
 a, k = 4, 5
 r(theta) = a * sin(k * theta)
 plot_polar(r, 0, pi)
@@ -200,7 +202,7 @@ r(\theta) = -b \cos(\theta) + 4a \cos(\theta) \sin(2\theta)
 ~$$
 
 
-```
+```julia;
 a, b = 4, 2
 r(theta) = -b * cos(theta) + 4a * cos(theta) * sin(2theta)
 plot_polar(r, 0, 2pi)
@@ -212,7 +214,7 @@ correspond to which loop. For our choice of $a$ and $b$ this gives $\pi/2$, $3\p
 $b/4a = 1/8$, when $\sin(2\theta) = 1/8$ which happens at
 $a_0=\sin^{-1}(1/8)/2=0.0626...$ and $\pi/2 - a_0$, $\pi+a_0$ and $3\pi/2 - a_0$. The first folium can be plotted with:
 
-```
+```julia;
 a0 = (1/2) * asin(1/8)
 plot_polar(r, a0, pi/2 - a0)
 ```
@@ -220,13 +222,13 @@ plot_polar(r, a0, pi/2 - a0)
 
 The second---which is too small to appear in the initial plot without zooming in---with
 
-```
+```julia;
 plot_polar(r, pi/2 - a0, pi/2)
 ```
 
 The third with
 
-```
+```julia;
 plot_polar(r, pi/2, pi + a0)
 ```
 
@@ -240,7 +242,7 @@ $$~
 r(\theta) = b + 2a\cos(\theta)
 ~$$
 
-```
+```julia;
 a,b = 4, 2
 r(theta) = b + 2a*cos(theta)
 plot_polar(r, 0, 2pi)
@@ -252,7 +254,7 @@ Some curves require a longer parameterization, such as this where we
 plot over $[0, 8\pi]$ so that the cosine term can range over an entire
 half period:
 
-```
+```julia;
 r(theta) = sqrt(abs(cos(theta/8)))
 plot_polar(r, 0, 8pi)
 ```
@@ -261,7 +263,7 @@ plot_polar(r, 0, 8pi)
 
 Consider the [cardioid](http://www-history.mcs.st-and.ac.uk/Curves/Cardioid.html) described by $r(\theta) = 2(1 + \cos(\theta))$:
 
-```
+```julia;
 r(theta) = 2(1 + cos(theta))
 plot_polar(r, 0, 2pi)
 ```
@@ -274,7 +276,7 @@ solution.
 
 The area can be approximated by wedges (not rectangles). For example, here we see that the area over a given angle is well approximated by the wedge for each of the sectors:
 
-```nocode
+```julia; echo=false
 gr()
 r(theta) = 1/(1 + (1/3)cos(theta))
 p = plot_polar(r, 0, pi/2, legend=false, linewidth=3, aspect_ratio=:equal)
@@ -313,7 +315,7 @@ r(\theta)^2 d\theta$. This limit of this sum defines the area in polar coordinat
 
 So the area of the cardioid, which is parameterized over $[0, 2\pi]$ is found by
 
-```
+```julia;
 using SymPy
 r(theta) = 2(1 + cos(theta))
 @vars theta
@@ -330,7 +332,7 @@ that leaf?
 
 An antiderivative exists for arbitrary $a$ and $b$:
 
-```
+```julia;
 @vars a b
 r(theta) = -b*cos(theta) + 4a*cos(theta)*sin(theta)^2
 integrate(r(theta)^2, theta) / 2
@@ -338,7 +340,7 @@ integrate(r(theta)^2, theta) / 2
 
 For our specific values, the answer can be computed with:
 
-```
+```julia;
 ex = integrate(r(theta)^2, (theta, PI/6, PI/2)) / 2
 ex(a => 1, b=>1)
 ```
@@ -351,14 +353,14 @@ Pascal's
 like the cardioid, but contains an extra loop. When $a=1$ and $b=1$ we
 have this graph.
 
-```
+```julia; echo=false
 a,b = 1,1
 r(theta) = b + 2a*cos(theta)
 p = plot(t->r(t)*cos(t), t->r(t)*sin(t), 0, pi/2 + pi/6,  legend=false, color=:blue)
 plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, pi/2 + pi/6, color=:orange)
 plot!(p, t->r(t)*cos(t), t->r(t)*sin(t), 3pi/2 - pi/6, 2pi, color=:blue)
 
-Outputonly(p)
+p
 ```
 
 What is the area contained in the outer loop, that is not in the inner loop?
@@ -369,7 +371,7 @@ which for the choice of $a$ and $b$ solves $1 + 2\cos(\theta) = 0$, or
 $\cos(\theta) = -1/2$. This is $\pi/2 + \pi/6$ and $3\pi/2 -
 \pi/6$. The inner loop is traversed between those values and has area:
 
-```
+```julia;
 @vars a b
 r(theta) =  b + 2a*cos(theta)
 ex = integrate(r(theta)^2 / 2, (theta, PI/2 + PI/6, 3PI/2 - PI/6))
@@ -378,14 +380,14 @@ inner = ex(a=>1, b=>1)
 
 The outer area (including the inner loop) is the integral from $0$ to $\pi/2 + \pi/6$ plus that from $3\pi/2 - \pi/6$ to $2\pi$. These areas are equal, so we double the first:
 
-```
+```julia;
 ex = 2 * integrate(r(theta)^2 / 2, (theta, 0, PI/2 + PI/6))
 outer = ex(a=>1, b=>1)
 ```
 
 The answer is the difference:
 
-```
+```julia;
 outer - inner
 ```
 
@@ -441,7 +443,7 @@ A cardioid is described by $r(\theta) = 2(1 + \cos(\theta))$. What is the arc le
 
 The integrand is integrable
 
-```
+```julia;
 r(theta) = 2*(1 + cos(theta))
 ds = sqrt(diff(r(theta), theta)^2 + r(theta)^2) |> simplify
 ```
@@ -449,7 +451,7 @@ ds = sqrt(diff(r(theta), theta)^2 + r(theta)^2) |> simplify
 with antiderivative $4\sqrt{2\cos(\theta) + 2} \cdot \tan(\theta/2)$,
 but `SymPy` isn't able to find it. Instead we give a numeric answer:
 
-```
+```julia;
 quadgk(t -> sqrt(r'(t)^2 + r(t)^2), 0, 2pi)[1]
 ```
 
@@ -463,7 +465,7 @@ r(\theta) = a e^{\theta \cot(b)}
 
 With $a=1$ and $b=\pi/4$, find the arc length traced out from $\theta=0$ to $\theta=1$.
 
-```
+```julia;
 a, b= 1, PI/4
 r(theta) = a * exp(theta * cot(b))
 ds = sqrt(diff(r(theta), theta)^2 + r(theta)^2)
@@ -500,7 +502,7 @@ $$~
 
 Numerically then we have:
 
-```
+```julia;
 dinner = 1 + 5/8
 douter = 5 + 1/4
 r(b,t) = dinner/2 + b*t
@@ -512,7 +514,7 @@ b = find_zero(b -> quadgk(t->integrand(b,t), 0, n(b)*2*pi)[1] - 3700, (1/100000,
 
 This gives a value in inches, in millimeters this is about a $.02mm$ thickness per sheet:
 
-```
+```julia;
 b * 25.4
 ```
 
@@ -523,14 +525,14 @@ b * 25.4
 
 Let $r=3$ and $\theta=\pi/8$. In Cartesian coordinates what is $x$?
 
-```
+```julia; echo=false
 x,y = 3 * [cos(pi/8), sin(pi/8)]
 numericq(x)
 ```
 
 What is $y$?
 
-```
+```julia; echo=false
 numericq(y)
 ```
 
@@ -538,7 +540,7 @@ numericq(y)
 
 A point in Cartesian coordinates is given by $(-12, -5)$. In has a polar coordinate representation with an angle $\theta$ in $[0,2\pi]$ and $r > 0$. What is $r$?
 
-```
+```julia; echo=false
 x,y = -12, -5
 r1, theta1 = sqrt(x^2 + y^2), atan(y,x)
 numericq(r1)
@@ -546,7 +548,7 @@ numericq(r1)
 
 What is $\theta$?
 
-```
+```julia; echo=false
 numericq(theta1)
 ```
 
@@ -554,13 +556,13 @@ numericq(theta1)
 
 Does $r(\theta) = a \sec(\theta - \gamma)$ describe a line for $0$ when $a=3$ and $\gamma=\pi/4$?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
 If yes, what is the $y$ intercept
 
-```
+```julia; echo=false
 r(theta) == 3 * sec(theta -pi/4)
 val = r(pi/2)
 numericq(val)
@@ -568,14 +570,14 @@ numericq(val)
 
 What is slope of the line?
 
-```
+```julia; echo=false
 val = (r(pi/2)*sin(pi/2) - r(pi/4)*sin(pi/4)) / (r(pi/2)*cos(pi/2) - r(pi/4)*cos(pi/4))
 numericq(val)
 ```
 
 Does this seem likely: the slope is $-1/\tan(\gamma)$?
 
-```
+```julia; echo=false
 yesnoq("yes")
 ```
 
@@ -597,7 +599,7 @@ $$~
 
 Numerically, what is the slope of the tangent line when $\theta = \pi/4$?
 
-```
+```julia; echo=false
 r(theta) = 2cos(theta)
 g(theta) = r(theta)*cos(theta)
 f(theta) = r(theta)*sin(theta)
@@ -618,7 +620,7 @@ has a familiar form. The value of $k$ is just a scale factor, but different valu
 
 When $0 < e < 1$ what is the shape of the curve? (Answer by making a plot and guessing.)
 
-```
+```julia; echo=false
 choices = [
 "an ellipse",
 "a parabola",
@@ -633,7 +635,7 @@ radioq(choices, ans, keep_order=true)
 
 When $e = 1$ what is the shape of the curve?
 
-```
+```julia; echo=false
 choices = [
 "an ellipse",
 "a parabola",
@@ -648,7 +650,7 @@ radioq(choices, ans, keep_order=true)
 
 When $1 < e$ what is the shape of the curve?
 
-```
+```julia; echo=false
 choices = [
 "an ellipse",
 "a parabola",
@@ -667,7 +669,7 @@ Find the area of a lobe of the
 curve traced out by $r(\theta) = \sqrt{\cos(2\theta)}$ between
 $-\pi/4$ and $\pi/4$. What is the answer?
 
-```
+```julia; echo=false
 choices = [
 L"1/2",
 L"\pi/2",
@@ -681,7 +683,7 @@ radioq(choices, ans)
 
 Find the area of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curves/Eight.html) curve traced out by $r(\theta) = \cos(2\theta)\sec(\theta)^4$ from $-\pi/4$ to $\pi/4$. Do this numerically.
 
-```
+```julia; echo=false
 r(theta) = sqrt(cos(2theta) * sec(theta)^4)
 val, _ = quadgk(t -> r(t)^2/2, -pi/4, pi/4)
 numericq(val)
@@ -694,7 +696,7 @@ Find the arc length of a lobe of the
 curve traced out by $r(\theta) = \sqrt{\cos(2\theta)}$ between
 $-\pi/4$ and $\pi/4$. What is the answer (numerically)?
 
-```
+```julia; echo=false
 r(theta) = sqrt(cos(2theta))
 val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)
@@ -705,7 +707,7 @@ numericq(val)
 
 Find the arc length of a lobe of the [eight](http://www-history.mcs.st-and.ac.uk/Curves/Eight.html) curve traced out by $r(\theta) = \cos(2\theta)\sec(\theta)^4$ from $-\pi/4$ to $\pi/4$. Do this numerically.
 
-```
+```julia; echo=false
 r(theta) = sqrt(cos(2theta) * sec(theta)^4)
 val, _ = quadgk(t -> sqrt(D(r)(t)^2 + r(t)^2), -pi/4, pi/4)
 numericq(val)

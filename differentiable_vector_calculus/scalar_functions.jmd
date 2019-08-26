@@ -23,7 +23,7 @@ Mathematically, we may describe the values $(x,y)$ in terms of a point, $P=(x,y)
 Before proceeding with how to define such functions in `Julia`, we load our package:
 
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
@@ -32,7 +32,7 @@ using CalculusWithJulia
 Returning to the task at hand,
 in `Julia`, defining a scalar function is straightforward, the syntax following mathematical notation:
 
-```
+```julia;
 f(x,y) = x^2 + y^2
 g(x,y) = x * y
 h(x,y) = sin(x) * sin(y)
@@ -40,20 +40,20 @@ h(x,y) = sin(x) * sin(y)
 
 To call a scalar function for specific values of $x$ and $y$ is also similar to the mathematical case:
 
-```
+```julia;
 f(1,2), g(2, 3), h(3,4)
 ```
 
 It may be advantageous to have the values as a vector or a point, as in `v=[x,y]`. Splatting can be used to turn a vector or tuple into two arguments:
 
-```
+```julia;
 v = [1,2]
 f(v...)
 ```
 
 Alternatively, the function may be defined using a vector argument:
 
-```
+```julia;
 f(v) = v[1]^2 + v[2]^2
 ```
 
@@ -61,7 +61,7 @@ A style required for other packages within the `Julia` ecosystem.
 
 More verbosely, but avoiding index notation, we can use multiline functions:
 
-```
+```julia;
 function g(v)
     x, y = v
     x * y
@@ -70,7 +70,7 @@ end
 
 Then we have
 
-```
+```julia;
 f(v), g([2,3])
 ```
 
@@ -78,25 +78,25 @@ f(v), g([2,3])
 
 More elegantly, and the approach we will use, is to mirror the mathematical notation through multiple dispatch. If we define `f` for multiple variables, say with:
 
-```
+```julia;
 f(x,y) = x^2 - 2x*y^2
 ```
 
 The we can define an alternative method with just a single variable and use splatting to turn it into multiple variables:
 
-```
+```julia;
 f(v) = f(v...)
 ```
 
 The we can call `f` with a vector or point:
 
-```
+```julia;
 f([1,2])
 ```
 
 or by passing in the individual components:
 
-```
+```julia;
 f(1,2)
 ```
 
@@ -121,7 +121,7 @@ Here, a two-dimensional grid of $x$-$y$ values needs specifying, and the corresp
 Here is an example:
 
 
-```
+```julia;
 using Plots     # loaded with CalculusWithJulia
 f(x, y) = x^2 + y^2
 
@@ -133,7 +133,7 @@ surface(xs, ys, f)
 
 The `surface` function will generate the surface.
 
-```
+```julia; echo=false
 note("""Using `surface` as a function name is equivalent to `plot(xs, ys, f, seriestype=:surface)`.""")
 ```
 
@@ -147,14 +147,14 @@ the $j$th entry from the `ys`.
 
 We can generate this using a comprehension:
 
-```
+```julia;
 zs = [f(x,y) for y in ys, x in xs]
 surface(xs, ys, zs)
 ```
 
 If remembering that the $y$ values go first, and then the $x$ values in the above is too hard, then an alternative can be used. Broadcasting `f.(xs,ys)` may not make sense, were the `xs` and `ys` not of commensurate lengths, and when it does, this call pairs off `xs` and `ys` values and passes them to `f`. What is desired here is different, where for each `xs` value there are pairs for each of the `ys` values. The syntax `xs'` can ve viewed as creating a *row* vector, where `xs` is a *column* vector. Broadcasting will create a *matrix*  of values in this case. So the following is identical to the above:
 
-```
+```julia;
 surface(xs, ys, f.(xs', ys))
 ```
 
@@ -162,7 +162,7 @@ surface(xs, ys, f.(xs', ys))
 
 An alternate to `surface` is `wireframe`, which doesn't use shading, but rather shows the grid in the $x$-$y$ plane mapped to the surface:
 
-```
+```julia;
 wireframe(xs, ys, f)   # gr() or pyplot() wireplots render better than plotly()
 ```
 
@@ -172,7 +172,7 @@ wireframe(xs, ys, f)   # gr() or pyplot() wireplots render better than plotly()
 
 The surface $f(x,y) = x^2 - y^2$ has a "saddle," as this shows:
 
-```
+```julia;
 f(x,y) = x^2 - y^2
 xs = ys = range(-2, 2, length=100)
 surface(xs, ys, f)
@@ -184,7 +184,7 @@ As mentioned. In plots of univariate functions, a dot-to-dot algorithm is follow
 
 We can see this in the `GR` toolkit by forcing the surface to show just one cell, as the `xs` and `ys` below only contain $2$ values:
 
-```
+```julia;
 gr()
 xs = [-1,1];ys = [-1,1]
 f(x,y) = x*y
@@ -194,7 +194,7 @@ surface(xs, ys, f.(xs', ys))
 
 Compare this, to the same region, but with many cells to represent the surface:
 
-```
+```julia;
 xs = ys = range(-1, 1, length=100)
 surface(xs, ys, f.(xs', ys))
 ```
@@ -202,7 +202,7 @@ surface(xs, ys, f.(xs', ys))
 
 ### Contour plots
 
-```noeval, nocode, noout
+```julia; echo=false;eval=false; results="hidden"
 n,m = 25,50
 xs = range(-74.3129825592041, -74.2722129821777, length=n)
 ys = range(40.7261855236006, 40.7869834960339, length=m)
@@ -227,17 +227,17 @@ close(io)
 
 Consider the example of latitude, longitude, and elevation data describing a surface. The following graph is generated from such data, which was retrieved from the USGS website for a given area. The grid points are chosen about every 150m, so this is not too fine grained.
 
-```
+```julia;
 using JSON
 SC = JSON.parsefile("data/somocon.json")  # a local file
-xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
+xs, ys, zs =  [float.(SC[i]) for i in ("xs", "ys","zs")]
 gr()  # use GR backend
 surface(xs, ys, zs)
 ```
 
 This shows a bit of the topography. If we look at the region from directly above, the graph looks different:
 
-```
+```julia;
 surface(xs, ys, zs, camera=(0, 90))
 ```
 
@@ -245,7 +245,7 @@ The rendering uses different colors to indicate height. A more typical graph, th
 
 For a scalar function, Define a *level curve* as the solutions to the equations $f(x,y) = c$ for a given $c$. (Or more generally $f(\vec{x}) = c$ for a vector if dimension $2$ or more.) Plotting a selection of level curves yields a *contour* graph. These are produced with `contour` and called as above. For example, we have:
 
-```
+```julia;
 contour(xs, ys, zs)
 ```
 
@@ -254,7 +254,7 @@ Were one to walk along one of the contour lines, then there would be no change i
 
 The $c$ values for the levels drawn may be specified through the `levels` argument:
 
-```
+```julia;
 contour(xs, ys, zs, levels=[50,75,100, 125, 150, 175])
 ```
 
@@ -263,7 +263,7 @@ That shows the 50m, 75m, ... contours.
 If a fixed number of evenly spaced levels is desirable, then the `nlevels` argument is available.
 
 
-```
+```julia;
 contour(xs, ys, zs, nlevels = 5)
 ```
 
@@ -271,7 +271,7 @@ contour(xs, ys, zs, nlevels = 5)
 
 If a function describes the surface, then the function may be passed as the third value:
 
-```
+```julia;
 plotly()
 f(x, y) = sin(x) - cos(y)
 xs = range(0, 2pi, length=100)
@@ -285,7 +285,7 @@ An informative graphic mixes both a surface plot with a contour plot. The `PyPlo
 made within the `Plots` framework. Here is a workaround, where the contours are generated through the `Contours` package. This shows how to add a contour at a fixed level ($0$ below). As no hidden line algorithm is used to hide the contour line if the surface were to cover it, a transparency is specified through `alpha=0.5`:
 
 
-```
+```julia;
 import Contour: contours, levels, level, lines, coordinates
 
 function surface_contour(xs, ys, f; offset=0)
@@ -317,10 +317,12 @@ We can see that at the minimum of the surface, the contour lines are nested clos
 
 The figure shows a weather map from 1943 with contour lines based on atmospheric pressure. These are also know as *isolines*.
 
-```
-ImageFile("figures/daily-map.jpg", """
+```julia; echo=false
+imgfile = "figures/daily-map.jpg"
+caption = """
 Image from [weather.gov](https://www.weather.gov/unr/1943-01-22) of a contour map showing atmospheric pressures from January 22, 1943 in Rapid City, South Dakota.
-""")
+"""
+ImageFile(imgfile, caption)
 ```
 
 This day is highlighted as "The most notable temperature fluctuations
@@ -339,10 +341,12 @@ This frontal boundary is marked with triangles and half circles along the thicke
 
 Sea surface temperature varies with latitude and other factors, such as water depth. The following figure shows average temperatures for January 1982 around Australia. The filled contours allow for an easier identification of the ranges represented.
 
-```
-ImageFile("figures/australia.png", """
+```julia; echo=false
+imgfile = "figures/australia.png"
+caption = """
 Image from [IRI](https://iridl.ldeo.columbia.edu/maproom/Global/Ocean_Temp/Monthly_Temp.html) shows mean sea surface temperature near Australia in January 1982. IRI has zoomable graphs for this measurement from 1981 to the present. The contour lines are in 2 degree Celsius increments.
-""")
+"""
+ImageFile(imgfile, caption)
 ```
 
 
@@ -350,7 +354,7 @@ Image from [IRI](https://iridl.ldeo.columbia.edu/maproom/Global/Ocean_Temp/Month
 
 The filled contour and the heatmap are related figures to a simple contour graph. The heatmap uses a color gradient to indicate the value at $(x,y)$:
 
-```
+```julia;
 f(x,y) = exp(-(x^2 + y^2)/5) * sin(x) * cos(y)
 xs= ys = range(-pi, pi, length=100)
 heatmap(xs, ys, f)
@@ -358,7 +362,7 @@ heatmap(xs, ys, f)
 
 The filled contour layers on the contour lines to a heatmap:
 
-```
+```julia;
 f(x,y) = exp(-(x^2 + y^2)/5) * sin(x) * cos(y)
 xs= ys = range(-pi, pi, length=100)
 contourf(xs, ys, f)
@@ -425,7 +429,7 @@ At $\vec{0}$ this will not have a limit. However, along any line $y=mx$ we have 
 
 Discussing the behaviour of a scalar function along a path is described mathematically through composition. If $\vec\gamma(t)$ is a path in $R^n$, then the composition $f \circ \vec\gamma$ will be a univariate function. When $n=2$, we can visualize this composition directly, or as a 3D path on the surface given by $\vec{r}(t) = \langle \gamma_1(t), \gamma_2(t), \dots, \gamma_n(t), (f \circ \vec\gamma)(t) \rangle$.
 
-```
+```julia;
 f(x,y) = 2 - x^2 - 3y^2
 f(x) = f(x...)
 γ(t) = 2*[t, -t^2]   # use \gamma[tab]
@@ -443,7 +447,7 @@ The vector valued function `r3(t) = [γ(t)..., f(γ(t))]` takes the 2-dimensiona
 
 However, the composition,  $f\circ\vec\gamma$, is a univariate function, so this can also be visualized by
 
-```
+```julia;
 plot(f ∘ γ, 0, 1/2)
 ```
 
@@ -543,14 +547,14 @@ Two different methods are described, one for working with functions, the other s
 
 Suppose, we consider $f(x,y) = x^2 - 2xy$. We may define it with `Julia` through:
 
-```
+```julia;
 f(x,y) = x^2 - 2x*y
 f(v) = f(v...)       # to handle vectors. Need not be defined each time
 ```
 
 The numeric gradient at a point, can be found from the function `ForwardDiff.gradient` through:
 
-```
+```julia;
 using ForwardDiff
 pt = [1, 2]
 ForwardDiff.gradient(f, pt)      # uses the f(v) call above
@@ -563,23 +567,23 @@ The `ForwardDiff.gradient` function expects a function that accepts a vector of 
 
 To go from a function that takes a point to a function of that point, we have the following definition. This takes advantage of `Julia`'s multiple dispatch to add a new method for the `gradient` generic. This is done in the `CalculusWithJulia` package along the lines of:
 
-```noeval
+```julia; eval=false
 FowardDiff.gradient(f::Function) = x -> ForwardDiff.gradient(f, x)
 ```
 
 It works as follows, where a vector of values is passed in for the point in question:
 
-```
+```julia;
 gradient(f)([1,2]), gradient(f)([3,4])
 ```
 
 This expects a point or vector for its argument, and not the expanded values. Were that desired, something like this would work:
 
-```noeval
+```julia; eval=false
 ForwardDiff.gradient(f::Function) = (x, xs...) -> ForwardDiff.gradient(f, vcat(x, xs...))
 ```
 
-```
+```julia;
 gradient(f)([1,2]), gradient(f)(3,4)
 ```
 
@@ -589,18 +593,18 @@ From the gradient, finding the partial derivatives involves extraction of the co
 
 For example, were it desirable, this function could be used to find the partial in $x$ for some constant $y$:
 
-```
+```julia;
 partial_x(f, y) = x -> ForwardDiff.gradient(f,[x,y])[1]   # first component of gradient
 ```
 
 Another alternative would be to hold one variable constant, and use the `derivative` function, as in:
 
-```
+```julia;
 partial_x(f, y) = x -> ForwardDiff.derivative(u -> f(u,y), x)
 ```
 
 
-```
+```julia; echo=false
 note("""
 For vector-valued functions, we can overide the syntax `'` using `Base.adjoint`, as `'` is treated as a postfix operator in `Julia` for the `adjoint` operation. The symbol `\\nabla` is also available in `Julia`, but it is not an operator, so can't be used as mathematically written `∇f` (this could be used as a name though). In `CalculusWithJulia` a definition is made so essentially `∇(f) = x -> ForwardDiff.gradient(f, x)`. It does require parentheses to be called, as in `∇(f)`.
 """)
@@ -611,7 +615,7 @@ For vector-valued functions, we can overide the syntax `'` using `Base.adjoint`,
 
 The partial derivatives are more directly found with `SymPy`. As with univariate functions, the `diff` function is used by simply passing in the variable in which to find the partial derivative:
 
-```
+```julia;
 using SymPy
 @vars x y
 ex = x^2 - 2x*y
@@ -620,32 +624,32 @@ diff(ex, x)
 
 And evaluation:
 
-```
+```julia;
 diff(ex,x)(x=>1, y=>2)
 ```
 
 Or
 
-```
+```julia;
 diff(ex, y)(x=>1, y=>2)
 ```
 
 The gradient would be found by combining the two:
 
-```
+```julia;
 [diff(ex, x), diff(ex, y)]
 ```
 
 This can be simplified through broadcasting:
 
-```
+```julia;
 grad_ex = diff.(ex, [x,y])
 ```
 
 
 To evaluate at a point we have:
 
-```
+```julia;
 subs.(grad_ex, x.=>1, y.=>2)
 ```
 
@@ -654,13 +658,13 @@ This uses the same subtle trick of using `.=>` to pair off the values, in place 
 
 The `gradient` function from `CalculusWithJulia` is defined to find the symbolic gradient. It uses `free_symbols` to specify the number and order of the variables, but that may be wrong; they are specified below:
 
-```
+```julia;
 gradient(ex, [x, y])   # [∂f/∂x, ∂f/∂y]
 ```
 
 To use `∇` and specify the variables, a tuple (grouping parentheses) is used:
 
-```
+```julia;
 ∇((ex, [x,y]))
 ```
 
@@ -681,7 +685,7 @@ $\langle \partial{f}/\partial{x}(x,y), \partial{f}/\partial{y}(x,y) \rangle$. We
 plotting a vector at several points on a grid. This task is made
 easier with a function like the following, which handles the task of vectorizing the values. It is provided within the `CalculusWithJulia` package:
 
-```noeval
+```julia; eval=false
 function vectorfieldplot!(V; xlim=(-5,5), ylim=(-5,5), nx=10, ny=10, kwargs...)
 
     dx, dy = (xlim[2]-xlim[1])/nx, (ylim[2]-ylim[1])/ny
@@ -689,7 +693,7 @@ function vectorfieldplot!(V; xlim=(-5,5), ylim=(-5,5), nx=10, ny=10, kwargs...)
 
     ps = [[x,y] for x in xs for y in ys]
     vs = V.(ps)
-    λ = 0.9 * min(dx, dy) / maximum(norm.(vs))
+	λ = 0.9 * minimum([u/maximum(getindex.(vs,i)) for (i,u) in enumerate((dx,dy))])
 
     quiver!(unzip(ps)..., quiver=unzip(λ * vs))
 
@@ -699,7 +703,7 @@ end
 
 Here we show the gradient for the scalar function $f(x,y) = 2 - x^2 - 3y^2$ over the region $[-2, 2]\times[-2,2]$ along with a contour plot:
 
-```
+```julia;
 gr()  # better arrows
 
 f(x,y) = 2 - x^2 - 3y^2
@@ -797,7 +801,7 @@ will be shown in more generality later.
 Consider the function $f(x,y) = 2 - x^2 - y^2$ and the curve $\vec\gamma(t) = t\langle \cos(t), -\sin(t) \rangle$ at $t=\pi/6$. We visualize this below:
 
 
-```
+```julia;
 plotly()
 
 f(x,y) = 2 - x^2 - y^2
@@ -817,20 +821,20 @@ arrow!(r(t0), r'(t0), linewidth=5, color=:black)
 
 In three dimensions, the tangent line is seen, but the univariate function $f \circ \vec\gamma$ looks like:
 
-```
+```julia;
 plot(f∘γ, 0, pi/2)
 plot!(t -> (f∘γ)(t0) + (f∘γ)'(t0)*(t - t0))
 ```
 
 From the graph, the slope of the tangent line looks to be about $-1$, using the chain rule gives the exact value:
 
-```
+```julia;
 ForwardDiff.gradient(f, γ(t0)) ⋅ γ'(t0)
 ```
 
 We can compare this to taking the derivative after composition:
 
-```
+```julia;
 (f∘γ)'(t0)
 ```
 
@@ -841,12 +845,12 @@ We can compare this to taking the derivative after composition:
 
 Consider the following plot showing a hiking trail on a surface:
 
-```
+```julia; echo=false
 using JSON, CSV, DataFrames
 SC = JSON.parsefile("data/somocon.json")  # a local file
 lenape = CSV.File("data/lenape.csv") |> DataFrame
 
-xs, ys, zs = SC["xs"], SC["ys"], SC["zs"]
+xs, ys, zs =  [float.(SC[i]) for i in ("xs", "ys","zs")]
 
 gr()
 surface(xs, ys, zs, legend=false)
@@ -857,7 +861,7 @@ Though here it is hard to see the trail  rendered on the surface, for the hiker,
 
 For this question, we can answer it in turns of the sampled data in the `lenape` variable. The steepness being the change in elevation with respect to distance in the $x$-$y$ direction. Treating latitude and longitude coordinates describing motion in a plane (as opposed to a very big sphere), we can compute the maximum steepness:
 
-```
+```julia;
 xs, ys, zs = lenape.longitude, lenape.latitude, lenape.elevation
 dzs = zs[2:end] - zs[1:end-1]
 dxs, dys = xs[2:end] - xs[1:end-1], ys[2:end] - ys[1:end-1]
@@ -869,7 +873,7 @@ atand(maximum(slopes))   # in degrees due to the `d`
 
 This is certainly too steep for a trail, which should be at most $10$ to $15$ degrees or so, not $58$. This is due to the inaccuracy in the measurements. An average might be better:
 
-```
+```julia;
 import Statistics: mean
 atand(mean(slopes))
 ```
@@ -879,7 +883,7 @@ Which seems about right for a generally uphill trail section, as this is.
 
 In the above example, the data is given in terms of a sample, not a functional representation. Suppose instead, the surface was generated by `f` and the path -- in the $x$-$y$ plane -- by $\gamma$. Then we could estimate the maximum and average steepness by a process like this:
 
-```
+```julia;
 f(x,y) = 2 - x^2 - y^2
 f(x) = f(x...)
 γ(t) = t*[cos(t), -sin(t)]
@@ -892,7 +896,7 @@ plot_parametric_curve!(r, 0, pi/2, linewidth=5, color=:black)
 ```
 
 
-```
+```julia;
 using QuadGK
 
 plot(f∘γ, 0, pi/2)
@@ -903,7 +907,7 @@ slope(t) = abs((f∘γ)'(t))
 
 the average is $50$ degrees. As for the maximum slope:
 
-```
+```julia;
 using Roots
 cps = fzeros(slope, 0, pi/2) # critical points
 
@@ -954,7 +958,7 @@ This is a *natural* generalization of the partial derivatives, which, in two dim
 The following figure shows $C = (1/2, -1/2)$ and the two curves. Planes are added, as it can be easiest to visualize these curves as the intersection of the surface generated by $f$ and the vertical planes $x=C_x$ and $y=C_y$
 
 
-```nocode
+```julia; echo=false
 f(x,y) = 2 - x^2 - y^2
 
 xs = ys = range(-3/2, 3/2, length=100)
@@ -980,7 +984,7 @@ arrow!([x0,y0,M], [0, 1,0], linewidth=3)
 
 We can then visualize the directional derivative by a plane through $C$ in the direction $\vec{v}$. Here we take $C=(1/2, -1/2)$, as before, and $\vec{v} = \langle 1, 1\rangle$:
 
-```nocode
+```julia; echo=false
 f(x,y) = 2 - x^2 - y^2
 f(x) = f(x...)
 xs = ys = range(-3/2, 3/2, length=100)
@@ -1029,7 +1033,7 @@ Let $f(x,y) = 2 - x^2 - y^2$ and $\vec\gamma(t) = (\pi-t) \langle \cos(t), \sin(
 
 We have $\nabla{f} = \langle -2x, -2y \rangle$ and $\vec\gamma'(t) = -\langle(\cos(t), \sin(t)) + (\pi-t) \langle(-\sin(t), \cos(t)\rangle$. We maximize this over $[0, \pi]$:
 
-```
+```julia;
 f(x,y) = 2 - x^2 - y^2
 gamma(t) = (pi-t) * [cos(t), sin(t)]
 dd(t) = gradient(f)(gamma(t))  ⋅ gamma'(t)
@@ -1047,7 +1051,7 @@ M
 
 Consider this figure showing a surface and a level curve along with a contour line:
 
-```nocode
+```julia; echo=false
 f(x,y) = sqrt(x^2 + y^2)
 f(v) = f(v...)
 
@@ -1228,7 +1232,7 @@ The placement of $x$ and $y$ indicating the order is different in the two notati
 
 We can compute these for an example easily enough:
 
-```
+```julia;
 @vars x y
 f(x, y) = exp(x) * cos(y)
 ex = f(x,y)
@@ -1264,7 +1268,7 @@ H = \left[
 
 For symbolic expressions, the Hessian may be computed directly in `SymPy` with its `hessian` function:
 
-```
+```julia;
 hessian(ex, (x, y))
 ```
 
@@ -1273,7 +1277,7 @@ When the mixed partials are continuous, this will be a symmetric matrix. The Hes
 
 For numeric use, `FowardDiff` has a `hessian` function. It expects a scalar function and a point and returns the Hessian matrix. We have for $f(x,y) = e^x\cos(y)$ at the point $(1,2)$, the Hessian matrix is:
 
-```
+```julia;
 f(x,y) = exp(x) * cos(y)
 f(v) = f(v...)
 pt = [1, 2]
@@ -1288,7 +1292,7 @@ ForwardDiff.hessian(f, pt)  # symmetric
 
 Consider the graph of a function $z= f(x,y)$ presented below:
 
-```nocode
+```julia; echo=false
 f(x,y) = x * exp(-(x^2 + y^2))
 xs = ys = range(-2, stop=2, length=50)
 surface(xs, ys, f)
@@ -1296,7 +1300,7 @@ surface(xs, ys, f)
 
 From the graph, is the value of $f(1/2, 1)$ positive or negative?
 
-```
+```julia;
 choices = ["positive", "negative"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -1305,7 +1309,7 @@ radioq(choices, ans, keep_order=true)
 
 On which line is the function $0$:
 
-```
+```julia;
 choices = [
 L"The line $x=0$",
 L"The line $y=0$"
@@ -1316,20 +1320,20 @@ radioq(choices, ans, keep_order=true)
 
 Consider the contour plot
 
-```nocode
+```julia; echo=false
 contour(xs, ys, f)
 ```
 
 What is the value of $f(1, 0)$?
 
-```
+```julia;
 val = 0.4
 numericq(val, 1/3)
 ```
 
 From this graph, the minimum value over this region is
 
-```
+```julia;
 choices = [
 L"is around $(-0.7, 0)$ and with a value less than $-0.4$",
 L"is around $(0.7, 0)$ and with a value less than $-0.4$",
@@ -1342,7 +1346,7 @@ radioq(choices, ans)
 
 From this graph, where is the surface steeper?
 
-```
+```julia;
 choices = [
 L"near $(1/4, 0)$",
 L"near $(1/2, 0)$",
@@ -1357,7 +1361,7 @@ radioq(choices, ans, keep_order=true)
 
 Consider the contour graph of a function below:
 
-```nocode
+```julia; echo=false
 f(x,y)= sin(x)*cos(x*y)
 xs = ys = range(-3, stop=3, length=50)
 contour(xs, ys, f)
@@ -1365,7 +1369,7 @@ contour(xs, ys, f)
 
 Are there any peaks or valleys (local extrema) indicated?
 
-```
+```julia;
 choices = [
 L"Yes, the closed loops near $(-1.5, 0)$ and $(1.5, 0)$ will contain these",
 L"No, the vertical lines parallel to $x=0$ show this function to be flat"
@@ -1376,13 +1380,13 @@ radioq(choices, ans)
 
 Imagine hiking on this surface within this region. Could you traverse from left to right without having to go up or down?
 
-```
+```julia;
 yesnoq(false)
 ```
 
 Imagine hiking on this surface within this region. Could you traverse from top to bottom without having to go up or down?
 
-```
+```julia;
 yesnoq(true)
 ```
 
@@ -1393,7 +1397,7 @@ yesnoq(true)
 
 The figure (taken from [openstreetmap.org](https://www.openstreetmap.org/way/537938655#map=15/46.5308/10.4556&layers=C) shows the [Stelvio](https://en.wikipedia.org/wiki/Stelvio_Pass) Pass  in Northern Italy near the Swiss border.
 
-```
+```julia; echo=false
 ImageFile("figures/stelvio-pass.png", "Stelvio Pass")
 ```
 
@@ -1401,7 +1405,7 @@ The road through the pass (on the right) makes a series of switch backs.
 
 Are these
 
-```
+```julia;
 choices = [
 "running essentially parallel to the contour lines",
 "running essentially perpendicular to the contour lines"
@@ -1412,7 +1416,7 @@ radioq(choices, ans)
 
 Why?
 
-```
+```julia;
 choices = [
 "By being essentially parallel, the steepness of the roadway can be kept to a passable level",
 "By being essentially perpendicular, the road can more quickly climb up the mountain"
@@ -1423,7 +1427,7 @@ radioq(choices, ans)
 
 The pass is at about 2700 meters. As shown towards the top and bottom of the figure the contour lines show increasing heights, and to the left and right decreasing heights. The shape of the [pass](https://en.wikipedia.org/wiki/Mountain_pass) would look like:
 
-```
+```julia;
 choices = [
 "A saddle-like shape, called a *col* or *gap*",
 "A upside down bowl-like shape like the top of a mountain"
@@ -1442,7 +1446,7 @@ $$~
 \lim_{\vec{x} \rightarrow \vec{x}} \frac{af(\vec{x})g(\vec{x}) + bh(\vec{x})}{ci(\vec{x})}.
 ~$$
 
-```
+```julia;
 choices = [
 L"When $i(\vec{x}) = 0$",
 L"When any of $f(\vec{x})$, $g(\vec{x})$, or $i(\vec{x})$ are zero",
@@ -1458,20 +1462,20 @@ Let $f(x,y) = (x^2 -  y^2) /(x^2 + y^2)$.
 
 Fix $y=0$. What is $\lim_{x \rightarrow 0} f(x,0)$?
 
-```
+```julia;
 numericq(1)
 ```
 
 Fix $x=0$. What is $\lim_{y \rightarrow 0} f(0, y)$?
 
-```
+```julia;
 numericq(-1)
 ```
 
 The two paths technique shows a limit does not exist by finding two paths with *different* limits as $\vec{x}$ approaches $\vec{c}$. Does this apply to
 $\lim_{\langle x,y\rangle \rightarrow\langle 0, 0 \rangle}f(x,y)$?
 
-```
+```julia;
 yesnoq(true)
 ```
 
@@ -1482,7 +1486,7 @@ Let $f(x,y) = \langle \sin(x)\cos(2y), \sin(2x)\cos(y) \rangle$
 
 Compute $f_x$
 
-```
+```julia;
 choices = [
 L"\langle \cos(x)\cos(2y), 2\cos(2x)\cos(y)\rangle",
 L"\langle \cos(2y), \cos(y) \rangle",
@@ -1495,7 +1499,7 @@ radioq(choices, ans)
 
 Compute $f_y$
 
-```
+```julia;
 choices = [
 L"\langle -2\sin(x)\sin(2y), -\sin(2x)\sin(y)  \rangle",
 L"\langle 2\sin(x), \sin(2x)  \rangle",
@@ -1514,7 +1518,7 @@ Let $f(x,y) = x^{y\sin(xy)}$. Using `ForwardDiff`, at the point $(1/2, 1/2)$, co
 
 The value of $f_x$:
 
-```
+```julia;
 f(x,y) = x^(y*sin(x*y))
 pt  = [1/2, 1/2]
 fx, fy = ForwardDiff.gradient(f, pt)
@@ -1523,7 +1527,7 @@ numericq(fx)
 
 The value of $\partial{f}/\partial{y}$:
 
-```
+```julia;
 numericq(fy)
 ```
 
@@ -1534,7 +1538,7 @@ Let $z = f(x,y)$ have gradient $\langle f_x, f_y \rangle$.
 
 The gradient is:
 
-```
+```julia;
 choices = ["two dimensional", "three dimensional"]
 ans = 1
 radioq(choices, ans, keep_order=true)
@@ -1542,7 +1546,7 @@ radioq(choices, ans, keep_order=true)
 
 The surface is:
 
-```
+```julia;
 choices = ["two dimensional", "three dimensional"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -1550,7 +1554,7 @@ radioq(choices, ans, keep_order=true)
 
 The gradient points in the direction of greatest increase of $f$. If a person were on a hill described by $z=f(x,y)$, what three dimensional vector would they follow to go the steepest way up the hill?
 
-```
+```julia;
 choices = [
 L"\langle f_x, f_y, -1 \rangle",
 L"\langle -f_x, -f_y, 1 \rangle",
@@ -1564,8 +1568,10 @@ radioq(choices, ans)
 
 The figure shows climbers on their way to summit Mt. Everest:
 
-```
-ImageFile("figures/everest.png", "Climbers en route to the summit of Mt. Everest")
+```julia; echo=false
+imgfile = "figures/everest.png"
+caption = "Climbers en route to the summit of Mt. Everest"
+ImageFile(imgfile, caption)
 ```
 
 If the surface of the mountain is given by a function $z=f(x,y)$ then the climbers move along a single path parameterized, say, by $\vec{\gamma}(t) = \langle x(t), y(t)\rangle$, as set up by the Sherpas.
@@ -1574,7 +1580,7 @@ Consider the composition $(f\circ\vec\gamma)(t)$.
 
 For a climber with GPS coordinates $(x,y)$. What describes her elevation?
 
-```
+```julia; echo=false
 choices = [
 L"f(x,y)",
 L"(f\circ\vec\gamma)(x,y)",
@@ -1586,7 +1592,7 @@ radioq(choices, ans)
 
 A climber leaves base camp at $t_0$. At time $t > t_0$, what describes her elevation?
 
-```
+```julia; echo=false
 choices = [
 L"(f\circ\vec\gamma)(t)",
 L"\vec\gamma(t)",
@@ -1598,7 +1604,7 @@ radioq(choices, ans)
 
 What does the vector-valued function $\vec{r}(t) = \langle x(t), y(t), (f\circ\vec\gamma(t))\rangle$ describe:
 
-```
+```julia; echo=false
 choices = [
 "The three dimensional position of the climber",
 "The climbers gradient, pointing in the direction of greatest ascent"
@@ -1609,7 +1615,7 @@ radioq(choices, ans)
 
 In the figure, the climbers are making a switch back, so as to avoid the steeper direct ascent. Mathematically $\nabla{f}(\vec\gamma(t)) \cdot \vec\gamma'(t)$ describes the directional derivative that they follow. Using $\|\vec{u}\cdot\vec{v}\| = \|\vec{u}\|\|\vec{v}\|\cos(\theta)$, does this route:
 
-```
+```julia; echo=false
 choices = [
 L"Keep $\cos(\theta)$ smaller than $1$, so that the slope taken is not too great",
 L"Keep $\cos(\theta)$ as close to $1$ as possible, so the slope taken is as big as possible",
@@ -1621,7 +1627,7 @@ radioq(choices, ans)
 
 Suppose our climber reaches the top at time $t$. What would be $(f\circ\vec\gamma)'(t)$, assuming the derivative exists?
 
-```
+```julia; echo=false
 choices = [
 L"It would be $0$, as the top would be maximum for $f\circ\vec\gamma$",
 L"It would be $\langle f_x, f_y\rangle$ and point towards the sky, the direction of greatest ascent",
@@ -1639,7 +1645,7 @@ Suppose a trail height is described parametrically by a composition $(f \circ \v
 
 What expression below captures point 1 that the steepness should be no more than 10 degrees ($\pi/18$ radians):
 
-```
+```julia; echo=false
 choices = [
 L"|\hat{T} \cdot \hat{P}| \leq \cos(\pi/18)",
 L"|\hat{T} \cdot \hat{P}| \leq \sin(\pi/18)",
@@ -1651,7 +1657,7 @@ radioq(choices, ans)
 
 The normal to the surface $z=f(x,y)$ is *not* the normal to the trail tread. Suppose $\vec{N}(t)$ is a function that returns this. At the same point $\vec\gamma(t)$, let $\vec{M} = \langle -f_x, -f_y, 0\rangle$ be a vector in 3 dimensions pointing downhill. Let "hats" indicate unit vectors. The outward slope is $\pi/2$ minus the angle between $\hat{N}$ and $\hat{M}$. What condition will ensure this angle is $5$ degrees ($\pi/36$ radians)?
 
-```
+```julia; echo=false
 choices = [
 L"|\hat{N} \cdot \hat{M}| \leq \cos(\pi/2 - \pi/36)",
 L"|\hat{N} \cdot \hat{M}| \leq \sin(\pi/2 - \pi/18)",
@@ -1671,7 +1677,7 @@ radioq(choices, ans)
 
 Let $f(x,y) = x^2 \cdot(x - y^2)$. Let $\vec{v} = \langle 1, 2\rangle$. Find the directional derivative in the direction of $\vec{v}$.
 
-```
+```julia; echo=false
 choices = [
 L"\frac{\sqrt{5}}{5}\left(2 \cos{\left (3 \right )} - 7 \sin{\left (3 \right )}\right)",
 L"2 \cos{\left (3 \right )} - 7 \sin{\left (3 \right )}",
@@ -1688,7 +1694,7 @@ radioq(choices, ans)
 
 Let $\vec{v}$ be any non-zero vector. Does $\nabla{f}(\vec{x})\cdot\vec{v}$ give the rate of increase of $f$ per unit of distance in the direction of $\vec{v}$?
 
-```
+```julia; echo=false
 choices = [
 "Yes, by definition",
 L"No, not unless $\vec{v}$ were a unit vector"
@@ -1705,7 +1711,7 @@ Let $f(x,y,z) = x^4 + 2xz + 2xy + y^4$ and $\vec\gamma(t) = \langle t, t^2, t^3\
 
 The value of $\nabla{f}(x,y,z)$ is
 
-```
+```julia; echo=false
 choices = [
 L"\langle 4x^3 + 2x + 2y, 2x + 4y^3, 2x \rangle",
 L"\langle 4x^3, 2z, 2y\rangle",
@@ -1717,7 +1723,7 @@ radioq(choices, ans)
 
 The value of $\vec\gamma'(t)$ is:
 
-```
+```julia; echo=false
 choices = [
 L"\langle 1, 2t, 3t^2\rangle",
 L"1 + 2y + 3t^2",
@@ -1729,7 +1735,7 @@ radioq(choices, ans)
 
 The value of $(f\circ\vec\gamma)'(t)$ is found by:
 
-```
+```julia; echo=false
 choices = [
 L"Taking the dot product of  $\nabla{f}(\vec\gamma(t))$ and $\vec\gamma'(t)$",
 L"Taking the dot product of  $\nabla{f}(\vec\gamma'(t))$ and $\vec\gamma(t)$",
@@ -1746,7 +1752,7 @@ Let $z = f(x,y)$ be some unknown function,
 
 From the figure, which drawn vector is the gradient at $(1/2, -3/4)$?
 
-```
+```julia; echo=false
 plotly()
 f(x,y) = 2 + x^2 - y^2
 f(v) = f(v...)
@@ -1762,7 +1768,7 @@ arrow!([pt..., f(pt...)], uvec([(-gradf)..., 1]), color=:red, linewidth=3)
 ```
 
 
-```
+```julia; echo=false
 choices = [
 "The blue one",
 "The green one",
@@ -1775,7 +1781,7 @@ radioq(choices, ans)
 
 From the figure, which drawn vector is the gradient as $(1/2, -3/4)$?
 
-```nocode
+```julia; echo=false
 gr()
 f(x,y) = 2 + x^2 - y^2
 f(v) = f(v...)
@@ -1786,7 +1792,7 @@ arrow!(pt, [-1, 0], color=:green, linewidth=3)
 arrow!([0,0], pt, color=:red, linewidth=3)
 ```
 
-```
+```julia; echo=false
 choices = [
 "The blue one",
 "The green one",
@@ -1818,7 +1824,7 @@ g(\vec{x}) = f(\vec{c}) + \frac{1}{2}(\vec{x} - \vec{c})^tH(\vec{c})(\vec{x} - \
 
 If $f$ is a linear function at $\vec{c}$, what does this say about $g$?
 
-```
+```julia; echo=false
 choices = [
 L"Linear means $H$ is the $0$ matrix, so $g(\vec{x})$ is the constant $f(\vec{c})$",
 L"Linear means $H$ is linear, so $g(\vec{x})$ describes a plane",
@@ -1830,7 +1836,7 @@ radioq(choices, ans)
 
 Suppose, $H$ has the magic property that for *any* vector $\vec{v}^tH\vec{v} < 0$. What does this imply:
 
-```
+```julia; echo=false
 choices = [
 L"That $g(\vec{x}) \geq f(\vec{c})$",
 L"That $g(\vec{x}) = f(\vec{c})$",
@@ -1844,7 +1850,7 @@ radioq(choices, ans, keep_order=true)
 
 Let $f(x,y) = x^3y^3$. Which partial derivative is identically $0$?
 
-```
+```julia; echo=false
 choices = [
 L"\partial^4{f}/\partial{x^4}",
 L"\partial^4{f}/\partial{x^3}\partial{y}",
@@ -1861,7 +1867,7 @@ Let $f(x,y) = 3x^2 y$.
 
 Which value is greater at the point $(1/2,2)$?
 
-```
+```julia; echo=false
 choices = [
 L"f_x",
 L"f_y",
@@ -1900,21 +1906,21 @@ $$~
 
 At $(0,0)$ what is $ \frac{\partial \frac{\partial f}{\partial x}}{ \partial y}$?
 
-```
+```julia; echo=false
 ans = -1
 numericq(ans)
 ```
 
 At $(0,0)$ what is $ \frac{\partial \frac{\partial f}{\partial y}}{ \partial x}$?
 
-```
+```julia; echo=false
 ans = 1
 numericq(ans)
 ```
 
 Away from $(0,0)$ the mixed partial is $\frac{x^{6} + 9 x^{4} y^{2} - 9 x^{2} y^{4} - y^{6}}{x^{6} + 3 x^{4} y^{2} + 3 x^{2} y^{4} + y^{6}}$.
 
-```
+```julia; echo=false
 choices = ["As this is the ratio of continuous functions, it is continuous at the origin",
 L"This is not continuous at $(0,0)$, still the limit along the two paths $x=0$ and $y=0$ are equivalent.",
 L"This is not continuous at $(0,0)$, as the limit along the two paths $x=0$ and $y=0$ are not equivalent."
@@ -1929,7 +1935,7 @@ radioq(choices, ans)
 
 Consider the following code which computes the mixed partials for the discrete derivative:
 
-```
+```julia;
 @vars x y Δ real=true
 
 G = SymPy.SymFunction("G")
@@ -1941,7 +1947,7 @@ Dy(Dx(G(x,y), Δ), Δ) - Dx(Dy(G(x,y), Δ), Δ)
 
 What does this simplify to?
 
-```
+```julia; echo=false
 numericq(0)
 ```
 
@@ -1950,7 +1956,7 @@ numericq(0)
 
 Is continuity required for this to be true?
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
@@ -1961,7 +1967,7 @@ yesnoq(false)
 
 What equation does the function $f(x,y) = x^3 - 3xy^2$ satisfy?
 
-```
+```julia; echo=false
 # 4 questions, don't edit this order!
 choices = [
 L"The wave equation: $f_{tt} = f_{xx}$; governs motion of light or sound",
@@ -1982,7 +1988,7 @@ radioq(choices, ans, keep_order=true)
 
 What equation does the function $f(t, x) = sin(x-t) + sin(x+t)$ satisfy?
 
-```
+```julia; echo=false
 ans = 1
 radioq(choices, ans, keep_order=true)
 ```
@@ -1992,7 +1998,7 @@ radioq(choices, ans, keep_order=true)
 
 What equation does the function $f(t, x) = e^{-(x+t)^2}$ satisfy?
 
-```
+```julia; echo=false
 ans = 4
 radioq(choices, ans, keep_order=true)
 ```
@@ -2000,7 +2006,7 @@ radioq(choices, ans, keep_order=true)
 
 What equation does the function $f(x,y) = \cos(x) + \sin(y)$ satisfy?
 
-```
+```julia; echo=false
 ans = 5
 radioq(choices, ans, keep_order=true)
 ```

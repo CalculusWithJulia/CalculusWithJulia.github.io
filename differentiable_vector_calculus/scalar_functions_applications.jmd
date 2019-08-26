@@ -3,7 +3,7 @@
 This section presents different applications of scalar functions.
 We begin by loading our package allowing access to several useful packages of `Julia`:
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
@@ -25,7 +25,7 @@ Consider $f(\vec\gamma_x)$ at a point $(a,b)$. The path has a tangent vector, wh
 
 These two vectors will lie in the plane. The normal vector is found by their cross product:
 
-```
+```julia;
 using SymPy
 @vars f_x f_y
 n = [1, 0, f_x] × [0, 1, f_y]
@@ -54,7 +54,7 @@ This form would then generalize to scalar functions from $R^n \rightarrow R$. Th
 
 The following figure illustrates the above for the function $f(x,y) = 6 - x^2 - y^2$:
 
-```
+```julia;
 f(x,y) = 6 - x^2 -y^2
 f(x)= f(x...)
 
@@ -104,7 +104,7 @@ f(a,b) + \frac{\partial f}{\partial x} dx + \frac{\partial f}{\partial y} dy,
 
 which is a common form for the equation, though possibly confusing, as $\partial x$ and $dx$ need to be distinguished. For $n > 2$, additional terms follow this pattern. This explicit form is helpful when doing calculations by hand, but much less so when working on the computer, say with `Julia`, as the representations using vectors (or matrices) can be readily implemented and their representation much closer to the formulas. For example, consider these two possible functions to find the tangent plane (returned as a function) at a point in 2 dimensions
 
-```
+```julia;
 function tangent_plane(f, pt)
   fx, fy = ForwardDiff.gradient(f, pt)
   x -> f(x...) + fx * (x[1]-pt[1]) + fy * (x[2]-pt[2])
@@ -113,7 +113,7 @@ end
 
 It isn't so bad, but as written, we specialized to the number of dimensions, used indexing,  and with additional dimensions, it clearly would get tedious to generalize. Using vectors, we might have:
 
-```
+```julia;
 function tangent_plane(f, pt)
   ∇f = ForwardDiff.gradient(f, pt) # using a variable ∇f
   x -> f(pt) + ∇f ⋅ (x - pt)
@@ -147,7 +147,7 @@ Let $z = f(x,y) = \sin(x)\cos(x-y)$. Find an equation for the tangent plane at $
 
 We have many possible forms to express this in, but we will use the functional description:
 
-```
+```julia;
 @vars x y
 vars = [x, y]
 f(x,y) = sin(x) * cos(x-y)
@@ -176,7 +176,7 @@ will describe the tangent.
 
 The curve may be described parametrically by $\vec\gamma(t) = a \langle 1 + \cos(t), \sin(t), 2\sin(t/2) \rangle$. Let's see that the above is correct by verifying that the cross product of the tangent vector computed two ways is $0$:
 
-```
+```julia;
 a = 1
 gamma(t) = a * [1 + cos(t), sin(t), 2sin(t/2) ]
 P = gamma(1/2)
@@ -195,7 +195,7 @@ t = 1/2
 
 The `wireframe` plot can be used to a surface of the type `z=f(x,y)`, as previously illustrated. However we have no way of plotting $3$-dimensional implicit surfaces (of the type $F(x,y,z)=c$) as we do for $2$-dimensional implicit surfaces. The following function, which is **not** part of `CalculusWithJulia` can be used for this task to make a surface akin to the wireframe plot. The basic idea is to slice an axis, by default the $z$ axis up and for each level plot the contours of $(x,y) \rightarrow f(x,y,z)-c$, which becomes a $2$-dimensional problem. The function allows any of 3 different axes to be chosen to slice over, the default being just the $z$ axis.
 
-```
+```julia;
 import Contour # installed with the Plots package, so should be available
                # import -- not using -- to avoid name collision
 function plot_implicit_surface(F, c=0;
@@ -251,7 +251,7 @@ end
 
 We demonstrate with an example from a February 14, 2019 article in the [New York Times](https://www.nytimes.com/2019/02/14/science/math-algorithm-valentine.html). It shows an equation for a "heart," as the graphic will illustrate:
 
-```
+```julia;
 a,b = 1,3
 f(x,y,z) = (x^2+((1+b)*y)^2+z^2-1)^3-x^2*z^3-a*y^2*z^3
 
@@ -280,7 +280,7 @@ That is, if $V(r,h) = \pi r^2 h$, what is $V(1.01, 2.01) - V(1,2)$?
 
 We can use linear approximation to see that this difference is *approximately* $\nabla{V} \cdot \langle 0.01, 0.01 \rangle$. This is:
 
-```
+```julia;
 V(r, h) = pi * r^2 * h
 V(v) = V(v...)
 a = [1,2]
@@ -290,7 +290,7 @@ ForwardDiff.gradient(V, a) ⋅ dx   # or use ∇(V)(a)
 
 The exact difference can be computed:
 
-```
+```julia;
 V(a + dx) - V(a)
 ```
 
@@ -318,7 +318,7 @@ A [piriform](http://www.math.harvard.edu/~knill/teaching/summer2011/handouts/32-
 
 Here, $\nabla{f}$ describes a *normal* to the tangent plane. The description of a plane may be  described by $\hat{N}\cdot(\vec{x} - \vec{x}_0) = 0$, where $\vec{x}_0$ is identified with a point on the plane (the point $(2,2,2)$ here). With this, we have $\hat{N}\cdot\vec{x} = ax + by + cz = \hat{N}\cdot\langle 2,2,2\rangle = 2(a+b+c)$. For ths problem, $\nabla{f}(2,2,2) = \langle a, b, c\rangle$ is given by:
 
-```
+```julia;
 f(x,y,z) = x^4 -x^3 + y^2 + z^2
 a, b,c = ∇(f)(2,2,2)
 "$a x + $b y  + $c z = $([a,b,c] ⋅ [2,2,2])"
@@ -340,7 +340,7 @@ cx + dy &= v
 
 A method to solve this by hand would be to solve for $y$ from one equation, replace this expression into the second equation and then solve for $x$. From there, $y$ can be found. A more advanced method expresses the problem in a matrix formulation of the form $Mx=b$ and solves that equation. This form of solving is implemented in `Julia`, through the "backslash" operator. Here is the general solution:
 
-```
+```julia;
 @vars a b c d u v
 M = [a b; c d]
 B = [u, v]
@@ -363,7 +363,7 @@ Consider the functions $f(x,y) =2 - x^2 - y^2$ and
 $g(x,y) = 3 - 2x^2 - (1/3)y^2$. These graphs show their surfaces with the level sets for $c=0$ drawn and just the levels sets, showing they intersect in 4 places.
 
 
-```nocode
+```julia; echo=false
 import Contour: contours, levels, level, lines, coordinates
 
 
@@ -440,7 +440,7 @@ One step of Newton's method defines $(x_{n+1}, y_{n+1})$ to be the values $(x,y)
 As just described, we can use `Julia`'s `\` operation to solve the above system of equations, if we express them in matrix form. With this, one step of Newton's method can be coded as follows:
 
 
-```
+```julia;
 function newton_step(f, g, xn)
     M = [ForwardDiff.gradient(f, xn)'; ForwardDiff.gradient(g, xn)']
     b = -[f(xn), g(xn)]
@@ -451,7 +451,7 @@ end
 
 We investigate what happens starting at $(1,1)$ after one step:
 
-```
+```julia;
 f(x,y) = 2 - x^2 - y^2
 g(x,y) = 3 - 2x^2 - (1/3)y^2
 f(v) = f(v...); g(v) = g(v...)
@@ -461,13 +461,13 @@ x1 = newton_step(f, g, x0)
 
 The new function values are
 
-```
+```julia;
 f(x1), g(x1)
 ```
 
 We can get better approximations by iterating. Here we hard code 4 more steps:
 
-```
+```julia;
 x2 = newton_step(f, g, x1)
 x3 = newton_step(f, g, x2)
 x4 = newton_step(f, g, x3)
@@ -481,7 +481,7 @@ For nearby initial guesses and reasonable functions, Newton's method is *quadrat
 
 Here is a simplistic method to iterate $n$ steps:
 
-```
+```julia;
 function nm(f, g, x, n=5)
     for i in 1:n
       x = newton_step(f, g, x)
@@ -504,7 +504,7 @@ $(0,0)$ is a solution to $f(x,y)=1$ and $g(x,y)=1$. What about a level like $1/2
 
 Rather than work with $f(x,y) = c$ we solve $f(x,y)^2 = c^2$, as that will be avoid issues with the square root not being defined. Here is one way to solve:
 
-```
+```julia;
 c = 1/2
 f(x,y) = 1 - y^2 - c^2
 g(x,y) = (1 - x^2) - c^2
@@ -570,7 +570,7 @@ Let $f(x,y,z) = x^4 -x^3 + y^2 + z^2 = 0$ be a surface with point $(2,2,2)$. Fin
 
 To find $\partial{z}/\partial{x}$ we have:
 
-```
+```julia;
 Z = SymFunction("Z")
 @vars x y
 solve(diff(x^4 -x^3 + y^2 + Z(x,y)^2, x), diff(Z(x,y),x))
@@ -578,7 +578,7 @@ solve(diff(x^4 -x^3 + y^2 + Z(x,y)^2, x), diff(Z(x,y),x))
 
 Similarly, for $\partial{z}/\partial{y}$:
 
-```
+```julia;
 Z = SymFunction("Z")
 @vars x y
 solve(diff(x^4 -x^3 + y^2 + Z(x,y)^2, y), diff(Z(x,y),y))
@@ -625,10 +625,14 @@ Call a point in the domain of $f$ where the function is differentiable and the  
 
 Consider the function $f(x,y) = e^{-(x^2 + y^2)/5} \cos(x^2 + y^2)$.
 
+```julia; echo=false; results="hidden"
+plotly()
 ```
+
+```julia;
 f(x,y)= exp(-(x^2 + y^2)/5) * cos(x^2 + y^2)
 xs = ys = range(-4, 4, length=100)
-surface(xs, ys, f)
+surface(xs, ys, f, legend=false)
 ```
 
 This function is differentiable and the gradient is given by:
@@ -643,7 +647,7 @@ This is zero at the origin, or when $ 5\sin(x^2 + y^2) = -\cos(x^2 + y^2)$. The 
 
 Now consider the differentiable function $f(x,y) = xy$, graphed below with the projections of the $x$ and $y$ axes:
 
-```
+```julia;
 f(x,y) = x*y
 xs = ys = range(-3, 3, length=100)
 surface(xs, ys, f, legend=false)
@@ -680,7 +684,7 @@ Apply this to $f(x,y) = xy$ at $\vec{a} = \vec{0}$ we have $f_{xx} = f_{yy} = 0$
 
 Applying this to $f(x,y) = e^{-(x^2 + y^2)/5} \cos(x^2 + y^2)$, we will use `SymPy` to compute the derivatives, as they get a bit involved:
 
-```
+```julia;
 f(x,y) =  exp(-(x^2 + y^2)/5) * cos(x^2 + y^2)
 @vars x y
 H = sympy.hessian(f(x,y), [x,y])
@@ -688,19 +692,19 @@ H = sympy.hessian(f(x,y), [x,y])
 
 This is messy, but we only consider it at critical points. The point $(0,0)$ is graphically a local maximum. We can see from the Hessian, that the second partial derivative test will give the same characterization:
 
-```
+```julia;
 H_00 = subs.(H, x.=>0, y.=>0)
 ```
 
 Which satisfies:
 
-```
+```julia;
 H_00[1,1] < 0 && det(H_00) > 0
 ```
 
 Now consider $\vec{a} = \langle \sqrt{2\pi + \tan^{-1}(-1/5)}, 0 \rangle$, a point on the first visible ring on the graph. The gradient vanishes here:
 
-```
+```julia;
 gradf = gradient(f(x,y), [x,y])
 a = [sqrt(2PI + atan(-Sym(1)//5)), 0]
 subs.(gradf, x.=> a[1], y.=> a[2])
@@ -708,7 +712,7 @@ subs.(gradf, x.=> a[1], y.=> a[2])
 
 But the test is *inconclusive*, as the determinant of the Hessian is $0$:
 
-```
+```julia;
 a = [sqrt(PI + atan(-Sym(1)//5)), 0]
 H_a = subs.(H, x.=> a[1], y.=> a[2])
 det(H_a)
@@ -722,19 +726,19 @@ Characterize the critical points of $f(x,y) = 4xy - x^4 - y^4$.
 
 The critical points may be found by solving when the gradient is $\vec{0}$:
 
-```
+```julia;
 @vars x y real=true
 f(x,y) = 4x*y - x^4 - y^4
 gradf = gradient(f(x,y), [x,y])
 ```
 
-```
+```julia;
 pts = solve(gradf, [x,y])
 ```
 
 There are $3$ critical points. To classify them we need the sign of $f_{xx}$ and the determinant of the Hessian. We make a simple function to compute these, then apply it to each point using a comprehension:
 
-```
+```julia;
 H = sympy.hessian(f(x,y), [x,y])
 function classify(H, pt)
   Ha = subs.(H, x .=> pt[1], y .=> pt[2])
@@ -745,7 +749,7 @@ end
 
 We see the first and third points have positive determinant and negative $f_{xx}$, so are relative maxima, and the second point has negative derivative, so is a saddle point. We graphically confirm this:
 
-```
+```julia;
 xs = ys = range(-3/2, 3/2, length=100)
 surface(xs, ys, f, legend=false)
 scatter!(unzip([N.([pt...,f(pt...)]) for pt in pts])...)  # add each pt on surface
@@ -769,7 +773,7 @@ H = \left[
 
 At $\vec{a}$ this has positive determinant and $f_{xx} > 0$, so $\vec{a}$ corresponds to a *local* minimum with values $f(\vec{a}) = (1/2)^2 + 3(0) - 1/2 = -1/4$. The absolute maximum and minimum may occur here (well, not the maximum) or on the boundary, so that must be considered. In this case we can easily parameterize the boundary and turn this into the univariate case:
 
-```
+```julia;
 f(x,y) = x^2 + 2y^2 - x
 f(v) = f(v...)
 gamma(t) = [cos(t), sin(t)]  # traces out x^2 + y^2 = 1 over [0, 2pi]
@@ -784,20 +788,20 @@ g.(cps)
 
 We see that maximum value is `2.25` and that the interior point, $\vec{a}$, will be where the minimum value occurs. To see exactly where the maximum occurs, we look at the values of gamma:
 
-```
+```julia;
 inds = [2,4]
 cps = cps[inds]
 ```
 
 These are multiples of $\pi$:
 
-```
+```julia;
 cps/pi
 ```
 
 So we have the maximum occurs at the angles $2\pi/3$ and $4\pi/3$. Here we visualize, using a hacky trick of assigning `NaN` values to the function to avoid plotting outside the circle:
 
-```
+```julia;
 f(x,y) = x^2 + 2y^2 - x
 h(x,y) = f(x,y) * (x^2 + y^2 <= 1 ? 1 : NaN)
 xs = ys = range(-1,1, length=100)
@@ -811,7 +815,7 @@ scatter!(xs, ys, zs)
 
 A contour plot also shows that some--and only one--extrema happens on the interior:
 
-```
+```julia;
 h(x,y) = f(x,y) * (x^2 + y^2 <= 1 ? 1 : NaN)
 xs = ys = range(-1,1, length=100)
 contour(xs, ys, h)
@@ -828,7 +832,7 @@ We have three points in the plane, $(x_1, y_1)$, $(x_2, y_2)$, and $(x_3,y_3)$. 
 
 If the measure is the Euclidean distance, then $d_i^2 = (p_x - x_i)^2 + (p_y - y_i)^2$. If we sought to minimize $d_1^2 + d_2^2 + d_3^2$, then we would proceed as follows:
 
-```
+```julia;
 @vars x y x1 y1 x2 y2 x3 y3
 d2(p,x) = (p[1] - x[1])^2 + (p[2]-x[2])^2
 d2_1, d2_2, d2_3 = d2((x,y), (x1, y1)), d2((x,y), (x2, y2)), d2((x,y), (x3, y3))
@@ -837,7 +841,7 @@ ex = d2_1 + d2_2 + d2_3
 
 We then find the gradient, and solve for when it is $\vec{0}$:
 
-```
+```julia;
 gradf = diff.(ex, [x,y])
 xstar = solve(gradf, [x,y])
 ```
@@ -846,7 +850,7 @@ There is only one critical point, so must be a minimum.
 
 We confirm this by looking at the Hessian and noting $H_{11} > 0$:
 
-```
+```julia;
 H = subs.(hessian(ex, [x,y]), x.=>xstar[x], y.=>xstar[y])
 ```
 
@@ -874,7 +878,12 @@ To find the minimum then within the triangle, this point and the boundary must b
 
 Here is a triangle, where the minimum would be within the triangle:
 
+
+```echo=false; results="hidden"
+gr()
 ```
+
+```julia;
 us = [[cos(t), sin(t)] for t in (0, 2pi/3, 4pi/3)]
 polygon(ps) = unzip(vcat(ps, ps[1:1])) # easier way to plot a polygon
 
@@ -887,7 +896,7 @@ p
 ```
 For this triangle we find the Steiner point outside of the triangle.
 
-```
+```julia;
 as = (1, -1, 3)
 p = scatter([0],[0], markersize=2, legend=false)
 p1, p2, p3 = ps = [a*u for (a,u) in zip(as, us)]
@@ -897,7 +906,7 @@ p
 
 Let's see where the minimum distance point is by constructing a plot. The minimum must be on the boundary, as the only point where the gradient vanishes is the origin, not in the triangle. The plot of the triangle has a contour plot of the distance function, so we see clearly that the minimum happens at the point `[0.5, -0.866025]`. On this plot, we drew the gradient at some points along the boundary. The gradient points in the direction of greatest increase -- away from the minimum. That the gradient vectors have a non-zero projection onto the edges of the triangle in a direction pointing away from the point indicates that the function `d` would increase if moved along the boundary in that direction, as indeed it does.
 
-```
+```julia;
 function polygon(ps)
     unzip(vcat(ps, ps[1:1]))
 end
@@ -925,7 +934,7 @@ p
 
 The following graph, shows distance along each edge:
 
-```
+```julia;
 p = plot(legend=false)
 for i in 1:2, j in (i+1):3
   plot!(p, t -> euclid_dist(li(t, ps[i], ps[j])), 0, 1)
@@ -962,7 +971,7 @@ d3(\alpha, \beta) = \frac{\beta x_1 - y_1 + \alpha}{\sqrt{1 + \beta^2}} + \frac{
 
 The method of least squares minimizes the second one of these. That is, it chooses $\alpha$ and $\beta$ that make the expression a minimum.
 
-```
+```julia;
 x1, x2, x3 = xs = Sym["x$i" for i in 1:3]
 y1, y2, y3 = ys = Sym["y$i" for i in 1:3]
 li(x, alpha, beta) =  alpha + beta * x
@@ -974,17 +983,17 @@ d2(α, β)
 
 To identify $\alpha$ and $\beta$ we find the gradient:
 
-```
+```julia;
 grad_d2 = diff.(d2(α, β), [α, β])
 ```
 
-```
+```julia;
 out = solve(grad_d2, [α, β])
 ```
 
 As found, the formulas aren't pretty. If $x_1 + x_2 + x_3 = 0$ they simplify. For example:
 
-```
+```julia;
 subs(out[β], x1 + x2 + x3 => 0)
 ```
 
@@ -1011,7 +1020,7 @@ $(\vec{x}-\bar{x})\cdot(\vec{y}-\bar{y}) / \|\vec{x}-\bar{x}\|$.
 
 As an example, if the point are $(1,1), (2,3), (5,8)$ we get:
 
-```
+```julia;
 [k => subs(v, x1=>1, y1=>1, x2=>2, y2=>3, x3=>5, y3=>8) for (k,v) in out]
 ```
 
@@ -1039,7 +1048,7 @@ Let $\Delta_x =\vec{x}_{n}- \vec{x}_{n-1}$ and $\Delta_y =  \nabla{f}(\vec{x}_{n
 
 To illustrate, take $f(x,y) = -(x^2 + y^2) \cdot e^{-(2x^2 + y^2)}$ and a starting point $\langle 1, 1 \rangle$. We have, starting with $\gamma_0 = 1$ $5$ steps taken as follows:
 
-```
+```julia;
 f(x,y) = -exp(-((x-1)^2 + 2(y-1/2)^2))
 f(x) = f(x...)
 
@@ -1062,7 +1071,11 @@ end
 
 We now visualize, using the `Contour` package to draw the contour lines in the $x-y$ plane:
 
+```echo=false; results="hidden"
+plotly()
 ```
+
+```julia;
 import Contour: contours, levels, level, lines, coordinates
 
 function surface_contour(xs, ys, f; offset=0)
@@ -1113,7 +1126,7 @@ The Wikipedia page states where applicable, Newton's method converges much faste
 
 We apply it to the task of characterizing the following function, which has a few different peaks over the region $[-3,3] \times [-2,2]$:
 
-```
+```julia;
 function peaks(x, y)
     z = 3 * (1 - x)^2 * exp(-x^2 - (y + 1)^2)
     z += -10 * (x / 5 - x^3 - y^5) * exp(-x^2 - y^2)
@@ -1128,7 +1141,7 @@ surface(xs, ys, peaks)
 
 As we will solve for the critical points numerically, so consider the contour plot as well, as it shows better where the critical points are:
 
-```
+```julia;
 contour(xs, ys, peaks)
 ```
 
@@ -1136,7 +1149,7 @@ Over this region we see clearly 5 peaks or valleys: near $(0, 1.5)$, near $(1.2,
 
 For concreteness, consider the peak or valley near $(0,1.5)$. We use Newton's method to numerically compute the critical point. The Newton step, specialized here is:
 
-```
+```julia;
 function newton_step(f, x)
   M = ForwardDiff.hessian(f, x)
   b = ForwardDiff.gradient(f, x)
@@ -1146,7 +1159,7 @@ end
 
 We perform 3 steps of Newton's method, and see that it has found a critical point.
 
-```
+```julia;
 peaks(v) = peaks(v...)
 x = [0, 1.5]
 x = newton_step(peaks, x)
@@ -1157,13 +1170,13 @@ x, ForwardDiff.gradient(peaks, x)
 
 The Hessian at this point is given by:
 
-```
+```julia;
 H = ForwardDiff.hessian(peaks, x)
 ```
 
 From which we see:
 
-```
+```julia;
 fxx = H[1,1]
 d = det(H)
 fxx, d
@@ -1172,7 +1185,7 @@ fxx, d
 Consequently we have a local maximum at this critical point.
 
 
-```
+```julia; echo=false
 note(""" The `Optim.jl` package provides efficient implementations of these two numeric methods, and others. """)
 ```
 
@@ -1186,7 +1199,7 @@ The different setting is: maximize $f(x,y)$ subject to the constraint $g(x,y) = 
 
 Why does this help? The key is something we have seen prior: If $g$ is differentiable, and we take $\nabla{g}$, then it will point at directions *orthogonal* to the level curve $g(x,y) = 0$. (Parameterize the curve, then $(g\circ\vec{r})(t) = 0$ and so the chain rule has $\nabla{g}(\vec{r}(t)) \cdot \vec{r}'(t) = 0$.) For example, consider the function $g(x,y) = x^2 +2y^2 - 1$. The level curve $g(x,y) = 0$ is an ellipse. Here we plot the level curve, along with a few gradient vectors at points satisfying $g(x,y) = 0$:
 
-```
+```julia;
 gr()
 
 g(x,y) = x^2 + 2y^2 -1
@@ -1213,7 +1226,7 @@ From the plot we see the key property that $g$ is orthogonal to the level curve.
 
 Now consider $f(x,y)$, a function we wish to maximize. The gradient points in the direction of *greatest* increase, provided $f$ is smooth. We are interested in the value of this gradient along the level curve of $g$. Consider this figure representing a portion of the level curve, it's tangent, normal, the gradient of $f$, and the contours of $f$:
 
-```nocode
+```julia; echo=false
 r(t) = [cos(t), sin(t)/2]
 plot_parametric_curve(r, pi/12, pi/3, legend=false, aspect_ratio=true, linewidth=3)
 T(t) = -r'(t) / norm(r'(t))
@@ -1244,7 +1257,7 @@ The gradient points in the direction of greatest increase. If we first move in o
 
 Now consider this figure at a different point of the figure:
 
-```nocode
+```julia; echo=false
 r(t) = [cos(t), sin(t)/2]
 plot_parametric_curve(r, -pi/6, pi/6, legend=false, aspect_ratio=true, linewidth=3)
 T(t) = -r'(t) / norm(r'(t))
@@ -1347,7 +1360,7 @@ L(x, y, \lambda) = f(x,y) - \lambda(g(x,y) - 1)
 
 We can solve for $\nabla{L} = \vec{0}$ by hand, but we do so symbolically:
 
-```
+```julia;
 @vars x y lambda
 f(x, y) = x^2 - y^2
 g(x, y) = x^2 + y^2
@@ -1358,7 +1371,7 @@ ds = solve(diff.(L(x,y,lambda), [x, y, lambda]))
 
 This has $4$ easy solutions, here are the values at each point:
 
-```
+```julia;
 [f(d[x], d[y]) for d in ds]
 ```
 
@@ -1549,7 +1562,7 @@ $$~
 
 Here we use `SymPy`:
 
-```
+```julia;
 @vars x y z lambda1 lambda2
 g1(x, y, z) = x^2 + y^2 - z^2
 g2(x, y, z) = x - 2z - 3
@@ -1561,19 +1574,19 @@ L(x,y,z,lambda1, lambda2) = f(x,y,z) - lambda1*(g1(x,y,z) - 0) - lambda2*(g2(x,y
 
 Before trying to solve for $\nabla{L} = \vec{0}$ we see from the second equation that *either* $\lambda_1 = 1$ or $y = 0$. First we solve with $\lambda_1 = 1$:
 
-```
+```julia;
 solve(subs.(∇L, lambda1 .=> 1))
 ```
 
 There are no real solutions. Next when $y = 0$ we get:
 
-```
+```julia;
 out = solve(subs.(∇L, y .=> 0))
 ```
 
 The two solutions have values  yielding the extrema:
 
-```
+```julia;
 [f(d[x], 0, d[z]) for d in out]
 ```
 
@@ -1658,7 +1671,7 @@ The exact answer is usually not as useful as the bound: $|R| \leq M/(k+1)! \|\ve
 
 We can encode multiindices using `SymPy`. The basic definitions are fairly straightforward using `zip` to pair variables with components of $\alpha$. We define a new type so that we can overload the familiar notation:
 
-```
+```julia;
 struct MultiIndex
   alpha::Vector{Int}
   end
@@ -1679,7 +1692,7 @@ partial(ex::SymPy.SymbolicObject, α::MultiIndex, vars=free_symbols(ex)) = diff(
 ```
 
 
-```
+```julia;
 @vars w x y z
 alpha = MultiIndex([1,2,1,3])
 length(alpha)  # 1 + 2 + 1 + 3=7
@@ -1691,7 +1704,7 @@ partial(ex, alpha, [w,x,y,z])
 
 The remainder term needs to know information about sets like $|\alpha| =k$. This is a combinatoric problem, even to identify the length. Here we define an iterator to iterate over all possible MultiIndexes. This is low level, and likely could be done in a much better style, so shouldn't be parsed unless there is curiosity. It manually chains together iterators.
 
-```
+```julia;
 struct MultiIndices
     n::Int
     k::Int
@@ -1750,27 +1763,27 @@ end
 
 This returns a vector, not a `MultiIndex`. Here we get all multiindices in two variables of size $3$
 
-```
+```julia;
 collect(MultiIndices(2, 3))
 ```
 
 To get all of size $3$ or less, we could do something like this:
 
-```
+```julia;
 union((collect(MultiIndices(2, i)) for i in 0:3)...)
 ```
 
 
 To see the computational complexity. Suppose we had $3$ variables and were interested in the error for order $4$:
 
-```
+```julia;
 k = 4
 length(MultiIndices(3, k+1))
 ```
 
 Finally, to see how compact the notation issue, suppose $f:R^3 \rightarrow R$, we have the third-order Taylor series expands to 20 terms as follows:
 
-```
+```julia;
 F = SymFunction("F")
 a = Sym["a$i" for i in 1:3]    # n=3
 dx = Sym["dx$i" for i in 1:3]
@@ -1785,7 +1798,7 @@ sum(partial(F(a...), α, a) / factorial(α) * dx^α for k in 0:3 for α in Multi
 
 Let $f(x,y) = \sqrt{x + y}$. Find the tangent plane approximation for $f(2.1, 2.2)$?
 
-```
+```julia; echo=false
 f(x,y) = sqrt(x + y)
 f(v) = f(v...)
 pt = [2,2]
@@ -1798,7 +1811,7 @@ numericq(val)
 
 Let $f(x,y,z) = xy + yz + zx$. Using a *linear approximation* estimate $f(1.1, 1.0, 0.9)$.
 
-```
+```julia; echo=false
 f(x,y,z) = x*y + y*z + z*x
 f(v) = f(v...)
 pt = [1,1,1]
@@ -1812,7 +1825,7 @@ numericq(val)
 
 Let $f(x,y,z) = xy + yz + zx - 3$. What equation describes the tangent approximation at $(1,1,1)$?
 
-```
+```julia; echo=false
 f(x,y,z) = x*y + y*z + z*x - 8
 f(v) = f(v...)
 pt = [1,1,1]
@@ -1833,7 +1846,7 @@ radioq(choices, ans)
 
 Find the gradient of $f$:
 
-```
+```julia; echo=false
 choices = [L"\langle 2xy + y^2 + y, 2xy + x^2 + x\rangle",
 L"y^2 + y, x^2 + x",
 L"\langle 2y + y^2, 2x + x^2"
@@ -1848,13 +1861,13 @@ $$~
 \left[\begin{matrix}2 y & 2 x + 2 y + 1\\2 x + 2 y + 1 & 2 x\end{matrix}\right]
 ~$$
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 The point $(-1/3, -1/3)$ is a solution to the $\nabla{f} = 0$. What is the *determinant*, $d$, of the Hessian at this point?
 
-```
+```julia; echo=false
 f(x,y) = x*y + x*y^2 + x^2 * y
 f(v) = f(v...)
 val = det(ForwardDiff.hessian(f, [-1/3, -1/3]))
@@ -1863,7 +1876,7 @@ numericq(val)
 
 Which is true of $f$ at $(-1/3, 1/3)$:
 
-```
+```julia; echo=false
 choices = [
 L"The function $f$ has a local minimum, as $f_{xx} > 0$ and $d >0$",
 L"The function $f$ has a local maximum, as $f_{xx} < 0$ and $d >0$",
@@ -1881,35 +1894,35 @@ radioq(choices, ans, keep_order=true)
 
 Does this accurately find the gradient of $f$?
 
-```noout
+```julia; results="hidden"
 f(x,y) = x + 2x^2 + x^3 + y + 2x*y + y^2
 @vars x y real=true
 gradf = gradient(f(x,y), [x,y])
 ```
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 How many answers does this find to $\nabla{f} = \vec{0}$?
 
-```noout
+```julia; results="hidden"
 solve(gradf, [x,y])
 ```
 
-```
+```julia; echo=false
 numericq(2)
 ```
 
 The Hessian is found by
 
-```
+```julia;
 sympy.hessian(f(x,y), [x,y])
 ```
 
 Which is true of $f$ at $(-1/3, 1/3)$:
 
-```
+```julia; echo=false
 choices = [
 L"The function $f$ has a local minimum, as $f_{xx} > 0$ and $d >0$",
 L"The function $f$ has a local maximum, as $f_{xx} < 0$ and $d >0$",
@@ -1923,7 +1936,7 @@ radioq(choices, ans, keep_order=true)
 
 Which is true of $f$ at $(0, -1/2)$:
 
-```
+```julia; echo=false
 choices = [
 L"The function $f$ has a local minimum, as $f_{xx} > 0$ and $d >0$",
 L"The function $f$ has a local maximum, as $f_{xx} < 0$ and $d >0$",
@@ -1938,7 +1951,7 @@ radioq(choices, ans, keep_order=true)
 
 Which is true of $f$ at $(1/2, 0)$:
 
-```
+```julia; echo=false
 choices = [
 L"The function $f$ has a local minimum, as $f_{xx} > 0$ and $d >0$",
 L"The function $f$ has a local maximum, as $f_{xx} < 0$ and $d >0$",
@@ -1968,7 +1981,7 @@ $$~
 \right]
 ~$$
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
@@ -1983,13 +1996,13 @@ bx  & 2cy
 \right]
 ~$$
 
-```
+```julia; echo=false
 yesnoq(false)
 ```
 
 Explain why $ac - b^2$ is of any interest here:
 
-```
+```julia; echo=false
 choices =[
 "It is the determinant of the Hessian",
 L"It isn't, $b^2-4ac$ is from the quadratic formula"
@@ -2000,7 +2013,7 @@ radioq(choices, ans)
 
 Which condition on $a$, $b$, and $c$ will ensure a *local maximum*:
 
-```
+```julia; echo=false
 choices = [
 L"That $a>0$ and $ac-b^2 > 0$",
 L"That $a<0$ and $ac-b^2 > 0$",
@@ -2013,7 +2026,7 @@ radioq(choices, ans, keep_order=true)
 Which condition on $a$, $b$, and $c$ will ensure a saddle point?
 
 
-```
+```julia; echo=false
 choices = [
 L"That $a>0$ and $ac-b^2 > 0$",
 L"That $a<0$ and $ac-b^2 > 0$",
@@ -2035,14 +2048,14 @@ $$~
 \nabla{f} =2 e^{-x^2 - y^2} \langle x(2 - 2x^2 - y^2), y(1 - 2x^2 - y^2)\rangle.
 ~$$
 
-```
+```julia; echo=false
 yesnoq(true)
 ```
 
 
 Which vector is orthogonal to the contour line $x^2 + y^2 = 3$?
 
-```
+```julia; echo=false
 choices = [
 L"\langle 2x, 2y\rangle",
 L"\langle 2x, y^2\rangle",
@@ -2054,7 +2067,7 @@ radioq(choices, ans)
 
 Due to the form of the gradient of the constraint, finding when $\nabla{f} = \lambda \nabla{g}$ is the same as identifying when this ratio $|f_x/f_y|$ is $1$. The following solves for this by checking each point on the constraint:
 
-```
+```julia;
 f(x,y) = exp(-x^2-y^2) * (2x^2 + y^2)
 f(v) = f(v...)
 r(t) = 3*[cos(t), sin(t)]
@@ -2065,7 +2078,7 @@ ts = fzeros(fn, 0, 2pi)
 
 Using these points, what is the largest value on the boundary?
 
-```
+```julia; echo=false
 val = maximum((f∘r).(ts))
 numericq(val)
 ```

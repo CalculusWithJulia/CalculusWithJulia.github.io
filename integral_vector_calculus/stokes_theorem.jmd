@@ -20,13 +20,13 @@ Many of the the examples in this section come from either [Strang](https://ocw.m
 
 Before beginning, we load our usual package.
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
 To make the abstract concrete, consider the one dimensional case of finding the definite integral $\int_a^b F'(x) dx$. The Riemann sum picture at the *microscopic* level considers a figure like:
 
-```nocode
+```julia; echo=false
 function drawf!(p,f, m, dx)
     a,b = m-dx, m+dx
     xs = range(a,b,length=100)
@@ -83,7 +83,7 @@ The three theorems of this section, Green's theorem, Stokes' theorem, and the di
 To continue the above analysis for a higher dimension, we consider
 the following figure hinting at a decomposition of a macroscopic square into subsequent microscopic sub-squares. The boundary of each square is oriented so that the right hand rule comes out of the picture.
 
-```nocode
+```julia; echo=false
 gr()
 using LaTeXStrings
 _bar(x) = sum(x)/length(x)
@@ -191,7 +191,7 @@ This gives a means to compute the area of a region by integrating around its bou
 
 To compute the area of an ellipse, we have:
 
-```
+```julia;
 F(x,y) = [-y,x]
 F(v) = F(v...)
 
@@ -274,7 +274,7 @@ Let $D$ be the unit disc, $C$ the unit circle parameterized counter clockwise.
 
 Let $R(x,y) = \langle -y, x\rangle$ be a rotation field and $F(x,y) = R(x,y)/(R(x,y)\cdot R(x,y))$. Then:
 
-```
+```julia;
 R(x,y) = [-y,x]
 F(x,y) = R(x,y)/(R(x,y)⋅R(x,y))
 
@@ -300,7 +300,7 @@ A simple closed curve is one that does not cross itself. Green's theorem applies
 
 Consider the curve $y = f(x)$, $a \leq x \leq b$, assuming $f$ is continuous, $f(a) > 0$, and $f(b) < 0$. We can use Green's theorem to compute the signed "area" under under $f$ if we consider the curve in $R^2$ from $(b,0)$ to $(a,0)$ to $(a, f(a))$, to $(b, f(b))$ and back to $(b,0)$ in that orientation. This will cross at each zero of $f$.
 
-```nocode
+```julia; echo=false
 gr()
 a, b = pi/2, 3pi/2
 f(x) = sin(x)
@@ -342,7 +342,7 @@ Combining, we have after cancellation $\oint (xdy - ydx) = 2\int_a^b f(t) dt$, o
 
 The region may not be simply connected. A simple case might be the disc: $1 \leq x^2 + y^2 \leq 4$. In this figure we introduce a cut to make a simply connected region.
 
-```nocode
+```julia; echo=false
 a, b = 1, 2
 theta = pi/48
 alpha = asin(b/a*sin(theta))
@@ -410,7 +410,7 @@ Rather than leave this as an algebraic consequence, we sketch out how this could
 
 
 
-```nocode, noeval
+```julia; echo=false; eval=false; results="hidden"
 ## This isn't used
 r4(t) = cos(2t) + sqrt(1.5^4 - sin(2t)^2)
 ts = range(0, pi/2, length=100)
@@ -429,7 +429,7 @@ arrow!(f(t0), 1/10*[-ys[2],ys[1]], color=:black, linestyle=:dash)
 
 Consider now a $2$-dimensional region  split into microscopic boxes;  we focus now on two adjacent boxes, $A$ and $B$:
 
-```nocode
+```julia; echo=false
 a = 1
 ps = [[0,a],[0,0],[a,0],[a,a]]
 p = plot(; legend=false, aspect_ratio=:equal, xticks=nothing,  border=:none, yticks=nothing)
@@ -449,7 +449,7 @@ The integrand $F\cdot\hat{N}$ for $A$ will differ from that for $B$ by a minus s
 
 This figure shows in red the parts of the line integrals that will cancel for a more refined grid.
 
-```nocode
+```julia; echo=false
 # arrow square
 # start 1,2,3,4: 1 upper left, 2 lower left
 function cpoly!(p, c, r, st=1, orient=:ccw; linewidth=1,linealpha=1.0, color=[:red,:red,:red,:black])
@@ -571,7 +571,7 @@ g(r, \theta) = A r^n \sin(n\theta).
 
 The constant $A$ just sets the scale, the parameter $n$ has a qualitative effect on the contour lines. Consider $n=2$ visualized below:
 
-```
+```julia;
 n = 2
 f(r,theta) = r^n * cos(n*theta)
 g(r, theta) = r^n * sin(n*theta)
@@ -596,11 +596,13 @@ The fluid would flow along the blue (stream) lines. The red lines have equal pot
 
 ## Stokes' theorem
 
-```
+```julia;echo=false
 # https://en.wikipedia.org/wiki/Jiffy_Pop#/media/File:JiffyPop.jpg
-ImageFile("figures/jiffy-pop.png","""
+imgfile ="figures/jiffy-pop.png"
+caption ="""
 The Jiffy Pop popcorn design has a top surface that is designed to expand to accommodate the popped popcorn. Viewed as a surface, the surface area grows, but the boundary--where the surface meets the pan--stays the same. This is an example that many different surfaces can have the same bounding curve. Stokes' theorem will relate a surface integral over the surface to a line integral about the bounding curve.
-""")
+"""
+ImageFile(imgfile, caption)
 ```
 
 Were the figure of Jiffy Pop popcorn animated, the surface of foil would slowly expand due to pressure of popping popcorn until the popcorn was ready. However, the boundary would remain the same. Many different surfaces can have the same boundary. Take for instance the upper half unit sphere in $R^3$ it having the curve $x^2 + y^2 = 1$ as a boundary curve. This is the same curve as the surface of the cone $z = 1 - (x^2 + y^2)$ that lies above the $x-y$ plane. This would also be the same curve as the surface formed by a Mickey Mouse glove if the collar were scaled and positioned onto the unit circle.
@@ -653,7 +655,7 @@ Let $F(x,y,z) = \langle x^2, 0, y^2\rangle$ and $C$ be the circle $x^2 + z^2 = 1
 
 We can use Stoke's theorem with the surface being just the disc, so that $\hat{N} = \hat{j}$. This makes the computation easy:
 
-```
+```julia;
 @vars x y z real=true
 F(x,y,z) = [x^2, 0, y^2]
 CurlF = curl(F(x,y,z), [x,y,z])
@@ -663,7 +665,7 @@ We have $\nabla\times{F}\cdot\hat{N} = 0$, so the answer is $0$.
 
 We could have directly computed this. Let $r(t) = \langle \cos(t), 0, \sin(t)\rangle$. Then we have:
 
-```
+```julia;
 @vars t real=true
 r(t) = [cos(t), 0, sin(t)]
 rp = diff.(r(t), t)
@@ -672,7 +674,7 @@ integrand = F(r(t)...) ⋅ rp
 
 The integrand isn't obviously going to yield $0$ for the integral, but through symmetry:
 
-```
+```julia;
 integrate(integrand, (t, 0, 2PI))
 ```
 
@@ -751,7 +753,7 @@ Take $F = \langle yz^2, xz^2, 2xyz \rangle$. Verify $F$ is conservative and find
 
 To verify that $F$ is conservative, we find its curl to see that it is $\vec{0}$:
 
-```
+```julia;
 F(x,y,z) = [y*z^2, x*z^2, 2*x*y*z]
 @vars x y z real=true
 curl(F(x,y,z), [x,y,z])
@@ -781,7 +783,7 @@ So $h'(z) = 0$. This value can be any constant, even $0$ which we take, so that 
 
 Let $F(x,y,z) = \nabla(xy^2z^3) = \langle y^2z^3, 2xyz^3, 3xy^2z^2\rangle$. Show that the line integrals around the unit circle in the $x-y$ plane and the $y-z$ planes are $0$, as $F$ is conservative.
 
-```
+```julia;
 @vars x y z t
 Fxyz = ∇(x*y^2*z^3)
 r(t) = [cos(t), sin(t), 0]
@@ -794,7 +796,7 @@ integrate(Ft ⋅ rp, (t, 0, 2PI))
 
 In the $y-z$ plane we have:
 
-```
+```julia;
 r(t) = [0, cos(t), sin(t)]
 rp = diff.(r(t), t)
 Ft = subs.(Fxyz, x .=> r(t)[1], y.=> r(t)[2], z .=> r(t)[3])
@@ -853,7 +855,7 @@ Verify the divergence theorem for the vector field $F(x,y,z) = \langle xy, yz, z
 
 We need to compute two terms and show they are equal. We begin with the volume integral:
 
-```
+```julia;
 F(x,y,z) = [x*y, y*z, z*x]
 @vars x y z real=true
 DivF = divergence(F(x,y,z), [x,y,z])
@@ -864,7 +866,7 @@ The total integral is $0$ by symmetry, not due to the divergence being $0$, as i
 
 As for the surface integral, we have $6$ sides to consider. We take the sides with $\hat{N}$ being $\pm\hat{i}$:
 
-```
+```julia;
 Nhat = [1,0,0]
 integrate((F(x,y,z) ⋅ Nhat), (y, -1, 1), (z, -1,1)) # at x=1
 ```
@@ -879,7 +881,7 @@ As such, the two sides of the Divergence theorem are both $0$, so the theorem is
 
 We have the heat flow is simply:
 
-```
+```julia;
 @vars x y z real=true
 R(x,y,z) = norm([x,y,z])
 T(x,y,z) = log(1/R(x,y,z))
@@ -890,7 +892,7 @@ We may recognize this as $\rho/\|\rho\|^2 = \hat{\rho}/\|\rho\|$.
 
 The source is
 
-```
+```julia;
 DivF = divergence(HeatFlow, [x,y,z]) |> simplify
 ```
 
@@ -900,7 +902,7 @@ Finally, the surface integral over the surface of the sun is an integral over a 
 
 Finally, though $F$ is not continuous at the origin, the divergence theorem's result holds. Using spherical coordinates we have:
 
-```
+```julia;
 @vars rho rho_0 phi theta real=true
 Jac = rho^2 * sin(phi)
 integrate(1/rho^2 * Jac, (rho, 0, rho_0), (theta, 0, 2PI), (phi, 0, PI))
@@ -981,7 +983,7 @@ $$~
 
 The assumption of the divergence theorem that the vector field by *continuously* differentiable is important, as otherwise it may not hold. With $R(x,y,z) = \langle x,y,z\rangle$ take for example $F = (R/\|R\|) / \|R\|^2)$. This has divergence
 
-```
+```julia;
 R(x,y,z) = [x,y,z]
 F(x,y,z) = R(x,y,z) / norm(R(x,y,z))^3
 
@@ -1016,7 +1018,7 @@ As already seen, the inverse square law here arises in the electrostatic force f
 
 (Schey) What conditions on $F: R^2 \rightarrow R^2$ imply $\oint_C F\cdot d\vec{r} = A$? ($A$ is the area bounded by the simple, closed curve $C$)
 
-```
+```julia; echo=false
 choices = [
 L"We must have $\text{curl}(F) = 1$",
 L"We must have $\text{curl}(F) = 0$",
@@ -1033,7 +1035,7 @@ For $C$, a simple, closed curve parameterized by $\vec{r}(t) = \langle x(t), y(t
 
 Find the area inside $C$
 
-```
+```julia; echo=false
 val, err = quadgk(t -> (sin(t)*cos(t)* ForwardDiff.derivative(u->sin(u)^2, t)), 0, 2pi)
 numericq(val)
 ```
@@ -1044,7 +1046,7 @@ Let $\hat{N} = \langle \cos(t), \sin(t) \rangle$ and $\hat{T} = \langle -\sin(t)
 
 Applying Green's theorem to the vector field $F = \langle -y, x\rangle$ which along the curve is $r(t) \hat{T}$ we know the area formula $(1/2) (\int xdy - \int y dx)$. What is this in polar coordinates (using $\theta=t$?) (Using $(r\hat{N}' = r'\hat{N} + r \hat{N}' = r'\hat{N} +r\hat{T}$ is useful.)
 
-```
+```julia; echo=false
 choices = [
 L"\int rd\theta",
 L"(1/2) \int r d\theta",
@@ -1060,7 +1062,7 @@ radioq(choices, ans)
 
 Let $\vec{r}(t) = \langle \cos^3(t), \sin^3(t)\rangle$, $0\leq t \leq 2\pi$. (This describes hypocycloid.) Compute the area enclosed by the curve $C$ using Green's theorem.
 
-```
+```julia; echo=false
 r(t) = [cos(t)^3, sin(t)^3]
 @vars x y t real=true
 F(x,y) = [-y,x]/2
@@ -1082,7 +1084,7 @@ Let $F(x,y) = \langle y, x\rangle$. We verify Green's theorem holds when $S$ is 
 
 The curl of $F$ is
 
-```
+```julia; echo=false
 choices = [
 L"0",
 L"1",
@@ -1094,7 +1096,7 @@ radioq(choices, ans, keep_order=true)
 
 As the curl is a constant, say $c$, we have $\iint_S (\nabla\times{F}) dS = c \cdot 1$. This is?
 
-```
+```julia; echo=false
 choices = [
 L"0",
 L"1",
@@ -1108,7 +1110,7 @@ To integrate around the boundary we have 4 terms: the path $A$ connecting $(0,0)
 
 Which path has tangent $\hat{j}$?
 
-```
+```julia; echo=false
 choices = [L"A",L"B",L"C",L"D"]
 ans = 2
 radioq(choices, ans, keep_order=true)
@@ -1116,7 +1118,7 @@ radioq(choices, ans, keep_order=true)
 
 Along  path $C$, $F(x,y) = [1,x]$ and $\hat{T}=-\hat{i}$ so $F\cdot\hat{T} = -1$. The path integral $\int_C (F\cdot\hat{T})ds = -1$. What is the value of the path integral over $A$?
 
-```
+```julia; echo=false
 choices = [
 L"-1",
 L"0",
@@ -1128,7 +1130,7 @@ radioq(choices, ans, keep_order=true)
 
 What is the integral over the oriented boundary of $S$?
 
-```
+```julia; echo=false
 choices = [
 L"0",
 L"1",
@@ -1144,7 +1146,7 @@ radioq(choices, ans, keep_order=true)
 
 Suppose $F: R^2 \rightarrow R^2$ is a vector field such that $\nabla\cdot{F}=0$ *except* at the origin. Let $C_1$ and $C_2$ be the unit circle and circle with radius $2$ centered at the origin, both parameterized counterclockwise. What is the relationship between $\oint_{C_2} F\cdot\hat{N}ds$ and $\oint_{C_1} F\cdot\hat{N}ds$?
 
-```
+```julia; echo=false
 choices = [
 L"They are the same, as Green's theorem applies to the area, $S$, between $C_1$ and $C_2$ so $\iint_S \nabla\cdot{F}dA = 0$."
 L"They  differ by a minus sign, as Green's theorem applies to the area, $S$, between $C_1$ and $C_2$ so $\iint_S \nabla\cdot{F}dA = 0$."
@@ -1158,7 +1160,7 @@ radioq(choices, ans)
 
 Let $F(x,y) = \langle x, y\rangle/(x^2+y^2)$. Though this has divergence $0$ away from the origin, the flow integral around the unit circle, $\oint_C (F\cdot\hat{N})ds$, is $2\pi$, as Green's theorem in divergence form does not apply. Consider the integral around the square centered at the origin, with side lengths $2$. What is the flow integral around this closed curve?
 
-```
+```julia; echo=false
 choices = [
 L"Also $2\pi$, as Green's theorem applies to the region formed by the square minus the circle and so the overall flow integral around the boundary is $0$, so the two will be the same.",
 L"It is $-2\pi$, as Green's theorem applies to the region formed by the square minus the circle and so the overall flow integral around the boundary is $0$, so the two will have opposite signs, but the same magnitude."
@@ -1171,7 +1173,7 @@ radioq(choices, ans)
 
 Using the divergence theorem, compute $\iint F\cdot\hat{N} dS$ where $F(x,y,z) = \langle x, x, y \rangle$ and $V$ is the unit sphere.
 
-```
+```julia; echo=false
 choices = [
 L"4/3 \pi",
 L"4\pi",
@@ -1186,7 +1188,7 @@ radioq(choices, ans)
 
 Using the divergence theorem, compute $\iint F\cdot\hat{N} dS$ where $F(x,y,z) = \langle y, y,x \rangle$ and $V$ is the unit cube $[0,1]\times[0,1]\times[0,1]$.
 
-```
+```julia; echo=false
 choices = [
 L"1",
 L"2",
@@ -1201,7 +1203,7 @@ radioq(choices, ans, keep_order=true)
 
 Let $R(x,y,z) = \langle x, y, z\rangle$ and $\rho = \|R\|^2$. If $F = 2R/\rho^2$ then $F$ is the gradient of a potential. Which one?
 
-```
+```julia; echo=false
 choices = [
 L"\log(\rho)",
 L"1/\rho",
@@ -1213,7 +1215,7 @@ radioq(choices, ans)
 
 Based on this information, for $S$ a surface not including the origin with boundary $C$, a simple closed curve, what is $\oint_C F\cdot\hat{T}ds$?
 
-```
+```julia; echo=false
 choices = [
 L"It is $0$, as, by Stoke's theorem, it is equivalent to $\iint_S (\nabla\times\nabla{\phi})dS = \iint_S 0 dS = 0$.",
 L"It is $2\pi$, as this is the circumference of the unit circle"
@@ -1226,7 +1228,7 @@ radioq(choices, ans)
 
 Consider the circle, $C$ in $R^3$ parameterized by $\langle \cos(t), \sin(t), 0\rangle$. The upper half sphere and the unit disc in the $x-y$ plane are both surfaces with this boundary. Let $F(x,y,z) = \langle -y, x, z\rangle$. Compute $\oint_C F\cdot\hat{T}ds$ using Stokes' theorem. The value is:
 
-```
+```julia; echo=false
 choices = [
 L"2\pi",
 L"2",
@@ -1246,7 +1248,7 @@ From [Illinois](https://faculty.math.illinois.edu/~franklan/Math241_165_Conserva
 
 What should finish the last sentence?
 
-```
+```julia; echo=false
 choices = [
 "the field could be conservative or not. One must work harder to answer the question.",
 "the field is *not* conservative.",
@@ -1283,7 +1285,7 @@ The one for the curl in $n=3$ is Stoke's theorem: $\iint S \nabla\times{F}dA = \
 
 * Working left to right along a row of the diagram, applying two steps of these operations yields:
 
-```
+```julia; echo=false
 choices = [
 "Zero, by the vanishing properties of these operations",
 "The maximum number in a row",
@@ -1306,7 +1308,7 @@ $$~
 
 This is a form of:
 
-```
+```julia; echo=false
 choices = [
 "Green's theorem",
 "The divergence (Gauss') theorem",

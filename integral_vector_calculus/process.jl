@@ -30,5 +30,6 @@ process_files(twice=false) = [process_file(nm, twice) for nm in fnames]
 
 """
 ## TODO integral_vector_calculus
+* line integrals needs an image (lasso?)
 * more questions
 """

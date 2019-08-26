@@ -4,11 +4,11 @@ We discuss functions of a single variable that return a vector in $R^n$. There a
 
 Before beginning, we load our `CalculusWithJulia` package, which will provide a few functions used in the following.
 
-```
+```julia;
 using CalculusWithJulia
 ```
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 gr()         # renders vectors better than plotly()
 ```
 
@@ -37,7 +37,7 @@ will see that many concepts of calculus for univariate functions
 
 In `Julia`, the representation of a vector-valued function is straightforward: we define a function of a single variable that returns a vector. For example, the three functions above would be represented by:
 
-```
+```julia;
 f(t) = [sin(t), 2*cos(t)]
 g(t) = [sin(t), cos(t), t]
 h(t) = [2, 3] + t * [1, 2]
@@ -45,7 +45,7 @@ h(t) = [2, 3] + t * [1, 2]
 
 For a given `t`, these evaluate to a vector. For example:
 
-```
+```julia;
 h(2)
 ```
 
@@ -79,7 +79,7 @@ That is, for a collection of time values, `ts`, typically generated, as above, b
 To get the `xs` and `ys` from this, is conceptually easy: just iterate over all the points and extract the corresponding component. For example, to get `xs` we would have a command like `[p[1] for p in f.(ts)]`. Similarly, the `ys` would use `p[2]` in place of `p[1]`. The following  function, from the `CalculusWithJulia` package and employed  previously, does this for us, returning the vectors in a tuple:
 
 
-```noeval
+```julia; eval=false
 unzip(vs) = Tuple(eltype(first(vs))[xyz[j] for xyz in vs] for j in eachindex(first(vs)))
 ```
 
@@ -91,7 +91,7 @@ turns a vector of points (or vectors) into a tuple of vectors
 collecting the $x$ values, the $y$ values, and, if present, the $z$
 values:
 
-```verbatim
+```
 [[x1, y1, z1],         (⌈x1⌉,  ⌈y1⌉, ⌈z1⌉,
  [x2, y2, z2],          |x2|, |y2|, |z2|,
  [x3, y3, z3],   -->    |x3|, |y3|, |z3|,
@@ -111,7 +111,7 @@ Finally, with these definitions, we can visualize the three functions we have de
 
 Here we show the plot of `f` over the values between $0$ and $2\pi$ and also add a vector anchored at the origin defined by `f(1)`.
 
-```
+```julia;
 using Plots  # already done by loading the CalculusWithJulia package
 ts = range(0, 2pi, length=200)
 plot(unzip(f.(ts))...)
@@ -123,31 +123,31 @@ The trace of the plot is an ellipse. If we describe the components as $\vec{f}(t
 
 The plot of $g$ needs 3-dimensions to render. For most plotting backends, the following should work with no differences, save the additional vector is anchored in 3 dimensions now:
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 plotly()
 ```
 
-```
+```julia;
 ts = range(0, 6pi, length=200)
 plot(unzip(g.(ts))...)
 arrow!([0, 0, 0], g(2pi))
 ```
 
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 gr()
 ```
 
 Here the graph is a helix; three turns are plotted. If we write $g(t) = \langle x(t), y(t), z(t) \rangle$, as the $x$ and $y$ values trace out a circle, the $z$ value increases. When the graph is viewed from above, as below, we see only $x$ and $y$ components, and the view is circular.
 
-```
+```julia;
 plot(unzip(g.(ts))..., camera=(0, 90))
 ```
 
 
 The graph of $h$ shows that this function parameterizes a line in space. The line segment for $-2 \leq t \leq 2$ is shown below:
 
-```
+```julia;
 ts = range(-2, 2, length=200)
 plot(unzip(h.(ts))...)
 ```
@@ -157,12 +157,12 @@ plot(unzip(h.(ts))...)
 While the `unzip` function is easy to understand as a function that reshapes data from one format into one that `plot` can use, it's usage is a bit cumbersome.
 The `CalculusWithJulia` package provides a function `plot_parametric_curve` which hides the use of `unzip` and the splatting within a function definition. It expects a vector-valued function and a range of $t$ values specified by two values. For example, the last plot can be produced with
 
-```
+```julia;
 plot_parametric_curve(h, -2, 2)
 ```
 
 
-```
+```julia; echo=false
 note("""
 Defining plotting functions in `Julia` for `Plots` is facilitated by the `RecipesBase` package. There are two common choices: creating a new function for plotting, as is done with `plot_parametric_curve` and `plot_polar`; or creating a new type so that `plot` can dispatch to an appropriate plotting method. The latter would also be a reasonable choice, but wasn't taken here.
 """)
@@ -219,7 +219,7 @@ $\vec{x}(\theta) = \langle r(\theta) \cos(\theta), r(\theta) \sin(\theta)\rangle
 
 For example:
 
-```
+```julia;
 a, ecc = 20, 3/4
 f(t) = a*(1-ecc^2)/(1 + ecc*cos(t)) * [cos(t), sin(t)]
 plot_parametric_curve(f, 0, 2pi, legend=false)
@@ -249,13 +249,13 @@ $$~
 
 To visualize this we first define a helper function to draw a circle at point $P$ with radius $R$:
 
-```
+```julia;
 circle!(P, R; kwargs...) = plot_parametric_curve!(t -> P + R*[cos(t), sin(t)], 0, 2pi;kwargs...)
 ```
 
 Then we have this function to visualize the spirograph for different $t$ values:
 
-```
+```julia;
 function spiro(t; r=2, R=5, rho=0.8*r)
 
     cent(t) = (R-r) * [cos(t), sin(t)]
@@ -276,19 +276,19 @@ end
 And we can see the trace for $t=\pi$:
 
 
-```
+```julia;
 spiro(pi)
 ```
 
 The point of contact is at $(-R, 0)$, as expected. Carrying this forward to a full circle's worth is done through:
 
-```
+```julia;
 spiro(2pi)
 ```
 
 The curve does not match up at the start. For that, a second time around the outer circle is needed:
 
-```
+```julia;
 spiro(4pi)
 ```
 
@@ -317,7 +317,7 @@ $$~
 
 To visualize for some parameters, we have:
 
-```
+```julia;
 plotly()
 M, m = 25, 5
 height = 5
@@ -349,7 +349,7 @@ $$~
 
 For example, if $\vec{f}(t) = \langle 3\cos(t), 2\sin(t) \rangle$ and $t=\pi/4$ and $\Delta t = \pi/16$ we have this picture:
 
-```
+```julia;
 gr()  # better arrows
 f(t) = [3cos(t), 2sin(t)]
 t, Deltat = pi/4, pi/16
@@ -373,7 +373,7 @@ If the derivative is never $\vec{0}$, the curve is called *regular*. For a regul
 curve
 the derivative is a tangent vector to the parameterized curve, akin to the case for a univariate function. We can use `ForwardDiff` to compute the derivative in the exact same manner as was done for univariate functions:
 
-```noeval
+```julia; eval=false
 using ForwardDiff
 D(f,n=1) = n > 1 ? D(D(f),n-1) : x -> ForwardDiff.derivative(f, float(x))
 Base.adjoint(f::Function) = D(f)         # allow f' to compute derivative
@@ -383,7 +383,7 @@ Base.adjoint(f::Function) = D(f)         # allow f' to compute derivative
 
 We can visualize the tangential property through a graph:
 
-```
+```julia;
 f(t) = [3cos(t), 2sin(t)]
 p = plot_parametric_curve(f, 0, 2pi, legend=false, aspect_ratio=:equal)
 for t in [1,2,3]
@@ -397,7 +397,7 @@ p
 
 Were symbolic expressions used in place of functions, the vector-valued function would naturally be represented as a vector of expressions:
 
-```
+```julia;
 using SymPy
 @vars t
 vvf = [cos(t), sin(t), t]
@@ -407,15 +407,15 @@ We will see working with these expressions is not identical to working with a ve
 
 To plot, we can avail ourselves of the the parametric plot syntax. The following expands to `plot(cos(t), sin(t), t, 0, 2pi)`:
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 plotly()
 ```
 
-```
+```julia;
 plot(vvf..., 0, 2pi)
 ```
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 gr()
 ```
 
@@ -423,7 +423,7 @@ The `unzip` usage, as was done above, could be used, but it would be  more troub
 
 To evaluate the function at a given value, say $t=2$, we can use `subs` with broadcasting to substitute into each component:
 
-```
+```julia;
 subs.(vvf, t.=>2)
 ```
 
@@ -432,7 +432,7 @@ The notation is a bit subtle: `subs.(` will broadcast over the 3 components in `
 
 Limits are performed component by component, and can also be defined by broadcasting, again with the need to adjust the values:
 
-```
+```julia;
 @syms delta
 limit.((subs.(vvf, t .=> t + delta) - vvf) / delta, delta .=> 0)
 ```
@@ -442,17 +442,17 @@ Derivatives, as was just done through a limit, are a bit more
 straightforward than evaluation or limit taking, as we won't bump into
 the shape mismatch when broadcasting:
 
-```
+```julia;
 diff.(vvf, t)
 ```
 
 The second derivative, can be found through:
 
-```
+```julia;
 diff.(vvf, t, t)
 ```
 
-```
+```julia; echo=false
 note("""
 If these differences are too subtle, it might be best to work with a function and when a symbolic expression is desirable, simply evaluate the function for a symbolic value.
 """)
@@ -475,7 +475,7 @@ In physics, we learn that the equation $F=ma$ can be used to derive a formula fo
 
 For two dimensions, we have the force due to gravity acts downward, only in the $y$ direction. The acceleration is then $\vec{a} = \langle 0, -g \rangle$. If we start at the origin, with initial velocity $\vec{v_0} = \langle 2, 3\rangle$, then we can plot the trajectory until the object returns to ground ($y=0$) as follows:
 
-```
+```julia;
 gravity = 9.8
 x0, v0, a = [0,0], [2, 3], [0, -gravity]
 xpos(t) = x0 + v0*t + (1/2)*a*t^2
@@ -489,7 +489,7 @@ plot_parametric_curve(xpos, 0, t_0)
 
 ##### Example: tractrix
 
-```noeval,nocode,noout
+```julia; echo=false; eval=false; resuls="hidden"
 https://en.wikipedia.org/wiki/Tractrix
 https://sinews.siam.org/Details-Page/a-bike-and-a-catenary
 https://www.math.psu.edu/tabachni/talks/BicycleDouble.pdf
@@ -547,7 +547,7 @@ discussed in [ODEs](../ODEs/odes.html). Though here we will use the
 
 We can define our equation as follows, using `p` to pass in the two parameters: the wheel-base length $a$, and $F(t)$, the parameterization of the front wheel in time:
 
-```
+```julia;
 using DifferentialEquations, LinearAlgebra
 
 function bicycle(dB, B, p, t)
@@ -562,7 +562,7 @@ end
 
 Let's consider a few simple cases first. We suppose $a=1$ and the front wheel moves in a circle of radius $3$. Here is how we can plot two loops:
 
-```noout
+```julia; results="hidden"
 t0, t1 = 0.0, 4pi
 tspan = (t0, t1)  # time span to consider
 
@@ -580,7 +580,7 @@ We qualify the `solve` function, as `SymPy` also has a `solve` function. (We wou
 
 To plot the two trajectories, we could use that `out.u` holds the $x$ and $y$ components of the computed trajectory, but more simply, we  call `out` like a function.
 
-```
+```julia;
 plt = plot_parametric_curve(F, t0, t1, legend=false)
 plot_parametric_curve!(out,  t0, t1, linewidth=3)
 
@@ -596,7 +596,7 @@ That the rear wheel track appears shorter, despite the rear wheel starting outsi
 
 Let's look what happens if the front wheel wobbles back and forth following a sine curve. Repeating the above, only with $F$ redefined, we have:
 
-```
+```julia;
 a = 1
 F(t) = [t, 2sin(t)]
 p = (a, F)
@@ -614,7 +614,7 @@ Again, the back wheel moves less than the front.
 
 The motion of the back wheel need not be smooth, even if the motion of the front wheel is, as this curve illustrates:
 
-```
+```julia;
 a = 1
 F(t) = [cos(t), sin(t)] + [cos(2t), sin(2t)]
 p = (a, F)
@@ -632,7 +632,7 @@ The back wheel is moving backwards for part of the above trajectory.
 
 This effect can happen even for a front wheel motion as simple as a circle when the front wheel radius is less than the wheelbase:
 
-```
+```julia;
 a = 1
 F(t) = a/3 * [cos(t), sin(t)]
 p = (a, F)
@@ -692,7 +692,7 @@ Suggesting the that a product rule like formula applies for dot products.
 
 For the cross product, we let `SymPy` derive a formula for us.
 
-```
+```julia;
 u1, u2, u3, v1, v2, v3 = SymFunction("u1, u2, u3, v1, v2, v3")
 @vars t
 u = [u1(t), u2(t), u3(t)]
@@ -701,14 +701,14 @@ v = [v1(t), v2(t), v3(t)]
 
 Then the cross product a derivative:
 
-```
+```julia;
 using LinearAlgebra
 diff.(u × v, t)
 ```
 
 Admittedly, that isn't very clear. With a peek at the answer, we show that the derivative is the same as the product rule would suggest ($\vec{u}' \times \vec{v} + \vec{u} \times \vec{v}'$):
 
-```
+```julia;
 diff.(u × v, t) - (diff.(u,t) × v + u × diff.(v,t))
 ```
 
@@ -868,7 +868,7 @@ Kepler's second law can also be derived from vector calculus. This derivation fo
 The second law states that the area being swept out during a time duration only depends on the duration of time, not the time. Let $\Delta t$ be this duration. Then if $\vec{x}(t)$ is the position vector, as above, we have the area swept out between $t$ and $t + \Delta t$ is visualized along the lines of:
 
 
-```
+```julia;
 x1(t) = [cos(t), 2 * sin(t)]
 t0, t1, Delta = 1.0, 2.0, 1/10
 plot_parametric_curve(x1, 0, pi/2)
@@ -1026,11 +1026,11 @@ Finally, define the *binormal*, $\hat{B}(t) = \hat{T}(t) \times \hat{N}(t)$. At 
 
 We can visualize this, for example along a [Viviani](https://tinyurl.com/y4lo29mv) curve, as is done in a [Wikipedia](https://en.wikipedia.org/wiki/Frenet%E2%80%93Serret_formulas) animation:
 
-```nocode, noout
+```julia; echo=false; results="hidden"
 plotly()
 ```
 
-```
+```julia;
 function viviani(t, a=1)
     [a*(1-cos(t)), a*sin(t), 2a*sin(t/2)]
 end
@@ -1040,12 +1040,14 @@ Tangent(t) = viviani'(t)/norm(viviani'(t))
 Normal(t) = Tangent'(t)/norm(Tangent'(t))
 Binormal(t) = Tangent(t) × Normal(t)
 
-plot_parametric_curve(viviani, -2pi, 2pi, legend=false, aspect_ratio=:equal)
+p = plot(legend=false, aspect_ratio=:equal)
+plot_parametric_curve!(viviani, -2pi, 2pi)
 
 t0, t1 = -pi/3, pi/2 + 2pi/5
 r0, r1 = viviani(t0), viviani(t1)
 arrow!(r0, Tangent(t0)); arrow!(r0, Binormal(t0)); arrow!(r0, Normal(t0))
 arrow!(r1, Tangent(t1)); arrow!(r1, Binormal(t1)); arrow!(r1, Normal(t1))
+p
 ```
 
 
@@ -1075,7 +1077,7 @@ cross product will be closer to $1$.
 
 Let $\vec{r}(t) = k \cdot \langle \cos(t), \sin(t), 0 \rangle$. This will have curvature:
 
-```
+```julia;
 @vars k positive=true
 @vars t real=true
 r1 = k * [cos(t), sin(t),0]
@@ -1137,7 +1139,7 @@ That is, the arc length from $[0,c]$ for $\phi$ is just $c$; the curve $C$ is pa
 
 Viviani's curve is the intersection of sphere of radius $a$ with a cylinder of radius $a$. A parameterization was given previously by:
 
-```
+```julia;
 function viviani(t, a=1)
     [a*(1-cos(t)), a*sin(t), 2a*sin(t/2)]
 end
@@ -1145,7 +1147,7 @@ end
 
 The curve is traced out over the interval $[0, 4\pi]$. We try to find the arc-length:
 
-```
+```julia;
 @vars t a positive=true
 speed = simplify(norm(diff.(viviani(t, a), t)))
 integrate(speed, (t, 0, 4*PI))
@@ -1153,7 +1155,7 @@ integrate(speed, (t, 0, 4*PI))
 
 We see that the answer depends linearly on $a$, but otherwise is a constant expressed as an integral. We use `QuadGk` to provide a numeric answer for the case $a=1$:
 
-```
+```julia;
 using QuadGK
 quadgk(t -> norm(viviani'(t)), 0, 4pi)
 ```
@@ -1163,7 +1165,7 @@ quadgk(t -> norm(viviani'(t)), 0, 4pi)
 
 Very few parameterized curves admit a closed-form expression for parameterization by arc-length. Let's consider the helix expressed by $\langle a\cos(t), a\sin(t), bt\rangle$, as this does allow such a parameterization.
 
-```
+```julia;
 @vars a b t al positive=true
 helix = [a*cos(t), a*sin(t), b*t]
 speed = simplify( norm(diff.(helix, t)) )
@@ -1172,13 +1174,13 @@ s = integrate(speed, (t, 0, al))
 
 So `s` is a linear function. We can re-parameterize by:
 
-```
+```julia;
 eqn = subs.(helix, t.=> al/sqrt(a^2 + b^2))
 ```
 
 To see that the speed, $\| \vec{\phi}' \|$, is constantly $1$:
 
-```
+```julia;
 simplify(norm(diff.(eqn,al)))
 ```
 
@@ -1214,28 +1216,28 @@ These are the [Frenet-Serret](https://en.wikipedia.org/wiki/Frenet%E2%80%93Serre
 
 Continuing with our parameterization of a helix by arc length, we can compute the curvature and torsion by differentiation:
 
-```
+```julia;
 gamma = subs.(helix, t.=> al/sqrt(a^2 + b^2))   # gamma parameterized by arc length
 @vars u positive=true
 gamma = subs.(gamma, al .=> u)                  # u is arc-length parameterization
 ```
 
-```
+```julia;
 T = diff.(gamma, u)
 norm(T)
 ```
 
 The length is one, as the speed of a curve parameterized by arc-length is 1.
 
-```
+```julia;
 out = diff.(T, u)
 ```
 
 This should be $\kappa \hat{N}$, so we do:
 
-```
+```julia;
 kappa = norm(out)
-N = out/kappa
+Norm = out/kappa
 kappa |> simplify
 ```
 
@@ -1244,21 +1246,21 @@ Interpreting, $a$ is the radius of the circle and $b$ how tight the coils are. I
 
 To find the torsion, we find, $\hat{B}$ then differentiate:
 
-```
-B = T × N
+```julia;
+B = T × Norm
 out = diff.(B, u)
 ```
 
-This looks complicated, as does `N`:
+This looks complicated, as does `Norm`:
 
-```
-N
+```julia;
+Norm
 ```
 
 
 However, the torsion, up to a sign, simplifies nicely:
 
-```
+```julia;
 norm(out) |> simplify
 ```
 
@@ -1269,7 +1271,7 @@ Here, when $b$ gets large, the curve looks more and more "straight" and the tors
 
 [Levi and Tabachnikov](https://projecteuclid.org/download/pdf_1/euclid.em/1259158427) consider the trajectories of the front and rear bicycle wheels. Recall the notation previously used: $\vec{F}(t)$ for the front wheel, and $\vec{B}(t)$ for the rear wheel trajectories. Consider now their parameterization by arc length, using $u$ for the arc-length parameter for $\vec{F}$ and $v$ for $\vec{B}$. We define $\alpha(u)$ to be the steering angle of the bicycle. This can be found as the angle between the tangent vector of the path of $\vec{F}$ with the vector $\vec{B} - \vec{F}$. Let $\kappa$ be the curvature of the front wheel and $k$ the curvature of the back wheel.
 
-```nocode
+```julia; echo=false
 gr()
 a = 1
 F(t) = [cos(pi/2 - t), 2sin(pi/2-t)]
@@ -1406,7 +1408,7 @@ $$~
 From this $\|\vec{B}(u)\| = |\cos(\alpha)\|$. But $1 = \|d\vec{B}/dv\| = \|d\vec{B}/du \| \cdot |du/dv|$ and $|dv/du|=|\cos(\alpha)|$ follows.
 
 
-```nocode, noout, noeval
+```julia; echo=false; eval=false; results="hidden"
 How to compute the curvature k?
 $$~
 \begin{align}
@@ -1428,7 +1430,7 @@ $$~
 
 Following [Fuchs](https://doi.org/10.4169/amer.math.monthly.120.03.217) we discuss a geometric phenomenon known and explored by Huygens, and likely earlier. We stick to the two-dimensional case, Fuchs extends this to three dimensions. The following figure
 
-```nocode
+```julia; echo=false
 X(t)= 2cos(t)
 Y(t) = sin(t)
 r(t) = [X(t),Y(t)]
@@ -1458,7 +1460,7 @@ v(t) - au'(t) &= v(t+\epsilon) - bu'(t+\epsilon).
 
 This is a linear equation in two unknowns ($a$ and $b$) which can be solved. Here is the value for `a`:
 
-```
+```julia;
 u, v = SymFunction("u, v")
 @vars t epsilon w
 @vars a b
@@ -1491,7 +1493,7 @@ $$~
 
 Revisualizing:
 
-```
+```julia;
 unit_vec(x) = x/norm(x)
 
 r(t) = [2cos(t), sin(t), 0]
@@ -1519,7 +1521,7 @@ We see $\vec\beta'$ is zero (the curve is non-regular) when $\kappa'(s) = 0$. Th
 
 The curve parameterized by $\vec{r}(t) = 2(1 - \cos(t)) \langle \cos(t), \sin(t)\rangle$ over $[0,2\pi]$ is cardiod. It is formed by rolling a circle of radius $r$ around another similar sized circle. The following graphically shows the evolute is a smaller cardiod (one-third the size). For fun, the evolute of the evolute is drawn:
 
-```
+```julia;
 r(t) = 2*(1 - cos(t)) * [cos(t), sin(t), 0]
 
 function evolute(r)
@@ -1538,7 +1540,7 @@ plot_parametric_curve!(t -> ((evolute∘evolute)(r)(t))[1:2], 0, 2pi)
 
 If $\vec\beta$ is *the* **evolute** of $\vec\gamma$, then $\vec\gamma$ is *an* **involute** of $\beta$. For a given curve, there is a parameterized family of involutes. While this definition has a pleasing self-referentialness, it doesn't have an immediately clear geometric interpretation. For that, consider the image of a string of fixed length $a$ attached to the curve $\vec\gamma$ at some point $t_0$. As this curve wraps around the curve traced by $\vec\gamma$ it is held taut so that it makes a tangent at the point of contact. The end of the string will trace out a curve and this is the trace of an *involute*.
 
-```
+```julia;
 using QuadGK
 
 r(t) = [t, cosh(t)]
@@ -1644,7 +1646,7 @@ Using the formula for $\vec\beta'$ above, we get $\hat{T}_\beta(s)=\hat{N}_{\vec
 
 Show that *an* involute of the cycloid $\vec{r}(t) = \langle t - \sin(t), 1 - \cos(t) \rangle$ is also a cycloid. We do so graphically:
 
-```
+```julia;
 r(t) = [t - sin(t), 1 - cos(t)]
 ## find *involute*: r - r'/|r'| * int(|r'|, a, t)
 t0, t1, a = 2PI, PI, PI
@@ -1677,7 +1679,7 @@ $$~
 
 What is the position at $t=\pi/4$?
 
-```
+```julia; echo=false
 choices = [
 q"[0.0782914, 0.292893 ]",
 q"[0.181172, 0.5]",
@@ -1689,7 +1691,7 @@ radioq(choices, ans)
 And the position at $\pi/2$?
 
 
-```
+```julia; echo=false
 choices = [
 q"[0.0782914, 0.292893 ]",
 q"[0.181172, 0.5]",
@@ -1702,7 +1704,7 @@ radioq(choices, ans)
 
 Suppose instead of keeping track of a point on the outer rim of the wheel, a point a distance $r < R$ from the hub is chosen in the above description of a cycloid (a [Curtate](http://mathworld.wolfram.com/CurtateCycloid.html) cycloid). If we start at $\langle 0,~ R-r \rangle$, what will be the position at $t$?
 
-```
+```julia; echo=false
 choices = [
 L"\langle Rt - r\sin(t),~ R - r\cos(t) \rangle",
 L"\langle Rt - R\sin(t),~ R - R\cos(t) \rangle",
@@ -1716,7 +1718,7 @@ radioq(choices, ans)
 
 For the  cycloid $\vec{r}(t) = \langle t - \sin(t),~ 1 - \cos(t) \rangle$, find a simplified expression for $\| \vec{r}'(t)\|$.
 
-```
+```julia; echo=false
 choices = [
 L"\sqrt{2 - 2\cos(t)}",
 L"1",
@@ -1732,15 +1734,15 @@ The cycloid $\vec{r}(t) = \langle t - \sin(t),~ 1 - \cos(t) \rangle$ has a formu
 
 Plot the following two equations over $[0,8]$ which are a reparameterization of the cycloid by $l^{-1}(t)$.
 
-```
+```julia;
 γ(s) = 2 * acos(1-s/4)
-x(s) = γ(s) - sin(γ(s))
-y(s) = 1 - cos(γ(s))
+x1(s) = γ(s) - sin(γ(s))
+y1(s) = 1 - cos(γ(s))
 ```
 
 How many arches of the cycloid are traced out?
 
-```
+```julia; echo=false
 radioq(1:3, 1, keep_order=true)
 ```
 
@@ -1750,7 +1752,7 @@ Consider the cycloid  $\vec{r}(t) = \langle t - \sin(t),~ 1 - \cos(t) \rangle$
 
 What is the derivative at $t=\pi/2$?
 
-```
+```julia; echo=false
 choices = [
 q"[1,1]",
 q"[2,0]",
@@ -1763,7 +1765,7 @@ radioq(choices, ans)
 What is the derivative at $t=\pi$?
 
 
-```
+```julia; echo=false
 choices = [
 q"[1,1]",
 q"[2,0]",
@@ -1777,7 +1779,7 @@ radioq(choices, ans)
 
 Consider the circle $\vec{r}(t) = R \langle \cos(t),~ \sin(t) \rangle$, $R > 0$. Find the norm of $\vec{r}'(t)$:
 
-```
+```julia; echo=false
 choices = [
 L"1",
 L"1/R",
@@ -1793,7 +1795,7 @@ radioq(choices, ans, keep_order=true)
 
 The curve described by $\vec{r}(t) = \langle 10t,~ 10t - 16t^2\rangle$ models the flight of an arrow. Compute the length traveled from when it is launched to when it returns to the ground.
 
-```
+```julia; echo=false
 using Roots
 x(t) = 10t
 y(t) = 10t - 16t^2
@@ -1808,7 +1810,7 @@ numericq(val)
 
 Let $\vec{r}(t) = \langle t, t^2 \rangle$ describe a parabola. What is the arc length between $0 \leq t \leq 1$? First, what is a formula for the speed ($\| \vec{r}'(t)\|$)?
 
-```
+```julia; echo=false
 choices = [
 L"\sqrt{1 + 4t^2}",
 L"1 + 4t^2",
@@ -1821,7 +1823,7 @@ radioq(choices, ans)
 
 Numerically find the arc length.
 
-```
+```julia; echo=false
 val,err = quadgk(t -> (1 + 4t^2)^(1/2), 0, 1)
 numericq(val)
 ```
@@ -1833,7 +1835,7 @@ numericq(val)
 
 Let $\vec{r}(t) = \langle t, t^2 \rangle$ describe a parabola. What is the curvature of $\vec{r}(t)$ at $t=0$?
 
-```
+```julia; echo=false
 @vars t positive=true
 rt = [t, t^2, 0]
 rp = diff.(rt, t)
@@ -1846,7 +1848,7 @@ numericq(val)
 
 The curvature at $1$ will be
 
-```
+```julia; echo=false
 choices = [
 L"greater than the curvature at $t=0$",
 L"less than the curvature at $t=0$",
@@ -1857,7 +1859,7 @@ radioq(choices, ans)
 
 The curvature as $t\rightarrow \infty$ will be
 
-```
+```julia; echo=false
 choices = [
 L"0",
 L"\infty",
@@ -1871,7 +1873,7 @@ radioq(choices, ans)
 
 Now, if we have a more general parabola by introducing a parameter $a>0$: $\vec{r}(t) = \langle t, a\cdot t^2 \rangle$, What is the curvature of $\vec{r}(t)$ at $t=0$?
 
-```
+```julia; echo=false
 choices = [
 L"2a",
 L"2/a",
@@ -1889,7 +1891,7 @@ Projectile motion with constant acceleration is expressed parametrically by $\ve
 
 The plate is 60 feet away. How long will it take for the ball to reach the batter? (When the first component is $60$?)
 
-```
+```julia; echo=false
 x0 = [0,0,5]
 v0 = [120, -2, 2]
 a = [0, 16, -32]
@@ -1900,7 +1902,7 @@ numericq(ans)
 
 At $t=1/4$ the ball is half-way to home. If the batter reads the ball at this point, where in the $y$ direction is the ball?
 
-```
+```julia; echo=false
 t = 1/4
 ans = r(t)[2]
 numericq(ans)
@@ -1908,7 +1910,7 @@ numericq(ans)
 
 At $t=1/2$ has the ball moved more than 1/2 foot in the $y$ direction?
 
-```
+```julia; echo=false
 t = 1/2
 ans = abs(r(t)[2]) > 1/2
 yesnoq(ans)
@@ -1919,7 +1921,7 @@ yesnoq(ans)
 
 In [Strang](https://ocw.mit.edu/resources/res-18-001-calculus-online-textbook-spring-2005/textbook/MITRES_18_001_strang_12.pdf) we see this picture describing  a curve:
 
-```nocode
+```julia; echo=false
 a = 1
 
 plot(t -> 0, -2, 2,aspect_ratio=:equal, legend=false)
@@ -1948,7 +1950,7 @@ We wish to identify the parameterization. Using $\theta$ an angle in standard po
 
 What is the $x$ coordinate of point $A$? (Also the $x$ coordinate of $P$.)
 
-```
+```julia; echo=false
 choices = [
 L"2\cot(\theta)",
 L"\cot(\theta)",
@@ -1961,7 +1963,7 @@ radioq(choices, ans)
 
 Using the polar form of a circle, the length between the origin and $B$ is given by $2\cos(\theta-\pi/2) = 2\sin(\theta)$. Using this, what is the $y$ coordinate of $B$?
 
-```
+```julia; echo=false
 choices = [
 L"2\sin^2(\theta)",
 L"2\sin(\theta)",
@@ -1977,7 +1979,7 @@ radioq(choices, ans)
 
 Let $n > 0$, $\vec{r}(t) = \langle t^(n+1),t^n\rangle$. Find the speed, $\|\vec{r}'(t)\|$.
 
-```
+```julia; echo=false
 choices = [
 L"\frac{\sqrt{n^{2} t^{2 n} + t^{2 n + 2} \left(n + 1\right)^{2}}}{t}",
 L"t^n + t^{n+1}",
@@ -1989,7 +1991,7 @@ radioq(choices, ans)
 
 For $n=2$, the arc length of $\vec{r}$ can be found exactly. What is the arc-length between $0 \leq t \leq a$?
 
-```
+```julia; echo=false
 choices = [
 L"\frac{a^{2} \sqrt{9 a^{2} + 4}}{3} + \frac{4 \sqrt{9 a^{2} + 4}}{27} - \frac{8}{27}",
 L"\frac{2 a^{\frac{5}{2}}}{5}",
@@ -2004,7 +2006,7 @@ radioq(choices, ans)
 
 The [astroid](http://www-history.mcs.st-and.ac.uk/Curves/Astroid.html) is one of the few curves with an exactly computable arc-length. The curve is parametrized by $\vec{r}(t) = \langle a\cos^3(t), a\sin^3(t)\rangle$. For $a=1$ find the arc-length between $0 \leq t \leq \pi/2$.
 
-```
+```julia; echo=false
 choices = [
 L"\sqrt{2}",
 L"3/2",
@@ -2019,7 +2021,7 @@ radioq(choices, ans, keep_order=true)
 ###### Question
 
 
-```nocode
+```julia; echo=false
 t0, t1 = pi/12, pi/3
 tspan = (t0, t1)  # time span to consider
 
@@ -2040,7 +2042,7 @@ plot!(plt, unzip(t->out(t),  t0, t1)..., color=:blue)
 
 Let $F$ and $B$ be pictured above. Which is the red curve?
 
-```
+```julia; echo=false
 choices = [
 "The front wheel",
 "The back wheel"
@@ -2054,7 +2056,7 @@ radioq(choices, ans)
 ###### Question
 
 
-```nocode
+```julia; echo=false
 t0, t1 = 0.0, pi/3
 tspan = (t0, t1)  # time span to consider
 
@@ -2075,7 +2077,7 @@ plot!(plt, unzip(t->out(t),  t0, t1)..., color=:red)
 
 Let $F$ and $B$ be pictured above. Which is the red curve?
 
-```
+```julia; echo=false
 choices = [
 "The front wheel",
 "The back wheel"
@@ -2106,7 +2108,7 @@ This expresses the acceleration in term of the tangential part and the normal pa
 
 If a car is on a straight road, the $\kappa=0$. Is the acceleration along the $\hat{T}$ direction of the $\hat{N}$ direction?
 
-```
+```julia; echo=false
 choices = [
 L"The $\hat{T}$ direction",
 L"The $\hat{N}$ direction"]
@@ -2116,7 +2118,7 @@ radioq(choices, ans)
 
 Suppose no gas or break is applied for a duration of time. The tangential acceleration will be $0$. During this time, which of these must  be $0$?
 
-```
+```julia; echo=false
 choices = [
 L"\vec{\gamma} \circ s",
 L"ds/dt",
@@ -2128,7 +2130,7 @@ radioq(choices, ans, keep_order=true)
 
 In going around a corner (with non-zero curvature), which is true?
 
-```
+```julia; echo=false
 choices = [
 L"The acceleration in the normal direction depends on both the curvature and the speed ($ds/dt$)",
 L"The acceleration in the normal direction depends only on the curvature and not the speed ($ds/dt$)",
@@ -2155,7 +2157,7 @@ Let $\vec\gamma(t) = \langle t, t^2 \rangle = \langle x(t), y(t)\rangle$ be a pa
 
 * Compute $r(t)$
 
-```
+```julia; echo=false
 choices = [
 L"1 + 4t^2",
 L"1 - 4t^2",
@@ -2168,7 +2170,7 @@ radioq(choices, ans)
 
 * Compute $k(t)$
 
-```
+```julia; echo=false
 choices = [
 L"2",
 L"-2",
@@ -2181,7 +2183,7 @@ radioq(choices, ans)
 
 * Compute $X(t)$
 
-```
+```julia; echo=false
 choices = [
 L"t - 2t(1 + 4t^2)/2",
 L"t - 4t(1+2t)/2",
@@ -2194,7 +2196,7 @@ radioq(choices, ans)
 
 * Compute $Y(t)$
 
-```
+```julia; echo=false
 choices = [
 L"t^2 + 1(1 + 4t^2)/2",
 L"t^2 + 2t(1+4t^2)/2",
@@ -2209,7 +2211,7 @@ radioq(choices, ans)
 
 The following will compute the evolute of an ellipse:
 
-```verbatim
+```julia; eval=false
 @vars t a b
 x = a*cos(t)
 y = b*sin(t)
@@ -2223,7 +2225,7 @@ Y = y + xp * r2 / k |> simplify
 
 What is the resulting curve?
 
-```
+```julia; echo=false
 choices = [
 L"An astroid of the form $c \langle \cos^3(t), \sin^3(t) \rangle$",
 L"An cubic parabola of the form $\langle ct^3, dt^2\rangle$",

@@ -118,8 +118,18 @@ When a surface is described parametrically, there is no "gradient." The *partial
 
 ### Plotting parametrized surfaces in `Julia`
 
+
+```julia; echo=false
+alert("""
+
+WAIT: as of writing, the plotting of parametric surfaces, as illustrated below, is currently broken in `Plots`. The following works in `v0.26.0`, but not in `v0.26.1` and `v0.26.2`. Hopefully the old behaviour will be restored, until then we do not evaluate the code in this section.
+
+""")
+```
+
+
 Consider the parametrically described surface above. How would it be
-plotted?Using the `Plots` package, the process is quite similar to how
+plotted? Using the `Plots` package, the process is quite similar to how
 a surface described by a function is plotted, but the $z$ values must
 be computed prior to plotting.
 
@@ -128,7 +138,7 @@ be computed prior to plotting.
 
 Here we define the parameterization using functions to represent each component:
 
-```julia;
+```julia; eval=false
 X(theta,phi) = sin(phi) * cos(theta)
 Y(theta,phi) = sin(phi) * sin(theta)
 Z(theta,phi) = cos(phi)
@@ -136,7 +146,7 @@ Z(theta,phi) = cos(phi)
 
 Only *some* backends for `Plots` will produce this type of plot. Both `plotly()` and `pyplot()` will, but not `gr()`.
 
-```julia;
+```julia; ; eval=false
 thetas = range(0, stop=pi/2, length=50)
 phis   = range(0, stop=pi,   length=50)
 
@@ -145,29 +155,40 @@ ys = [Y(theta, phi) for theta in thetas, phi in phis]
 zs = [Z(theta, phi) for theta in thetas, phi in phis]
 
 plotly()
-surface(xs, ys, zs)
+surface(xs, ys, zs)  ## see note
+```
+
+```julia; echo=false
+note("""Note: PyPlot can  be used directly to make these surface plots: `import PyPlot; PyPlot.plot_surface(xs,ys,zs)`""")
 ```
 
 Instead of the comprehension, broadcasting can be used
 
-```julia;
+```julia; ; eval=false
 pyplot()  # for variety to compare to plotly()
 surface(X.(thetas, phis'), Y.(thetas, phis'), Z.(thetas, phis'))
 ```
 
+
+
 If the parameterization is presented as a function, broadcasting can be used to succintly plot:
 
-```julia;
+```julia; eval=false
 Phi(theta, phi) = [X(theta, phi), Y(theta, phi), Z(theta, phi)]
 
 surface(unzip(Phi.(thetas, phis'))...)
 ```
 
 
-The latter is done by the `plot_parametric_surface` function of `CalculusWithJulia`. It is called as follows:
 
-```julia;
-plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi))
+
+The latter is done by the `plot_parametric_surface` function of `CalculusWithJulia`.
+
+
+It is called as follows:
+
+```julia; eval=false
+plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi)) |> plt -> PyPlot.display(plt.figure)
 ```
 
 The partial derivatives of each component, $\partial{\Phi}/\partial{\theta}$ and $\partial{\Phi}/\partial{\phi}$, can be computed directly:
@@ -182,7 +203,7 @@ $$~
 Using `SymPy`, we can compute through:
 
 
-```julia;
+```julia; eval=false
 using SymPy
 @vars theta phi
 out = [diff.(Phi(theta, phi), theta) diff.(Phi(theta, phi), phi)]
@@ -191,29 +212,27 @@ out = [diff.(Phi(theta, phi), theta) diff.(Phi(theta, phi), phi)]
 
 At the point $(\theta, \phi) = (\pi/12, \pi/6)$ this evaluates to the following.
 
-```julia;
+```julia; eval=false
 subs.(out, theta.=> PI/12, phi.=>PI/6) .|> N
 ```
 
 We found numeric values, so that we can
 compare to the numerically identical values computed by the `jacobian` function from `ForwardDiff`:
 
-```julia;
+```julia; eval=false
 using ForwardDiff
 Phi(v) = Phi(v...)    # need Phi(v) defined, not Phi(theta, phi)
-out = ForwardDiff.jacobian(Phi, [pi/12, pi/6])
+pt = [pi/12, pi/6]
+out = ForwardDiff.jacobian(Phi, pt)
 ```
 
 What this function computes exactly will be described next, but here we visualize the partial derivatives and see they lie in the tangent plane at the point:
 
-```julia;
-pt = [pi/12, pi/6]
-plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi), legend=false)
+```julia; eval=false
+plt = plot_parametric_surface(Phi, xlim=(0,pi/2), ylim=(0,pi), legend=false)
 arrow!(Phi(pt), out[:,1], linewidth=3)
 arrow!(Phi(pt), out[:,2], linewidth=3)
 ```
-
-
 
 
 

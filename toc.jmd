@@ -265,14 +265,9 @@ Here is a quick review of the math topics discussed on vector calculus.
 
 ----
 
+## Contributing, commenting, ...
 
-
-
-```julia; echo=false
-using WeaveTpl
-alert("""
 
 This is a work in progress. To report an issue, make a comment, or suggest something new, please file an [issue](https://github.com/CalculusWithJulia/CalculusWithJulia.github.io/issues/). In your message add the tag `@jverzani` to ensure it is not overlooked. Otherwise, an email to `verzani` at `math.csi.cuny.edu` will also work.
 
-""")
-```
+To make edits to the document directly, a pull request with the modified `*.jmd` files should be made. Minor edits to the `*.jmd` files should be possible through the GitHub web interface. The `*.html` files are generated using `Julia's` `Weave` package and an internal package `CwJWeaveTpl`. This need not be done.

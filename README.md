@@ -18,6 +18,14 @@ Before beginning, we need to get started with Julia. This is akin to going out a
 
 - [Getting Started](getting-started-with-julia.html)
 
+----
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/CalculusWithJulia/CwJScratchPad.git/master) Julia can be used through the internet for free using the [mybinder.org](https://mybinder.org) service.
+Click on the `CalcululsWithJulia.ipynb` file after launching Binder by clicking on the badge.
+
+
+
+
 ## Precalculus
 
 Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus *review*, covers some of the basic materials mathematically (though not systematically). More importantly it illustrates the key computational mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).

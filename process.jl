@@ -131,4 +131,13 @@ function process_files(; force = false, cache=:off)
             process_file(d, f, force=force, cache=cache)
         end
     end
+
+    # move files
+    if mtime("README.md") < mtime("toc.jmd")
+        cp("toc.jmd", "README.md", force=true)
+    end
+    if mtime("index.html") < mtime("toc.html")
+        cp("toc.html", "index.html", force=true)
+    end
+
 end

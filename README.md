@@ -28,7 +28,9 @@ Click on the `CalcululsWithJulia.ipynb` file after launching Binder by clicking 
 
 ## Precalculus
 
-Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus *review*, covers some of the basic materials mathematically (though not systematically). More importantly it illustrates the key computational mechanics we will use throughout. A quick rundown of the `julia` concepts alone is [here](precalc/julia_overview.html).
+Many of the necessary computational skills needed for employing `Julia` successfully to assist in learning calculus are in direct analogy to concepts of mathematics that are first introduced in precalculus or prior. This precalculus *review*, covers some of the basic materials mathematically (though not systematically). More importantly it illustrates the key computational mechanics we will use throughout.
+
+A quick rundown of the `Julia` concepts presented in this setion is in a [Julia overview](precalc/julia_overview.html).
 
 ### Number systems
 
@@ -260,6 +262,8 @@ Here is a quick review of the math topics discussed on vector calculus.
 ## A quick review
 
 - [Quick notes](quick-notes.html)
+
+A review of the `Julia` concepts used within these notes.
 
 
 ## Miscellaneous

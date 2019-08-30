@@ -3,13 +3,18 @@
 
 [Julia](http://www.julialang.org) is a programming language that is freely available.
 
-We can use `Julia` without installation on
-[juliabox.com](https://www.juliabox.com). It uses the
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/CalculusWithJulia/CwJScratchPad.git/master)
+
+We can use `Julia` without installation by clicking the "launch Binder" badge. The notebook `CalculusWithJulia.ipynb` is a blank notebook except for the command to load the `CalculusWithJulia` package.
+
+
+Alternatively, the [juliabox.com](https://www.juliabox.com) service
+provides access to `Julia` through the internet, though the free
+access is slated to be discontinued. Both use the
 [Jupyter](https://jupyter.org/) notebook interface, which we will
 assume, though many other means of interacting with `Julia` are
-available. However, `juliabox` is possibly going to stop as a free
-service. An alternative is to use `Julia` through [mybinder](XXX),
-though slow to start, this requires no account.
+available.
 
 
 ## Commands
@@ -48,15 +53,17 @@ As much as possible, operations involving  certain types of numbers will produce
 2/1, 1/2
 ```
 
-Some operations won't work with integer types, but will with floating point types, as the type of output can't be assured. Powers are the main example where `2^(1/2)` is not defined, but `2.0^(1/2)` is.
+Some operations won't work with integer types, but will with floating point types, as the type of output can't be assured.
 
-Powers with negative bases, like `(-3.0)^(1/3)`, are also not defined. However, `Julia` provides the special-case function `cbrt` (and `sqrt`) for handling these.
+Powers with negative bases, like `(-3.0)^(1/3)`, are not defined. However, `Julia` provides the special-case function `cbrt` (and `sqrt`) for handling these.
 
-Integer operations may silently overflow, producing odd answers:
+Integer operations may silently overflow, producing odd answers, at first glance:
 
 ```julia;
 2^64
 ```
+
+(Though the output is predictable, if overflow is taken into consideration appropriateley.)
 
 When different types of numbers are mixed, `Julia` will usually promote the values to a common type before the operation:
 
@@ -66,13 +73,14 @@ When different types of numbers are mixed, `Julia` will usually promote the valu
 
 `Julia` will first add `2` and `1//2` converting `2` to rational before doing so. Then add the result, `5//2` to `0.5` by promoting `5//2` to the floating point number `2.5` before proceeding.
 
+`Julia` uses a special type to store a handful of constants, of which both `pi` and `e` are used here. Theh special type allows these to be treated without round off, until they mix with other floating point numbers. There are some functions that require these be explicitly promoted to floating point. This can be done by calling `float`.
+
 The standard mathematical operations are implemented by `+`, `-`, `*`, `/`, `^`. Parentheses are used for grouping.
 
 
 ### Vectors
 
-* A vector is an indexed collection of similarly typed values. Vectors can
-be constructed with square brackets (syntax for concatenation):
+A vector is an indexed collection of similarly typed values. Vectors can be constructed with square brackets (syntax for concatenation):
 
 ```julia;
 [1,1,2,3,5,8]
@@ -84,8 +92,9 @@ Regular arithmetic sequences can be defined by either:
 
 * Range operations:  `a:h:b` or `a:b` which produces a generator of values starting at `a` separated by `h` (`h` is `1` in the last form) until they reach `b`.
 
-* `range(a, b, length=n)` which produces a generator of `n` values between `a` and `b`;
+* `range(a, b, length=n)` which produces a generator of `n` values between `a` and `b`; (`range(a, stop=b, length=n)` is needed for version `v1.0.0` of `Julia.)
 
+These constructs return range objects. A range object *compactly* stores the values it references. To see all the values, they can be collected with the `collect` function, though this is hardly needed in practice.
 
 ## Variables
 
@@ -110,7 +119,7 @@ x + a_really_long_name + a - b
 
 Names may be repurposed, even with values of different types (a
 dynamic language), save for function names, which have some special
-rules and can only be redefined as an another function.
+rules and can only be redefined as an another function. (Generic functions are central to `Julia`'s design. Generic functions use a method table to dispatch on, so once a name is assigned to a generic function, it can not be used as a variable name; the reverse is also true.
 
 ## Functions
 
@@ -336,6 +345,9 @@ To substitute a value, we can use `pair` notation (`variable=>value`):
 ```julia;
 p(x=>2), p(x=>2, a=>3, b=>4, c=>1)
 ```
+
+This is convenient notation for calling the `subs` function.
+
 
 SymPy expressions of a single free variable can be plotted directly:
 

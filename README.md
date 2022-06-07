@@ -1,6 +1,6 @@
 These notes have been moved to the
-[CalculusWithJulia.jl](https://github.com/jverzani/CalculusWithJulia.jl/)
+[CalculusWithJuliaNotes.jl](https://github.com/jverzani/CalculusWithJuliaNotes.jl/)
 package.
 
-Follow [https://jverzani.github.io/CalculusWithJulia.jl/dev/](https://jverzani.github.io/CalculusWithJulia.jl/dev/)
+Follow [https://jverzani.github.io/CalculusWithJuliaNotes.jl/dev/](https://jverzani.github.io/CalculusWithJuliaNotes.jl/dev/)
 to view the notes.
